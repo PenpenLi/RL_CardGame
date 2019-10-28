@@ -1,0 +1,3 @@
+﻿id,title,des,achieveType,achieveNum,rewardGold,rewardDiamond
+10001,初来咋到,A_LoginDays,login,1,500,5
+10002,勇往直前,A_LoginDays,login,2,500,5

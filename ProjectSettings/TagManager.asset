@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - HERO
+  - ENEMY
   layers:
   - Default
   - TransparentFX
@@ -40,4 +42,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Scene
+    uniqueID: 3825195009
+    locked: 0
+  - name: Role
+    uniqueID: 1048950049
+    locked: 0
+  - name: Effects
+    uniqueID: 2913370951
+    locked: 0
+  - name: UI
+    uniqueID: 2413109323
     locked: 0

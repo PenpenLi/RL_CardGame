@@ -1,0 +1,7 @@
+﻿id,name,class,quality,rarity,image,type,mainEffect,sideEffect,passiveEffect,extra
+1400001,彩虹小马挂饰,饰品,0,2,equip400001,0,speed:2,md:5,,0
+1400002,幸运骰子,护身符,0,1,equip400002,1,expect:10,evo:2,,0
+1400003,铅坠,工具,0,0,equip400003,2,speed:-10,ad:5,,0
+1400004,诅咒项链,饰品,0,1,equip400004,0,mt:15,ad:-15,,0
+1400005,袖珍望远镜,工具,0,2,equip400005,2,accur:15,crit:5,,0
+1400006,海马眼球,护身符,0,0,equip400006,1,ad:5,md:5,,0

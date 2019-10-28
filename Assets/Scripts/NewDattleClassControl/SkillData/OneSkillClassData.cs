@@ -1,121 +1,68 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
+#region 所有相关Enum
 public enum SkillKind
 {
-    Elemental,
+    Elemental=0,
     Physical,
     Arcane,
+    End,
 }
-[System.Serializable]
-public class OneState
+public enum SkillBreed
 {
-    public OneStateShow ThisStateShow;
-    //状态种类
-    SkillKind _thisstatekind;
-    public SkillKind ThisStateKind
-        { get { return _thisstatekind; } private set { _thisstatekind = value; } }
-    public string StateKindIcon;
-
-    //此次状态目标
-    SkillAim _ThisSkillTarget;
-    public SkillAim ThisSkillTarget { get { return _ThisSkillTarget; } set { _ThisSkillTarget = value; } }
-
-    //状态触发效果
-    public OneEffect[] AllStateResults;
-
-
-    //
-    public OneState()
-    {
-
-    }
-    public OneState Copy()
-    {
-        return new OneState();
-    }
+    Absence,
+    Remote,
+    Close,
+    End,
 }
-[System.Serializable]
-public class OneStateShow
-{
-    public int StateId;
-    public int StateTime;
-    public string StateName;
-    //
-    public string StateIcon;
-    public string StateBgIcon;
-}
-
-
-
 public enum SkillAim
 {
     Self,
-    OneOther,
-    AllOthers,
-    OneFriend,
-    AllFriends,
+    Friend,
+    Other,
+    All,
+    End,
 }
-public enum DataType
-{
-    Normal,
-    HP_SP,
-    HPOnly,
-    SPOnly,
-    MP,
-    TP,
-}
-[System.Serializable]
-public class OneEffect
-{
-    //施加数值影响设置
-    public float DataRate = 1;
-    int _data;
-    public int Data { get { return (int)(_data * DataRate); } private set{ _data = value; }}
-    DataType _thisdatatype;
-    public DataType ThisDataType { get { return _thisdatatype; } set { _thisdatatype = value; } }
-    public void SetDataRate(float Multi)
-    {
-        DataRate = Multi;
-    }
-
-
-    //此次影响目标
-    SkillAim _ThisSkillTarget;
-    public SkillAim ThisSkillTarget { get { return _ThisSkillTarget; }set { _ThisSkillTarget = value; } }
-
-    //
-    static public OneEffect CreateStandardSkillData()
-    {
-        OneEffect s = new OneEffect();
-        return s;
-    }
-}
-
-
+#endregion
 
 
 [System.Serializable]
 public class OneSkill
 {
-    public int SkillId;
+    public int skillId;
     public string SkillName;
-    public string Icon;
-    public string BgIcon;
+    public int SkillFunctionID;
+    public string IconImg;
+    public string BulletImg;
+
+    public bool isOmegaSkill;
+    public bool isUnlocked;
+
     public string Desc;
+    public int lv;
 
-    //技能种类
-    SkillKind _thisskillkind;
-    public SkillKind ThisSkillKind
+    public int skillAnimId;
+
+    public SkillAim Aim = SkillAim.End;
+    public SkillBreed Breed = SkillBreed.End;
+    public SkillKind Kind = SkillKind.End;
+    public SDConstants.AOEType SkillAoe = SDConstants.AOEType.End;
+    public SDConstants.AddMpTpType MpTpAddType = SDConstants.AddMpTpType.End;
+    public static OneSkill normalAttack
     {
-        get { return _thisskillkind; }
-        private set { _thisskillkind = value; }
+        get {
+            return new OneSkill()
+            {
+                skillId = 1,
+                SkillName = "NormalAttack",
+                SkillFunctionID = 0,
+                IconImg = "NormalAttack",
+                Desc = "对单体敌人造成基本物理伤害",
+                lv = 0
+            };
+        }
     }
-    public string SkillKindIcon;
-
-    //技能具体效果
-    public OneEffect[] AllSkillResults;
-    public OneState SkillState;
-
 }

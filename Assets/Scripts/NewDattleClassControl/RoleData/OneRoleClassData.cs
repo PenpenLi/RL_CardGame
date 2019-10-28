@@ -1,33 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 
-[System.Serializable]
-public class RoleAttributeList
+public enum SelfAbilityElement
 {
-    public int Hp;//public int MaxHp;
-    public int Sp;//public int MaxSp;
-    public int Mp;//public int MAxMp;
-    public int Tp;//public int MAxTp;
-    //
-    public int AT;public int AD;//物理攻防
-    public int MT;public int MD;//法术攻防
-    public int Speed;//行动条速度
-    public int Taunt;//嘲讽值
-    public int Evo;//闪避值
-    public int Crit;//暴击值
-    public int CritD;//暴击伤害加成值
-
-    //恢复率影响值
-    public int Hp_Up;
-    public int Sp_Up;
-    public int Mp_Up;
-    public int Tp_Up;
-
-
+    Dur,
+    Str,
+    Wis,
+    Dex,
+    Per,
+    End,
 }
-
 //角色基础能力，用于生成角色基本属性
 [System.Serializable]
 public class RoleSelfAbility
@@ -36,218 +21,268 @@ public class RoleSelfAbility
     /// <summary>
     /// 耐性
     /// </summary>
-    public int Dur;
+    public int Dur { get { return BasicSA[(int)SelfAbilityElement.Dur]; }set { BasicSA[(int)SelfAbilityElement.Dur] = value; } }
     /// <summary>
     /// 力量
     /// </summary>
-    public int Str;
+    public int Str { get { return BasicSA[(int)SelfAbilityElement.Str]; } set { BasicSA[(int)SelfAbilityElement.Str] = value; } }
     /// <summary>
     /// 聪慧
     /// </summary>
-    public int Wis;
+    public int Wis { get { return BasicSA[(int)SelfAbilityElement.Wis]; } set { BasicSA[(int)SelfAbilityElement.Wis] = value; } }
     /// <summary>
     /// 敏捷
     /// </summary>
-    public int Dex;
+    public int Dex { get { return BasicSA[(int)SelfAbilityElement.Dex]; } set { BasicSA[(int)SelfAbilityElement.Dex] = value; } }
     /// <summary>
     /// 感知
     /// </summary>
-    public int Per;
-
-
+    public int Per { get { return BasicSA[(int)SelfAbilityElement.Per]; } set { BasicSA[(int)SelfAbilityElement.Per] = value; } }
+    public int[] BasicSA = new int[(int)SelfAbilityElement.End];
     //角色其他属性
     /// <summary>
     /// 社交倾向
     /// </summary>
     public Vector2 Disposition;
-
-
-
+    /// <summary>
+    /// 角色源面板构建
+    /// </summary>
+    /// <param name="dur">耐性</param>
+    /// <param name="str">力量</param>
+    /// <param name="wis">聪慧</param>
+    /// <param name="dex">敏捷</param>
+    /// <param name="per">感知</param>
+    /// <param name="disposition">社交倾向</param>
+    public RoleSelfAbility(int dur,int str,int wis,int dex,int per,Vector2 disposition)
+    {
+        this.Dur = dur;this.Str = str;this.Wis = wis;this.Dex = dex;this.Per = per;this.Disposition = disposition;
+    }
+    /// <summary>
+    /// 构建由源面板拼成的数据
+    /// </summary>
+    /// <param name="Dur_R">耐性占比</param>
+    /// <param name="Str_R">力量占比</param>
+    /// <param name="Wis_R">智慧占比</param>
+    /// <param name="Dex_R">敏捷占比</param>
+    /// <param name="Per_R">感知占比</param>
+    /// <returns></returns>
+    public int IntgerFromAbility(float Dur_R,float Str_R,float Wis_R,float Dex_R,float Per_R)
+    {
+        int a = (int)(Dur * Dur_R + Str * Str_R + Wis * Wis_R + Dex * Dex_R + Per * Per_R);
+        return a;
+    }
 }
-
-public enum Job
-{
-    Fighter,
-    Caster,
-    Ranger,
-    Other,
-}
-public enum Race
-{
-    Human,
-    Elf,
-    Draeni,
-
-}
-
 [System.Serializable]
 public class OneRoleClassData 
 {
-    public OneRoleShow ThisRoleShow;
-    #region 开始时角色数据
-    //角色详细属性（正式战斗时实时显示）
-    public RoleAttributeList ThisRoleAttributes;
-    //角色装备
-    public OneEquipageData[] ThisRoleEquipageList;
-    //角色职业
-    Job _thisjob;
-    public Job ThisJob { get { return _thisjob; }private set { _thisjob = value; } }
-    //角色种族
-    Race _thisrace;
-    public Race ThisRace { get { return _thisrace; }private set { _thisrace = value; } }
-
-
-
-
-
-
-
-    //角色详细属性生成工具
-    public void RefreshAbility()
+    /// <summary>
+    /// 开始时属性
+    /// </summary>
+    public RoleAttributeList ThisRoleAttributes 
     {
-
+        get { return baseRALChangeData + extraRALChangeData; }
+        set { baseRALChangeData = value; }
     }
-    #endregion
-    #region 角色实时数据变化
-    private int _hp;
-    public int Hp {get { return _hp; } private set { _hp = value; } }
-    private int _sp;
-    public int Sp { get { return _sp; }private set { _sp = value; } }
-    private int _mp;
-    public int Mp { get { return _mp; }private set { _mp = value; } }
-    private int _tp;
-    public int Tp { get { return _tp; }private set { _tp = value; } }
-    //
-    public List<OneState> StateList = new List<OneState>();
-    #endregion
-
-
-    public virtual void ReceiveEffect(SkillKind ThisSkillKind, OneEffect ThisEffect,bool UseDef)
+    public RoleAttributeList baseRALChangeData;
+    public RoleAttributeList extraRALChangeData 
     {
-        int Num = ThisEffect.Data;
-        if (!UseDef)
+        get { return groupStateRAL + environmentStateRAL; }
+    }
+    public RoleAttributeList groupStateRAL;
+    public RoleAttributeList environmentStateRAL;
+    //public RoleAttributeList 
+
+    #region 索引
+    /// <summary>
+    /// BarChart最大值读取
+    /// </summary>
+    public RoleBarChart ReadAllMaxSSD
+    {
+        get
         {
-            //直接有效不受角色属性影响
+            RoleBarChart a = new RoleBarChart();
+            a.HP = ReadCurrentRoleRA(AttributeData.Hp);
+            a.MP = ReadCurrentRoleRA(AttributeData.Mp);
+            a.TP = ReadCurrentRoleRA(AttributeData.Tp);
+            return a;
+        }
+    }
+    //加减int值，用于显示实时属性增减
+    public RoleAttributeList AllARevision;
+    public int ReadCurrentRoleRA(int Tag, bool IsAttributeData = true)
+    {
+        if (IsAttributeData)
+        {
+            AttributeData t = (AttributeData)Mathf.Clamp(Tag, 0, (int)AttributeData.End);
+            return ThisRoleAttributes.read(t) + AllARevision.read(t);
         }
         else
         {
-            if(ThisSkillKind == SkillKind.Physical)
-            {
-                Num = Num * 3 + ThisRoleAttributes.AD * 2;//物理伤害计算公式
-            }
-            else if(ThisSkillKind == SkillKind.Elemental)
-            {
-                Num = Num - ThisRoleAttributes.MD;//元素伤害计算公式
-            }
-            else if(ThisSkillKind == SkillKind.Arcane)
-            {
-                //Num = Num;//神秘伤害计算公式
-            }
-        }
-        switch (ThisEffect.ThisDataType)
-        {
-            case DataType.Normal:
-                {
-                    break;
-                }
-            case DataType.HP_SP:
-                {
-                    if (this.Sp + Num < 0)
-                    {
-                        this.Sp = 0; this.Hp += this.Sp + Num;
-                    }
-                    else
-                    {
-                        this.Sp += Num;
-                    }
-                    break;
-                }
-            case DataType.HPOnly:
-                {
-                    this.Hp += Num;
-                    break;
-                }
-            case DataType.SPOnly:
-                {
-                    this.Sp += Num;
-                    break;
-                }
-            case DataType.MP:
-                {
-                    this.Mp += Num;
-                    break;
-                }
-            case DataType.TP:
-                {
-                    this.Tp += Num;
-                    break;
-                }
-            default:
-                {
-                    Debug.Log(ThisRoleShow.Name +"#" + ThisRoleShow.Id + " 受到的影响不存在或影响类型不存在");
-                    break;
-                }
+            StateTag t = (StateTag)Mathf.Clamp(Tag, 0, (int)StateTag.End);
+            return ThisRoleAttributes.read(t) + AllARevision.read(t);
         }
     }
-    public virtual bool ReceiveState(OneState ThisState)
+    public int ReadCurrentRoleRA(AttributeData Tag)
     {
-        StateList.Add(ThisState);
-        return true;
+        return ThisRoleAttributes.read(Tag) + AllARevision.read(Tag);
     }
-
-    virtual public void UseSkill(OneSkill UseThisSkill)
+    public int ReadCurrentRoleRA(StateTag Tag)
     {
-        //Cost
-        for(int i = 0; i < UseThisSkill.AllSkillResults.Length; i++)
-        {
-            //技能消耗
-            if (UseThisSkill.AllSkillResults[i].ThisSkillTarget == SkillAim.Self)
-            {
-                ReceiveEffect(UseThisSkill.ThisSkillKind, UseThisSkill.AllSkillResults[i], false);
-            }
-        }
-        if(UseThisSkill.SkillState.ThisSkillTarget == SkillAim.Self)
-        {
-            ReceiveState(UseThisSkill.SkillState);
-        }
-
+        return ThisRoleAttributes.read(Tag) + AllARevision.read(Tag);
     }
-
-
+    #endregion
+    #region 战斗属性快速索引
+    public int hp
+    {
+        get { return ReadCurrentRoleRA(AttributeData.Hp); }
+    }
+    public int mp
+    {
+        get { return ReadCurrentRoleRA(AttributeData.Mp); }
+    }
+    public int tp { get { return ReadCurrentRoleRA(AttributeData.Tp); } }
+    public int at { get { return ReadCurrentRoleRA(AttributeData.AT); } }
+    public int ad { get { return ReadCurrentRoleRA(AttributeData.AD); } }
+    public int mt { get { return ReadCurrentRoleRA(AttributeData.MT); } }
+    public int md { get { return ReadCurrentRoleRA(AttributeData.MD); } }
+    public int speed { get { return ReadCurrentRoleRA(AttributeData.Speed); } }
+    public int taunt { get { return ReadCurrentRoleRA(AttributeData.Taunt); } }
+    public int accur { get { return ReadCurrentRoleRA(AttributeData.Accur); } }
+    public int evo { get { return ReadCurrentRoleRA(AttributeData.Evo); } }
+    public int crit { get { return ReadCurrentRoleRA(AttributeData.Crit); } }
+    public int expect { get { return ReadCurrentRoleRA(AttributeData.Expect); } }
+    #endregion
 }
 
 
 
-//
-[System.Serializable]
-public class RoleSkillCardsEntry
-{
-    public OneSkill[] OneRoleCardPool;//总卡池
-    public List<OneSkill> CurrentCardPool;//战斗时卡组
-    public List<OneSkill> CurrentCardCemetery;//战斗时墓地
 
-    //当前获取卡牌
-    public int MaxShowingCardNum;   
-    public List<OneSkill> OnShowingCards;
+
+public enum Job
+{
+    Fighter=0,
+    Ranger,
+    Priest,
+    Caster,
+    End,
+}
+public enum Race
+{
+    Human=0,
+    Elf,
+    Dragonborn,
+    End,
+}
+[System.Serializable]
+public class RoleBarChart
+{
+    #region 角色三项可视化数据
+    public int HP
+    {
+        get { return ThisArray[0]; }
+        set { DATA.x = value; }
+    }
+    public int MP
+    {
+        get { return ThisArray[1]; }
+        set
+        {
+            DATA.y = value;
+        }
+    }
+    public int TP
+    {
+        get
+        {
+            return ThisArray[2];
+        }
+        set
+        {
+            DATA.z = value;
+        }
+    }
+    [HideInInspector]
+    public int[] ThisArray 
+    {
+        get { return new int[3] { (int)DATA.x, (int)DATA.y, (int)DATA.z }; }
+    }
+    public Vector3 DATA;
+    #endregion
+    #region 计算公式
+    public static RoleBarChart operator +(RoleBarChart a
+        , RoleBarChart b)
+    {
+        a.HP += b.HP;
+        a.MP += b.MP;
+        a.TP += b.TP;
+        return a;
+    }
+    public static RoleBarChart operator +(RoleBarChart a
+    , int b)
+    {
+        a.HP += b; a.MP += b; a.MP += b; return a;
+    }
+    public static RoleBarChart operator *(RoleBarChart a
+        , int b)
+    {
+        a.HP *= b; a.MP *= b; a.TP *= b; return a;
+    }
+    public static RoleBarChart operator *(RoleBarChart a
+    , float b)
+    {
+        a.HP = (int)(a.HP*b);
+        a.MP = (int)(a.MP*b);
+        a.TP = (int)(a.TP*b);
+        return a;
+    }
+    public static RoleBarChart operator *(RoleBarChart a
+        , RoleBarChart b)
+    {
+        a.HP *= b.HP;a.MP *= b.MP;a.TP *= b.TP;
+        return a;
+    }
+    #endregion
+    public RoleBarChart ExpandByRBCPercent(RoleBarChart percentArray)
+    {
+        HP = (int)(HP * AllRandomSetClass.SimplePercentToDecimal(percentArray.HP));
+        MP = (int)(MP * AllRandomSetClass.SimplePercentToDecimal(percentArray.MP));
+        TP = (int)(TP * AllRandomSetClass.SimplePercentToDecimal(percentArray.TP));
+        return this;
+    }
+    public void ResetSelf()
+    {
+        HP = MP = TP = 0;
+    }
+    public static RoleBarChart zero = new RoleBarChart()
+    {
+        HP = 0,
+        MP = 0,
+        TP = 0
+    };
 }
 
-
-
+/// <summary>
+/// 角色基底
+/// </summary>
 [System.Serializable]
-public class OneRoleShow//可用于角色库观察
+public class ROHeroData
 {
-    public int Id;
-    public string Name;
-    public string Desc;
-    public string Icon;
-    public string BgIcon;
-    //
-    public int Count;
-    [Range(0, 5)]
-    public int Quality;
-    public int Level;
-    public int Mastery;
+    public string Name = "基础人";//名字
+    public int starNum=0;//LEVEL
 
-    //角色基础能力，用于生成角色详细属性
-    public RoleSelfAbility ThisRoleAbility;
+    public RoleAttributeList BasicRAL = RoleAttributeList.zero;
+    public RoleAttributeList RALRate = RoleAttributeList.zero;//选择属性加成
+
+    public int CRI = 10;
+    public int CRIDmg = 150;
+    public int DmgReduction = 0;//(-∞,100)% 伤害修正
+    public int DmgReflection = 0;//(0,x)% 伤害反射
+    public int RewardRate = 0;//奖励获得概率变动()%
+    public int GoldRate = 0;//奖金数量变动()%
+    //public int HireCost = 0;//雇佣价格
+    public RoleBarChart BarChartRegendPerTurn;//每回合四项可视化值回复量
+    public int ID = 0;
+    public int gender = -1;
+    public int quality = 0;
+    public bool isRare = false;
 }

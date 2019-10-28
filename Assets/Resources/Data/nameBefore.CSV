@@ -1,0 +1,4 @@
+﻿id,name,level,rarity,quality,type,gender,detail,extra
+1,勇气可嘉的,0,0,1,phyBuff:0,-1,phy,0
+2,勇猛的,1,5,1,phyBuff:1,-1,phy,0
+3,战神,2,10,1,phyBuff:2,-1,phy,0

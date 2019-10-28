@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6554972299979341335
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6554972299979341334}
+  - component: {fileID: 6554972299979341333}
+  m_Layer: 5
+  m_Name: SkillDetialsList
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6554972299979341334
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6554972299979341335}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6554972299979341333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6554972299979341335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4529d43fe996b348ab39e08711bdb71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AllSkillList:
+  - {fileID: 4837869067163833593, guid: 628d8c744f7e9ab49aa60a82a2dc9c79, type: 3}
+  - {fileID: 2450582158622473813, guid: d7e3e0dd07dd9854abdead70d2db723a, type: 3}
+  - {fileID: 1995359199694546457, guid: 4da5fd29fa75a3f49b4f99ea78904157, type: 3}
+  - {fileID: 8186172205097651187, guid: 3e6c789bddbcbc045893fd248861ed6c, type: 3}
+  - {fileID: 8993011931991731023, guid: 95a8b39b6087b6748b78931b18cb6df9, type: 3}
+  SkillDetailsByJob:
+  - GroupNotice: Fighter
+    DetailList:
+    - SkillName: "\u7C89\u788E\u65A9\u51FB"
+      SkillFunctionID: 1
+      Desc: "\u7ED9\u4E88\u5355\u4F53\u654C\u4EBA\u7269\u7406\u4F24\u5BB3"
+    - SkillName: "\u5632\u8BBD\uFF01"
+      SkillFunctionID: 0
+      Desc: "\u5927\u5E45\u63D0\u5347\u81EA\u8EAB\u5632\u8BBD\u503C"
+    - SkillName: "\u91CD\u5251\u6C14\u5203"
+      SkillFunctionID: 0
+      Desc: 
+  - GroupNotice: Ranger
+    DetailList:
+    - SkillName: "\u7A81\u88AD"
+      SkillFunctionID: 1
+      Desc: "\u7ED9\u4E88\u654C\u4EBA\u7269\u7406\u4F24\u5BB3"
+    - SkillName: "\u5FEB\u901F\u5C04\u51FB"
+      SkillFunctionID: 2
+      Desc: "\u7ED9\u4E88\u654C\u4EBA\u7269\u7406\u4F24\u5BB3"
+    - SkillName: 
+      SkillFunctionID: 0
+      Desc: 
+  - GroupNotice: Priest
+    DetailList:
+    - SkillName: "\u633A\u8EAB\u800C\u51FA"
+      SkillFunctionID: 0
+      Desc: "\u5927\u5E45\u63D0\u5347\u81EA\u8EAB\u5632\u8BBD\u503C"
+    - SkillName: "\u9B54\u5F39\u653B\u51FB"
+      SkillFunctionID: 3
+      Desc: "\u7ED9\u4E88\u654C\u4EBA\u6CD5\u672F\u4F24\u5BB3"
+    - SkillName: 
+      SkillFunctionID: 0
+      Desc: 
+  - GroupNotice: Caster
+    DetailList:
+    - SkillName: "\u5B9E\u5F39\u5C04\u51FB"
+      SkillFunctionID: 2
+      Desc: "\u7ED9\u4E88\u654C\u4EBA\u7269\u7406\u4F24\u5BB3"
+    - SkillName: "\u9B54\u5F39\u672F"
+      SkillFunctionID: 3
+      Desc: "\u7ED9\u4E88\u654C\u4EBA\u6CD5\u672F\u4F24\u5BB3"
+    - SkillName: 
+      SkillFunctionID: 0
+      Desc: 
+  SkillDetailsByRace:
+  - GroupNotice: Human
+    DetailList: []
+  - GroupNotice: Elf
+    DetailList: []
+  - GroupNotice: Dragonborn
+    DetailList: []
