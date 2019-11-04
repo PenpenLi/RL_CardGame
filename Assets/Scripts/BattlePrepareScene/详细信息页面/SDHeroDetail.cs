@@ -66,7 +66,7 @@ public class SDHeroDetail : BasicRoleProperty
     #endregion
     #region 总栏
     [Header("上级信息 栏")]
-    public AllOwnedHeroesPanel RoleCentralController;
+    public HeroDetailPanel HeroWholeMessage;
     #endregion
 
     private void Awake()
@@ -118,10 +118,12 @@ public class SDHeroDetail : BasicRoleProperty
                         = Vector3.up + Vector3.forward + Vector3.right * (e0 * 1f / e1);
 
             }
-            RoleCentralController.showRoleDetailPanel();
             showRoleModelPanel();
+            //equipedSkills
+            HeroWholeMessage.readHeroEquipedSkills(hashcode);
         }
     }
+
     public void showRoleModelPanel()
     {
         if(ModelAndEquipsPanel.parent != this)
@@ -249,7 +251,7 @@ public class SDHeroDetail : BasicRoleProperty
                 string name = s["name"];
                 string passiveEffect = s["passiveEffect"];
                 RoleAttributeList rateRAL = new RoleAttributeList();
-                _gardebras.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                _gardebras.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, RoleBarChart.zero
                     , id, name, 0);
                 _gardebras.PassiveEffectInit(passiveEffect);
                 _gardebras.armorType = (SDConstants.ArmorType)
@@ -283,7 +285,7 @@ public class SDHeroDetail : BasicRoleProperty
                 string name = s["name"];
                 string passiveEffect = s["passiveEffect"];
                 RoleAttributeList rateRAL = new RoleAttributeList();
-                _legging.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                _legging.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, RoleBarChart.zero
                     , id, name, 0);
                 _legging.PassiveEffectInit(passiveEffect);
                 _legging.armorType = (SDConstants.ArmorType)
@@ -354,7 +356,7 @@ public class SDHeroDetail : BasicRoleProperty
                     string name = s["name"];
                     string passiveEffect = s["passiveEffect"];
                     RoleAttributeList rateRAL = new RoleAttributeList();
-                    _jewelry1.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                    _jewelry1.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, RoleBarChart.zero
                         , id, name, 0);
                     _jewelry1.PassiveEffectInit(passiveEffect);
                     _jewelry1._jewelryType = (SDConstants.JewelryType)

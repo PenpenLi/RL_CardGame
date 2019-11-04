@@ -299,6 +299,20 @@ namespace GameDataEditor
             }
         }
 
+        static string likabilityKey = "likability";
+		int _likability;
+        public int likability
+        {
+            get { return _likability; }
+            set {
+                if (_likability != value)
+                {
+                    _likability = value;
+					GDEDataManager.SetInt(_key, likabilityKey, _likability);
+                }
+            }
+        }
+
         static string equipHelmetKey = "equipHelmet";
 		GDEEquipmentData _equipHelmet;
         public GDEEquipmentData equipHelmet
@@ -441,6 +455,7 @@ namespace GameDataEditor
             dict.Merge(true, skillOmegaId.ToGDEDict(skillOmegaIdKey));
             dict.Merge(true, skill1Id.ToGDEDict(skill1IdKey));
             dict.Merge(true, skill0Id.ToGDEDict(skill0IdKey));
+            dict.Merge(true, likability.ToGDEDict(likabilityKey));
 
             dict.Merge(true, equipHelmet.ToGDEDict(equipHelmetKey));
             dict.Merge(true, equipBreastplate.ToGDEDict(equipBreastplateKey));
@@ -510,6 +525,7 @@ namespace GameDataEditor
                 dict.TryGetInt(skillOmegaIdKey, out _skillOmegaId);
                 dict.TryGetInt(skill1IdKey, out _skill1Id);
                 dict.TryGetInt(skill0IdKey, out _skill0Id);
+                dict.TryGetInt(likabilityKey, out _likability);
 
                 string customDataKey;
                 dict.TryGetString(equipHelmetKey, out customDataKey);
@@ -558,6 +574,7 @@ namespace GameDataEditor
             _skillOmegaId = GDEDataManager.GetInt(_key, skillOmegaIdKey, _skillOmegaId);
             _skill1Id = GDEDataManager.GetInt(_key, skill1IdKey, _skill1Id);
             _skill0Id = GDEDataManager.GetInt(_key, skill0IdKey, _skill0Id);
+            _likability = GDEDataManager.GetInt(_key, likabilityKey, _likability);
 
             _equipHelmet = GDEDataManager.GetCustom(_key, equipHelmetKey, _equipHelmet);
             _equipBreastplate = GDEDataManager.GetCustom(_key, equipBreastplateKey, _equipBreastplate);
@@ -596,6 +613,7 @@ namespace GameDataEditor
             newClone.skillOmegaId = skillOmegaId;
             newClone.skill1Id = skill1Id;
             newClone.skill0Id = skill0Id;
+            newClone.likability = likability;
 
             newClone.equipHelmet = equipHelmet;
             newClone.equipBreastplate = equipBreastplate;
@@ -814,6 +832,15 @@ namespace GameDataEditor
             dict.TryGetInt(skill0IdKey, out _skill0Id);
         }
 
+        public void Reset_likability()
+        {
+            GDEDataManager.ResetToDefault(_key, likabilityKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(likabilityKey, out _likability);
+        }
+
         public void Reset_equipHelmet()
 		{
 			GDEDataManager.ResetToDefault(_key, equipHelmetKey);
@@ -967,6 +994,7 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, skillsOwnedKey);
             GDEDataManager.ResetToDefault(_key, skillOmegaIdKey);
             GDEDataManager.ResetToDefault(_key, teamPosKey);
+            GDEDataManager.ResetToDefault(_key, likabilityKey);
 
             Reset_equipHelmet();
             Reset_equipBreastplate();

@@ -230,7 +230,7 @@ public class BattleRoleData : MonoBehaviour
                 int id = SDDataManager.Instance.getInteger(s["id"]);
                 string passiveEffect = s["passiveEffect"];
                 RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._helmet.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                HeroProperty._helmet.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, RoleBarChart.zero
                     , id, name, 0);
                 HeroProperty._helmet.PassiveEffectInit(passiveEffect);
                 HeroProperty._helmet.armorType = (SDConstants.ArmorType)
@@ -260,7 +260,8 @@ public class BattleRoleData : MonoBehaviour
                 int id = SDDataManager.Instance.getInteger(s["id"]);
                 string passiveEffect = s["passiveEffect"];
                 RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._breastplate.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                HeroProperty._breastplate.initData(level, basicRAL, rateRAL
+                    , 0, 0, 0, 0, 0, RoleBarChart.zero
                     , id, name, 0);
                 HeroProperty._breastplate.PassiveEffectInit(passiveEffect);
                 HeroProperty._breastplate.armorType = (SDConstants.ArmorType)
@@ -290,7 +291,8 @@ public class BattleRoleData : MonoBehaviour
                 int id = SDDataManager.Instance.getInteger(s["id"]);
                 string passiveEffect = s["passiveEffect"];
                 RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._gardebras.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                HeroProperty._gardebras.initData(level, basicRAL, rateRAL
+                    , 0, 0, 0, 0, 0, RoleBarChart.zero
                     , id, name, 0);
                 HeroProperty._gardebras.PassiveEffectInit(passiveEffect);
                 HeroProperty._gardebras.armorType = (SDConstants.ArmorType)
@@ -320,7 +322,8 @@ public class BattleRoleData : MonoBehaviour
                 int id = SDDataManager.Instance.getInteger(s["id"]);
                 string passiveEffect = s["passiveEffect"];
                 RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._legging.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                HeroProperty._legging.initData(level, basicRAL, rateRAL
+                    , 0, 0, 0, 0, 0,  RoleBarChart.zero
                     , id, name, 0);
                 HeroProperty._legging.PassiveEffectInit(passiveEffect);
                 HeroProperty._legging.armorType = (SDConstants.ArmorType)
@@ -352,7 +355,8 @@ public class BattleRoleData : MonoBehaviour
                     int id = SDDataManager.Instance.getInteger(s["id"]);
                     string passiveEffect = s["passiveEffect"];
                     RoleAttributeList rateRAL = new RoleAttributeList();
-                    HeroProperty._jewelry0.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                    HeroProperty._jewelry0.initData(level, basicRAL, rateRAL
+                        , 0, 0, 0, 0, 0, RoleBarChart.zero
                         , id, name, 0);
                     HeroProperty._jewelry0.PassiveEffectInit(passiveEffect);
                     HeroProperty._jewelry0._jewelryType = (SDConstants.JewelryType)
@@ -382,7 +386,8 @@ public class BattleRoleData : MonoBehaviour
                     int id = SDDataManager.Instance.getInteger(s["id"]);
                     string passiveEffect = s["passiveEffect"];
                     RoleAttributeList rateRAL = new RoleAttributeList();
-                    HeroProperty._jewelry1.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                    HeroProperty._jewelry1.initData(level, basicRAL, rateRAL
+                        , 0, 0, 0, 0, 0,  RoleBarChart.zero
                         , id, name, 0);
                     HeroProperty._jewelry1.PassiveEffectInit(passiveEffect);
                     HeroProperty._jewelry1._jewelryType = (SDConstants.JewelryType)
@@ -413,7 +418,8 @@ public class BattleRoleData : MonoBehaviour
                 int id = SDDataManager.Instance.getInteger(s["id"]);
                 string passiveEffect = s["passiveEffect"];
                 RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._weapon.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, new RoleBarChart()
+                HeroProperty._weapon.initData(level, basicRAL, rateRAL
+                    , 0, 0, 0, 0, 0,  RoleBarChart.zero
                     , id, name, 0);
                 HeroProperty._weapon.PassiveEffectInit(passiveEffect);
                 HeroProperty._weapon._weaponType = (SDConstants.WeaponType)
@@ -424,6 +430,19 @@ public class BattleRoleData : MonoBehaviour
     #endregion
     public void addSkillByCareerByRaceByStarnum(int heroHashcode,int quality)
     {
+        GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(heroHashcode);
+        int skill0Id = hero.skill0Id;
+        _skills.Add(SDDataManager.Instance.getOwnedSkillById(skill0Id, heroHashcode));
+        if (SDDataManager.Instance.checkHeroEnableSkill1ByHashcode(heroHashcode))
+        {
+            int skill1Id = hero.skill1Id;
+            _skills.Add(SDDataManager.Instance.getOwnedSkillById(skill1Id, heroHashcode));
+        }//稀有角色才能拥有额外技能
+        int skillOmegaId = hero.skillOmegaId;
+        _skills.Add(SDDataManager.Instance.getOwnedSkillById(skillOmegaId, heroHashcode));
+        return;
+
+
         int herocareer = SDDataManager.Instance.getHeroCareerById(UnitId);
         int herorace = SDDataManager.Instance.getHeroRaceById(UnitId);
         List<OneSkill> skills = SkillDetailsList.WriteOneSkillList(
@@ -434,18 +453,6 @@ public class BattleRoleData : MonoBehaviour
             _skills.Add(skills[1]);
         if(skills.Count>2)
             _skills.Add(skills[2]);
-        return;
-
-        GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(heroHashcode);
-        int skill0Id = hero.skill0Id;
-        _skills.Add(SDDataManager.Instance.getOwnedSkillById(skill0Id, heroHashcode));
-        if (quality > 1)
-        {
-            int skill1Id = hero.skill1Id;
-            _skills.Add(SDDataManager.Instance.getOwnedSkillById(skill1Id, heroHashcode));
-        }//稀有角色才能拥有额外技能
-        int skillOmegaId = hero.skillOmegaId;
-        _skills.Add(SDDataManager.Instance.getOwnedSkillById(skillOmegaId, heroHashcode));
     }
     public void initEnemy(int enemyId)
     {
@@ -780,11 +787,14 @@ public class BattleRoleData : MonoBehaviour
         }
         #region consume or add BarChart
         RoleBarChart rbc = checkStatesChangingBC();
-        if (rbc.HP > 0) HpController.addHp(rbc.HP);
+        if (rbc.HP > 0) 
+            HpController.addHp(rbc.HP);
         else HpController.consumeHp(Mathf.Abs(rbc.HP));
-        if (rbc.MP > 0) MpController.addMp(rbc.MP);
+        if (rbc.MP > 0)
+            MpController.addMp(rbc.MP);
         else MpController.consumeMp(Mathf.Abs(rbc.MP));
-        if (rbc.TP > 0) TpController.addTp(rbc.TP);
+        if (rbc.TP > 0) 
+            TpController.addTp(rbc.TP);
         else TpController.consumeTp(Mathf.Abs(rbc.TP));
         #endregion
         #region dmg
@@ -819,11 +829,11 @@ public class BattleRoleData : MonoBehaviour
         }
         string d1 = "";
         RoleBarChart rbc = checkStatesChangingBC();
-        for (int i = 0; i < rbc.ThisArray.Length; i++)
+        for (int i = 0; i < 3; i++)
         {
-            if(rbc.ThisArray[i] != 0)
+            if(rbc.ThisArray(i) != 0)
             {
-                d1 += "BAR_CHART:" + i + " COST: " + rbc.ThisArray[i] + "=== "; 
+                d1 += "BAR_CHART:" + i + " COST: " + rbc.ThisArray(i) + "=== "; 
             }
         }
         string d2 = "";
@@ -845,11 +855,13 @@ public class BattleRoleData : MonoBehaviour
 
 
     #region 状态造成伤害汇总
-    //public int[]AllDmgInKind = new int[(int)SkillKind.End];
-    //public int[] AllDmgInBreed = new int[(int)SkillBreed.End];
     public RoleBarChart checkStatesChangingBC()
     {
-        RoleBarChart rbc = ThisBasicRoleProperty().BarChartRegendPerTurn;
+        RoleBarChart rbc = RoleBarChart.zero;
+        if (ThisBasicRoleProperty().BarChartRegendPerTurn != null)
+        {
+            rbc += ThisBasicRoleProperty().BarChartRegendPerTurn;
+        }
         for (int i = 0; i < (int)StateTag.End; i++)
         {
             if (AllStates[i].stateCondition != 0)
@@ -1058,7 +1070,7 @@ public class BattleRoleData : MonoBehaviour
         #region 死亡掉落
         if (_Tag == SDConstants.CharacterType.Hero)
         {
-
+            SDDataManager.Instance.setHeroStatus(unitHashcode, 2);
         }
         else
         {

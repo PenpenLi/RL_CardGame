@@ -50,6 +50,13 @@ public class RTSingleStockItem : MonoBehaviour
     public void BtnTapped()
     {
         //beingTapped = true;
+        if (!stockPage.checkIfCanWork(this))
+        {
+            Debug.Log("无法点击");
+            return;
+        }
+
+        //
         if (stockType == SDConstants.StockType.hero)
         {
             chooseHeroToConsume();

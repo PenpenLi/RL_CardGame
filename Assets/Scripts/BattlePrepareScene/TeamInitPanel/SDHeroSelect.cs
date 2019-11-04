@@ -39,6 +39,7 @@ public class SDHeroSelect : MonoBehaviour
             heroItemsInTeam[i].initHero(unitTeam.heroes[i]);
         }
         //initads();
+        MainPanel.RPC.initRoleModelToRolePosPlace();
 
         heroBtnFunction(MainPanel.currentHeroIndexInTeam);
     }
@@ -71,6 +72,10 @@ public class SDHeroSelect : MonoBehaviour
                 HDP.gameObject.SetActive(true);
                 HDP.initHeroDetailPanel(_hashcode);
 
+                if(SDGameManager.Instance.heroSelectType != SDConstants.HeroSelectType.Battle)
+                {
+                    HDP.HeroWholeMessage.OpenThisPanel();
+                }
 
                 simpleHDV.ReadFromSDHD(HDP);
             }

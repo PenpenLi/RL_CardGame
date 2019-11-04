@@ -84,6 +84,7 @@ public class StockPageController : MonoBehaviour
         List<GDEHeroData> heroes = SDDataManager.Instance.PlayerData.herosOwned;
         List<GDEAMaterialData> all = SDDataManager.Instance.PlayerData.materials;
 
+        materialType = MType;
         //对应材料构建
         for (int i = 0; i < all.Count; i++)
         {
@@ -142,6 +143,10 @@ public class StockPageController : MonoBehaviour
                 if (roh.starNum == heroStarNum) flag = true;
                 else flag = false;
             }
+            else if(MType == SDConstants.MaterialType.likability)
+            {
+                flag = false;
+            }
             else
             {
                 flag = true;
@@ -158,7 +163,6 @@ public class StockPageController : MonoBehaviour
             }
         }
         itemCount = items.Count;
-
     }
     public void showHeroesOwnned()
     {
@@ -225,5 +229,32 @@ public class StockPageController : MonoBehaviour
             _s.stockPage = this;
             //_s.initStock()
         }
+    }
+
+
+    public bool checkIfCanWork(RTSingleStockItem newStock)
+    {
+        List<RTSingleStockItem> list = new List<RTSingleStockItem>();
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].isSelected) list.Add(items[i]);
+        }
+        if(materialType == SDConstants.MaterialType.exp)
+        {
+            return heroImproveController.expectImprove_before(list, SDHeroImprove.ImproveKind.exp, newStock);
+        }
+        else if(materialType == SDConstants.MaterialType.star)
+        {
+            return heroImproveController.expectImprove_before(list, SDHeroImprove.ImproveKind.star, newStock);
+        }
+        else if (materialType == SDConstants.MaterialType.skill)
+        {
+            return heroImproveController.expectImprove_before(list, SDHeroImprove.ImproveKind.skill,newStock);
+        }
+        else if(materialType == SDConstants.MaterialType.likability)
+        {
+            return heroImproveController.expectImprove_before(list, SDHeroImprove.ImproveKind.likability, newStock);
+        }
+        return false;
     }
 }

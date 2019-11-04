@@ -29,8 +29,16 @@ public class SummonAltarPanel : MonoBehaviour
     public Text NewRoleDetailText;
     public Text NewRoleWelcomeText;
     private float NewRolePoseTime = 2f;
+
+    public enum panelContent
+    {
+        main,rrp,pose,end
+    }
+    [Header("历史记录设置")]
+    public panelContent currentPanelContent = panelContent.end;
     public void whenOpenThisPanel()
     {
+        currentPanelContent = panelContent.main;
         pageView.maxIndex = (int)Job.End;
         rewardIds.Clear();
         refreshCurrentPoolIndex();
@@ -107,24 +115,36 @@ public class SummonAltarPanel : MonoBehaviour
             resultRewards[i].initCalledHero(hc);
             if (firstGet)
             {
-                UIEffectManager.Instance.showAnimFadeIn(NewRoleShowPanel);
+                currentPanelContent = panelContent.pose;
                 NRSBG.gameObject.SetActive(true);
                 resultRewards[i].levelText.text = "NEW!!!";
-                yield return new WaitForSeconds(NewRolePoseTime);
 
-                UIEffectManager.Instance.hideAnimFadeOut(NewRoleShowPanel);
-                yield return new WaitForSeconds(0.3f);
+                if (!excapePose)
+                {
+                    UIEffectManager.Instance.showAnimFadeIn(NewRoleShowPanel);
+
+                    yield return new WaitForSeconds(NewRolePoseTime);
+
+                    UIEffectManager.Instance.hideAnimFadeOut(NewRoleShowPanel);
+                    yield return new WaitForSeconds(0.3f);
+                }
             }
             if (excapePose)
             {
                 excapePose = false;
-                break;
             }
         }
         NRSBG.gameObject.SetActive(false);
+        currentPanelContent = panelContent.rrp;
     }
     bool excapePose = false;
-    public void BtnToExcapePose() { if (!excapePose) excapePose = true; }
+    public void BtnToExcapePose() 
+    {
+        if (!excapePose) 
+        {
+            excapePose = true;
+        }
+    }
     public List<int> ConfirmCurrentPool()
     {
         List<int> all = new List<int>();
@@ -195,7 +215,6 @@ public class SummonAltarPanel : MonoBehaviour
     }
     public int callHeroToPlayerdataExportHashcode(int heroId)
     {
-        //Dictionary<string, string> heroD = SDDataManager.Instance.readHeroFromCSVById(heroId);
         SDDataManager.Instance.heroNum++;
         GDEHeroData hero = new GDEHeroData(GDEItemKeys.Hero_BasicHero)
         {
@@ -209,6 +228,27 @@ public class SummonAltarPanel : MonoBehaviour
             ,
             exp=0
         };
+        List<GDEASkillData> list = SDDataManager.Instance.addStartSkillsWhenSummoning(hero.id);
+        for(int i = 0; i < list.Count; i++)
+        {
+            hero.skillsOwned.Add(list[i]);
+            if (SDDataManager.Instance.getSkillByHeroId(list[i].Id, hero.id).isOmegaSkill)
+            {
+                hero.skillOmegaId = list[i].Id;
+            }
+            else
+            {
+                if (hero.skill0Id > 0 && SDDataManager.Instance.checkHeroEnableSkill1ById(hero.id))
+                {
+                    hero.skill1Id = list[i].Id;
+                }
+                else
+                {
+                    hero.skill0Id = list[i].Id;
+                }
+            }
+        }
+        //
         SDDataManager.Instance.PlayerData.herosOwned.Add(hero);
         SDDataManager.Instance.PlayerData.Set_herosOwned();
         //rewardHCs.Add(hero.hashCode);
@@ -249,8 +289,6 @@ public class SummonAltarPanel : MonoBehaviour
             });
         SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
     }
-
-
     public void exitRRP()
     {
         rewardIds.Clear();
@@ -259,6 +297,29 @@ public class SummonAltarPanel : MonoBehaviour
             Destroy(resultRewards[i].gameObject);
         }
         resultRewards.Clear();
+        currentPanelContent = panelContent.main;
         UIEffectManager.Instance.hideAnimFadeOut(ResultRewardPanel);
+    }
+
+
+
+    public void commonBackAction()
+    {
+        if(currentPanelContent == panelContent.main)//
+        {
+            homeScene.SubMenuClose();
+        }
+        else if(currentPanelContent == panelContent.rrp)
+        {
+            exitRRP();
+        }
+        else if(currentPanelContent == panelContent.pose)
+        {
+            BtnToExcapePose();
+        }
+        else if(currentPanelContent == panelContent.end)
+        {
+
+        }
     }
 }

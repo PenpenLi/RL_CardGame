@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using System;
 
 /// <summary>
 /// 通用武器选择项
@@ -39,6 +40,16 @@ public class SingleItem : MonoBehaviour
             SelectedPanel?.gameObject.SetActive(_isSelected);
         }
     }
+    bool _isUnable = false;
+    public bool isUnable
+    {
+        get { return _isUnable; }
+        set 
+        {
+            _isUnable = value;
+            UnablePanel?.gameObject.SetActive(_isUnable);
+        }
+    }
     [Space(25)]
     //public Transform HeroPanel;
     public Transform EmptyPanel;
@@ -63,6 +74,7 @@ public class SingleItem : MonoBehaviour
         {
             if (SDGameManager.Instance.isSelectHero)
             {
+                Debug.Log("当前类别" + SDGameManager.Instance.heroSelectType);
                 if(SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Battle)
                 {
                     chooseHeroToBattle();
@@ -98,6 +110,10 @@ public class SingleItem : MonoBehaviour
                 else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Promote)
                 {
                     chooseHeroToPromote();
+                }
+                else if(SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Hospital)
+                {
+                    chooseHeroToTreat();
                 }
                 else if(SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.All)
                 {
@@ -186,14 +202,44 @@ public class SingleItem : MonoBehaviour
             //显示英雄详情
             SDHeroDetail HDP = BHS.heroDetails.GetComponent<SDHeroDetail>();
             HDP.initHeroDetailPanel(itemHashcode);
-            if (!BHS.heroDetails.gameObject.activeSelf)
-            {
-                UIEffectManager.Instance.showAnimFadeIn(BHS.heroDetails);
-            }
+            HDP.HeroWholeMessage.OpenThisPanel();
         }
     }
     public void chooseHeroToTreat()
     {
+        HospitalPanel hp = GetComponentInParent<HospitalPanel>();
+        if (SDDataManager.Instance.getHeroStatus(itemHashcode) == 2
+            && hp.SickBed(hp.currentSickBedId).isEmpty)
+        {
+            SDDataManager.Instance.setHeroStatus(itemHashcode, 3);
+
+            if (hp)
+            {
+                GDEtimeTaskData task = new GDEtimeTaskData(GDEItemKeys.timeTask_emptyTimeTask)
+                {
+                    taskId = hp.currentSickBedId
+                    ,
+                    isFinished = false
+                    ,
+                    itemChara = itemHashcode
+                    ,
+                    taskType = 0
+                    ,
+                    startTime = DateTime.Now.ToString()
+                };
+                int quality = SDDataManager.Instance.getHeroQualityById(itemId);
+                int starNum = SDDataManager.Instance.getHeroStarNumByHashcode(itemHashcode);
+                task.timeType = quality + starNum + 1;
+
+                //
+                SDDataManager.Instance.PlayerData.TimeTaskList.Add(task);
+                SDDataManager.Instance.PlayerData.Set_TimeTaskList();
+            }
+        }
+        else
+        {
+
+        }
 
     }
     #endregion
@@ -233,17 +279,17 @@ public class SingleItem : MonoBehaviour
         if (status == 0)
         {
             isSelected = false;
-            UnablePanel.gameObject.SetActive(false);
+            isUnable = false;
         }//无业
         else if(status == 1)
         {
             isSelected = true;
-            UnablePanel.gameObject.SetActive(false);
+            isUnable = false;
         }//战斗队伍中
         else
         {
             isSelected = false;
-            UnablePanel.gameObject.SetActive(true);
+            isUnable = true;
         }//其他状态
         //statusImg.gameObject.SetActive(true);
         //statusImg.sprite = herostat
@@ -251,7 +297,36 @@ public class SingleItem : MonoBehaviour
 
 
     }
+    public void initInjuriedHero(GDEHeroData hero)
+    {
+        type = SDConstants.ItemType.Hero;
+        itemId = hero.id;
+        itemHashcode = hero.hashCode;
+        //
 
+        //
+        ROHeroData dal = SDDataManager.Instance.getHeroDataByID(itemId, hero.starNumUpgradeTimes);
+        //if (frameImg != null) frameImg.gameObject.SetActive(false);
+
+        levelText.gameObject.SetActive(true);
+        levelText.text = "Lv." + SDDataManager.Instance.getLevelByExp(hero.exp);
+        nameText.text = SDGameManager.T(dal.Name);
+        //
+        int status = SDDataManager.Instance.getHeroStatus(hero.hashCode);
+        if (status == 2)
+        {
+            isSelected = false;
+            isUnable = false;
+        }//受伤且未进行治疗状态
+        else
+        {
+            isSelected = false;
+            isUnable = true;
+        }//其他状态
+        //starVision.StarNum = dal.starNum;
+        starVision.gameObject.SetActive(false);
+
+    }
     public void initHero(GDEHeroData hero)
     {
         type = SDConstants.ItemType.Hero;

@@ -22,10 +22,6 @@ public class ChapterLevelController : MonoBehaviour
 
 
 
-
-
-
-
     public void FirstlyShowLevelList()
     {
         maxSectionIndex = SDConstants.PerBossAppearLevel / SDConstants.LevelNumPerSection;

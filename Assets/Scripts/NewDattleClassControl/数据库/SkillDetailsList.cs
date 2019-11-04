@@ -30,7 +30,7 @@ public class SkillDetailsList : MonoBehaviour
         }
         for(int i = 0; i < all.Count; i++)
         {
-            all[i].skillId = i;
+            all[i].skillId = i+1;
         }
         return all;
     }
@@ -279,15 +279,36 @@ public class SkillDetailsList : MonoBehaviour
         });
         if (_race == Race.Human)
         {
+            if (quality > 0)
+            {
 
+                if (quality > 1)
+                {
+
+                }
+            }
         }
         else if (_race == Race.Elf)
         {
+            if (quality > 0)
+            {
 
+                if (quality > 1)
+                {
+
+                }
+            }
         }
         else if (_race == Race.Dragonborn)
         {
+            if (quality > 0)
+            {
 
+                if (quality > 1)
+                {
+
+                }
+            }
         }
         return skills;
     }

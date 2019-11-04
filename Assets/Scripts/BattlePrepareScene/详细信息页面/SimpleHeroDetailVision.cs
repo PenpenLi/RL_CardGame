@@ -61,14 +61,7 @@ public class SimpleHeroDetailVision : MonoBehaviour
     {
         Debug.Log("进入英雄配置界面");
         if (hs == null) hs = FindObjectOfType<HomeScene>();
-
-        hs.allRoleDetailBtnTapped();
-
-        AllOwnedHeroesPanel basic = hs.HeroDetailPanel.GetComponent<AllOwnedHeroesPanel>();
-        basic.showRoleDetailPanel();
-        if (!basic.heroDetail.gameObject.activeSelf)
-        {
-            UIEffectManager.Instance.showAnimFadeIn(basic.heroDetail.transform);
-        }
+        //UIEffectManager.Instance.showAnimFadeIn(hs.heroDetailPanel);
+        hs.heroDetailBtnTapped();
     }
 }

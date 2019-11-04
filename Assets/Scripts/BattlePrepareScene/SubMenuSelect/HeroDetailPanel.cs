@@ -1,0 +1,236 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class HeroDetailPanel : MonoBehaviour
+{
+    HomeScene _hs;
+    public HomeScene homeScene
+    {
+        get
+        {
+            if (_hs == null) _hs = FindObjectOfType<HomeScene>();
+            return _hs;
+        }
+
+    }
+    public SDHeroDetail detail;
+    public SDEquipSelect equip;
+    public SDHeroDeploySkills skill;
+    public SDHeroImprove improve;
+    public Transform aboveMenu;
+    public enum RoleDetailSubType
+    {
+        heroDetail,
+        heroEquip,
+        heroImprove,
+        heroSkill,
+        heroInfor,
+        end,
+    }
+    public RoleDetailSubType CurrentRDSubType = RoleDetailSubType.heroDetail;
+    //public bool isFromAllOwnedHeroesPanel;
+    public HomeScene.HomeSceneSubMenu panelFrom;
+    List<RoleDetailSubType> history = new List<RoleDetailSubType>();
+    public Transform equipedSkillsPanel;
+    public SkillDetailsList skillDetailList;
+    public SkillSlot[] skillSlots;
+    public void OpenThisPanel()
+    {
+        panelFrom = homeScene.CurrentSubMenuType;
+        UIEffectManager.Instance.showAnimFadeIn(transform);
+        homeScene.CurrentSubMenuType = HomeScene.HomeSceneSubMenu.HeroDetails;
+        detail.gameObject.SetActive(true);
+        CurrentRDSubType = RoleDetailSubType.end;
+        history.Clear();
+        closeAllSubPanelTrans();
+        BtnToHeroDetail();
+    }
+
+
+    #region roleDetailPanelSubMenu
+    public Transform RDSubPanel(RoleDetailSubType RDType)
+    {
+        switch (RDType)
+        {
+            case RoleDetailSubType.heroDetail:
+                return detail.transform;
+            case RoleDetailSubType.heroEquip:
+                return equip.transform;
+            case RoleDetailSubType.heroSkill:
+                return skill.transform;
+            case RoleDetailSubType.heroImprove:
+                return improve.transform;
+            case RoleDetailSubType.end:
+                return null;
+            default: return detail.transform;
+        }
+    }
+    public void closeAllSubPanelTrans()
+    {
+        detail.transform.gameObject.SetActive(false);
+        equip.transform.gameObject.SetActive(false);
+        skill.transform.gameObject.SetActive(false);
+        improve.transform.gameObject.SetActive(false);
+
+    }
+    public void BtnToHeroDetail()
+    {
+        if (CurrentRDSubType != RoleDetailSubType.heroDetail)
+        {
+            resetAllRDSubPanel();
+
+            if(CurrentRDSubType != RoleDetailSubType.end)
+            {
+                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
+            }
+            bool flag = false;
+            if(CurrentRDSubType == RoleDetailSubType.heroSkill
+                || CurrentRDSubType == RoleDetailSubType.heroEquip)
+            {
+                flag = true;
+            }
+            CurrentRDSubType = RoleDetailSubType.heroDetail;
+            if(!flag)
+                UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
+            historyAdd(CurrentRDSubType);
+
+        }
+    }
+    public void BtnToHeroImprove()
+    {
+        if (CurrentRDSubType != RoleDetailSubType.heroImprove)
+        {
+            resetAllRDSubPanel();
+
+            if (CurrentRDSubType != RoleDetailSubType.end)
+            {
+                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
+                if(CurrentRDSubType == RoleDetailSubType.heroSkill 
+                    || CurrentRDSubType == RoleDetailSubType.heroEquip)
+                {
+                    UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(RoleDetailSubType.heroDetail));
+                }
+            }
+            CurrentRDSubType = RoleDetailSubType.heroImprove;
+            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
+            historyAdd(CurrentRDSubType);
+
+            //
+            improve.initImprovePanel();
+        }
+    }
+    public void BtnToHeroEquip()
+    {
+        if (CurrentRDSubType != RoleDetailSubType.heroEquip)
+        {
+            //resetAllRDSubPanel();
+            if (CurrentRDSubType != RoleDetailSubType.end
+                && CurrentRDSubType != RoleDetailSubType.heroDetail)
+            {
+                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
+                UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(RoleDetailSubType.heroDetail));
+            }
+            CurrentRDSubType = RoleDetailSubType.heroEquip;
+            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
+            historyAdd(CurrentRDSubType);
+
+            //
+
+        }
+    }
+    public void BtnToHeroSkill()
+    {
+        if (CurrentRDSubType != RoleDetailSubType.heroSkill)
+        {
+            //resetAllRDSubPanel();
+            if(CurrentRDSubType != RoleDetailSubType.end 
+                && CurrentRDSubType != RoleDetailSubType.heroDetail)
+            {
+                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
+                UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(RoleDetailSubType.heroDetail));
+            }
+            CurrentRDSubType = RoleDetailSubType.heroSkill;
+            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
+            historyAdd(CurrentRDSubType);
+
+            //
+            skill.initHeroSkillListPanel();
+        }
+    }
+    public void resetAllRDSubPanel()
+    {
+
+        improve.closeThisPanel();
+        //heroDetail.ModelAndEquipsPanel.gameObject.SetActive(false);
+    }
+    public void readHeroEquipedSkills(int heroHashcode)
+    {
+        for(int i = 0; i < skillSlots.Length; i++)
+        {
+            skillSlots[i].initSkillSlot(heroHashcode);
+        }
+
+    }
+    #endregion
+
+    public void historyAdd(RoleDetailSubType type)
+    {
+        if (history.Count > 5)
+        {
+            history.RemoveAt(0);
+        }
+        history.Add(type);
+    }
+
+
+
+    public void commonBackAction()
+    {
+        RoleDetailSubType lastOne;
+        if (history.Count > 0)
+        {
+            history.RemoveAt(history.Count-1);
+            if (history.Count > 0)
+            {
+                lastOne = history[history.Count - 1];
+            }
+            else lastOne = RoleDetailSubType.end;
+        }
+        else lastOne = RoleDetailSubType.end;
+
+        if(lastOne == RoleDetailSubType.end)
+        {
+            homeScene.SubMenuClose();
+            homeScene.CurrentSubMenuType = panelFrom;
+            CurrentRDSubType = RoleDetailSubType.end;
+            history.Clear();
+        }
+        else
+        {
+            if (lastOne == RoleDetailSubType.heroDetail)
+            {
+                BtnToHeroDetail();
+            }
+            else if (lastOne == RoleDetailSubType.heroImprove)
+            {
+                BtnToHeroImprove();
+            }
+            else if (lastOne == RoleDetailSubType.heroSkill)
+            {
+                BtnToHeroSkill();
+            }
+            else if (lastOne == RoleDetailSubType.heroEquip)
+            {
+
+            }
+            else if (lastOne == RoleDetailSubType.heroInfor)
+            {
+
+            }
+            if (history.Count > 0) { history.RemoveAt(history.Count - 1); }
+        }
+
+    }
+}

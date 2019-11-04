@@ -159,6 +159,20 @@ namespace GameDataEditor
             }
         }
 
+        static string sickBedNumKey = "sickBedNum";
+		int _sickBedNum;
+        public int sickBedNum
+        {
+            get { return _sickBedNum; }
+            set {
+                if (_sickBedNum != value)
+                {
+                    _sickBedNum = value;
+					GDEDataManager.SetInt(_key, sickBedNumKey, _sickBedNum);
+                }
+            }
+        }
+
         static string temple_fighterKey = "temple_fighter";
 		public List<int>      temple_fighter;
 		public void Set_temple_fighter()
@@ -271,6 +285,7 @@ namespace GameDataEditor
             dict.Merge(true, newBestLevel.ToGDEDict(newBestLevelKey));
             dict.Merge(true, dimension.ToGDEDict(dimensionKey));
             dict.Merge(true, damond.ToGDEDict(damondKey));
+            dict.Merge(true, sickBedNum.ToGDEDict(sickBedNumKey));
 
             dict.Merge(true, temple_fighter.ToGDEDict(temple_fighterKey));
             dict.Merge(true, temple_ranger.ToGDEDict(temple_rangerKey));
@@ -359,6 +374,7 @@ namespace GameDataEditor
                 dict.TryGetInt(newBestLevelKey, out _newBestLevel);
                 dict.TryGetInt(dimensionKey, out _dimension);
                 dict.TryGetInt(damondKey, out _damond);
+                dict.TryGetInt(sickBedNumKey, out _sickBedNum);
 
                 dict.TryGetIntList(temple_fighterKey, out temple_fighter);
                 dict.TryGetIntList(temple_rangerKey, out temple_ranger);
@@ -392,6 +408,7 @@ namespace GameDataEditor
             _newBestLevel = GDEDataManager.GetInt(_key, newBestLevelKey, _newBestLevel);
             _dimension = GDEDataManager.GetInt(_key, dimensionKey, _dimension);
             _damond = GDEDataManager.GetInt(_key, damondKey, _damond);
+            _sickBedNum = GDEDataManager.GetInt(_key, sickBedNumKey, _sickBedNum);
 
             temple_fighter = GDEDataManager.GetIntList(_key, temple_fighterKey, temple_fighter);
             temple_ranger = GDEDataManager.GetIntList(_key, temple_rangerKey, temple_ranger);
@@ -424,6 +441,7 @@ namespace GameDataEditor
             newClone.newBestLevel = newBestLevel;
             newClone.dimension = dimension;
             newClone.damond = damond;
+            newClone.sickBedNum = sickBedNum;
 
             newClone.temple_fighter = new List<int>(temple_fighter);
 			newClone.Set_temple_fighter();
@@ -594,6 +612,15 @@ namespace GameDataEditor
             dict.TryGetInt(damondKey, out _damond);
         }
 
+        public void Reset_sickBedNum()
+        {
+            GDEDataManager.ResetToDefault(_key, sickBedNumKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(sickBedNumKey, out _sickBedNum);
+        }
+
         public void Reset_temple_fighter()
         {
 	        GDEDataManager.ResetToDefault(_key, temple_fighterKey);
@@ -760,6 +787,7 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, heroesTeamKey);
             GDEDataManager.ResetToDefault(_key, damondKey);
             GDEDataManager.ResetToDefault(_key, TimeTaskListKey);
+            GDEDataManager.ResetToDefault(_key, sickBedNumKey);
 
             Reset_herosOwned();
             Reset_heroesTeam();

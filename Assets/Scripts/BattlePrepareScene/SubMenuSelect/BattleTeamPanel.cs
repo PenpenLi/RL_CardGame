@@ -27,9 +27,17 @@ public class BattleTeamPanel : MonoBehaviour
     //public List<OneUnitTeam> Teams;
     [Space(10)]
     public Transform EditUnitTeamPanel;
+    public enum panelContent
+    {
+        main,edit,end
+    }
+    public panelContent currentPanelContent = panelContent.end;
+    //public bool isFromLevelEnterPanel;
+    public HomeScene.HomeSceneSubMenu panelFrom = HomeScene.HomeSceneSubMenu.End;
+
     public void WhenOpenThisMenu()
     {
-        //HS.heroPanelInit();
+        currentPanelContent = panelContent.main;
         BasicHeroSelect bhs = HS.heroesSelectPanel.GetComponent<BasicHeroSelect>();
         bhs.pageController.scrollRectReset();
         if (SDGameManager.Instance.currentHeroTeamIndex == 0)
@@ -40,7 +48,6 @@ public class BattleTeamPanel : MonoBehaviour
         EditUnitTeamPanel.localScale = Vector3.zero;
         showTeamId(SDGameManager.Instance.currentHeroTeamIndex);
     }
-
     public void OpenSelectUnitTeamPanel(int teamId)
     {
         if (SDDataManager.Instance.getHeroGroup().Count != SDConstants.MaxBattleTeamNum)
@@ -68,6 +75,7 @@ public class BattleTeamPanel : MonoBehaviour
     }
     public void openEditUnitTeamPanel(int teamId)
     {
+        currentPanelContent = panelContent.edit;
         SelectTeamUnitPanel STUP = EditUnitTeamPanel.GetComponent<SelectTeamUnitPanel>();
         STUP.CurrentTeamId = teamId;
         STUP.whenOpenThisPanel();
@@ -110,10 +118,52 @@ public class BattleTeamPanel : MonoBehaviour
         ChapterLevelController CLC = homeScene.LevelEnterPanel.GetComponent<LevelEnterPanel>().CLC;
         CLC.GoToBattleScene();
     }
+    public void changeSpriterenderersStatus(bool needHide)
+    {
+        Transform modelGroup
+            = EditUnitTeamPanel.GetComponent<SelectTeamUnitPanel>().RPC.RoleGroup;
+        if (needHide)
+        {
+            for(int i = 0; i < modelGroup.childCount; i++)
+            {
+                modelGroup.GetChild(i).gameObject.SetActive(false);
+            }
+
+
+        }
+        else
+        {
+            for (int i = 0; i < modelGroup.childCount; i++)
+            {
+                modelGroup.GetChild(i).gameObject.SetActive(true);
+            }
+
+
+        }
+    }
 
 
 
+    public void commonBackAction()
+    {
+        if(currentPanelContent == panelContent.main)
+        {
+            homeScene.SubMenuClose();
+            if (panelFrom != HomeScene.HomeSceneSubMenu.End)
+            {
+                homeScene.CurrentSubMenuType = panelFrom;
+            }
+        }
+        else if(currentPanelContent == panelContent.edit)
+        {
+            currentPanelContent = panelContent.main;
+            EditUnitTeamPanel.localScale = Vector3.zero;
+            showTeamId(SDGameManager.Instance.currentHeroTeamIndex);
+        }
+        else if(currentPanelContent == panelContent.end)
+        {
 
-
+        }
+    }
 
 }

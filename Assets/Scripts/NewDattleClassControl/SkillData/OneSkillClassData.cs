@@ -56,7 +56,7 @@ public class OneSkill
         get {
             return new OneSkill()
             {
-                skillId = 1,
+                skillId = 0,
                 SkillName = "NormalAttack",
                 SkillFunctionID = 0,
                 IconImg = "NormalAttack",

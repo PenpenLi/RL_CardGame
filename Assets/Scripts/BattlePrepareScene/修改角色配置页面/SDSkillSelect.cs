@@ -17,6 +17,11 @@ public class SDSkillSelect : MonoBehaviour
     public List<OneSkill> currentAll;
     public List<RTSingleSkillItem> skillList;
     public ScrollRect rect;
+    public enum itemUseType
+    {
+        none,deploy,detail,
+    }
+    public itemUseType item_use_type = itemUseType.none;
     public void resetSkillList()
     {
         for(int i = 0; i < skillList.Count; i++)
@@ -37,11 +42,14 @@ public class SDSkillSelect : MonoBehaviour
             all.Sort(
                 (x, y) =>
                 {
-                    return x.isUnlocked.CompareTo(y.isUnlocked);
+                    return x.isUnlocked.CompareTo(!y.isUnlocked);
                 });
         }
         resetSkillList();
-        for(int i = 0; i < all.Count; i++)
+
+
+
+        for (int i = 0; i < all.Count; i++)
         {
             Transform s = Instantiate(skillItem) as Transform;
             s.SetParent(rect.content);
@@ -49,15 +57,23 @@ public class SDSkillSelect : MonoBehaviour
             s.gameObject.SetActive(true);
             RTSingleSkillItem _S = s.GetComponent<RTSingleSkillItem>();
 
-            _S.initSkillItem(all[i]);//构建技能基础信息
-
+            _S.initSkillItem(all[i], heroDetail.Hashcode);//构建技能基础信息
             if (SDDataManager.Instance.ifDeployThisSkill(all[i].skillId, heroDetail.Hashcode))
             {
                 _S.isDeployed = true;
             }
+            if(item_use_type == itemUseType.deploy)
+            {
+                _S.use_type = 1;
+            }
+            else if(item_use_type == itemUseType.detail)
+            {
+                _S.use_type = 2;
+            }
             skillList.Add(_S);
         }
     }
+
 
 
     public void BtnToShowSkillDetail(int skillId)

@@ -23,8 +23,21 @@ public class SkillFunction : MonoBehaviour
     public RoleBarChart BCCostUsingPercent;//技能消耗(固定占比)%
     #endregion
     #region 技能细节设置
-    [Header("技能细节信息"),Space(25)]
-    public int SkillGrade;
+    //[Header("技能细节信息"),Space(25)]
+    int skillgrade;
+    public int SkillGrade
+    {
+        get 
+        {
+            if (GetComponent<HSkilInfo>()) { skillgrade = GetComponent<HSkilInfo>().HSDetail.lv; }
+            return skillgrade; 
+        }
+        set
+        { 
+            skillgrade = value;
+            if (GetComponent<HSkilInfo>()) { GetComponent<HSkilInfo>().HSDetail.lv = skillgrade; }
+        }
+    }
     public int CritR
     {
         get { return SkillDetailsR[0].Data + skillDetailsRPerSkillGrade[0].Data*SkillGrade; }

@@ -14,8 +14,10 @@ public class HomeScene : MonoBehaviour
             ,
         BattleTeam
             ,
-        HeroDetail
+        HeroStage
             ,
+        HeroDetails
+        ,
         Store
         ,
         SummonAltar
@@ -24,56 +26,89 @@ public class HomeScene : MonoBehaviour
         ,
         Depository
         ,
+        Hospital
+        ,
         End
     }
-    public HomeSceneSubMenu CurrentSubMenuType = HomeSceneSubMenu.End;
+    public HomeSceneSubMenu _csm = HomeSceneSubMenu.End;
+    public HomeSceneSubMenu CurrentSubMenuType
+    {
+        get { return _csm; }
+        set 
+        {
+            if(value != _csm)
+            {
+                WhenChangingSubMenu(_csm, value);
+                _csm = value;
+            }
 
+        }
+    }
     public Transform LevelEnterPanel;
     public Transform BattleTeamPanel;
-    public Transform HeroDetailPanel;
+    public Transform HeroStagePanel;
     public Transform DepositoryPanel;
     public Transform SummonAltarPanel;
+    public Transform HospitalPanel;
+    public Transform MainCastlePanel;
+    [Space(25)]
+    public Transform heroDetailPanel;
     [Space(25)]
     public Transform OuterMenuPanel;
+    public Transform NoticePanel;
     [Header("场景配置")]
     public Transform leftArrow;
     public Transform rightArrow;
-
+    [HideInInspector]
+    public List<int> menuEnterHistory;
+    [Header("OuterMenu")]
+    public Transform InSubMenuPanel;
+    public Transform InHomeScenePanel;
     // Start is called before the first frame update
     void Start()
     {
-        //HeroDetailPanel.GetComponent<AllOwnedHeroesPanel>().ShowAllOwnedHeroes();
+        //HeroStagePanel.GetComponent<AllOwnedHeroesPanel>().ShowAllOwnedHeroes();
         closeAllSubMenu();
         buildPlayerOwned();
         buildPlayerOwned_equip();
         buildPlayerOwned_material();
     }
     #region 场景建筑按钮
-    public void levelEnterBtnTapped()
+    public void levelEnterBtnTapped(bool fromSubMenu = false)
     {
-        closeAllSubMenu();
+        if(!fromSubMenu)
+            closeAllSubMenu();
         //SubMenuClose(true);
         CurrentSubMenuType = HomeSceneSubMenu.LevelEnter;
         UIEffectManager.Instance.showAnimFadeIn(LevelEnterPanel);
 
         LevelEnterPanel.GetComponent<LevelEnterPanel>().WhenOpenThisMenu();
     }
-    public void battleTeamBtnTapped(bool EnterLevel = false)
+    public void battleTeamBtnTapped(bool fromSubMenu = false)
     {
-        closeAllSubMenu();
+        if (!fromSubMenu)
+        {
+            closeAllSubMenu();
+        }
+        else
+        {
+            BattleTeamPanel.GetComponent<BattleTeamPanel>()
+                .panelFrom = CurrentSubMenuType;
+        }
         CurrentSubMenuType = HomeSceneSubMenu.BattleTeam;
         UIEffectManager.Instance.showAnimFadeIn(BattleTeamPanel);
 
         BattleTeamPanel.GetComponent<BattleTeamPanel>().WhenOpenThisMenu();
     }
-    public void allRoleDetailBtnTapped()
+    public void RoleStageBtnTapped(bool fromSubMenu = false)
     {
-        closeAllSubMenu();
+        if(!fromSubMenu)
+            closeAllSubMenu();
         //SubMenuClose(true);
-        CurrentSubMenuType = HomeSceneSubMenu.HeroDetail;
-        UIEffectManager.Instance.showAnimFadeIn(HeroDetailPanel);
+        CurrentSubMenuType = HomeSceneSubMenu.HeroStage;
+        UIEffectManager.Instance.showAnimFadeIn(HeroStagePanel);
 
-        HeroDetailPanel.GetComponent<AllOwnedHeroesPanel>().ShowAllOwnedHeroes();
+        HeroStagePanel.GetComponent<AllOwnedHeroesPanel>().ShowAllOwnedHeroes();
     }
     public void summonAltarBtnTapped()
     {
@@ -83,6 +118,19 @@ public class HomeScene : MonoBehaviour
 
         SummonAltarPanel.GetComponent<SummonAltarPanel>().whenOpenThisPanel();
     }
+    public void hospitalBtnTapped()
+    {
+        closeAllSubMenu();
+        CurrentSubMenuType = HomeSceneSubMenu.Hospital;
+        UIEffectManager.Instance.showAnimFadeIn(HospitalPanel);
+
+        HospitalPanel.GetComponent<HospitalPanel>().whenOpenThisPanel();
+    }
+    public void heroDetailBtnTapped(bool fromSubMenu = true)
+    {
+        if (!fromSubMenu) closeAllSubMenu();
+        heroDetailPanel.GetComponent<HeroDetailPanel>().OpenThisPanel();
+    }
     #endregion
     public Transform getSubMenuByType(HomeSceneSubMenu type)
     {
@@ -90,8 +138,12 @@ public class HomeScene : MonoBehaviour
         {
             case HomeSceneSubMenu.LevelEnter:return LevelEnterPanel;
             case HomeSceneSubMenu.BattleTeam:return BattleTeamPanel;
-            case HomeSceneSubMenu.HeroDetail:return HeroDetailPanel;
+            case HomeSceneSubMenu.HeroStage:return HeroStagePanel;
             case HomeSceneSubMenu.SummonAltar:return SummonAltarPanel;
+            case HomeSceneSubMenu.Hospital:return HospitalPanel;
+            case HomeSceneSubMenu.HeroDetails:return heroDetailPanel;
+            case HomeSceneSubMenu.Depository:return DepositoryPanel;
+            case HomeSceneSubMenu.MainCastle:return MainCastlePanel;
             default:return null;//end索引
         }
     }
@@ -106,8 +158,8 @@ public class HomeScene : MonoBehaviour
                 if(BattleTeamPanel.GetComponentInChildren<BasicHeroSelect>())
                     BattleTeamPanel.GetComponentInChildren<BasicHeroSelect>().pageController.ResetPage();
                 break;
-            case HomeSceneSubMenu.HeroDetail:
-                //HeroDetailPanel.GetComponentInChildren<BasicHeroSelect>().pageController.ResetPage();
+            case HomeSceneSubMenu.HeroStage:
+                //HeroStagePanel.GetComponentInChildren<BasicHeroSelect>().pageController.ResetPage();
                 break;
         }
     }
@@ -119,6 +171,7 @@ public class HomeScene : MonoBehaviour
             {
                 UIEffectManager.Instance.hideAnimFadeOut(getSubMenuByType(CurrentSubMenuType));
                 resetOneSubMenu(CurrentSubMenuType);
+                //UIEffectManager.Instance.hideAnimFadeOut(heroDetailPanel);
             }
             else
             {
@@ -144,10 +197,7 @@ public class HomeScene : MonoBehaviour
                 resetOneSubMenu((HomeSceneSubMenu)i);
             }
         }
-    }
-    public void OuterMenu_backBtnTapped()
-    {
-        SubMenuClose();
+        menuEnterHistory.Clear();
     }
     public void changeDayNightByHour()
     {
@@ -168,13 +218,99 @@ public class HomeScene : MonoBehaviour
             SDDataManager.Instance.ResidentMovementData.CurrentDayNightId = a;
         }
     }
+    public void WhenChangingSubMenu
+        (HomeSceneSubMenu oldOne, HomeSceneSubMenu newOne)
+    {
+        if(oldOne != HomeSceneSubMenu.End && newOne == HomeSceneSubMenu.End)
+        {
+            //返回城镇大街页面
+            changeToHomeScene();
+        }
+        else if(oldOne == HomeSceneSubMenu.End && newOne != HomeSceneSubMenu.End)
+        {
+            //从城镇大厅进入功能建筑页面         
+            changeToSubMenuScene();
+        }
 
+        if(oldOne == HomeSceneSubMenu.BattleTeam && newOne != oldOne)
+        {
+            BattleTeamPanel.GetComponent<BattleTeamPanel>()
+                .changeSpriterenderersStatus(true);
+        }
+        else if(newOne == HomeSceneSubMenu.BattleTeam && newOne != oldOne)
+        {
+            BattleTeamPanel.GetComponent<BattleTeamPanel>()
+                .changeSpriterenderersStatus(false);
+        }
+    }
     private void FixedUpdate()
     {
         changeDayNightByHour();
     }
 
-
+    #region outerMenu
+    public void changeToHomeScene()
+    {
+        InSubMenuPanel.gameObject.SetActive(false);
+        InHomeScenePanel.gameObject.SetActive(true);
+    }
+    public void changeToSubMenuScene()
+    {
+        InSubMenuPanel.gameObject.SetActive(true);
+        InHomeScenePanel.gameObject.SetActive(false);
+    }
+    public void BtnForBack()
+    {
+        switch (CurrentSubMenuType)
+        {
+            case HomeSceneSubMenu.SummonAltar:
+                callBackInSummomAltarPanel();break;
+            case HomeSceneSubMenu.LevelEnter:
+                callBackInLevelEnterPanel();break;
+            case HomeSceneSubMenu.BattleTeam:
+                callBackInBattleTeamPanel();break;
+            case HomeSceneSubMenu.HeroStage:
+                callBackInRoleStagePanel();break;
+            case HomeSceneSubMenu.Hospital:
+                callBackInHospitalPanel();break;
+            case HomeSceneSubMenu.HeroDetails:
+                callBackInRoleDetailPanel();break;
+            default:SubMenuClose();break;
+        }
+    }
+    #region callBackInSubPanel
+    public void callBackInSummomAltarPanel()
+    {
+        SummonAltarPanel panel = SummonAltarPanel.GetComponent<SummonAltarPanel>();
+        panel.commonBackAction();
+    }
+    public void callBackInLevelEnterPanel()
+    {
+        LevelEnterPanel panel = LevelEnterPanel.GetComponent<LevelEnterPanel>();
+        panel.commonBackAction();
+    }
+    public void callBackInBattleTeamPanel()
+    {
+        BattleTeamPanel panel = BattleTeamPanel.GetComponent<BattleTeamPanel>();
+        panel.commonBackAction();
+    }
+    public void callBackInRoleStagePanel()
+    {
+        AllOwnedHeroesPanel panel = HeroStagePanel.GetComponent<AllOwnedHeroesPanel>();
+        panel.commonBackAction();
+    }
+    public void callBackInHospitalPanel()
+    {
+        HospitalPanel panel = HospitalPanel.GetComponent<HospitalPanel>();
+        panel.commonBackAction();
+    }
+    public void callBackInRoleDetailPanel()
+    {
+        HeroDetailPanel panel = heroDetailPanel.GetComponent<HeroDetailPanel>();
+        panel.commonBackAction();
+    }
+    #endregion
+    #endregion
 
     #region 存档生成（测试用）
     #region 角色

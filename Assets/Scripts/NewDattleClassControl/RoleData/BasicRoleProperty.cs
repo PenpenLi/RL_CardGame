@@ -22,7 +22,7 @@ public class BasicRoleProperty : MonoBehaviour
     //
     public int HireCost = 0;//雇佣价格
     //
-    public RoleBarChart BarChartRegendPerTurn;//每回合三项可视化值回复量
+    public RoleBarChart BarChartRegendPerTurn = RoleBarChart.zero;//每回合三项可视化值回复量
     public int ID = 1000;
     public string Name = "";//名字
 

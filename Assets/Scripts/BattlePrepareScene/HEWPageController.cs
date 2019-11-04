@@ -96,6 +96,10 @@ public class HEWPageController : MonoBehaviour
             {
 
             }
+            else if(st == SDConstants.HeroSelectType.Hospital)
+            {
+                ShowHeroesownedInjuried();
+            }
         }
         else if (type == SDConstants.ItemType.Helmet)
         {
@@ -172,6 +176,31 @@ public class HEWPageController : MonoBehaviour
             {
                 _s.isSelected = false;
             }
+
+            items.Add(_s);
+        }
+    }
+    public void ShowHeroesownedInjuried()
+    {
+        ResetPage();
+        List<GDEHeroData> heroes = SDDataManager.Instance.PlayerData.herosOwned;
+        List<GDEHeroData> results = new List<GDEHeroData>();
+        for(int i = 0; i < heroes.Count; i++)
+        {
+            if(heroes[i].status == 2 || heroes[i].status == 3)//该角色已遭重创(包括正在救治中)
+            {
+                results.Add(heroes[i]);
+            }
+        }
+        for (int i = 0; i < results.Count; i++)
+        {
+            Transform s = Instantiate(SItem) as Transform;
+            s.transform.SetParent(scrollRect.content);
+            s.transform.localScale = Vector3.one;
+            s.gameObject.SetActive(true);
+            SingleItem _s = s.GetComponent<SingleItem>();
+            _s.initInjuriedHero(results[i]);
+            _s.sourceController = this;
 
             items.Add(_s);
         }

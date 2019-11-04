@@ -73,6 +73,8 @@ public class SDHeroImprove : MonoBehaviour
             StarTrans?.gameObject.SetActive(false);
             LikabilityTrans?.gameObject.SetActive(true);
             SkillTrans?.gameObject.SetActive(false);
+
+            LikabilityTrans.GetComponent<SDLikability>().initLikabilityVision();
         }
         else if(kind == ImproveKind.exp)
         {
@@ -120,12 +122,13 @@ public class SDHeroImprove : MonoBehaviour
         }
         else if(improveKind == ImproveKind.likability)
         {
-
+            MType = SDConstants.MaterialType.likability;
+            maxSelectedNum = 10;
         }
         else if(improveKind == ImproveKind.skill)
         {
-            MType = SDConstants.MaterialType.skill; 
-
+            MType = SDConstants.MaterialType.skill;
+            maxSelectedNum = 10;
         }
         currentImproveKind = improveKind;
         stockPage.ResetPage();
@@ -190,7 +193,9 @@ public class SDHeroImprove : MonoBehaviour
                 }
                 else if(kind == ImproveKind.likability && stock.materialType == SDConstants.MaterialType.likability)
                 {
-
+                    int usenum = stock.UsedNum;
+                    SDDataManager.Instance.addLikabilityToHeroByHashcode
+                        (hashcode, SDDataManager.Instance.getMaterialFigureById(stock.itemId) * usenum);
                 }
                 SDDataManager.Instance.consumeMaterial(stock.itemId, stock.UsedNum);
             }
@@ -348,7 +353,155 @@ public class SDHeroImprove : MonoBehaviour
         }
     }
     #endregion
+    public bool expectImprove_before(List<RTSingleStockItem> list, ImproveKind kind, RTSingleStockItem newStock)
+    {
+        bool flag = false;
+        int figure = 0;
+        for(int i = 0; i < list.Count; i++)
+        {
+            RTSingleStockItem stock = list[i];
+            if(stock.stockType == SDConstants.StockType.material)
+            {
+                if(kind == ImproveKind.exp && stock.materialType == SDConstants.MaterialType.exp)
+                {
+                    figure += SDDataManager.Instance.getMaterialFigureById(stock.itemId) * stock.UsedNum;
+                }
+                else if (kind == ImproveKind.star && stock.materialType == SDConstants.MaterialType.star)
+                {
+                    figure++;
+                }
+                else if(kind == ImproveKind.skill && stock.materialType == SDConstants.MaterialType.skill)
+                {
 
+                }
+                else if(kind == ImproveKind.likability && stock.materialType == SDConstants.MaterialType.likability)
+                {
+                    figure += SDDataManager.Instance.getMaterialFigureById(stock.itemId) * stock.UsedNum;
+                }
+            }
+            else if(stock.stockType == SDConstants.StockType.hero)
+            {
+                if(kind == ImproveKind.exp)
+                {
+                    figure += SDDataManager.Instance.getHeroExpPrice(stock.hashcode);
+                }
+                else if(kind == ImproveKind.star && stock.materialType == SDConstants.MaterialType.star)
+                {
+                    figure++;
+                }
+                else if(kind == ImproveKind.skill && stock.materialType == SDConstants.MaterialType.skill)
+                {
+
+                }
+                else if(kind == ImproveKind.likability && stock.materialType == SDConstants.MaterialType.likability)
+                {
+
+                }
+            }
+        }
+        if(kind == ImproveKind.exp)
+        {
+            flag = true;
+        }
+        else if(kind == ImproveKind.star)
+        {
+            if(heroDetail.StarNumVision.StarNum < 3 && figure < 2)
+            {
+                flag = true;
+            }
+            else if(heroDetail.StarNumVision.StarNum >=3 && figure < 3)
+            {
+                flag = true;
+            }
+        }
+        else if(kind == ImproveKind.skill)
+        {
+            flag = checkifUseThisInSkillImprove(list, newStock);
+        }
+        else if(kind == ImproveKind.likability)
+        {
+            if (figure < SDConstants.MinHeartVolume * 8.5f)
+            {
+                flag = true;
+            }
+        }
+        return flag;
+    }
+
+    public bool checkifUseThisInSkillImprove(List<RTSingleStockItem> list , RTSingleStockItem newStock)
+    {
+        List<OneSkill> all = SDDataManager.Instance.getAllSkillsByHashcode(heroDetail.Hashcode);
+        int m0 = 0;
+        for (int i = 0; i < list.Count; i++)
+        {
+            RTSingleStockItem stock = list[i];
+            if(stock.materialType == SDConstants.MaterialType.skill)
+            {
+                if(stock.itemId == 3010011)//m0
+                { 
+                    m0 = stock.UsedNum; 
+                }
+                else if(stock.itemId == 3010012)//m1
+                {
+                    foreach(OneSkill s in all)
+                    {
+                        s.lv += stock.UsedNum;
+                    }
+                }
+            }
+            else if(stock.materialType == SDConstants.MaterialType.skill)
+            {
+                all = listAddHeroSkill(all, SDDataManager.Instance.getHeroByHashcode(stock.hashcode));
+            }
+        }
+        int left = 0;
+        for(int i = 0; i < all.Count; i++)
+        {
+            left += SDConstants.SkillMaxGrade - all[i].lv;
+        }
+
+        if(newStock.stockType == SDConstants.StockType.material)
+        {
+            if (m0 < left)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if(newStock.stockType == SDConstants.StockType.hero)
+        {
+            for(int i = 0; i < SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned.Count; i++)
+            {
+                int id = SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned[i].Id;
+                foreach(OneSkill s in all)
+                {
+                    if(s.skillId == id && s.lv < SDConstants.SkillMaxGrade)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+    public List<OneSkill> listAddHeroSkill(List<OneSkill> oldAll, GDEHeroData hero)
+    {
+        List<OneSkill> all = oldAll;
+        for(int i = 0; i < hero.skillsOwned.Count; i++)
+        {
+            GDEASkillData skill = hero.skillsOwned[i];
+            foreach(OneSkill s in all)
+            {
+                if(s.skillId == skill.Id)
+                {
+                    s.lv++;
+                    break;
+                }
+            }
+        }
+        return all;
+    }
 
     public void BtnToChangeImproveKind()
     {

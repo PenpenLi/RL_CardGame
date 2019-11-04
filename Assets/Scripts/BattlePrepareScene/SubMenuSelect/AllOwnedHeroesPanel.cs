@@ -6,134 +6,45 @@ using DG.Tweening;
 
 public class AllOwnedHeroesPanel : MonoBehaviour
 {
+    HomeScene _hs;
+    public HomeScene homeScene
+    {
+        get
+        {
+            if (_hs == null) _hs = FindObjectOfType<HomeScene>();
+            return _hs;
+        }
+
+    }
     public BasicHeroSelect BHS;
     public Transform RoleDetailPanel;
     public Transform RoleStagePanel;
     [Header("RoleDetailPanel__Content")]
-    public SDHeroDetail heroDetail;
-    public SDEquipSelect heroEquip;
-    public SDHeroImprove heroImprove;
-    public enum OwnedHeroPanelSubType
+    public HeroDetailPanel detailpanel;
+    public enum panelContent
     {
-        Stage,
-        HeroDetail,
-
+        main, end
     }
-    [Header("子页面索引器")]
-    public OwnedHeroPanelSubType CurrentSubType = OwnedHeroPanelSubType.Stage;
-    public enum RoleDetailSubType
-    {
-        heroDetail,
-        heroEquip,
-        heroImprove,
-        heroSkill,
-    }
-    [Header("角色子页面内的子页面索引器")]
-    public RoleDetailSubType CurrentRDSubType = RoleDetailSubType.heroDetail;
-    void Start()
-    {
-        //ShowAllOwnedHeroes();
-    }
-
+    public panelContent currentPanelContent = panelContent.end;
     public void ShowAllOwnedHeroes()
     {
+        currentPanelContent = panelContent.main;
         SDGameManager.Instance.isSelectHero = true;
         SDGameManager.Instance.heroSelectType = SDConstants.HeroSelectType.All;
-        BHS.heroesInit();
-        showStagePanel();
-    }
-
-    public void showStagePanel()
-    {
-        CurrentSubType = OwnedHeroPanelSubType.Stage;
-        RoleStagePanel.gameObject.SetActive(true);
-        RoleStagePanel.localScale = Vector3.one;
-        if (RoleStagePanel.GetComponent<CanvasGroup>())
-            RoleStagePanel.GetComponent<CanvasGroup>().alpha = 1;
-        //RoleStagePanel.GetComponent<CanvasGroup>().alpha = 1;
-        RoleDetailPanel.localScale = Vector3.zero;
-        //RoleDetailPanel.GetComponent<CanvasGroup>().alpha = 0;
+        UIEffectManager.Instance.showAnimFadeIn(RoleStagePanel);
         BHS.gameObject.SetActive(true);
-
-    }
-    public void showRoleDetailPanel()
-    {
-        CurrentSubType = OwnedHeroPanelSubType.HeroDetail;
-        RoleStagePanel.gameObject.SetActive(false);
-        //RoleStagePanel.GetComponent<CanvasGroup>().alpha = 1;
-        //RoleDetailPanel.localScale = Vector3.one;
-        UIEffectManager.Instance.showAnimFadeIn(RoleDetailPanel);
-        //RoleDetailPanel.GetComponent<CanvasGroup>().alpha = 0;
-        BHS.gameObject.SetActive(false);
-
-        //BtnToHeroDetail();
+        BHS.heroesInit();
     }
 
-    #region roleDetailPanelSubMenu
-    public Transform RDSubPanel(RoleDetailSubType RDType)
+    public void commonBackAction()
     {
-        switch (RDType)
+        if(currentPanelContent == panelContent.main)
         {
-            case RoleDetailSubType.heroDetail:
-                return heroDetail.transform;
-            case RoleDetailSubType.heroEquip:
-                return heroEquip.transform;
-            case RoleDetailSubType.heroImprove:
-                return heroImprove.transform;
-            //case RoleDetailSubType.heroSkill:
-                //return 
-            default:return heroDetail.transform;
+            homeScene.SubMenuClose();
         }
-    }
-    public void BtnToHeroDetail()
-    {
-        if(CurrentRDSubType != RoleDetailSubType.heroDetail)
+        else if(currentPanelContent == panelContent.end)
         {
-            resetAllRDSubPanel();
-
-            //RDSubPanel(CurrentRDSubType).DOScale(Vector3.zero, 0.2f);
-            UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-            CurrentRDSubType = RoleDetailSubType.heroDetail;
-            //RDSubPanel(CurrentRDSubType).DOScale(Vector3.one, 0.2f);
-            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
-
-            //heroDetail.ModelAndEquipsPanel.gameObject.SetActive(true);
-        }
-    }
-    public void BtnToHeroImprove()
-    {
-        if (CurrentRDSubType != RoleDetailSubType.heroImprove)
-        {
-            resetAllRDSubPanel();
-
-            //RDSubPanel(CurrentRDSubType).DOScale(Vector3.zero, 0.2f);
-            UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-            CurrentRDSubType = RoleDetailSubType.heroImprove;
-            //RDSubPanel(CurrentRDSubType).DOScale(Vector3.one, 0.2f);
-            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
-
-            //
-            heroImprove.initImprovePanel();
-        }
-    }
-    public void BtnToHeroSkill()
-    {
-        if(CurrentRDSubType != RoleDetailSubType.heroSkill)
-        {
-            resetAllRDSubPanel();
-
-            UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-            CurrentRDSubType = RoleDetailSubType.heroImprove;
-            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
-
 
         }
     }
-    public void resetAllRDSubPanel()
-    {
-
-        heroImprove.closeThisPanel();
-        //heroDetail.ModelAndEquipsPanel.gameObject.SetActive(false);
-    }
-    #endregion
 }

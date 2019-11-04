@@ -113,6 +113,10 @@ public class SDConstants
     /// 角色星级上限
     /// </summary>
     public static int UnitMAxStarNum = 5;
+    /// <summary>
+    /// 最小心形容量
+    /// </summary>
+    public static int MinHeartVolume = 100;
 
     public static string HERO_TAG = "HERO";
     public static string ENEMY_TAG = "ENEMY";
@@ -235,6 +239,7 @@ public class SDConstants
             ,StarUp
             ,Wake
             ,Replace
+            ,Hospital//包括injuried和treating
             
     }
 

@@ -89,11 +89,13 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
     {
         ResetThisPanel();
         yield return new WaitForSeconds(initDelay);
-        List<int> heroes = SDDataManager.Instance.getHeroTeamByTeamId(STUP.CurrentTeamId).heroes;
-        for (int i = 0; i < heroes.Count; i++)
+        int[] heroes = STUP.SDHS.heroesInTeam;
+        for (int i = 0; i < heroes.Length; i++)
         {
-            if (SDDataManager.Instance.GetHeroOwnedByHashcode(heroes[i]) != null)
+            if (SDDataManager.Instance.GetHeroOwnedByHashcode(heroes[i]) != null
+                && heroes[i] != 0)
             {
+                Debug.Log("载入模型对应hashcode：" + heroes[i] + "_" + i);
                 Transform s = Instantiate(RoleModel) as Transform;
                 CharacterModelController CMC = s.GetComponentInChildren<CharacterModelController>();
                 CMC.heroHashcode = heroes[i];

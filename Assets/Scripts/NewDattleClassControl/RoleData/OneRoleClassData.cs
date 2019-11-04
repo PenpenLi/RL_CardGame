@@ -179,12 +179,12 @@ public class RoleBarChart
     #region 角色三项可视化数据
     public int HP
     {
-        get { return ThisArray[0]; }
+        get { return ThisArray(0); }
         set { DATA.x = value; }
     }
     public int MP
     {
-        get { return ThisArray[1]; }
+        get { return ThisArray(1); }
         set
         {
             DATA.y = value;
@@ -194,7 +194,7 @@ public class RoleBarChart
     {
         get
         {
-            return ThisArray[2];
+            return ThisArray(2);
         }
         set
         {
@@ -202,9 +202,15 @@ public class RoleBarChart
         }
     }
     [HideInInspector]
-    public int[] ThisArray 
+    public int ThisArray(int index)
     {
-        get { return new int[3] { (int)DATA.x, (int)DATA.y, (int)DATA.z }; }
+        switch (index)
+        {
+            case 0:return (int)DATA.x;
+            case 1:return (int)DATA.y;
+            case 2:return (int)DATA.z;
+            default:return (int)DATA.x;
+        }
     }
     public Vector3 DATA;
     #endregion
@@ -257,7 +263,8 @@ public class RoleBarChart
     {
         HP = 0,
         MP = 0,
-        TP = 0
+        TP = 0,
+        DATA = Vector3.zero
     };
 }
 

@@ -49,60 +49,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AllSkillList:
-  - {fileID: 4837869067163833593, guid: 628d8c744f7e9ab49aa60a82a2dc9c79, type: 3}
   - {fileID: 2450582158622473813, guid: d7e3e0dd07dd9854abdead70d2db723a, type: 3}
+  - {fileID: 4837869067163833593, guid: 628d8c744f7e9ab49aa60a82a2dc9c79, type: 3}
   - {fileID: 1995359199694546457, guid: 4da5fd29fa75a3f49b4f99ea78904157, type: 3}
-  - {fileID: 8186172205097651187, guid: 3e6c789bddbcbc045893fd248861ed6c, type: 3}
   - {fileID: 8993011931991731023, guid: 95a8b39b6087b6748b78931b18cb6df9, type: 3}
-  SkillDetailsByJob:
-  - GroupNotice: Fighter
-    DetailList:
-    - SkillName: "\u7C89\u788E\u65A9\u51FB"
-      SkillFunctionID: 1
-      Desc: "\u7ED9\u4E88\u5355\u4F53\u654C\u4EBA\u7269\u7406\u4F24\u5BB3"
-    - SkillName: "\u5632\u8BBD\uFF01"
-      SkillFunctionID: 0
-      Desc: "\u5927\u5E45\u63D0\u5347\u81EA\u8EAB\u5632\u8BBD\u503C"
-    - SkillName: "\u91CD\u5251\u6C14\u5203"
-      SkillFunctionID: 0
-      Desc: 
-  - GroupNotice: Ranger
-    DetailList:
-    - SkillName: "\u7A81\u88AD"
-      SkillFunctionID: 1
-      Desc: "\u7ED9\u4E88\u654C\u4EBA\u7269\u7406\u4F24\u5BB3"
-    - SkillName: "\u5FEB\u901F\u5C04\u51FB"
-      SkillFunctionID: 2
-      Desc: "\u7ED9\u4E88\u654C\u4EBA\u7269\u7406\u4F24\u5BB3"
-    - SkillName: 
-      SkillFunctionID: 0
-      Desc: 
-  - GroupNotice: Priest
-    DetailList:
-    - SkillName: "\u633A\u8EAB\u800C\u51FA"
-      SkillFunctionID: 0
-      Desc: "\u5927\u5E45\u63D0\u5347\u81EA\u8EAB\u5632\u8BBD\u503C"
-    - SkillName: "\u9B54\u5F39\u653B\u51FB"
-      SkillFunctionID: 3
-      Desc: "\u7ED9\u4E88\u654C\u4EBA\u6CD5\u672F\u4F24\u5BB3"
-    - SkillName: 
-      SkillFunctionID: 0
-      Desc: 
-  - GroupNotice: Caster
-    DetailList:
-    - SkillName: "\u5B9E\u5F39\u5C04\u51FB"
-      SkillFunctionID: 2
-      Desc: "\u7ED9\u4E88\u654C\u4EBA\u7269\u7406\u4F24\u5BB3"
-    - SkillName: "\u9B54\u5F39\u672F"
-      SkillFunctionID: 3
-      Desc: "\u7ED9\u4E88\u654C\u4EBA\u6CD5\u672F\u4F24\u5BB3"
-    - SkillName: 
-      SkillFunctionID: 0
-      Desc: 
-  SkillDetailsByRace:
-  - GroupNotice: Human
-    DetailList: []
-  - GroupNotice: Elf
-    DetailList: []
-  - GroupNotice: Dragonborn
-    DetailList: []
+  - {fileID: 8186172205097651187, guid: 3e6c789bddbcbc045893fd248861ed6c, type: 3}
+  - {fileID: 5151786472835801433, guid: 57ec6def24f714942a929aa7348f96b2, type: 3}
+  - {fileID: 3928575310514394288, guid: f93496d1c30668047bb0ed15bb15829e, type: 3}
+  - {fileID: 7901811593350303485, guid: 29c768b72c4d5e04d84674464c4b771f, type: 3}
+  - {fileID: 2589652264800535954, guid: e647d9904f912034997a3c0b37e247d1, type: 3}
+  - {fileID: 3099232392852907077, guid: 5f613df61953bb9448c1dc058dedbc31, type: 3}
+  - {fileID: 808488836509402469, guid: 505a8ef163df2de40a0e1c943f632f15, type: 3}
