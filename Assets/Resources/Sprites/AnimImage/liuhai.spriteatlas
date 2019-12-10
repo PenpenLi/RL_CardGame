@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: liuhai
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 0
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 3c79f97d3fc4c19428a11dc1ea920ffe, type: 3}
+    totalSpriteSurfaceArea: 66864
+    bindAsDefault: 1
+    storedHash:
+      serializedVersion: 2
+      Hash: 7ed22ed1863668ca53e5bdf06ae62b08
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 922ac0247dfd7904b8a42d18527e8063, type: 3}
+  - {fileID: 21300000, guid: 87617f58c2f59f04b9731ba44db67e41, type: 3}
+  - {fileID: 21300000, guid: 2c54555ae3405ae47ac7a3e9dc22dcc4, type: 3}
+  - {fileID: 21300000, guid: dae7731ccf233f944b8129c652726672, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - liuhai01
+  - liuhai02
+  - liuhai04
+  - liuhai03
+  m_Tag: liuhai
+  m_IsVariant: 0

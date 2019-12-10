@@ -274,6 +274,7 @@ namespace I2.Loc
         //public override void ForceSaveSettings()
         //public override bool HasSetting(string key)
 
+        //public virtual bool CanAccessFiles();
         //public override bool SaveFile(PersistentStorage.eFileType fileType, string fileName, string data, bool logExceptions = true);
         //public override string LoadFile(PersistentStorage.eFileType fileType, string fileName, bool logExceptions = true);
         //public override bool DeleteFile(PersistentStorage.eFileType fileType, string fileName, bool logExceptions = true);

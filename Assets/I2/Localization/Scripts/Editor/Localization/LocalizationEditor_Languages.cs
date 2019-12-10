@@ -27,12 +27,23 @@ namespace I2.Loc
             OnGUI_StoreIntegration();
 
             GUILayout.BeginHorizontal();
-                GUILayout.Label(new GUIContent("On Missing Translation:", "What should happen IN-GAME when a term is not yet translated to the current language?"), EditorStyles.boldLabel, GUILayout.Width(160));
+                GUILayout.Label(new GUIContent("On Missing Translation:", "What should happen IN-GAME when a term is not yet translated to the current language?"), EditorStyles.boldLabel, GUILayout.Width(200));
                 GUILayout.BeginVertical();
                     GUILayout.Space(7);
                     EditorGUILayout.PropertyField(mProp_OnMissingTranslation, GUITools.EmptyContent, GUILayout.Width(165));
                 GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+                GUILayout.Label(new GUIContent("Unload Languages At Runtime:", "When playing the game, the plugin will unload all unused languages and only load them when needed"), EditorStyles.boldLabel, GUILayout.Width(200));
+                GUILayout.BeginVertical();
+                    GUILayout.Space(7);
+                    EditorGUILayout.PropertyField(mProp_AllowUnloadingLanguages, GUITools.EmptyContent, GUILayout.Width(165));
+                GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+
+
+            
 
             string firstLanguage = "";
 			if (mLanguageSource.mLanguages.Count > 0)
@@ -65,7 +76,9 @@ namespace I2.Loc
 			int IndexLanguageToDelete = -1;
 			int LanguageToMoveUp = -1;
 			int LanguageToMoveDown = -1;
-			mScrollPos_Languages = GUILayout.BeginScrollView( mScrollPos_Languages, EditorStyles.textArea, GUILayout.MinHeight (100), GUILayout.MaxHeight(Screen.height), GUILayout.ExpandHeight(false));
+            GUI.backgroundColor = Color.Lerp(GUITools.LightGray, Color.white, 0.5f);
+            mScrollPos_Languages = GUILayout.BeginScrollView( mScrollPos_Languages, LocalizeInspector.GUIStyle_OldTextArea, GUILayout.MinHeight (200), /*GUILayout.MaxHeight(Screen.height),*/ GUILayout.ExpandHeight(false));
+            GUI.backgroundColor = Color.white;
 
             if (mLanguageCodePopupList == null || mLanguageCodePopupList.Count==0)
             {
@@ -168,7 +181,7 @@ namespace I2.Loc
 				int time = (int)((Time.realtimeSinceStartup % 2) * 2.5);
 				string Loading = mConnection_Text + ".....".Substring(0, time);
 				GUI.color = Color.gray;
-				GUILayout.BeginHorizontal(EditorStyles.textArea);
+				GUILayout.BeginHorizontal(LocalizeInspector.GUIStyle_OldTextArea);
 				GUILayout.Label (Loading, EditorStyles.miniLabel);
 				GUI.color = Color.white;
                 if (GUILayout.Button("Cancel", EditorStyles.toolbarButton, GUILayout.ExpandWidth(false)))
@@ -186,7 +199,7 @@ namespace I2.Loc
 				{
 					mLanguageSource.RemoveLanguage (mLanguageSource.mLanguages [IndexLanguageToDelete].Name);
 					serializedObject.Update ();
-					ParseTerms (true, false);
+					ParseTerms (true, false, false);
 				}
 			}
 
@@ -197,7 +210,7 @@ namespace I2.Loc
 		void SwapLanguages( int iFirst, int iSecond )
 		{
 			serializedObject.ApplyModifiedProperties();
-			LanguageSource Source = mLanguageSource;
+			LanguageSourceData Source = mLanguageSource;
 
 			SwapValues( Source.mLanguages, iFirst, iSecond );
 			foreach (TermData termData in Source.mTerms)
@@ -230,9 +243,9 @@ namespace I2.Loc
 		
 		void OnGUI_AddLanguage( SerializedProperty Prop_Languages)
 		{
-			//--[ Add Language Upper Toolbar ]-----------------
-			
-			GUILayout.BeginVertical();
+            //--[ Add Language Upper Toolbar ]-----------------
+
+            GUILayout.BeginVertical();
 			GUILayout.BeginHorizontal();
 			
 			GUILayout.BeginHorizontal(EditorStyles.toolbar);
@@ -251,10 +264,10 @@ namespace I2.Loc
             GUI.enabled = true;
 			
 			GUILayout.EndHorizontal();
-			
-			
-			//--[ Add Language Bottom Toolbar ]-----------------
-			
+
+
+            //--[ Add Language Bottom Toolbar ]-----------------
+
 			GUILayout.BeginHorizontal();
 			
 			//-- Language Dropdown -----------------
@@ -321,7 +334,7 @@ namespace I2.Loc
 					continue;
 				
 				string sourceCode, sourceText;
-				FindTranslationSource( LanguageSource.GetKeyFromFullTerm(termData.Term), termData, code, null, out sourceText, out sourceCode );
+				FindTranslationSource( LanguageSourceData.GetKeyFromFullTerm(termData.Term), termData, code, null, out sourceText, out sourceCode );
 
 				mTranslationTerms.Add (termData.Term);
 
@@ -389,7 +402,7 @@ namespace I2.Loc
                       //  continue;
 
                     string sourceCode, sourceText;
-                    FindTranslationSource(LanguageSource.GetKeyFromFullTerm(termData.Term), termData, langCode, null, out sourceText, out sourceCode);
+                    FindTranslationSource(LanguageSourceData.GetKeyFromFullTerm(termData.Term), termData, langCode, null, out sourceText, out sourceCode);
 
                     string result = GoogleTranslation.RebuildTranslation(sourceText, mTranslationRequests, langCode);               // gets the result from google and rebuilds the text from multiple queries if its is plurals
 

@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 145221843110746791}
-  - component: {fileID: 8266010633769843555}
   - component: {fileID: 5917330669871241058}
   m_Layer: 5
   m_Name: StarBG (4)
@@ -27,7 +26,7 @@ RectTransform:
   m_GameObject: {fileID: 1295601377907583260}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000799, y: 1.0000799, z: 1.0000799}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2738483376414885818}
   m_Father: {fileID: 3791010231228920165}
@@ -36,16 +35,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8266010633769843555
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1295601377907583260}
-  m_CullTransparentMesh: 0
 --- !u!225 &5917330669871241058
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -67,7 +58,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6119024708793331364}
-  - component: {fileID: 456951636400266307}
   - component: {fileID: 1326675574238118720}
   m_Layer: 5
   m_Name: StarBG
@@ -94,16 +84,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &456951636400266307
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4442817025256399452}
-  m_CullTransparentMesh: 0
 --- !u!225 &1326675574238118720
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -346,6 +328,7 @@ GameObject:
   - component: {fileID: 3791010231228920165}
   - component: {fileID: 2058586176214671771}
   - component: {fileID: 4213629985650397782}
+  - component: {fileID: 3118678558322159563}
   m_Layer: 5
   m_Name: StarVision
   m_TagString: Untagged
@@ -375,7 +358,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -66.8, y: -42}
-  m_SizeDelta: {x: 100, y: 21.14}
+  m_SizeDelta: {x: 0, y: 21.14}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2058586176214671771
 MonoBehaviour:
@@ -398,7 +381,7 @@ MonoBehaviour:
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 1
+  m_ChildControlWidth: 0
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -416,6 +399,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AllStarParent: {fileID: 3791010231228920165}
   isInMiddle: 0
+--- !u!114 &3118678558322159563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6156037263979373629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 0
 --- !u!1 &6930261393767380812
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,7 +422,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4534844375424490025}
-  - component: {fileID: 5016476324884276363}
   - component: {fileID: 6795068763023437179}
   m_Layer: 5
   m_Name: StarBG (1)
@@ -452,16 +448,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &5016476324884276363
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6930261393767380812}
-  m_CullTransparentMesh: 0
 --- !u!225 &6795068763023437179
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -556,7 +544,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1249683291969616962}
-  - component: {fileID: 108544549857049802}
   - component: {fileID: 5175384613826738358}
   m_Layer: 5
   m_Name: StarBG (3)
@@ -574,7 +561,7 @@ RectTransform:
   m_GameObject: {fileID: 7807780465984783415}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000799, y: 1.0000799, z: 1.0000799}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4081993674548004788}
   m_Father: {fileID: 3791010231228920165}
@@ -583,16 +570,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &108544549857049802
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7807780465984783415}
-  m_CullTransparentMesh: 0
 --- !u!225 &5175384613826738358
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -687,7 +666,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8629016409015625268}
-  - component: {fileID: 7374373713935287177}
   - component: {fileID: 2938072587146262361}
   m_Layer: 5
   m_Name: StarBG (2)
@@ -705,7 +683,7 @@ RectTransform:
   m_GameObject: {fileID: 8548268735245276333}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000799, y: 1.0000799, z: 1.0000799}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3518592937728848990}
   m_Father: {fileID: 3791010231228920165}
@@ -714,16 +692,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &7374373713935287177
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8548268735245276333}
-  m_CullTransparentMesh: 0
 --- !u!225 &2938072587146262361
 CanvasGroup:
   m_ObjectHideFlags: 0

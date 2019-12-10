@@ -415,7 +415,6 @@ MonoBehaviour:
     DATA: {x: 0, y: 0, z: 0}
   BCCostUsingPercent:
     DATA: {x: 0, y: 0, z: 0}
-  SkillGrade: 0
   SkillDetailsR:
   - name: "\u66B4\u51FB\u4FEE\u6B63 CritR"
     Data: 5
@@ -440,7 +439,7 @@ MonoBehaviour:
   IsCausedCritDmg: 0
   IsCausedMiss: 0
   IsCausedFault: 0
-  IsRareHero: 0
+  IsRare: 0
   _skillUseRA: 5
   _standardState: {fileID: 1777913590949187957}
 --- !u!114 &3175910650301812180
@@ -483,9 +482,15 @@ MonoBehaviour:
     isUnlocked: 0
     Desc: 
     lv: 0
+    skillAnimId: 0
+    Aim: 4
+    Breed: 3
+    Kind: 3
+    SkillAoe: 13
+    MpTpAddType: 10
   breed: 1
   kind: 0
-  AOEType: 8
+  AOEType: 12
   AfterwardsAddType: 3
 --- !u!1 &7840334322634232121
 GameObject:
@@ -756,8 +761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aaeadfb4a574fc45add78b8c5485869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BasicVal:
-    DATA: {x: 0, y: 0, z: 0}
+  BCType: 3
   StateLastTime: 3
   stateTag: 1
   stateKind: 0

@@ -19,20 +19,6 @@ namespace GameDataEditor
 {
     public class GDEunitTeamData : IGDEData
     {
-        static string goddessKey = "goddess";
-		int _goddess;
-        public int goddess
-        {
-            get { return _goddess; }
-            set {
-                if (_goddess != value)
-                {
-                    _goddess = value;
-					GDEDataManager.SetInt(_key, goddessKey, _goddess);
-                }
-            }
-        }
-
         static string badgeKey = "badge";
 		int _badge;
         public int badge
@@ -47,16 +33,30 @@ namespace GameDataEditor
             }
         }
 
+        static string goddessKey = "goddess";
+		string _goddess;
+        public string goddess
+        {
+            get { return _goddess; }
+            set {
+                if (_goddess != value)
+                {
+                    _goddess = value;
+					GDEDataManager.SetString(_key, goddessKey, _goddess);
+                }
+            }
+        }
+
         static string idKey = "id";
-		int _id;
-        public int id
+		string _id;
+        public string id
         {
             get { return _id; }
             set {
                 if (_id != value)
                 {
                     _id = value;
-					GDEDataManager.SetInt(_key, idKey, _id);
+					GDEDataManager.SetString(_key, idKey, _id);
                 }
             }
         }
@@ -75,14 +75,6 @@ namespace GameDataEditor
             }
         }
 
-        static string heroesKey = "heroes";
-		public List<int>      heroes;
-		public void Set_heroes()
-        {
-	        GDEDataManager.SetIntList(_key, heroesKey, heroes);
-		}
-		
-
         public GDEunitTeamData(string key) : base(key)
         {
             GDEDataManager.RegisterItem(this.SchemaName(), key);
@@ -92,12 +84,10 @@ namespace GameDataEditor
 			var dict = new Dictionary<string, object>();
 			dict.Add(GDMConstants.SchemaKey, "unitTeam");
 			
-            dict.Merge(true, goddess.ToGDEDict(goddessKey));
             dict.Merge(true, badge.ToGDEDict(badgeKey));
+            dict.Merge(true, goddess.ToGDEDict(goddessKey));
             dict.Merge(true, id.ToGDEDict(idKey));
             dict.Merge(true, teamName.ToGDEDict(teamNameKey));
-
-            dict.Merge(true, heroes.ToGDEDict(heroesKey));
             return dict;
 		}
 
@@ -113,12 +103,10 @@ namespace GameDataEditor
 				LoadFromSavedData(dataKey);
 			else
 			{
-                dict.TryGetInt(goddessKey, out _goddess);
                 dict.TryGetInt(badgeKey, out _badge);
-                dict.TryGetInt(idKey, out _id);
+                dict.TryGetString(goddessKey, out _goddess);
+                dict.TryGetString(idKey, out _id);
                 dict.TryGetString(teamNameKey, out _teamName);
-
-                dict.TryGetIntList(heroesKey, out heroes);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -127,12 +115,10 @@ namespace GameDataEditor
 		{
 			_key = dataKey;
 			
-            _goddess = GDEDataManager.GetInt(_key, goddessKey, _goddess);
             _badge = GDEDataManager.GetInt(_key, badgeKey, _badge);
-            _id = GDEDataManager.GetInt(_key, idKey, _id);
+            _goddess = GDEDataManager.GetString(_key, goddessKey, _goddess);
+            _id = GDEDataManager.GetString(_key, idKey, _id);
             _teamName = GDEDataManager.GetString(_key, teamNameKey, _teamName);
-
-            heroes = GDEDataManager.GetIntList(_key, heroesKey, heroes);
         }
 
         public GDEunitTeamData ShallowClone()
@@ -140,13 +126,10 @@ namespace GameDataEditor
 			string newKey = Guid.NewGuid().ToString();
 			GDEunitTeamData newClone = new GDEunitTeamData(newKey);
 
-            newClone.goddess = goddess;
             newClone.badge = badge;
+            newClone.goddess = goddess;
             newClone.id = id;
             newClone.teamName = teamName;
-
-            newClone.heroes = new List<int>(heroes);
-			newClone.Set_heroes();
 
             return newClone;
 		}
@@ -157,15 +140,6 @@ namespace GameDataEditor
             return newClone;
 		}
 
-        public void Reset_goddess()
-        {
-            GDEDataManager.ResetToDefault(_key, goddessKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(goddessKey, out _goddess);
-        }
-
         public void Reset_badge()
         {
             GDEDataManager.ResetToDefault(_key, badgeKey);
@@ -175,13 +149,22 @@ namespace GameDataEditor
             dict.TryGetInt(badgeKey, out _badge);
         }
 
+        public void Reset_goddess()
+        {
+            GDEDataManager.ResetToDefault(_key, goddessKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetString(goddessKey, out _goddess);
+        }
+
         public void Reset_id()
         {
             GDEDataManager.ResetToDefault(_key, idKey);
 
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(idKey, out _id);
+            dict.TryGetString(idKey, out _id);
         }
 
         public void Reset_teamName()
@@ -193,23 +176,12 @@ namespace GameDataEditor
             dict.TryGetString(teamNameKey, out _teamName);
         }
 
-        public void Reset_heroes()
-        {
-	        GDEDataManager.ResetToDefault(_key, heroesKey);
-
-	        Dictionary<string, object> dict;
-	        GDEDataManager.Get(_key, out dict);
-	        dict.TryGetIntList(heroesKey, out heroes);
-        }
-		
-
         public void ResetAll()
         {
              #if !UNITY_WEBPLAYER
              GDEDataManager.DeregisterItem(this.SchemaName(), _key);
              #else
 
-            GDEDataManager.ResetToDefault(_key, heroesKey);
             GDEDataManager.ResetToDefault(_key, goddessKey);
             GDEDataManager.ResetToDefault(_key, badgeKey);
             GDEDataManager.ResetToDefault(_key, idKey);

@@ -33,20 +33,6 @@ namespace GameDataEditor
             }
         }
 
-        static string idKey = "id";
-		int _id;
-        public int id
-        {
-            get { return _id; }
-            set {
-                if (_id != value)
-                {
-                    _id = value;
-					GDEDataManager.SetInt(_key, idKey, _id);
-                }
-            }
-        }
-
         static string lvKey = "lv";
 		int _lv;
         public int lv
@@ -243,20 +229,6 @@ namespace GameDataEditor
             }
         }
 
-        static string teamIdBelongToKey = "teamIdBelongTo";
-		int _teamIdBelongTo;
-        public int teamIdBelongTo
-        {
-            get { return _teamIdBelongTo; }
-            set {
-                if (_teamIdBelongTo != value)
-                {
-                    _teamIdBelongTo = value;
-					GDEDataManager.SetInt(_key, teamIdBelongToKey, _teamIdBelongTo);
-                }
-            }
-        }
-
         static string skillOmegaIdKey = "skillOmegaId";
 		int _skillOmegaId;
         public int skillOmegaId
@@ -309,6 +281,62 @@ namespace GameDataEditor
                 {
                     _likability = value;
 					GDEDataManager.SetInt(_key, likabilityKey, _likability);
+                }
+            }
+        }
+
+        static string FatigueKey = "Fatigue";
+		int _Fatigue;
+        public int Fatigue
+        {
+            get { return _Fatigue; }
+            set {
+                if (_Fatigue != value)
+                {
+                    _Fatigue = value;
+					GDEDataManager.SetInt(_key, FatigueKey, _Fatigue);
+                }
+            }
+        }
+
+        static string TeamOrderKey = "TeamOrder";
+		int _TeamOrder;
+        public int TeamOrder
+        {
+            get { return _TeamOrder; }
+            set {
+                if (_TeamOrder != value)
+                {
+                    _TeamOrder = value;
+					GDEDataManager.SetInt(_key, TeamOrderKey, _TeamOrder);
+                }
+            }
+        }
+
+        static string teamIdBelongToKey = "teamIdBelongTo";
+		string _teamIdBelongTo;
+        public string teamIdBelongTo
+        {
+            get { return _teamIdBelongTo; }
+            set {
+                if (_teamIdBelongTo != value)
+                {
+                    _teamIdBelongTo = value;
+					GDEDataManager.SetString(_key, teamIdBelongToKey, _teamIdBelongTo);
+                }
+            }
+        }
+
+        static string idKey = "id";
+		string _id;
+        public string id
+        {
+            get { return _id; }
+            set {
+                if (_id != value)
+                {
+                    _id = value;
+					GDEDataManager.SetString(_key, idKey, _id);
                 }
             }
         }
@@ -417,6 +445,32 @@ namespace GameDataEditor
                 }
             }
         }
+        static string ItemInfoKey = "ItemInfo";
+		GDEItemData _ItemInfo;
+        public GDEItemData ItemInfo
+        {
+            get { return _ItemInfo; }
+            set {
+                if (_ItemInfo != value)
+                {
+                    _ItemInfo = value;
+					GDEDataManager.SetCustom(_key, ItemInfoKey, _ItemInfo);
+                }
+            }
+        }
+        static string AnimDataKey = "AnimData";
+		GDEAnimData _AnimData;
+        public GDEAnimData AnimData
+        {
+            get { return _AnimData; }
+            set {
+                if (_AnimData != value)
+                {
+                    _AnimData = value;
+					GDEDataManager.SetCustom(_key, AnimDataKey, _AnimData);
+                }
+            }
+        }
 
         static string skillsOwnedKey = "skillsOwned";
 		public List<GDEASkillData>      skillsOwned;
@@ -436,7 +490,6 @@ namespace GameDataEditor
 			dict.Add(GDMConstants.SchemaKey, "Hero");
 			
             dict.Merge(true, locked.ToGDEDict(lockedKey));
-            dict.Merge(true, id.ToGDEDict(idKey));
             dict.Merge(true, lv.ToGDEDict(lvKey));
             dict.Merge(true, status.ToGDEDict(statusKey));
             dict.Merge(true, hashCode.ToGDEDict(hashCodeKey));
@@ -451,11 +504,14 @@ namespace GameDataEditor
             dict.Merge(true, nameBeforeId.ToGDEDict(nameBeforeIdKey));
             dict.Merge(true, Likability.ToGDEDict(LikabilityKey));
             dict.Merge(true, teamPos.ToGDEDict(teamPosKey));
-            dict.Merge(true, teamIdBelongTo.ToGDEDict(teamIdBelongToKey));
             dict.Merge(true, skillOmegaId.ToGDEDict(skillOmegaIdKey));
             dict.Merge(true, skill1Id.ToGDEDict(skill1IdKey));
             dict.Merge(true, skill0Id.ToGDEDict(skill0IdKey));
             dict.Merge(true, likability.ToGDEDict(likabilityKey));
+            dict.Merge(true, Fatigue.ToGDEDict(FatigueKey));
+            dict.Merge(true, TeamOrder.ToGDEDict(TeamOrderKey));
+            dict.Merge(true, teamIdBelongTo.ToGDEDict(teamIdBelongToKey));
+            dict.Merge(true, id.ToGDEDict(idKey));
 
             dict.Merge(true, equipHelmet.ToGDEDict(equipHelmetKey));
             dict.Merge(true, equipBreastplate.ToGDEDict(equipBreastplateKey));
@@ -465,6 +521,8 @@ namespace GameDataEditor
             dict.Merge(true, jewelry1.ToGDEDict(jewelry1Key));
             dict.Merge(true, RoleAttritubeList.ToGDEDict(RoleAttritubeListKey));
             dict.Merge(true, equipWeapon.ToGDEDict(equipWeaponKey));
+            dict.Merge(true, ItemInfo.ToGDEDict(ItemInfoKey));
+            dict.Merge(true, AnimData.ToGDEDict(AnimDataKey));
             dict.Merge(true, skillsOwned.ToGDEDict(skillsOwnedKey));
             return dict;
 		}
@@ -487,6 +545,10 @@ namespace GameDataEditor
             RoleAttritubeList.UpdateCustomItems(rebuildKeyList);
             GDEDataManager.UpdateItem(equipWeapon, rebuildKeyList);
             equipWeapon.UpdateCustomItems(rebuildKeyList);
+            GDEDataManager.UpdateItem(ItemInfo, rebuildKeyList);
+            ItemInfo.UpdateCustomItems(rebuildKeyList);
+            GDEDataManager.UpdateItem(AnimData, rebuildKeyList);
+            AnimData.UpdateCustomItems(rebuildKeyList);
             if (skillsOwned != null)
             {
                 for(int x=0;  x<skillsOwned.Count;  x++)
@@ -506,7 +568,6 @@ namespace GameDataEditor
 			else
 			{
                 dict.TryGetBool(lockedKey, out _locked);
-                dict.TryGetInt(idKey, out _id);
                 dict.TryGetInt(lvKey, out _lv);
                 dict.TryGetInt(statusKey, out _status);
                 dict.TryGetInt(hashCodeKey, out _hashCode);
@@ -521,11 +582,14 @@ namespace GameDataEditor
                 dict.TryGetInt(nameBeforeIdKey, out _nameBeforeId);
                 dict.TryGetInt(LikabilityKey, out _Likability);
                 dict.TryGetInt(teamPosKey, out _teamPos);
-                dict.TryGetInt(teamIdBelongToKey, out _teamIdBelongTo);
                 dict.TryGetInt(skillOmegaIdKey, out _skillOmegaId);
                 dict.TryGetInt(skill1IdKey, out _skill1Id);
                 dict.TryGetInt(skill0IdKey, out _skill0Id);
                 dict.TryGetInt(likabilityKey, out _likability);
+                dict.TryGetInt(FatigueKey, out _Fatigue);
+                dict.TryGetInt(TeamOrderKey, out _TeamOrder);
+                dict.TryGetString(teamIdBelongToKey, out _teamIdBelongTo);
+                dict.TryGetString(idKey, out _id);
 
                 string customDataKey;
                 dict.TryGetString(equipHelmetKey, out customDataKey);
@@ -544,6 +608,10 @@ namespace GameDataEditor
 				_RoleAttritubeList = new GDERoleAttritubeData(customDataKey);
                 dict.TryGetString(equipWeaponKey, out customDataKey);
 				_equipWeapon = new GDEEquipmentData(customDataKey);
+                dict.TryGetString(ItemInfoKey, out customDataKey);
+				_ItemInfo = new GDEItemData(customDataKey);
+                dict.TryGetString(AnimDataKey, out customDataKey);
+				_AnimData = new GDEAnimData(customDataKey);
 
                 dict.TryGetCustomList(skillsOwnedKey, out skillsOwned);
                 LoadFromSavedData(dataKey);
@@ -555,7 +623,6 @@ namespace GameDataEditor
 			_key = dataKey;
 			
             _locked = GDEDataManager.GetBool(_key, lockedKey, _locked);
-            _id = GDEDataManager.GetInt(_key, idKey, _id);
             _lv = GDEDataManager.GetInt(_key, lvKey, _lv);
             _status = GDEDataManager.GetInt(_key, statusKey, _status);
             _hashCode = GDEDataManager.GetInt(_key, hashCodeKey, _hashCode);
@@ -570,11 +637,14 @@ namespace GameDataEditor
             _nameBeforeId = GDEDataManager.GetInt(_key, nameBeforeIdKey, _nameBeforeId);
             _Likability = GDEDataManager.GetInt(_key, LikabilityKey, _Likability);
             _teamPos = GDEDataManager.GetInt(_key, teamPosKey, _teamPos);
-            _teamIdBelongTo = GDEDataManager.GetInt(_key, teamIdBelongToKey, _teamIdBelongTo);
             _skillOmegaId = GDEDataManager.GetInt(_key, skillOmegaIdKey, _skillOmegaId);
             _skill1Id = GDEDataManager.GetInt(_key, skill1IdKey, _skill1Id);
             _skill0Id = GDEDataManager.GetInt(_key, skill0IdKey, _skill0Id);
             _likability = GDEDataManager.GetInt(_key, likabilityKey, _likability);
+            _Fatigue = GDEDataManager.GetInt(_key, FatigueKey, _Fatigue);
+            _TeamOrder = GDEDataManager.GetInt(_key, TeamOrderKey, _TeamOrder);
+            _teamIdBelongTo = GDEDataManager.GetString(_key, teamIdBelongToKey, _teamIdBelongTo);
+            _id = GDEDataManager.GetString(_key, idKey, _id);
 
             _equipHelmet = GDEDataManager.GetCustom(_key, equipHelmetKey, _equipHelmet);
             _equipBreastplate = GDEDataManager.GetCustom(_key, equipBreastplateKey, _equipBreastplate);
@@ -584,6 +654,8 @@ namespace GameDataEditor
             _jewelry1 = GDEDataManager.GetCustom(_key, jewelry1Key, _jewelry1);
             _RoleAttritubeList = GDEDataManager.GetCustom(_key, RoleAttritubeListKey, _RoleAttritubeList);
             _equipWeapon = GDEDataManager.GetCustom(_key, equipWeaponKey, _equipWeapon);
+            _ItemInfo = GDEDataManager.GetCustom(_key, ItemInfoKey, _ItemInfo);
+            _AnimData = GDEDataManager.GetCustom(_key, AnimDataKey, _AnimData);
 
             skillsOwned = GDEDataManager.GetCustomList(_key, skillsOwnedKey, skillsOwned);
         }
@@ -594,7 +666,6 @@ namespace GameDataEditor
 			GDEHeroData newClone = new GDEHeroData(newKey);
 
             newClone.locked = locked;
-            newClone.id = id;
             newClone.lv = lv;
             newClone.status = status;
             newClone.hashCode = hashCode;
@@ -609,11 +680,14 @@ namespace GameDataEditor
             newClone.nameBeforeId = nameBeforeId;
             newClone.Likability = Likability;
             newClone.teamPos = teamPos;
-            newClone.teamIdBelongTo = teamIdBelongTo;
             newClone.skillOmegaId = skillOmegaId;
             newClone.skill1Id = skill1Id;
             newClone.skill0Id = skill0Id;
             newClone.likability = likability;
+            newClone.Fatigue = Fatigue;
+            newClone.TeamOrder = TeamOrder;
+            newClone.teamIdBelongTo = teamIdBelongTo;
+            newClone.id = id;
 
             newClone.equipHelmet = equipHelmet;
             newClone.equipBreastplate = equipBreastplate;
@@ -623,6 +697,8 @@ namespace GameDataEditor
             newClone.jewelry1 = jewelry1;
             newClone.RoleAttritubeList = RoleAttritubeList;
             newClone.equipWeapon = equipWeapon;
+            newClone.ItemInfo = ItemInfo;
+            newClone.AnimData = AnimData;
 
             newClone.skillsOwned = new List<GDEASkillData>(skillsOwned);
 			newClone.Set_skillsOwned();
@@ -641,6 +717,8 @@ namespace GameDataEditor
             newClone.jewelry1 = jewelry1.DeepClone();
             newClone.RoleAttritubeList = RoleAttritubeList.DeepClone();
             newClone.equipWeapon = equipWeapon.DeepClone();
+            newClone.ItemInfo = ItemInfo.DeepClone();
+            newClone.AnimData = AnimData.DeepClone();
 
             newClone.skillsOwned = new List<GDEASkillData>();
 			if (skillsOwned != null)
@@ -659,15 +737,6 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetBool(lockedKey, out _locked);
-        }
-
-        public void Reset_id()
-        {
-            GDEDataManager.ResetToDefault(_key, idKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(idKey, out _id);
         }
 
         public void Reset_lv()
@@ -796,15 +865,6 @@ namespace GameDataEditor
             dict.TryGetInt(teamPosKey, out _teamPos);
         }
 
-        public void Reset_teamIdBelongTo()
-        {
-            GDEDataManager.ResetToDefault(_key, teamIdBelongToKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(teamIdBelongToKey, out _teamIdBelongTo);
-        }
-
         public void Reset_skillOmegaId()
         {
             GDEDataManager.ResetToDefault(_key, skillOmegaIdKey);
@@ -839,6 +899,42 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetInt(likabilityKey, out _likability);
+        }
+
+        public void Reset_Fatigue()
+        {
+            GDEDataManager.ResetToDefault(_key, FatigueKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(FatigueKey, out _Fatigue);
+        }
+
+        public void Reset_TeamOrder()
+        {
+            GDEDataManager.ResetToDefault(_key, TeamOrderKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(TeamOrderKey, out _TeamOrder);
+        }
+
+        public void Reset_teamIdBelongTo()
+        {
+            GDEDataManager.ResetToDefault(_key, teamIdBelongToKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetString(teamIdBelongToKey, out _teamIdBelongTo);
+        }
+
+        public void Reset_id()
+        {
+            GDEDataManager.ResetToDefault(_key, idKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetString(idKey, out _id);
         }
 
         public void Reset_equipHelmet()
@@ -945,6 +1041,32 @@ namespace GameDataEditor
 
 			equipWeapon.ResetAll();
 		}
+        public void Reset_ItemInfo()
+		{
+			GDEDataManager.ResetToDefault(_key, ItemInfoKey);
+
+			Dictionary<string, object> dict;
+	        GDEDataManager.Get(_key, out dict);
+
+			string customDataKey;
+            dict.TryGetString(ItemInfoKey, out customDataKey);
+			_ItemInfo = new GDEItemData(customDataKey);
+
+			ItemInfo.ResetAll();
+		}
+        public void Reset_AnimData()
+		{
+			GDEDataManager.ResetToDefault(_key, AnimDataKey);
+
+			Dictionary<string, object> dict;
+	        GDEDataManager.Get(_key, out dict);
+
+			string customDataKey;
+            dict.TryGetString(AnimDataKey, out customDataKey);
+			_AnimData = new GDEAnimData(customDataKey);
+
+			AnimData.ResetAll();
+		}
 
         public void Reset_skillsOwned()
 		{
@@ -965,7 +1087,6 @@ namespace GameDataEditor
              GDEDataManager.DeregisterItem(this.SchemaName(), _key);
              #else
 
-            GDEDataManager.ResetToDefault(_key, idKey);
             GDEDataManager.ResetToDefault(_key, lvKey);
             GDEDataManager.ResetToDefault(_key, statusKey);
             GDEDataManager.ResetToDefault(_key, hashCodeKey);
@@ -995,6 +1116,11 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, skillOmegaIdKey);
             GDEDataManager.ResetToDefault(_key, teamPosKey);
             GDEDataManager.ResetToDefault(_key, likabilityKey);
+            GDEDataManager.ResetToDefault(_key, FatigueKey);
+            GDEDataManager.ResetToDefault(_key, ItemInfoKey);
+            GDEDataManager.ResetToDefault(_key, idKey);
+            GDEDataManager.ResetToDefault(_key, TeamOrderKey);
+            GDEDataManager.ResetToDefault(_key, AnimDataKey);
 
             Reset_equipHelmet();
             Reset_equipBreastplate();
@@ -1004,6 +1130,8 @@ namespace GameDataEditor
             Reset_jewelry1();
             Reset_RoleAttritubeList();
             Reset_equipWeapon();
+            Reset_ItemInfo();
+            Reset_AnimData();
             Reset_skillsOwned();
 
             #endif

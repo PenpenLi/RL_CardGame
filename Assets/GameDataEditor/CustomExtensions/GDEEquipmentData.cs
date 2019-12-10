@@ -33,34 +33,6 @@ namespace GameDataEditor
             }
         }
 
-        static string equipIdKey = "equipId";
-		int _equipId;
-        public int equipId
-        {
-            get { return _equipId; }
-            set {
-                if (_equipId != value)
-                {
-                    _equipId = value;
-					GDEDataManager.SetInt(_key, equipIdKey, _equipId);
-                }
-            }
-        }
-
-        static string equipLvKey = "equipLv";
-		int _equipLv;
-        public int equipLv
-        {
-            get { return _equipLv; }
-            set {
-                if (_equipLv != value)
-                {
-                    _equipLv = value;
-					GDEDataManager.SetInt(_key, equipLvKey, _equipLv);
-                }
-            }
-        }
-
         static string equipTypeKey = "equipType";
 		int _equipType;
         public int equipType
@@ -117,20 +89,6 @@ namespace GameDataEditor
             }
         }
 
-        static string upLvKey = "upLv";
-		int _upLv;
-        public int upLv
-        {
-            get { return _upLv; }
-            set {
-                if (_upLv != value)
-                {
-                    _upLv = value;
-					GDEDataManager.SetInt(_key, upLvKey, _upLv);
-                }
-            }
-        }
-
         static string hashcodeKey = "hashcode";
 		int _hashcode;
         public int hashcode
@@ -159,6 +117,62 @@ namespace GameDataEditor
             }
         }
 
+        static string expKey = "exp";
+		int _exp;
+        public int exp
+        {
+            get { return _exp; }
+            set {
+                if (_exp != value)
+                {
+                    _exp = value;
+					GDEDataManager.SetInt(_key, expKey, _exp);
+                }
+            }
+        }
+
+        static string qualityKey = "quality";
+		int _quality;
+        public int quality
+        {
+            get { return _quality; }
+            set {
+                if (_quality != value)
+                {
+                    _quality = value;
+					GDEDataManager.SetInt(_key, qualityKey, _quality);
+                }
+            }
+        }
+
+        static string initialQualityKey = "initialQuality";
+		float _initialQuality;
+        public float initialQuality
+        {
+            get { return _initialQuality; }
+            set {
+                if (_initialQuality != value)
+                {
+                    _initialQuality = value;
+					GDEDataManager.SetFloat(_key, initialQualityKey, _initialQuality);
+                }
+            }
+        }
+
+        static string idKey = "id";
+		string _id;
+        public string id
+        {
+            get { return _id; }
+            set {
+                if (_id != value)
+                {
+                    _id = value;
+					GDEDataManager.SetString(_key, idKey, _id);
+                }
+            }
+        }
+
         public GDEEquipmentData(string key) : base(key)
         {
             GDEDataManager.RegisterItem(this.SchemaName(), key);
@@ -169,15 +183,16 @@ namespace GameDataEditor
 			dict.Add(GDMConstants.SchemaKey, "Equipment");
 			
             dict.Merge(true, locked.ToGDEDict(lockedKey));
-            dict.Merge(true, equipId.ToGDEDict(equipIdKey));
-            dict.Merge(true, equipLv.ToGDEDict(equipLvKey));
             dict.Merge(true, equipType.ToGDEDict(equipTypeKey));
             dict.Merge(true, equipBattleForce.ToGDEDict(equipBattleForceKey));
             dict.Merge(true, index.ToGDEDict(indexKey));
             dict.Merge(true, num.ToGDEDict(numKey));
-            dict.Merge(true, upLv.ToGDEDict(upLvKey));
             dict.Merge(true, hashcode.ToGDEDict(hashcodeKey));
             dict.Merge(true, OwnerHashcode.ToGDEDict(OwnerHashcodeKey));
+            dict.Merge(true, exp.ToGDEDict(expKey));
+            dict.Merge(true, quality.ToGDEDict(qualityKey));
+            dict.Merge(true, initialQuality.ToGDEDict(initialQualityKey));
+            dict.Merge(true, id.ToGDEDict(idKey));
             return dict;
 		}
 
@@ -194,15 +209,16 @@ namespace GameDataEditor
 			else
 			{
                 dict.TryGetBool(lockedKey, out _locked);
-                dict.TryGetInt(equipIdKey, out _equipId);
-                dict.TryGetInt(equipLvKey, out _equipLv);
                 dict.TryGetInt(equipTypeKey, out _equipType);
                 dict.TryGetInt(equipBattleForceKey, out _equipBattleForce);
                 dict.TryGetInt(indexKey, out _index);
                 dict.TryGetInt(numKey, out _num);
-                dict.TryGetInt(upLvKey, out _upLv);
                 dict.TryGetInt(hashcodeKey, out _hashcode);
                 dict.TryGetInt(OwnerHashcodeKey, out _OwnerHashcode);
+                dict.TryGetInt(expKey, out _exp);
+                dict.TryGetInt(qualityKey, out _quality);
+                dict.TryGetFloat(initialQualityKey, out _initialQuality);
+                dict.TryGetString(idKey, out _id);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -212,15 +228,16 @@ namespace GameDataEditor
 			_key = dataKey;
 			
             _locked = GDEDataManager.GetBool(_key, lockedKey, _locked);
-            _equipId = GDEDataManager.GetInt(_key, equipIdKey, _equipId);
-            _equipLv = GDEDataManager.GetInt(_key, equipLvKey, _equipLv);
             _equipType = GDEDataManager.GetInt(_key, equipTypeKey, _equipType);
             _equipBattleForce = GDEDataManager.GetInt(_key, equipBattleForceKey, _equipBattleForce);
             _index = GDEDataManager.GetInt(_key, indexKey, _index);
             _num = GDEDataManager.GetInt(_key, numKey, _num);
-            _upLv = GDEDataManager.GetInt(_key, upLvKey, _upLv);
             _hashcode = GDEDataManager.GetInt(_key, hashcodeKey, _hashcode);
             _OwnerHashcode = GDEDataManager.GetInt(_key, OwnerHashcodeKey, _OwnerHashcode);
+            _exp = GDEDataManager.GetInt(_key, expKey, _exp);
+            _quality = GDEDataManager.GetInt(_key, qualityKey, _quality);
+            _initialQuality = GDEDataManager.GetFloat(_key, initialQualityKey, _initialQuality);
+            _id = GDEDataManager.GetString(_key, idKey, _id);
         }
 
         public GDEEquipmentData ShallowClone()
@@ -229,15 +246,16 @@ namespace GameDataEditor
 			GDEEquipmentData newClone = new GDEEquipmentData(newKey);
 
             newClone.locked = locked;
-            newClone.equipId = equipId;
-            newClone.equipLv = equipLv;
             newClone.equipType = equipType;
             newClone.equipBattleForce = equipBattleForce;
             newClone.index = index;
             newClone.num = num;
-            newClone.upLv = upLv;
             newClone.hashcode = hashcode;
             newClone.OwnerHashcode = OwnerHashcode;
+            newClone.exp = exp;
+            newClone.quality = quality;
+            newClone.initialQuality = initialQuality;
+            newClone.id = id;
 
             return newClone;
 		}
@@ -255,24 +273,6 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetBool(lockedKey, out _locked);
-        }
-
-        public void Reset_equipId()
-        {
-            GDEDataManager.ResetToDefault(_key, equipIdKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(equipIdKey, out _equipId);
-        }
-
-        public void Reset_equipLv()
-        {
-            GDEDataManager.ResetToDefault(_key, equipLvKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(equipLvKey, out _equipLv);
         }
 
         public void Reset_equipType()
@@ -311,15 +311,6 @@ namespace GameDataEditor
             dict.TryGetInt(numKey, out _num);
         }
 
-        public void Reset_upLv()
-        {
-            GDEDataManager.ResetToDefault(_key, upLvKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(upLvKey, out _upLv);
-        }
-
         public void Reset_hashcode()
         {
             GDEDataManager.ResetToDefault(_key, hashcodeKey);
@@ -338,22 +329,59 @@ namespace GameDataEditor
             dict.TryGetInt(OwnerHashcodeKey, out _OwnerHashcode);
         }
 
+        public void Reset_exp()
+        {
+            GDEDataManager.ResetToDefault(_key, expKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(expKey, out _exp);
+        }
+
+        public void Reset_quality()
+        {
+            GDEDataManager.ResetToDefault(_key, qualityKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(qualityKey, out _quality);
+        }
+
+        public void Reset_initialQuality()
+        {
+            GDEDataManager.ResetToDefault(_key, initialQualityKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetFloat(initialQualityKey, out _initialQuality);
+        }
+
+        public void Reset_id()
+        {
+            GDEDataManager.ResetToDefault(_key, idKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetString(idKey, out _id);
+        }
+
         public void ResetAll()
         {
              #if !UNITY_WEBPLAYER
              GDEDataManager.DeregisterItem(this.SchemaName(), _key);
              #else
 
-            GDEDataManager.ResetToDefault(_key, equipIdKey);
-            GDEDataManager.ResetToDefault(_key, equipLvKey);
+            GDEDataManager.ResetToDefault(_key, idKey);
             GDEDataManager.ResetToDefault(_key, equipTypeKey);
             GDEDataManager.ResetToDefault(_key, equipBattleForceKey);
             GDEDataManager.ResetToDefault(_key, indexKey);
             GDEDataManager.ResetToDefault(_key, numKey);
-            GDEDataManager.ResetToDefault(_key, upLvKey);
             GDEDataManager.ResetToDefault(_key, hashcodeKey);
             GDEDataManager.ResetToDefault(_key, OwnerHashcodeKey);
             GDEDataManager.ResetToDefault(_key, lockedKey);
+            GDEDataManager.ResetToDefault(_key, expKey);
+            GDEDataManager.ResetToDefault(_key, qualityKey);
+            GDEDataManager.ResetToDefault(_key, initialQualityKey);
 
 
             #endif

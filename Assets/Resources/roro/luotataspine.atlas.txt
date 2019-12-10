@@ -1,0 +1,174 @@
+
+luotataspine.png
+size: 605,605
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+L_hand_a
+  rotate: false
+  xy: 499, 14
+  size: 48, 53
+  orig: 48, 53
+  offset: 0, 0
+  index: -1
+L_hand_b
+  rotate: false
+  xy: 435, 163
+  size: 45, 79
+  orig: 45, 79
+  offset: 0, 0
+  index: -1
+L_hand_c
+  rotate: false
+  xy: 487, 69
+  size: 48, 57
+  orig: 48, 57
+  offset: 0, 0
+  index: -1
+L_jiao
+  rotate: false
+  xy: 140, 67
+  size: 111, 126
+  orig: 111, 126
+  offset: 0, 0
+  index: -1
+L_leg_a
+  rotate: true
+  xy: 388, 244
+  size: 52, 81
+  orig: 52, 81
+  offset: 0, 0
+  index: -1
+L_leg_b
+  rotate: true
+  xy: 262, 231
+  size: 65, 124
+  orig: 65, 126
+  offset: 0, 0
+  index: -1
+R_jiao
+  rotate: false
+  xy: 435, 298
+  size: 48, 90
+  orig: 48, 91
+  offset: 0, 0
+  index: -1
+R_leg_a
+  rotate: false
+  xy: 378, 313
+  size: 47, 75
+  orig: 47, 75
+  offset: 0, 0
+  index: -1
+R_leg_b
+  rotate: true
+  xy: 262, 333
+  size: 55, 114
+  orig: 55, 114
+  offset: 0, 0
+  index: -1
+Rlinpian
+  rotate: true
+  xy: 367, 8
+  size: 25, 56
+  orig: 25, 56
+  offset: 0, 0
+  index: -1
+body
+  rotate: true
+  xy: 138, 2
+  size: 63, 114
+  orig: 63, 114
+  offset: 0, 0
+  index: -1
+daimao
+  rotate: true
+  xy: 435, 9
+  size: 49, 62
+  orig: 49, 62
+  offset: 0, 0
+  index: -1
+eyes1
+  rotate: true
+  xy: 89, 9
+  size: 116, 47
+  orig: 117, 47
+  offset: 1, 0
+  index: -1
+eyes2
+  rotate: false
+  xy: 254, 17
+  size: 111, 16
+  orig: 111, 16
+  offset: 0, 0
+  index: -1
+faceother
+  rotate: true
+  xy: 482, 128
+  size: 91, 94
+  orig: 92, 95
+  offset: 1, 1
+  index: -1
+hair1
+  rotate: false
+  xy: 271, 390
+  size: 215, 213
+  orig: 215, 213
+  offset: 0, 0
+  index: -1
+hair2
+  rotate: false
+  xy: 2, 127
+  size: 136, 296
+  orig: 136, 296
+  offset: 0, 0
+  index: -1
+hair3
+  rotate: false
+  xy: 488, 397
+  size: 115, 206
+  orig: 115, 206
+  offset: 0, 0
+  index: -1
+hair4
+  rotate: false
+  xy: 140, 195
+  size: 120, 228
+  orig: 120, 245
+  offset: 0, 0
+  index: -1
+handR
+  rotate: false
+  xy: 2, 4
+  size: 85, 121
+  orig: 85, 121
+  offset: 0, 0
+  index: -1
+head
+  rotate: true
+  xy: 262, 35
+  size: 184, 171
+  orig: 184, 172
+  offset: 0, 0
+  index: -1
+hips
+  rotate: true
+  xy: 435, 60
+  size: 66, 50
+  orig: 66, 50
+  offset: 0, 0
+  index: -1
+liuhai
+  rotate: true
+  xy: 488, 221
+  size: 174, 107
+  orig: 174, 107
+  offset: 0, 0
+  index: -1
+wuqi
+  rotate: false
+  xy: 2, 425
+  size: 267, 178
+  orig: 267, 178
+  offset: 0, 0
+  index: -1

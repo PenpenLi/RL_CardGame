@@ -21,11 +21,15 @@ namespace GameDataEditor
         public static string Hero = "Hero";
         public static string RoleAttritube = "RoleAttritube";
         public static string Enemy = "Enemy";
-        public static string AMaterial = "AMaterial";
+        public static string Item = "Item";
         public static string ResidentMovement = "ResidentMovement";
         public static string unitTeam = "unitTeam";
         public static string ASkill = "ASkill";
-        public static string goddes = "goddes";
+        public static string goddess = "goddess";
         public static string timeTask = "timeTask";
+        public static string townBuilding = "townBuilding";
+        public static string Achievement = "Achievement";
+        public static string Anim = "Anim";
+        public static string NPC = "NPC";
     }
 }

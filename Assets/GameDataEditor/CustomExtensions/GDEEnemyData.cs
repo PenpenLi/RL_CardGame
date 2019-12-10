@@ -145,20 +145,6 @@ namespace GameDataEditor
             }
         }
 
-        static string IdKey = "Id";
-		int _Id;
-        public int Id
-        {
-            get { return _Id; }
-            set {
-                if (_Id != value)
-                {
-                    _Id = value;
-					GDEDataManager.SetInt(_key, IdKey, _Id);
-                }
-            }
-        }
-
         static string nameBeforeIdKey = "nameBeforeId";
 		int _nameBeforeId;
         public int nameBeforeId
@@ -169,6 +155,20 @@ namespace GameDataEditor
                 {
                     _nameBeforeId = value;
 					GDEDataManager.SetInt(_key, nameBeforeIdKey, _nameBeforeId);
+                }
+            }
+        }
+
+        static string idKey = "id";
+		string _id;
+        public string id
+        {
+            get { return _id; }
+            set {
+                if (_id != value)
+                {
+                    _id = value;
+					GDEDataManager.SetString(_key, idKey, _id);
                 }
             }
         }
@@ -232,8 +232,8 @@ namespace GameDataEditor
             dict.Merge(true, HpRegendPerTurn.ToGDEDict(HpRegendPerTurnKey));
             dict.Merge(true, MpRegendPerTurn.ToGDEDict(MpRegendPerTurnKey));
             dict.Merge(true, TpRegendPerTurn.ToGDEDict(TpRegendPerTurnKey));
-            dict.Merge(true, Id.ToGDEDict(IdKey));
             dict.Merge(true, nameBeforeId.ToGDEDict(nameBeforeIdKey));
+            dict.Merge(true, id.ToGDEDict(idKey));
             dict.Merge(true, Name.ToGDEDict(NameKey));
 
             dict.Merge(true, BasicRA.ToGDEDict(BasicRAKey));
@@ -266,8 +266,8 @@ namespace GameDataEditor
                 dict.TryGetInt(HpRegendPerTurnKey, out _HpRegendPerTurn);
                 dict.TryGetInt(MpRegendPerTurnKey, out _MpRegendPerTurn);
                 dict.TryGetInt(TpRegendPerTurnKey, out _TpRegendPerTurn);
-                dict.TryGetInt(IdKey, out _Id);
                 dict.TryGetInt(nameBeforeIdKey, out _nameBeforeId);
+                dict.TryGetString(idKey, out _id);
                 dict.TryGetString(NameKey, out _Name);
 
                 string customDataKey;
@@ -292,8 +292,8 @@ namespace GameDataEditor
             _HpRegendPerTurn = GDEDataManager.GetInt(_key, HpRegendPerTurnKey, _HpRegendPerTurn);
             _MpRegendPerTurn = GDEDataManager.GetInt(_key, MpRegendPerTurnKey, _MpRegendPerTurn);
             _TpRegendPerTurn = GDEDataManager.GetInt(_key, TpRegendPerTurnKey, _TpRegendPerTurn);
-            _Id = GDEDataManager.GetInt(_key, IdKey, _Id);
             _nameBeforeId = GDEDataManager.GetInt(_key, nameBeforeIdKey, _nameBeforeId);
+            _id = GDEDataManager.GetString(_key, idKey, _id);
             _Name = GDEDataManager.GetString(_key, NameKey, _Name);
 
             _BasicRA = GDEDataManager.GetCustom(_key, BasicRAKey, _BasicRA);
@@ -314,8 +314,8 @@ namespace GameDataEditor
             newClone.HpRegendPerTurn = HpRegendPerTurn;
             newClone.MpRegendPerTurn = MpRegendPerTurn;
             newClone.TpRegendPerTurn = TpRegendPerTurn;
-            newClone.Id = Id;
             newClone.nameBeforeId = nameBeforeId;
+            newClone.id = id;
             newClone.Name = Name;
 
             newClone.BasicRA = BasicRA;
@@ -413,15 +413,6 @@ namespace GameDataEditor
             dict.TryGetInt(TpRegendPerTurnKey, out _TpRegendPerTurn);
         }
 
-        public void Reset_Id()
-        {
-            GDEDataManager.ResetToDefault(_key, IdKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(IdKey, out _Id);
-        }
-
         public void Reset_nameBeforeId()
         {
             GDEDataManager.ResetToDefault(_key, nameBeforeIdKey);
@@ -429,6 +420,15 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetInt(nameBeforeIdKey, out _nameBeforeId);
+        }
+
+        public void Reset_id()
+        {
+            GDEDataManager.ResetToDefault(_key, idKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetString(idKey, out _id);
         }
 
         public void Reset_Name()
@@ -484,7 +484,7 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, HpRegendPerTurnKey);
             GDEDataManager.ResetToDefault(_key, MpRegendPerTurnKey);
             GDEDataManager.ResetToDefault(_key, TpRegendPerTurnKey);
-            GDEDataManager.ResetToDefault(_key, IdKey);
+            GDEDataManager.ResetToDefault(_key, idKey);
             GDEDataManager.ResetToDefault(_key, NameKey);
             GDEDataManager.ResetToDefault(_key, nameBeforeIdKey);
 

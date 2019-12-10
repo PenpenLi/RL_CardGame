@@ -41,7 +41,7 @@ namespace I2.Loc
         string LastLocalizedLanguage;   // Used to avoid Localizing everytime the object is Enabled
 
 #if UNITY_EDITOR
-        public LanguageSource Source;   // Source used while in the Editor to preview the Terms
+        public ILanguageSource Source;   // Source used while in the Editor to preview the Terms (can be of type LanguageSource or LanguageSourceAsset)
 #endif
 
         #endregion
@@ -55,6 +55,7 @@ namespace I2.Loc
 		public bool CorrectAlignmentForRTL = true;	// If true, when Right To Left language, alignment will be set to Right
 
         public bool AddSpacesToJoinedLanguages; // Some languages (e.g. Chinese, Japanese and Thai) don't add spaces to their words (all characters are placed toguether), making this variable true, will add spaces to all characters to allow wrapping long texts into multiple lines.
+        public bool AllowLocalizedParameters=true;
 
         #endregion
 
@@ -102,6 +103,11 @@ namespace I2.Loc
 
         void Awake()
 		{
+            #if UNITY_EDITOR
+            if (UnityEditor.BuildPipeline.isBuildingPlayer)
+                return;
+            #endif
+
             UpdateAssetDictionary();
             FindTarget();
 
@@ -114,10 +120,19 @@ namespace I2.Loc
         {
             if (LocalizeCallBack.HasCallback())
             {
-                var methodInfo = UnityEvent.GetValidMethodInfo(LocalizeCallBack.Target, LocalizeCallBack.MethodName, new Type[0]);
+                try
+                {
+                    var methodInfo = UnityEvent.GetValidMethodInfo(LocalizeCallBack.Target, LocalizeCallBack.MethodName, new Type[0]);
 
-                UnityAction methodDelegate = System.Delegate.CreateDelegate(typeof(UnityAction), LocalizeCallBack.Target, methodInfo) as UnityAction;
-                UnityEditor.Events.UnityEventTools.AddPersistentListener(LocalizeEvent, methodDelegate);
+                    if (methodInfo != null)
+                    {
+                        UnityAction methodDelegate = System.Delegate.CreateDelegate(typeof(UnityAction), LocalizeCallBack.Target, methodInfo, false) as UnityAction;
+                        if (methodDelegate != null)
+                            UnityEditor.Events.UnityEventTools.AddPersistentListener(LocalizeEvent, methodDelegate);
+                    }
+                }
+                catch(Exception)
+                {}
 
                 LocalizeCallBack.Target = null;
                 LocalizeCallBack.MethodName = null;
@@ -172,7 +187,7 @@ namespace I2.Loc
 			{
 				LocalizeCallBack.Execute (this);  // This allows scripts to modify the translations :  e.g. "Player {0} wins"  ->  "Player Red wins"
                 LocalizeEvent.Invoke();
-                LocalizationManager.ApplyLocalizationParams (ref MainTranslation, gameObject);
+                LocalizationManager.ApplyLocalizationParams (ref MainTranslation, gameObject, AllowLocalizedParameters);
 			}
 
 			if (!FindTarget())
@@ -295,7 +310,7 @@ namespace I2.Loc
             if (mLocalizeTarget != null)
             {
                 mLocalizeTarget.GetFinalTerms(this, mTerm, mTermSecondary, out primaryTerm, out secondaryTerm);
-                primaryTerm = I2Utils.RemoveNonASCII(primaryTerm, false);
+                primaryTerm = I2Utils.GetValidTermName(primaryTerm, false);
             }
 
             // If there are values already set, go with those
@@ -323,7 +338,7 @@ namespace I2.Loc
 		
 		public void SetFinalTerms( string Main, string Secondary, out string primaryTerm, out string secondaryTerm, bool RemoveNonASCII )
 		{
-			primaryTerm = RemoveNonASCII ? I2Utils.RemoveNonASCII(Main) : Main;
+			primaryTerm = RemoveNonASCII ? I2Utils.GetValidTermName(Main) : Main;
 			secondaryTerm = Secondary;
 		}
 		
@@ -376,7 +391,9 @@ namespace I2.Loc
         public void UpdateAssetDictionary()
         {
             TranslatedObjects.RemoveAll(x => x == null);
-            mAssetDictionary = TranslatedObjects.Distinct().ToDictionary(o => o.name);
+            mAssetDictionary = TranslatedObjects.Distinct()
+                                                .GroupBy(o => o.name)
+                                                .ToDictionary(g => g.Key, g => g.First());
         }
 
         internal T GetObject<T>( string Translation) where T: Object
@@ -385,16 +402,16 @@ namespace I2.Loc
 				return null;
 			T obj = GetTranslatedObject<T>(Translation);
 			
-			if (obj==null)
-			{
+			//if (obj==null)
+			//{
 				// Remove path and search by name
 				//int Index = Translation.LastIndexOfAny("/\\".ToCharArray());
 				//if (Index>=0)
 				//{
 				//	Translation = Translation.Substring(Index+1);
-					obj = GetTranslatedObject<T>(Translation);
+				//	obj = GetTranslatedObject<T>(Translation);
 				//}
-			}
+			//}
 			return obj;
 		}
 

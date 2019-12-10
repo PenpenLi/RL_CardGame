@@ -22,10 +22,15 @@ namespace GameDataEditor
         public static string RoleAttritube_BasicRA = "BasicRA";
         public static string RoleAttritube_BasicEnemyRA = "BasicEnemyRA";
         public static string Enemy_BasicEnemy = "BasicEnemy";
-        public static string AMaterial_MaterialEmpty = "MaterialEmpty";
+        public static string Item_MaterialEmpty = "MaterialEmpty";
         public static string ResidentMovement_EmptyResidentMovement = "EmptyResidentMovement";
         public static string unitTeam_emptyHeroTeam = "emptyHeroTeam";
         public static string ASkill_normalAttack = "normalAttack";
+        public static string goddess_baseGoddess = "baseGoddess";
         public static string timeTask_emptyTimeTask = "emptyTimeTask";
+        public static string townBuilding_newTownBuilding = "newTownBuilding";
+        public static string Achievement_newAchievement = "newAchievement";
+        public static string Anim_EmptyAnim = "EmptyAnim";
+        public static string NPC_noone = "noone";
     }
 }

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: L_hand_c
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 0
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: c79f6f2fe97aec448bf459c49f034de7, type: 3}
+    totalSpriteSurfaceArea: 11318
+    bindAsDefault: 1
+    storedHash:
+      serializedVersion: 2
+      Hash: a5d48d073c9ea35c1f5be61f44d798a3
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: a709436046a8757429c774709c8e8a3f, type: 3}
+  - {fileID: 21300000, guid: c444c10134af7aa42b28012bb1389cb1, type: 3}
+  - {fileID: 21300000, guid: ad9aaa816a948c04b84178dbd6204982, type: 3}
+  - {fileID: 21300000, guid: 1582c7e67fe9624418e7795b8c5c442c, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - L_hand_c01
+  - L_hand_c04
+  - L_hand_c02
+  - L_hand_c03
+  m_Tag: L_hand_c
+  m_IsVariant: 0

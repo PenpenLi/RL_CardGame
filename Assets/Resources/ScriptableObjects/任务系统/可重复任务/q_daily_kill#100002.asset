@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4931676c37d75748b9ba97dd9ba5022, type: 3}
+  m_Name: q_daily_kill#100002
+  m_EditorClassIdentifier: 
+  _ID: q_daily_kill#100002
+  title: "\u6BCF\u65E5\u6740\u654C_\u6D88\u706D\u9996\u9886"
+  _DESC: "\u6D88\u706D\u8DB3\u591F\u7684\u9996\u9886\n\u76EE\u6807:\u6D88\u706D5\u540D\u7B26\u5408\u6761\u4EF6\u7684\u654C\u4EBA"
+  _Abandonable: 1
+  group: {fileID: 11400000, guid: f315191b3139a3d4fabdb02e940d1d2b, type: 2}
+  acceptConditions: []
+  beginDialogue: {fileID: 0}
+  ongoingDialogue: {fileID: 0}
+  completeDialogue: {fileID: 0}
+  rewardCoin: 500
+  rewardDamond: 0
+  rewardJiancai: 25
+  rewardEXP: 0
+  questItemReward:
+    _GetPossible: 1
+    rewardItems: []
+    dictRewardItems:
+    - ID: M_M#3010014
+      amount: 3
+      Possibility: 0.75
+    - ID: M_M#3010015
+      amount: 2
+      Possibility: 0.5
+    - ID: M_M#3010002
+      amount: 5
+      Possibility: 0.5
+    - ID: M_M#3010003
+      amount: 3
+      Possibility: 0.3
+  sbmtOnOriginalNPC: 1
+  _NPCToSubmit: {fileID: 0}
+  cmpltObjctvInOrder: 0
+  collectObjectives: []
+  killObjectives:
+  - runtimeID: 
+    runtimeParent: {fileID: 0}
+    displayName: "\u51FB\u6740\u9996\u9886"
+    display: 1
+    amount: 5
+    inOrder: 0
+    orderIndex: 0
+    objectiveType: 2
+    enemy: {fileID: 0}
+    enemyID: 
+    race: {fileID: 0}
+    enemyRank: {fileID: 11400000, guid: 29708ae65b8ac68478f72fde80137986, type: 2}
+  talkObjectives: []
+  submitObjectives: []
+  customObjectives: []

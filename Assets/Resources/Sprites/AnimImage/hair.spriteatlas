@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: hair
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 0
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 5fccc7633c505724eb503f5a6ba09eb3, type: 3}
+    totalSpriteSurfaceArea: 1510757
+    bindAsDefault: 1
+    storedHash:
+      serializedVersion: 2
+      Hash: a14a629a64ff60aab0ce031b37f57207
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: fa49d13087e793e4183928b3c2faaf56, type: 3}
+  - {fileID: 21300000, guid: cc83944081d4c17448cdf42d5734bcd0, type: 3}
+  - {fileID: 21300000, guid: 5d5770a04c168b44b975a8b09d93cfdd, type: 3}
+  - {fileID: 21300000, guid: 5c3afcf0dd6c7254b9b405b1e5659c04, type: 3}
+  - {fileID: 21300000, guid: 16bd1a21f9903284086c1e40c1b6f50a, type: 3}
+  - {fileID: 21300000, guid: 03d3e46122da9b246b16c377bdddffe7, type: 3}
+  - {fileID: 21300000, guid: 40eed6c1942bd084285ba737da739e78, type: 3}
+  - {fileID: 21300000, guid: 64c7d3f1c0723404ea8cdd74daf56d6b, type: 3}
+  - {fileID: 21300000, guid: 62ff9692d30d8b649a41eac2ab08a422, type: 3}
+  - {fileID: 21300000, guid: 6f326453f5d42eb4e8b7ca27069bf2f8, type: 3}
+  - {fileID: 21300000, guid: b692808384e286c47935e2b95ed8584b, type: 3}
+  - {fileID: 21300000, guid: 1bc6cb469a0d6dd4da7317ae1e82115d, type: 3}
+  - {fileID: 21300000, guid: 8e644037836751d44971316c01242a00, type: 3}
+  - {fileID: 21300000, guid: fd1ee559790823f4e95fd9cacc308016, type: 3}
+  - {fileID: 21300000, guid: 272754792d12e8b4688892ab7d75c069, type: 3}
+  - {fileID: 21300000, guid: 1ba09699bc4a4a749a154127532402ee, type: 3}
+  - {fileID: 21300000, guid: 7f41f8a9f9d630d479cf82f9d63738ba, type: 3}
+  - {fileID: 21300000, guid: 1b95f45ab893e974e8314aa6e102adc9, type: 3}
+  - {fileID: 21300000, guid: 284e798b3cdc9994b8754a26a1f716be, type: 3}
+  - {fileID: 21300000, guid: 464e419b14c4086498be89ba7668e4ee, type: 3}
+  - {fileID: 21300000, guid: 6dd4a50c2d5b49449a7ced1ac84dc061, type: 3}
+  - {fileID: 21300000, guid: bc20b97d026265847befcc1ac7e8e60e, type: 3}
+  - {fileID: 21300000, guid: 1082cf9d4cccf5d4cbf073f248393154, type: 3}
+  - {fileID: 21300000, guid: 9d9b29dd59fd14b46a916568b3540823, type: 3}
+  - {fileID: 21300000, guid: 4687a4ed937ba1e4dbc04a1a4af8dc7b, type: 3}
+  - {fileID: 21300000, guid: 96b3f80e27e315a48addcfd1c89305af, type: 3}
+  - {fileID: 21300000, guid: 3e6cb91e55829a740a09469a989c0a19, type: 3}
+  - {fileID: 21300000, guid: 17da513eb5f5a7c499bd9d98a2f06782, type: 3}
+  - {fileID: 21300000, guid: 712e00aebab5c6e4987680cab871f737, type: 3}
+  - {fileID: 21300000, guid: aa8724af355f59445b348d1ed57a664e, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - hair02
+  - hair23
+  - hair17
+  - hair11
+  - hair07
+  - hair01
+  - hair16
+  - hair27
+  - hair29
+  - hair03
+  - hair10
+  - hair14
+  - hair08
+  - hair15
+  - hair22
+  - hair24
+  - hair06
+  - hair12
+  - hair09
+  - hair18
+  - hair19
+  - hair28
+  - hair21
+  - hair30
+  - hair04
+  - hair25
+  - hair20
+  - hair26
+  - hair13
+  - hair05
+  m_Tag: hair
+  m_IsVariant: 0

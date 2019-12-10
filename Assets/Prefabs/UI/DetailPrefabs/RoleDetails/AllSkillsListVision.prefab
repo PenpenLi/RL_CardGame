@@ -124,6 +124,7 @@ MonoBehaviour:
   currentAll: []
   skillList: []
   rect: {fileID: 3784797143953535377}
+  item_use_type: 0
 --- !u!1 &3784797143989183939
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +247,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0005252203}
+  m_AnchoredPosition: {x: 0, y: 0.0005187988}
   m_SizeDelta: {x: 0, y: -0.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5902589579236333663

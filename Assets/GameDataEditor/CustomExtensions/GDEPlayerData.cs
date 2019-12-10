@@ -19,30 +19,30 @@ namespace GameDataEditor
 {
     public class GDEPlayerData : IGDEData
     {
-        static string maxPassLevelKey = "maxPassLevel";
-		int _maxPassLevel;
-        public int maxPassLevel
+        static string maxPassSectionKey = "maxPassSection";
+		int _maxPassSection;
+        public int maxPassSection
         {
-            get { return _maxPassLevel; }
+            get { return _maxPassSection; }
             set {
-                if (_maxPassLevel != value)
+                if (_maxPassSection != value)
                 {
-                    _maxPassLevel = value;
-					GDEDataManager.SetInt(_key, maxPassLevelKey, _maxPassLevel);
+                    _maxPassSection = value;
+					GDEDataManager.SetInt(_key, maxPassSectionKey, _maxPassSection);
                 }
             }
         }
 
-        static string lastPassLevelKey = "lastPassLevel";
-		int _lastPassLevel;
-        public int lastPassLevel
+        static string lastPassSectionKey = "lastPassSection";
+		int _lastPassSection;
+        public int lastPassSection
         {
-            get { return _lastPassLevel; }
+            get { return _lastPassSection; }
             set {
-                if (_lastPassLevel != value)
+                if (_lastPassSection != value)
                 {
-                    _lastPassLevel = value;
-					GDEDataManager.SetInt(_key, lastPassLevelKey, _lastPassLevel);
+                    _lastPassSection = value;
+					GDEDataManager.SetInt(_key, lastPassSectionKey, _lastPassSection);
                 }
             }
         }
@@ -71,20 +71,6 @@ namespace GameDataEditor
                 {
                     _coin = value;
 					GDEDataManager.SetInt(_key, coinKey, _coin);
-                }
-            }
-        }
-
-        static string n_coinKey = "n_coin";
-		int _n_coin;
-        public int n_coin
-        {
-            get { return _n_coin; }
-            set {
-                if (_n_coin != value)
-                {
-                    _n_coin = value;
-					GDEDataManager.SetInt(_key, n_coinKey, _n_coin);
                 }
             }
         }
@@ -173,6 +159,48 @@ namespace GameDataEditor
             }
         }
 
+        static string honorPointKey = "honorPoint";
+		int _honorPoint;
+        public int honorPoint
+        {
+            get { return _honorPoint; }
+            set {
+                if (_honorPoint != value)
+                {
+                    _honorPoint = value;
+					GDEDataManager.SetInt(_key, honorPointKey, _honorPoint);
+                }
+            }
+        }
+
+        static string JianCaiKey = "JianCai";
+		int _JianCai;
+        public int JianCai
+        {
+            get { return _JianCai; }
+            set {
+                if (_JianCai != value)
+                {
+                    _JianCai = value;
+					GDEDataManager.SetInt(_key, JianCaiKey, _JianCai);
+                }
+            }
+        }
+
+        static string achievementDataKey = "achievementData";
+		GDEAchievementData _achievementData;
+        public GDEAchievementData achievementData
+        {
+            get { return _achievementData; }
+            set {
+                if (_achievementData != value)
+                {
+                    _achievementData = value;
+					GDEDataManager.SetCustom(_key, achievementDataKey, _achievementData);
+                }
+            }
+        }
+
         static string temple_fighterKey = "temple_fighter";
 		public List<int>      temple_fighter;
 		public void Set_temple_fighter()
@@ -215,13 +243,6 @@ namespace GameDataEditor
 	        GDEDataManager.SetIntList(_key, bossKeyUsedKey, bossKeyUsed);
 		}
 		
-        static string propsTeamKey = "propsTeam";
-		public List<int>      propsTeam;
-		public void Set_propsTeam()
-        {
-	        GDEDataManager.SetIntList(_key, propsTeamKey, propsTeam);
-		}
-		
 
         static string herosOwnedKey = "herosOwned";
 		public List<GDEHeroData>      herosOwned;
@@ -238,7 +259,7 @@ namespace GameDataEditor
 		}
 		
         static string materialsKey = "materials";
-		public List<GDEAMaterialData>      materials;
+		public List<GDEItemData>      materials;
 		public void Set_materials()
         {
 	        GDEDataManager.SetCustomList(_key, materialsKey, materials);
@@ -252,10 +273,17 @@ namespace GameDataEditor
 		}
 		
         static string propsKey = "props";
-		public List<GDEAMaterialData>      props;
+		public List<GDEItemData>      props;
 		public void Set_props()
         {
 	        GDEDataManager.SetCustomList(_key, propsKey, props);
+		}
+		
+        static string propsTeamKey = "propsTeam";
+		public List<GDEItemData>      propsTeam;
+		public void Set_propsTeam()
+        {
+	        GDEDataManager.SetCustomList(_key, propsTeamKey, propsTeam);
 		}
 		
         static string TimeTaskListKey = "TimeTaskList";
@@ -263,6 +291,34 @@ namespace GameDataEditor
 		public void Set_TimeTaskList()
         {
 	        GDEDataManager.SetCustomList(_key, TimeTaskListKey, TimeTaskList);
+		}
+		
+        static string goddessOwnedKey = "goddessOwned";
+		public List<GDEgoddessData>      goddessOwned;
+		public void Set_goddessOwned()
+        {
+	        GDEDataManager.SetCustomList(_key, goddessOwnedKey, goddessOwned);
+		}
+		
+        static string buildingsOwnedKey = "buildingsOwned";
+		public List<GDEtownBuildingData>      buildingsOwned;
+		public void Set_buildingsOwned()
+        {
+	        GDEDataManager.SetCustomList(_key, buildingsOwnedKey, buildingsOwned);
+		}
+		
+        static string ItemsOwnedKey = "ItemsOwned";
+		public List<GDEItemData>      ItemsOwned;
+		public void Set_ItemsOwned()
+        {
+	        GDEDataManager.SetCustomList(_key, ItemsOwnedKey, ItemsOwned);
+		}
+		
+        static string NPCListKey = "NPCList";
+		public List<GDENPCData>      NPCList;
+		public void Set_NPCList()
+        {
+	        GDEDataManager.SetCustomList(_key, NPCListKey, NPCList);
 		}
 		
 
@@ -275,17 +331,18 @@ namespace GameDataEditor
 			var dict = new Dictionary<string, object>();
 			dict.Add(GDMConstants.SchemaKey, "Player");
 			
-            dict.Merge(true, maxPassLevel.ToGDEDict(maxPassLevelKey));
-            dict.Merge(true, lastPassLevel.ToGDEDict(lastPassLevelKey));
+            dict.Merge(true, maxPassSection.ToGDEDict(maxPassSectionKey));
+            dict.Merge(true, lastPassSection.ToGDEDict(lastPassSectionKey));
             dict.Merge(true, maxDurgeonPassLevel.ToGDEDict(maxDurgeonPassLevelKey));
             dict.Merge(true, coin.ToGDEDict(coinKey));
-            dict.Merge(true, n_coin.ToGDEDict(n_coinKey));
             dict.Merge(true, addGoldPerc.ToGDEDict(addGoldPercKey));
             dict.Merge(true, allBufPerc.ToGDEDict(allBufPercKey));
             dict.Merge(true, newBestLevel.ToGDEDict(newBestLevelKey));
             dict.Merge(true, dimension.ToGDEDict(dimensionKey));
             dict.Merge(true, damond.ToGDEDict(damondKey));
             dict.Merge(true, sickBedNum.ToGDEDict(sickBedNumKey));
+            dict.Merge(true, honorPoint.ToGDEDict(honorPointKey));
+            dict.Merge(true, JianCai.ToGDEDict(JianCaiKey));
 
             dict.Merge(true, temple_fighter.ToGDEDict(temple_fighterKey));
             dict.Merge(true, temple_ranger.ToGDEDict(temple_rangerKey));
@@ -293,19 +350,26 @@ namespace GameDataEditor
             dict.Merge(true, temple_caster.ToGDEDict(temple_casterKey));
             dict.Merge(true, bossKeys.ToGDEDict(bossKeysKey));
             dict.Merge(true, bossKeyUsed.ToGDEDict(bossKeyUsedKey));
-            dict.Merge(true, propsTeam.ToGDEDict(propsTeamKey));
 
+            dict.Merge(true, achievementData.ToGDEDict(achievementDataKey));
             dict.Merge(true, herosOwned.ToGDEDict(herosOwnedKey));
             dict.Merge(true, heroesTeam.ToGDEDict(heroesTeamKey));
             dict.Merge(true, materials.ToGDEDict(materialsKey));
             dict.Merge(true, equipsOwned.ToGDEDict(equipsOwnedKey));
             dict.Merge(true, props.ToGDEDict(propsKey));
+            dict.Merge(true, propsTeam.ToGDEDict(propsTeamKey));
             dict.Merge(true, TimeTaskList.ToGDEDict(TimeTaskListKey));
+            dict.Merge(true, goddessOwned.ToGDEDict(goddessOwnedKey));
+            dict.Merge(true, buildingsOwned.ToGDEDict(buildingsOwnedKey));
+            dict.Merge(true, ItemsOwned.ToGDEDict(ItemsOwnedKey));
+            dict.Merge(true, NPCList.ToGDEDict(NPCListKey));
             return dict;
 		}
 
         public override void UpdateCustomItems(bool rebuildKeyList)
         {
+            GDEDataManager.UpdateItem(achievementData, rebuildKeyList);
+            achievementData.UpdateCustomItems(rebuildKeyList);
             if (herosOwned != null)
             {
                 for(int x=0;  x<herosOwned.Count;  x++)
@@ -346,12 +410,52 @@ namespace GameDataEditor
                     props[x].UpdateCustomItems(rebuildKeyList);
                 }
             }
+            if (propsTeam != null)
+            {
+                for(int x=0;  x<propsTeam.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(propsTeam[x], rebuildKeyList);
+                    propsTeam[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
             if (TimeTaskList != null)
             {
                 for(int x=0;  x<TimeTaskList.Count;  x++)
                 {
                     GDEDataManager.UpdateItem(TimeTaskList[x], rebuildKeyList);
                     TimeTaskList[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
+            if (goddessOwned != null)
+            {
+                for(int x=0;  x<goddessOwned.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(goddessOwned[x], rebuildKeyList);
+                    goddessOwned[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
+            if (buildingsOwned != null)
+            {
+                for(int x=0;  x<buildingsOwned.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(buildingsOwned[x], rebuildKeyList);
+                    buildingsOwned[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
+            if (ItemsOwned != null)
+            {
+                for(int x=0;  x<ItemsOwned.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(ItemsOwned[x], rebuildKeyList);
+                    ItemsOwned[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
+            if (NPCList != null)
+            {
+                for(int x=0;  x<NPCList.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(NPCList[x], rebuildKeyList);
+                    NPCList[x].UpdateCustomItems(rebuildKeyList);
                 }
             }
         }
@@ -364,17 +468,22 @@ namespace GameDataEditor
 				LoadFromSavedData(dataKey);
 			else
 			{
-                dict.TryGetInt(maxPassLevelKey, out _maxPassLevel);
-                dict.TryGetInt(lastPassLevelKey, out _lastPassLevel);
+                dict.TryGetInt(maxPassSectionKey, out _maxPassSection);
+                dict.TryGetInt(lastPassSectionKey, out _lastPassSection);
                 dict.TryGetInt(maxDurgeonPassLevelKey, out _maxDurgeonPassLevel);
                 dict.TryGetInt(coinKey, out _coin);
-                dict.TryGetInt(n_coinKey, out _n_coin);
                 dict.TryGetInt(addGoldPercKey, out _addGoldPerc);
                 dict.TryGetInt(allBufPercKey, out _allBufPerc);
                 dict.TryGetInt(newBestLevelKey, out _newBestLevel);
                 dict.TryGetInt(dimensionKey, out _dimension);
                 dict.TryGetInt(damondKey, out _damond);
                 dict.TryGetInt(sickBedNumKey, out _sickBedNum);
+                dict.TryGetInt(honorPointKey, out _honorPoint);
+                dict.TryGetInt(JianCaiKey, out _JianCai);
+
+                string customDataKey;
+                dict.TryGetString(achievementDataKey, out customDataKey);
+				_achievementData = new GDEAchievementData(customDataKey);
 
                 dict.TryGetIntList(temple_fighterKey, out temple_fighter);
                 dict.TryGetIntList(temple_rangerKey, out temple_ranger);
@@ -382,14 +491,18 @@ namespace GameDataEditor
                 dict.TryGetIntList(temple_casterKey, out temple_caster);
                 dict.TryGetIntList(bossKeysKey, out bossKeys);
                 dict.TryGetIntList(bossKeyUsedKey, out bossKeyUsed);
-                dict.TryGetIntList(propsTeamKey, out propsTeam);
 
                 dict.TryGetCustomList(herosOwnedKey, out herosOwned);
                 dict.TryGetCustomList(heroesTeamKey, out heroesTeam);
                 dict.TryGetCustomList(materialsKey, out materials);
                 dict.TryGetCustomList(equipsOwnedKey, out equipsOwned);
                 dict.TryGetCustomList(propsKey, out props);
+                dict.TryGetCustomList(propsTeamKey, out propsTeam);
                 dict.TryGetCustomList(TimeTaskListKey, out TimeTaskList);
+                dict.TryGetCustomList(goddessOwnedKey, out goddessOwned);
+                dict.TryGetCustomList(buildingsOwnedKey, out buildingsOwned);
+                dict.TryGetCustomList(ItemsOwnedKey, out ItemsOwned);
+                dict.TryGetCustomList(NPCListKey, out NPCList);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -398,17 +511,20 @@ namespace GameDataEditor
 		{
 			_key = dataKey;
 			
-            _maxPassLevel = GDEDataManager.GetInt(_key, maxPassLevelKey, _maxPassLevel);
-            _lastPassLevel = GDEDataManager.GetInt(_key, lastPassLevelKey, _lastPassLevel);
+            _maxPassSection = GDEDataManager.GetInt(_key, maxPassSectionKey, _maxPassSection);
+            _lastPassSection = GDEDataManager.GetInt(_key, lastPassSectionKey, _lastPassSection);
             _maxDurgeonPassLevel = GDEDataManager.GetInt(_key, maxDurgeonPassLevelKey, _maxDurgeonPassLevel);
             _coin = GDEDataManager.GetInt(_key, coinKey, _coin);
-            _n_coin = GDEDataManager.GetInt(_key, n_coinKey, _n_coin);
             _addGoldPerc = GDEDataManager.GetInt(_key, addGoldPercKey, _addGoldPerc);
             _allBufPerc = GDEDataManager.GetInt(_key, allBufPercKey, _allBufPerc);
             _newBestLevel = GDEDataManager.GetInt(_key, newBestLevelKey, _newBestLevel);
             _dimension = GDEDataManager.GetInt(_key, dimensionKey, _dimension);
             _damond = GDEDataManager.GetInt(_key, damondKey, _damond);
             _sickBedNum = GDEDataManager.GetInt(_key, sickBedNumKey, _sickBedNum);
+            _honorPoint = GDEDataManager.GetInt(_key, honorPointKey, _honorPoint);
+            _JianCai = GDEDataManager.GetInt(_key, JianCaiKey, _JianCai);
+
+            _achievementData = GDEDataManager.GetCustom(_key, achievementDataKey, _achievementData);
 
             temple_fighter = GDEDataManager.GetIntList(_key, temple_fighterKey, temple_fighter);
             temple_ranger = GDEDataManager.GetIntList(_key, temple_rangerKey, temple_ranger);
@@ -416,14 +532,18 @@ namespace GameDataEditor
             temple_caster = GDEDataManager.GetIntList(_key, temple_casterKey, temple_caster);
             bossKeys = GDEDataManager.GetIntList(_key, bossKeysKey, bossKeys);
             bossKeyUsed = GDEDataManager.GetIntList(_key, bossKeyUsedKey, bossKeyUsed);
-            propsTeam = GDEDataManager.GetIntList(_key, propsTeamKey, propsTeam);
 
             herosOwned = GDEDataManager.GetCustomList(_key, herosOwnedKey, herosOwned);
             heroesTeam = GDEDataManager.GetCustomList(_key, heroesTeamKey, heroesTeam);
             materials = GDEDataManager.GetCustomList(_key, materialsKey, materials);
             equipsOwned = GDEDataManager.GetCustomList(_key, equipsOwnedKey, equipsOwned);
             props = GDEDataManager.GetCustomList(_key, propsKey, props);
+            propsTeam = GDEDataManager.GetCustomList(_key, propsTeamKey, propsTeam);
             TimeTaskList = GDEDataManager.GetCustomList(_key, TimeTaskListKey, TimeTaskList);
+            goddessOwned = GDEDataManager.GetCustomList(_key, goddessOwnedKey, goddessOwned);
+            buildingsOwned = GDEDataManager.GetCustomList(_key, buildingsOwnedKey, buildingsOwned);
+            ItemsOwned = GDEDataManager.GetCustomList(_key, ItemsOwnedKey, ItemsOwned);
+            NPCList = GDEDataManager.GetCustomList(_key, NPCListKey, NPCList);
         }
 
         public GDEPlayerData ShallowClone()
@@ -431,17 +551,20 @@ namespace GameDataEditor
 			string newKey = Guid.NewGuid().ToString();
 			GDEPlayerData newClone = new GDEPlayerData(newKey);
 
-            newClone.maxPassLevel = maxPassLevel;
-            newClone.lastPassLevel = lastPassLevel;
+            newClone.maxPassSection = maxPassSection;
+            newClone.lastPassSection = lastPassSection;
             newClone.maxDurgeonPassLevel = maxDurgeonPassLevel;
             newClone.coin = coin;
-            newClone.n_coin = n_coin;
             newClone.addGoldPerc = addGoldPerc;
             newClone.allBufPerc = allBufPerc;
             newClone.newBestLevel = newBestLevel;
             newClone.dimension = dimension;
             newClone.damond = damond;
             newClone.sickBedNum = sickBedNum;
+            newClone.honorPoint = honorPoint;
+            newClone.JianCai = JianCai;
+
+            newClone.achievementData = achievementData;
 
             newClone.temple_fighter = new List<int>(temple_fighter);
 			newClone.Set_temple_fighter();
@@ -455,21 +578,29 @@ namespace GameDataEditor
 			newClone.Set_bossKeys();
             newClone.bossKeyUsed = new List<int>(bossKeyUsed);
 			newClone.Set_bossKeyUsed();
-            newClone.propsTeam = new List<int>(propsTeam);
-			newClone.Set_propsTeam();
 
             newClone.herosOwned = new List<GDEHeroData>(herosOwned);
 			newClone.Set_herosOwned();
             newClone.heroesTeam = new List<GDEunitTeamData>(heroesTeam);
 			newClone.Set_heroesTeam();
-            newClone.materials = new List<GDEAMaterialData>(materials);
+            newClone.materials = new List<GDEItemData>(materials);
 			newClone.Set_materials();
             newClone.equipsOwned = new List<GDEEquipmentData>(equipsOwned);
 			newClone.Set_equipsOwned();
-            newClone.props = new List<GDEAMaterialData>(props);
+            newClone.props = new List<GDEItemData>(props);
 			newClone.Set_props();
+            newClone.propsTeam = new List<GDEItemData>(propsTeam);
+			newClone.Set_propsTeam();
             newClone.TimeTaskList = new List<GDEtimeTaskData>(TimeTaskList);
 			newClone.Set_TimeTaskList();
+            newClone.goddessOwned = new List<GDEgoddessData>(goddessOwned);
+			newClone.Set_goddessOwned();
+            newClone.buildingsOwned = new List<GDEtownBuildingData>(buildingsOwned);
+			newClone.Set_buildingsOwned();
+            newClone.ItemsOwned = new List<GDEItemData>(ItemsOwned);
+			newClone.Set_ItemsOwned();
+            newClone.NPCList = new List<GDENPCData>(NPCList);
+			newClone.Set_NPCList();
 
             return newClone;
 		}
@@ -477,6 +608,8 @@ namespace GameDataEditor
         public GDEPlayerData DeepClone()
 		{
 			GDEPlayerData newClone = ShallowClone();
+            newClone.achievementData = achievementData.DeepClone();
+
             newClone.herosOwned = new List<GDEHeroData>();
 			if (herosOwned != null)
 			{
@@ -491,7 +624,7 @@ namespace GameDataEditor
 					newClone.heroesTeam.Add(val.DeepClone());
 			}
 			newClone.Set_heroesTeam();
-            newClone.materials = new List<GDEAMaterialData>();
+            newClone.materials = new List<GDEItemData>();
 			if (materials != null)
 			{
 				foreach(var val in materials)
@@ -505,13 +638,20 @@ namespace GameDataEditor
 					newClone.equipsOwned.Add(val.DeepClone());
 			}
 			newClone.Set_equipsOwned();
-            newClone.props = new List<GDEAMaterialData>();
+            newClone.props = new List<GDEItemData>();
 			if (props != null)
 			{
 				foreach(var val in props)
 					newClone.props.Add(val.DeepClone());
 			}
 			newClone.Set_props();
+            newClone.propsTeam = new List<GDEItemData>();
+			if (propsTeam != null)
+			{
+				foreach(var val in propsTeam)
+					newClone.propsTeam.Add(val.DeepClone());
+			}
+			newClone.Set_propsTeam();
             newClone.TimeTaskList = new List<GDEtimeTaskData>();
 			if (TimeTaskList != null)
 			{
@@ -519,25 +659,53 @@ namespace GameDataEditor
 					newClone.TimeTaskList.Add(val.DeepClone());
 			}
 			newClone.Set_TimeTaskList();
+            newClone.goddessOwned = new List<GDEgoddessData>();
+			if (goddessOwned != null)
+			{
+				foreach(var val in goddessOwned)
+					newClone.goddessOwned.Add(val.DeepClone());
+			}
+			newClone.Set_goddessOwned();
+            newClone.buildingsOwned = new List<GDEtownBuildingData>();
+			if (buildingsOwned != null)
+			{
+				foreach(var val in buildingsOwned)
+					newClone.buildingsOwned.Add(val.DeepClone());
+			}
+			newClone.Set_buildingsOwned();
+            newClone.ItemsOwned = new List<GDEItemData>();
+			if (ItemsOwned != null)
+			{
+				foreach(var val in ItemsOwned)
+					newClone.ItemsOwned.Add(val.DeepClone());
+			}
+			newClone.Set_ItemsOwned();
+            newClone.NPCList = new List<GDENPCData>();
+			if (NPCList != null)
+			{
+				foreach(var val in NPCList)
+					newClone.NPCList.Add(val.DeepClone());
+			}
+			newClone.Set_NPCList();
             return newClone;
 		}
 
-        public void Reset_maxPassLevel()
+        public void Reset_maxPassSection()
         {
-            GDEDataManager.ResetToDefault(_key, maxPassLevelKey);
+            GDEDataManager.ResetToDefault(_key, maxPassSectionKey);
 
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(maxPassLevelKey, out _maxPassLevel);
+            dict.TryGetInt(maxPassSectionKey, out _maxPassSection);
         }
 
-        public void Reset_lastPassLevel()
+        public void Reset_lastPassSection()
         {
-            GDEDataManager.ResetToDefault(_key, lastPassLevelKey);
+            GDEDataManager.ResetToDefault(_key, lastPassSectionKey);
 
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(lastPassLevelKey, out _lastPassLevel);
+            dict.TryGetInt(lastPassSectionKey, out _lastPassSection);
         }
 
         public void Reset_maxDurgeonPassLevel()
@@ -556,15 +724,6 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetInt(coinKey, out _coin);
-        }
-
-        public void Reset_n_coin()
-        {
-            GDEDataManager.ResetToDefault(_key, n_coinKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(n_coinKey, out _n_coin);
         }
 
         public void Reset_addGoldPerc()
@@ -621,6 +780,24 @@ namespace GameDataEditor
             dict.TryGetInt(sickBedNumKey, out _sickBedNum);
         }
 
+        public void Reset_honorPoint()
+        {
+            GDEDataManager.ResetToDefault(_key, honorPointKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(honorPointKey, out _honorPoint);
+        }
+
+        public void Reset_JianCai()
+        {
+            GDEDataManager.ResetToDefault(_key, JianCaiKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(JianCaiKey, out _JianCai);
+        }
+
         public void Reset_temple_fighter()
         {
 	        GDEDataManager.ResetToDefault(_key, temple_fighterKey);
@@ -675,15 +852,20 @@ namespace GameDataEditor
 	        dict.TryGetIntList(bossKeyUsedKey, out bossKeyUsed);
         }
 		
-        public void Reset_propsTeam()
-        {
-	        GDEDataManager.ResetToDefault(_key, propsTeamKey);
 
-	        Dictionary<string, object> dict;
+        public void Reset_achievementData()
+		{
+			GDEDataManager.ResetToDefault(_key, achievementDataKey);
+
+			Dictionary<string, object> dict;
 	        GDEDataManager.Get(_key, out dict);
-	        dict.TryGetIntList(propsTeamKey, out propsTeam);
-        }
-		
+
+			string customDataKey;
+            dict.TryGetString(achievementDataKey, out customDataKey);
+			_achievementData = new GDEAchievementData(customDataKey);
+
+			achievementData.ResetAll();
+		}
 
         public void Reset_herosOwned()
 		{
@@ -745,6 +927,18 @@ namespace GameDataEditor
 
 			props.ForEach(x => x.ResetAll());
 		}
+        public void Reset_propsTeam()
+		{
+			GDEDataManager.ResetToDefault(_key, propsTeamKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(propsTeamKey, out propsTeam);
+			propsTeam = GDEDataManager.GetCustomList(_key, propsTeamKey, propsTeam);
+
+			propsTeam.ForEach(x => x.ResetAll());
+		}
         public void Reset_TimeTaskList()
 		{
 			GDEDataManager.ResetToDefault(_key, TimeTaskListKey);
@@ -756,6 +950,54 @@ namespace GameDataEditor
 			TimeTaskList = GDEDataManager.GetCustomList(_key, TimeTaskListKey, TimeTaskList);
 
 			TimeTaskList.ForEach(x => x.ResetAll());
+		}
+        public void Reset_goddessOwned()
+		{
+			GDEDataManager.ResetToDefault(_key, goddessOwnedKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(goddessOwnedKey, out goddessOwned);
+			goddessOwned = GDEDataManager.GetCustomList(_key, goddessOwnedKey, goddessOwned);
+
+			goddessOwned.ForEach(x => x.ResetAll());
+		}
+        public void Reset_buildingsOwned()
+		{
+			GDEDataManager.ResetToDefault(_key, buildingsOwnedKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(buildingsOwnedKey, out buildingsOwned);
+			buildingsOwned = GDEDataManager.GetCustomList(_key, buildingsOwnedKey, buildingsOwned);
+
+			buildingsOwned.ForEach(x => x.ResetAll());
+		}
+        public void Reset_ItemsOwned()
+		{
+			GDEDataManager.ResetToDefault(_key, ItemsOwnedKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(ItemsOwnedKey, out ItemsOwned);
+			ItemsOwned = GDEDataManager.GetCustomList(_key, ItemsOwnedKey, ItemsOwned);
+
+			ItemsOwned.ForEach(x => x.ResetAll());
+		}
+        public void Reset_NPCList()
+		{
+			GDEDataManager.ResetToDefault(_key, NPCListKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(NPCListKey, out NPCList);
+			NPCList = GDEDataManager.GetCustomList(_key, NPCListKey, NPCList);
+
+			NPCList.ForEach(x => x.ResetAll());
 		}
 
         public void ResetAll()
@@ -770,13 +1012,11 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, temple_casterKey);
             GDEDataManager.ResetToDefault(_key, bossKeysKey);
             GDEDataManager.ResetToDefault(_key, bossKeyUsedKey);
-            GDEDataManager.ResetToDefault(_key, maxPassLevelKey);
-            GDEDataManager.ResetToDefault(_key, lastPassLevelKey);
+            GDEDataManager.ResetToDefault(_key, lastPassSectionKey);
             GDEDataManager.ResetToDefault(_key, maxDurgeonPassLevelKey);
             GDEDataManager.ResetToDefault(_key, herosOwnedKey);
             GDEDataManager.ResetToDefault(_key, materialsKey);
             GDEDataManager.ResetToDefault(_key, coinKey);
-            GDEDataManager.ResetToDefault(_key, n_coinKey);
             GDEDataManager.ResetToDefault(_key, addGoldPercKey);
             GDEDataManager.ResetToDefault(_key, allBufPercKey);
             GDEDataManager.ResetToDefault(_key, newBestLevelKey);
@@ -788,13 +1028,27 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, damondKey);
             GDEDataManager.ResetToDefault(_key, TimeTaskListKey);
             GDEDataManager.ResetToDefault(_key, sickBedNumKey);
+            GDEDataManager.ResetToDefault(_key, maxPassSectionKey);
+            GDEDataManager.ResetToDefault(_key, goddessOwnedKey);
+            GDEDataManager.ResetToDefault(_key, buildingsOwnedKey);
+            GDEDataManager.ResetToDefault(_key, honorPointKey);
+            GDEDataManager.ResetToDefault(_key, achievementDataKey);
+            GDEDataManager.ResetToDefault(_key, JianCaiKey);
+            GDEDataManager.ResetToDefault(_key, ItemsOwnedKey);
+            GDEDataManager.ResetToDefault(_key, NPCListKey);
 
+            Reset_achievementData();
             Reset_herosOwned();
             Reset_heroesTeam();
             Reset_materials();
             Reset_equipsOwned();
             Reset_props();
+            Reset_propsTeam();
             Reset_TimeTaskList();
+            Reset_goddessOwned();
+            Reset_buildingsOwned();
+            Reset_ItemsOwned();
+            Reset_NPCList();
 
             #endif
 

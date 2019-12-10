@@ -49,7 +49,7 @@ namespace I2.Loc
                 if (Sources[i].TryGetTranslation(Term, out Translation, overrideLanguage))
                 {
                     if (applyParameters)
-                        ApplyLocalizationParams(ref Translation, localParametersRoot);
+                        ApplyLocalizationParams(ref Translation, localParametersRoot, allowLocalizedParameters:true);
 
                     if (IsRight2Left && FixForRTL)
                         Translation = ApplyRTLfix(Translation, maxLineLengthForRTL, ignoreRTLnumbers);
@@ -59,6 +59,30 @@ namespace I2.Loc
 
             return false;
         }
+
+        public static T GetTranslatedObject<T>( string AssetName, Localize optionalLocComp=null) where T : Object
+        {
+            if (optionalLocComp != null)
+            {
+                return optionalLocComp.FindTranslatedObject<T>(AssetName);
+            }
+            else
+            {
+                T obj = FindAsset(AssetName) as T;
+                if (obj)
+                    return obj;
+
+                obj = ResourceManager.pInstance.GetAsset<T>(AssetName);
+                return obj;
+            }
+        }
+        
+        public static T GetTranslatedObjectByTermName<T>( string Term, Localize optionalLocComp=null) where T : Object
+        {
+            string    translation = GetTranslation(Term, FixForRTL: false);
+            return GetTranslatedObject<T>(translation);
+        }
+        
 
         public static string GetAppName(string languageCode)
         {
@@ -124,7 +148,7 @@ namespace I2.Loc
 			}
 			if (OnLocalizeEvent != null)
 				OnLocalizeEvent ();
-			ResourceManager.pInstance.CleanResourceCache();
+			//ResourceManager.pInstance.CleanResourceCache();
             #if UNITY_EDITOR
                 RepaintInspectors();
             #endif
@@ -181,5 +205,24 @@ namespace I2.Loc
 
 			return null;
 		}
+        public static TermData GetTermData(string term, out LanguageSourceData source)
+        {
+            InitializeIfNeeded();
+
+            TermData data;
+            for (int i = 0, imax = Sources.Count; i < imax; ++i)
+            {
+                data = Sources[i].GetTermData(term);
+                if (data != null)
+                {
+                    source = Sources[i];
+                    return data;
+                }
+            }
+
+            source = null;
+            return null;
+        }
+
     }
 }

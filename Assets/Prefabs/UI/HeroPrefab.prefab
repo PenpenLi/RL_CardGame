@@ -159,7 +159,7 @@ MonoBehaviour:
   APC: {fileID: 312996217468603877}
   HeroProperty: {fileID: 6408209860465056197}
   EnemyProperty: {fileID: 0}
-  GodnessProperty: {fileID: 0}
+  GoddessProperty: {fileID: 0}
   HpController: {fileID: 8671048936073909026}
   MpController: {fileID: 7877801539769609682}
   TpController: {fileID: 4824818771226843043}
@@ -193,34 +193,61 @@ MonoBehaviour:
   Unit_Fire: {fileID: 6699436266079628283}
   Unit_Frost: {fileID: 7061738955073266648}
   Unit_Corrosion: {fileID: 1505808441719603446}
-  Unit_Nature: {fileID: 7884874699497874090}
+  Unit_Hush: {fileID: 7884874699497874090}
   Unit_Dizzy: {fileID: 1850433984993523998}
   Unit_Confuse: {fileID: 8909903806795422353}
+  Unit_HpRegend: {fileID: 2571181819791465585}
+  Unit_MpRegend: {fileID: 466736038587053901}
+  Unit_TpRegend: {fileID: 7366258853880146376}
   Unit_Die: {fileID: 680817209541394112}
   AllStates:
   - stateCondition: 0
     LastTime: 0
+    UniqueEffectInRA:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     ExtraDmg: 0
   - stateCondition: 0
     LastTime: 0
+    UniqueEffectInRA:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     ExtraDmg: 0
   - stateCondition: 0
     LastTime: 0
+    UniqueEffectInRA:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     ExtraDmg: 0
   - stateCondition: 0
     LastTime: 0
+    UniqueEffectInRA:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     ExtraDmg: 0
   - stateCondition: 0
     LastTime: 0
+    UniqueEffectInRA:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     ExtraDmg: 0
   - stateCondition: 0
     LastTime: 0
+    UniqueEffectInRA:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     ExtraDmg: 0
   - stateCondition: 0
     LastTime: 0
+    UniqueEffectInRA:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     ExtraDmg: 0
   - stateCondition: 0
     LastTime: 0
+    UniqueEffectInRA:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     ExtraDmg: 0
   _skills: []
   CritHappen: 0
@@ -262,7 +289,13 @@ MonoBehaviour:
   ID: 1000
   Name: 
   _role:
-    ThisRoleAttributes:
+    baseRALChangeData:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
+    groupStateRAL:
+      AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
+    environmentStateRAL:
       AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
       AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
     AllARevision:
@@ -303,6 +336,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6876f30ec272a74e88effdea74d7d1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interveneState:
+    stateUnit: {fileID: 0}
+    LastTime: 0
+    isBuff: 0
+    buffImg: {fileID: 0}
+    debuffImg: {fileID: 0}
+    changeData: 0
+  reflectState:
+    stateUnit: {fileID: 0}
+    LastTime: 0
+    isBuff: 0
+    buffImg: {fileID: 0}
+    debuffImg: {fileID: 0}
+    changeData: 0
 --- !u!1 &786127678457603083
 GameObject:
   m_ObjectHideFlags: 0
@@ -386,7 +433,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7884874699497874090}
   m_Layer: 5
-  m_Name: unit_nature_5
+  m_Name: unit_hush_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2283,7 +2330,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1003066099248509492}
-  m_RootOrder: 8
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2787,6 +2834,9 @@ RectTransform:
   - {fileID: 7884874699497874090}
   - {fileID: 1850433984993523998}
   - {fileID: 8909903806795422353}
+  - {fileID: 2571181819791465585}
+  - {fileID: 466736038587053901}
+  - {fileID: 7366258853880146376}
   - {fileID: 680817209541394112}
   m_Father: {fileID: 919340501938118221}
   m_RootOrder: 1
@@ -2869,7 +2919,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -46.8}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &8136254649312834897
@@ -2884,24 +2934,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 258b38646805d434dbf3705cb09d72fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
-  CharacterModelType0: {fileID: 0}
-  CharacterModelType1: {fileID: 0}
-  CharacterModelType2: {fileID: 0}
-  CharacterModelType3: {fileID: 0}
-  CharacterModelType4: {fileID: 0}
-  CharacterModelType5: {fileID: 0}
-  CharacterModelType6: {fileID: 0}
-  CharacterModelType7: {fileID: 0}
-  CharacterModelType8: {fileID: 0}
-  CharacterModelType9: {fileID: 0}
-  CharacterModelType10: {fileID: 0}
-  CharacterModelType11: {fileID: 0}
-  CharacterModelType12: {fileID: 0}
-  CharacterModelType13: {fileID: 0}
-  CharacterModelType14: {fileID: 0}
-  CharacterModelType15: {fileID: 0}
+  heroHashcode: 0
+  AllSkeletonDataAssets:
+  - {fileID: 11400000, guid: 4f08315998f61a24280821cd94103f8c, type: 2}
+  ModelParent: {fileID: 2567357007579536025}
   CurrentCharacterModel: {fileID: 0}
+  scaleRate: 1
   isModelAlignBottom: 0
 --- !u!1 &3792396199342960895
 GameObject:
@@ -3621,6 +3659,41 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &6389599883644916176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2571181819791465585}
+  m_Layer: 5
+  m_Name: unit_regend_hp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2571181819791465585
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6389599883644916176}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1003066099248509492}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6491026575652977617
 GameObject:
   m_ObjectHideFlags: 0
@@ -3810,6 +3883,41 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
+--- !u!1 &6877997551026805066
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 466736038587053901}
+  m_Layer: 5
+  m_Name: unit_regend_mp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &466736038587053901
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6877997551026805066}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1003066099248509492}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7343565558030059139
 GameObject:
   m_ObjectHideFlags: 0
@@ -3853,7 +3961,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7343565558030059139}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -4003,6 +4111,41 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7587315644249001398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7366258853880146376}
+  m_Layer: 5
+  m_Name: unit_regend_tp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7366258853880146376
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587315644249001398}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1003066099248509492}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8056095999972329614
 GameObject:
   m_ObjectHideFlags: 0
@@ -4456,7 +4599,6 @@ MonoBehaviour:
   DefaultSkill: {fileID: 0}
   SkillGroup: []
   BM: {fileID: 0}
-  SDL: {fileID: 0}
   ActionPanel: {fileID: 4631256069380365720}
   skillPos:
   - {fileID: 8129438492776879267}

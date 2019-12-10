@@ -10,19 +10,14 @@ public class UI_Anim : MonoBehaviour
     public float ASizeRate;
     public float ATime;
     private bool isC;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     public void WhenClicking()
     {
         if (!isC)
         {
-            StopCoroutine("UIClicking");
+            StopCoroutine(UIClicking());
             isC = true;
-            StartCoroutine("UIClicking");
+            StartCoroutine(UIClicking());
         }
     }
     IEnumerator UIClicking()
@@ -33,9 +28,4 @@ public class UI_Anim : MonoBehaviour
         isC = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

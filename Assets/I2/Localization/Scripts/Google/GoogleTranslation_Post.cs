@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using UnityEngine.Networking;
 
 namespace I2.Loc
 {
@@ -12,12 +13,14 @@ namespace I2.Loc
 
 	public static partial class GoogleTranslation
 	{
-		static List<WWW> mCurrentTranslations = new List<WWW>();
+		static List<UnityWebRequest> mCurrentTranslations = new List<UnityWebRequest>();
         static List<TranslationJob> mTranslationJobs = new List<TranslationJob>();
+
+        public delegate void fnOnTranslationReady(TranslationDictionary dict, string error);
 
 #region Multiple Translations
 
-		public static void Translate( TranslationDictionary requests, Action<TranslationDictionary, string> OnTranslationReady, bool usePOST = true )
+		public static void Translate( TranslationDictionary requests, fnOnTranslationReady OnTranslationReady, bool usePOST = true )
 		{
             //WWW www = GetTranslationWWW( requests, usePOST );
             //I2.Loc.CoroutineManager.Start(WaitForTranslation(www, OnTranslationReady, requests));
@@ -132,8 +135,12 @@ namespace I2.Loc
                 var fullText = texts[i++];
                 if (temp.Tags != null)
                 {
-                    for (int j = 0, jmax = temp.Tags.Length; j < jmax; ++j)
-                        fullText = fullText.Replace(  /*"{[" + j + "]}"*/ ((char)(0x2600+j)).ToString(), temp.Tags[j]);
+                    //for (int j = 0, jmax = temp.Tags.Length; j < jmax; ++j)
+                    for (int j = temp.Tags.Length-1; j>=0; --j)
+                    {
+                            fullText = fullText.Replace(GetGoogleNoTranslateTag(j), temp.Tags[j]);
+                        //fullText = fullText.Replace(  /*"{[" + j + "]}"*/ ((char)(0x2600+j)).ToString(), temp.Tags[j]);
+                    }
                 }
 
                 temp.Results = fullText.Split (splitter, StringSplitOptions.None);

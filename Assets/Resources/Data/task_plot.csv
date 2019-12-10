@@ -1,0 +1,9 @@
+﻿id,name,achieveType,class,level,quality,desc,special,reward,condition,extra
+1000001,尝试战斗,killEnemy;3,plot,0,,,,,,0
+1000002,消灭精英,killElite;1,plot,1,,,,,,0
+1000003,击败首领,killBoss;1,plot,1,,,,,,0
+1000004,解放城镇,getSection:1,plot,1,,,,,,0
+1000005,城镇建设,"getBuildingLevel:1,1",plot,2,,,,,,0
+1000006,英雄招募,hireHero;1,plot,3,,,,,,0
+1000007,女神召唤,hireGoddess;1,plot,3,,,,,,0
+1000008,扩建城镇,"getBuildingLevel;1,2",plot,3,,,,,,0
