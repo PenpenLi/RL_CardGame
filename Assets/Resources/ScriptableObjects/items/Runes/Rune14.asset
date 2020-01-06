@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2866c61e5a176f74a9b922dde39ec7da, type: 3}
+  m_Name: Rune14
+  m_EditorClassIdentifier: 
+  _ID: R_GODDESS#1100004
+  _NAME: "\u987D\u5F3A\u7B26\u6587"
+  _DESC: "\u589E\u52A0\u8010\u529B"
+  itemtype: 8
+  _LEVEL: 0
+  stackAble: 0
+  discardAble: 1
+  useable: 1
+  sellAble: 1
+  inexhaustible: 0
+  maxDurability: 100
+  quality: 1
+  _AttiType: 1
+  _Atti:
+    agile: 1
+    stamina: 5
+    recovery: 1
+    leader: 1

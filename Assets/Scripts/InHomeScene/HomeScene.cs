@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System;
 using GameDataEditor;
 using I2.Loc;
+using System.Linq;
 
 public class HomeScene : MonoBehaviour
 {
@@ -44,7 +45,11 @@ public class HomeScene : MonoBehaviour
             ,
         ElementalBuff=16
             ,
-        Factory=17
+        Factory0=17
+            ,
+        Factory1=18
+            ,
+        Rune=19
             ,
         End
     }
@@ -79,14 +84,16 @@ public class HomeScene : MonoBehaviour
     public Transform _achievementPanel;
     public Transform _physicalBuffPanel;
     public Transform _elementalBuffPanel;
-    public Transform _factoryPanel;
+    public Transform _factoryPanel0;
+    public Transform _factoryPanel1;
+    public Transform _runePanel;
     [Header("菜单快速索引")]
     public Transform[] AllSubMenus;
     [Space(25)]
     public Transform OuterMenuPanel;
-    [Header("场景配置")]
-    public Transform leftArrow;
-    public Transform rightArrow;
+    //[Header("场景配置")]
+    //public Transform leftArrow;
+    //public Transform rightArrow;
     [HideInInspector]
     public List<int> menuEnterHistory;
     [Header("OuterMenu")]
@@ -98,6 +105,7 @@ public class HomeScene : MonoBehaviour
 
     [Header("特殊设置")]
     public Button SubMenuLvUpBtn;
+    public HeroInfo BasicHero;
     private void Awake()
     {
         //建筑Id设置
@@ -111,18 +119,27 @@ public class HomeScene : MonoBehaviour
     void Start()
     {
         SDGameManager.Instance.INIT();
-        //HeroStagePanel.GetComponent<AllOwnedHeroesPanel>().ShowAllOwnedHeroes();
         SubMenuClose(true);
-        buildPlayerOwned();
-        buildPlayerOwned_equip();
-        buildPlayerOwned_material();
         SDDataManager.Instance.PlayerData.JianCai += 500;
+        SDDataManager.Instance.AddDamond(500);
+        SDDataManager.Instance.addConsumable
+            (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_oneTime.ID,10);
+        SDDataManager.Instance.addConsumable
+            (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_tenTimes.ID, 10);
+        //
+        AddHeroPools();
         //
         changeToHomeScene();
         refreshAllBuildingCondition();
+        refreshAllGoddessesCondition();
 
-        //SDTaskManager.Instance.AddNewTask(checkMCP(),"MainCastleOpen");
-        //UseKillTask.CreateTask(SDConstants.EnemyType.enemy.ToString(),1, null, null);
+        if (!SDDataManager.Instance.CheckHaveHeroById(BasicHero.ID))
+        {
+            SDDataManager.Instance.addHero(BasicHero.ID);
+        }
+
+        //
+        Test_AddConsumableItems();
     }
     /*
     public IEnumerator checkMCP()
@@ -149,12 +166,18 @@ public class HomeScene : MonoBehaviour
     {
         _MainCastlePanel.GetComponent<MainCastlePanel>().refreshAllBuildingsInfor();
     }
+    public void refreshAllGoddessesCondition()
+    {
+        _goddessDetailPanel.GetComponent<GoddessDetailPanel>().refreshAllGoddessesCondition();
+    }
     #region 场景建筑按钮
     public void levelEnterBtnTapped(bool fromSubMenu = false)
     {
         if(!fromSubMenu)
             SubMenuClose(true);
-        //SubMenuClose(true);
+        //
+        _LevelEnterPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
+        //
         CurrentSubMenuType = HomeSceneSubMenu.LevelEnter;
         UIEffectManager.Instance.showAnimFadeIn(_LevelEnterPanel);
 
@@ -166,11 +189,7 @@ public class HomeScene : MonoBehaviour
         {
             SubMenuClose(true);
         }
-        else
-        {
-            _BattleTeamPanel.GetComponent<BattleTeamPanel>()
-                .panelFrom = CurrentSubMenuType;
-        }
+        _BattleTeamPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.BattleTeam;
         UIEffectManager.Instance.showAnimFadeIn(_BattleTeamPanel);
 
@@ -181,6 +200,8 @@ public class HomeScene : MonoBehaviour
         if(!fromSubMenu)
             SubMenuClose(true);
         //SubMenuClose(true);
+        _HeroStagePanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
+
         CurrentSubMenuType = HomeSceneSubMenu.HeroStage;
         UIEffectManager.Instance.showAnimFadeIn(_HeroStagePanel);
 
@@ -189,6 +210,7 @@ public class HomeScene : MonoBehaviour
     public void summonAltarBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _SummonAltarPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.SummonAltar;
         UIEffectManager.Instance.showAnimFadeIn(_SummonAltarPanel);
 
@@ -197,6 +219,7 @@ public class HomeScene : MonoBehaviour
     public void hospitalBtnTapped(bool fromSubMenu = false)
     {
         if(!fromSubMenu)SubMenuClose(true);
+        _HospitalPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.Hospital;
         UIEffectManager.Instance.showAnimFadeIn(_HospitalPanel);
 
@@ -205,6 +228,7 @@ public class HomeScene : MonoBehaviour
     public void heroDetailBtnTapped(bool fromSubMenu = true)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _heroDetailPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.HeroDetails;
         UIEffectManager.Instance.showAnimFadeIn(_heroDetailPanel);
 
@@ -213,6 +237,7 @@ public class HomeScene : MonoBehaviour
     public void storeBtnTapped(bool fromSubMenu = true)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _StorePanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.Store;
         UIEffectManager.Instance.showAnimFadeIn(_StorePanel);
 
@@ -222,7 +247,7 @@ public class HomeScene : MonoBehaviour
     {
         if(!fromSubMenu)
             SubMenuClose(true);
-
+        _DepositoryPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.Depository;
         UIEffectManager.Instance.showAnimFadeIn(_DepositoryPanel);
 
@@ -231,6 +256,7 @@ public class HomeScene : MonoBehaviour
     public void mainCastleBtnTapped(bool FromSubMenu = false)
     {
         if (!FromSubMenu) SubMenuClose(true);
+        _MainCastlePanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.MainCastle;
         UIEffectManager.Instance.showAnimFadeIn(_MainCastlePanel);
 
@@ -239,6 +265,7 @@ public class HomeScene : MonoBehaviour
     public void goddessBtnTapped(bool FromSubMenu = false)
     {
         if (!FromSubMenu) SubMenuClose(true);
+        _GoddessPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.Goddess;
         UIEffectManager.Instance.showAnimFadeIn(_GoddessPanel);
 
@@ -247,6 +274,7 @@ public class HomeScene : MonoBehaviour
     public void goddessDetailBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _goddessDetailPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.GoddessDetail;
         UIEffectManager.Instance.showAnimFadeIn(_goddessDetailPanel);
 
@@ -255,6 +283,7 @@ public class HomeScene : MonoBehaviour
     public void equipmentBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _equipDetailPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.Equipment;
         UIEffectManager.Instance.showAnimFadeIn(_equipmentPanel);
 
@@ -263,6 +292,7 @@ public class HomeScene : MonoBehaviour
     public void equipDetailBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _equipDetailPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.EquipDetail;
         UIEffectManager.Instance.showAnimFadeIn(_equipDetailPanel);
 
@@ -271,6 +301,7 @@ public class HomeScene : MonoBehaviour
     public void missionBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _missionPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.Mission;
         UIEffectManager.Instance.showAnimFadeIn(_missionPanel);
 
@@ -279,6 +310,7 @@ public class HomeScene : MonoBehaviour
     public void achievementBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _achievementPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.Achievement;
         UIEffectManager.Instance.showAnimFadeIn(_achievementPanel);
 
@@ -287,6 +319,7 @@ public class HomeScene : MonoBehaviour
     public void physicalBuffBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _physicalBuffPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.PhysicalBuff;
         UIEffectManager.Instance.showAnimFadeIn(_physicalBuffPanel);
 
@@ -295,18 +328,37 @@ public class HomeScene : MonoBehaviour
     public void elementalBuffBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
+        _elementalBuffPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.ElementalBuff;
         UIEffectManager.Instance.showAnimFadeIn(_elementalBuffPanel);
 
         _elementalBuffPanel.GetComponent<ElementalBuffPanel>().whenOpenThisPanel();
     }
-    public void factoryBtnTapped(bool fromSubMenu = false)
+    public void factory0BtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
-        CurrentSubMenuType = HomeSceneSubMenu.Factory;
-        UIEffectManager.Instance.showAnimFadeIn(_factoryPanel);
+        _factoryPanel0.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
+        CurrentSubMenuType = HomeSceneSubMenu.Factory0;
+        UIEffectManager.Instance.showAnimFadeIn(_factoryPanel0);
 
-        _factoryPanel.GetComponent<FactoryPanel>().whenOpenThisPanel();
+        _factoryPanel0.GetComponent<FactoryPanel>().whenOpenThisPanel();
+    }
+    public void factory1BtnTapped(bool fromSubMenu = false)
+    {
+        if (!fromSubMenu) SubMenuClose(true);
+        _factoryPanel1.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
+        CurrentSubMenuType = HomeSceneSubMenu.Factory1;
+        UIEffectManager.Instance.showAnimFadeIn(_factoryPanel1);
+
+        _factoryPanel1.GetComponent<FactoryPanel>().whenOpenThisPanel();
+    }
+    public void runeBtnTapped(bool fromSubMenu = false)
+    {
+        if (!fromSubMenu) SubMenuClose(true);
+        _runePanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
+        CurrentSubMenuType = HomeSceneSubMenu.Rune;
+        UIEffectManager.Instance.showAnimFadeIn(_runePanel);
+        _runePanel.GetComponent<RunePanel>().whenOpenThisPanel();
     }
     /// <summary>
     /// 快速进入对应子菜单
@@ -379,9 +431,17 @@ public class HomeScene : MonoBehaviour
         {
             elementalBuffBtnTapped(fromSubMenu);
         }
-        else if(SMT == HomeSceneSubMenu.Factory)
+        else if(SMT == HomeSceneSubMenu.Factory0)
         {
-            factoryBtnTapped(fromSubMenu);
+            factory0BtnTapped(fromSubMenu);
+        }
+        else if(SMT == HomeSceneSubMenu.Factory1)
+        {
+            factory1BtnTapped(fromSubMenu);
+        }
+        else if(SMT == HomeSceneSubMenu.Rune)
+        {
+            runeBtnTapped(fromSubMenu);
         }
     }
     #endregion
@@ -424,7 +484,7 @@ public class HomeScene : MonoBehaviour
         else if (DateTime.Now.Day != SDDataManager.Instance.OpenTime.Day)
             changeDayNight = true;
         else return;
-        if (changeDayNight)
+        if (changeDayNight && SDDataManager.Instance.ResidentMovementData != null)
         {
             int a = SDDataManager.Instance.ResidentMovementData.CurrentDayNightId;
             a++; a %= 2;
@@ -502,7 +562,7 @@ public class HomeScene : MonoBehaviour
         BasicSubMenuPanel P = AllSubMenus[(int)CurrentSubMenuType].GetComponent<BasicSubMenuPanel>();
         if (P.CheckIfCanLvUp())
         {
-            int lv = SDDataManager.Instance.getLevelByExp(P.exp);
+            int lv = P.Level;
             SubMenuLvUpBtn.GetComponentInChildren<Text>().text
                 = "升级 </n> 当前等级" + lv;
             SubMenuLvUpBtn.gameObject.SetActive(true);
@@ -523,138 +583,44 @@ public class HomeScene : MonoBehaviour
     #endregion
 
 
-    #region 存档生成（测试用）
-    #region 角色
-    public void buildPlayerOwned()
+
+
+
+
+
+
+
+
+    public void AddHeroPools()
     {
-        List<Dictionary<string, string>> all = new List<Dictionary<string, string>>();
-        for (int i = 0; i < (int)Job.End; i++)
+        List<HeroAltarPool> All = SDDataManager.Instance.GetAllHeroAltarPoolList;
+        foreach (HeroAltarPool p in All)
         {
-            List<Dictionary<string, string>> list = SDDataManager.Instance.ReadHeroFromCSV(i);
-            for (int k = 0; k < list.Count; k++)
+            GDEHeroAltarPoolData d = new GDEHeroAltarPoolData(GDEItemKeys.HeroAltarPool_emptyPool)
             {
-                all.Add(list[k]);
-                //Debug.Log(all[all.Count-1]["id"] +" "+ all[all.Count - 1]["name"]);
-            }
+                ID = p.ID,
+                Unable = false,
+                NotNormalPool = false,
+                AltarTimes = 0,
+                GetSNum = 0,
+                Name = p.Name,
+                AllHeroes = p.HeroList.Select(x => x.ID).ToList(),
+                starttime = DateTime.Now.ToString(),
+                lasttime = 7,
+                PoolCapacity=50,
+            };
+            SDDataManager.Instance.PlayerData.AltarPoolList.Add(d);
+            SDDataManager.Instance.PlayerData.Set_AltarPoolList();
         }
+    }
 
-        all.Sort((x, y) =>
-        {
-            return SDDataManager.Instance.getInteger(x["id"]).CompareTo
-            (SDDataManager.Instance.getInteger(y["id"]));
-        });
-        for (int i = 0; i < all.Count; i++)
-        {
-            Dictionary<string, string> s = all[i];
-            string id = s["id"];
-            allRId.Add(id);
-        }
 
-
-        SDDataManager.Instance.SettingData.seatUnlocked = new List<int>();
-        for (int i = 0; i < SDConstants.MaxSelfNum; i++)
+    public void Test_AddConsumableItems()
+    {
+        List<consumableItem> all = SDDataManager.Instance.AllConsumableList;
+        foreach(consumableItem i in all)
         {
-            SDDataManager.Instance.SettingData.seatUnlocked.Add(1);
+            SDDataManager.Instance.addConsumable(i.ID, 5);
         }
-        SDDataManager.Instance.SettingData.Set_seatUnlocked();
-        //StartCoroutine(WriteToOwned());
     }
-    [HideInInspector]
-    public List<string> allRId = new List<string>();
-    public void AddHeroToPlayerData(int index)
-    {
-        GDEHeroData hero = new GDEHeroData(GDEItemKeys.Hero_BasicHero);
-        hero.id = allRId[index];
-        SDDataManager.Instance.heroNum++;
-        hero.hashCode = SDDataManager.Instance.heroNum;
-        hero.status = 0;
-        hero.starNumUpgradeTimes = 1;
-        SDDataManager.Instance.PlayerData.herosOwned.Add(hero);
-        SDDataManager.Instance.PlayerData.Set_herosOwned();
-        //read();
-    }
-    public IEnumerator WriteToOwned()
-    {
-        for (int i = 0; i < allRId.Count; i++)
-        {
-            AddHeroToPlayerData(i);
-            yield return new WaitForSeconds(0.01f);
-        }
-        Debug.Log("写入完成");
-    }
-    #endregion
-    #region 装备
-    public void buildPlayerOwned_equip()
-    {
-        List<Dictionary<string, string>> all = new List<Dictionary<string, string>>();
-        List<Dictionary<string, string>> equipList = SDDataManager.Instance.ReadFromCSV("equip");
-        List<Dictionary<string, string>> jewelryList = SDDataManager.Instance.ReadFromCSV("jewelry");
-        List<Dictionary<string, string>> weaponList = SDDataManager.Instance.ReadFromCSV("weapon");
-        for (int i = 0; i < equipList.Count; i++) { all.Add(equipList[i]); }
-        for (int i = 0; i < jewelryList.Count; i++) { all.Add(jewelryList[i]); }
-        for (int i = 0; i < weaponList.Count; i++) { all.Add(weaponList[i]); }
-        for (int i = 0; i < all.Count; i++)
-        {
-            Dictionary<string, string> s = all[i];
-            string id = s["id"];
-            allRId_equip.Add(id);
-        }
-        allRId_equip.Sort((x, y) =>
-        {
-            int _x 
-            = SDDataManager.Instance.getInteger(x.Split('#')[1])/10000;
-            int _y
-            = SDDataManager.Instance.getInteger(y.Split('#')[1]) / 10000;
-            return (_x).CompareTo(_y);
-        }
-        );
-        StartCoroutine(WriteToOwned_equip());
-    }
-    [HideInInspector]
-    public List<string> allRId_equip = new List<string>();
-    public void AddEquipToPlayerData_equip(int index)
-    {
-        GDEEquipmentData equip = new GDEEquipmentData(GDEItemKeys.Equipment_EquipEmpty);
-        equip.id = allRId_equip[index];
-        SDDataManager.Instance.addEquip(equip);
-    }
-    public IEnumerator WriteToOwned_equip()
-    {
-        for (int i = 0; i < allRId_equip.Count; i++)
-        {
-            AddEquipToPlayerData_equip(i);
-            yield return new WaitForSeconds(0.01f);
-        }
-        Debug.Log("写入完成---装备");
-    }
-    #endregion
-    #region 材料
-    public void buildPlayerOwned_material()
-    {
-        List<Dictionary<string, string>> all = SDDataManager.Instance.ReadFromCSV("material");
-        for(int i = 0; i < all.Count; i++)
-        {
-            string id = all[i]["id"];
-            allRId_material.Add(id);
-        }
-        allRId_material.Sort();
-        StartCoroutine(WriteToOwned_material());
-    }
-    [HideInInspector]
-    public List<string> allRId_material = new List<string>();
-    public void AddMaterialToPlayerData(int index)
-    {
-        SDDataManager.Instance.addMaterial(allRId_material[index], 5);
-    }
-    public IEnumerator WriteToOwned_material()
-    {
-        for(int i = 0; i < allRId_material.Count; i++)
-        {
-            AddMaterialToPlayerData(i);
-            yield return new WaitForSeconds(0.01f);
-        }
-        Debug.Log("写入完成_材料");
-    }
-    #endregion
-    #endregion
 }

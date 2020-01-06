@@ -1044,7 +1044,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 127.5, y: 257.5}
+  m_AnchoredPosition: {x: 127.5, y: 377}
   m_SizeDelta: {x: 205, y: 415}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &211318481
@@ -1677,10 +1677,10 @@ RectTransform:
   m_Father: {fileID: 508857923}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 502.1875, y: -142.5}
+  m_SizeDelta: {x: 164.875, y: 285}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &276213846
 CanvasRenderer:
@@ -3217,7 +3217,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -127.5, y: -257.50003}
+  m_AnchoredPosition: {x: -127.5, y: -351}
   m_SizeDelta: {x: 205, y: 415}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &601450118
@@ -3695,6 +3695,7 @@ MonoBehaviour:
   CurrentActionUnit: {fileID: 0}
   IsWaitingAction: 0
   BM: {fileID: 0}
+  GM: {fileID: 0}
   ActionBarSpeedFix: 7
   CurrentRoundNum: 0
 --- !u!1 &690308035
@@ -4092,7 +4093,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 878}
+  m_AnchoredPosition: {x: 0, y: 940}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &721928382
@@ -4814,7 +4815,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -25, y: -0.000061035156}
+  m_AnchoredPosition: {x: -25, y: -63}
   m_SizeDelta: {x: 470, y: -350.00006}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &1005183575
@@ -5024,7 +5025,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 127.5, y: -257.49988}
+  m_AnchoredPosition: {x: 127.5, y: -137.99988}
   m_SizeDelta: {x: 205, y: 415}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1070458748
@@ -5200,7 +5201,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1120770185
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6002,10 +6003,10 @@ RectTransform:
   m_Father: {fileID: 508857923}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 82.4375, y: -142.5}
+  m_SizeDelta: {x: 164.875, y: 285}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1269550424
 CanvasRenderer:
@@ -6086,6 +6087,7 @@ MonoBehaviour:
   ABM: {fileID: 0}
   GC: {fileID: 0}
   SDL: {fileID: 6554972299979341333, guid: 25f1bcadcae40844d81f887c50acb7ae, type: 3}
+  GM: {fileID: 0}
   HeroStatusGroup:
   - {fileID: 1269550423}
   - {fileID: 1529368305}
@@ -6098,10 +6100,8 @@ MonoBehaviour:
   ActionConfirm: 0
   WaitForNextUnitTime: 0
   _PropTarget: 
-  _PropRange: 
-  PropFunictionName: 
-  param0: 0
-  param1: 0
+  _PropRange: 0
+  PropSpecialStr: 
   PropTargetUnit: {fileID: 0}
   UsingPropBtn: {fileID: 980684063}
   CancelBtn: {fileID: 1750421022}
@@ -6847,10 +6847,10 @@ RectTransform:
   m_Father: {fileID: 508857923}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 292.3125, y: -142.5}
+  m_SizeDelta: {x: 164.875, y: 285}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1529368306
 CanvasRenderer:
@@ -6972,7 +6972,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -127.5, y: 257.50003}
+  m_AnchoredPosition: {x: -127.5, y: 164.00006}
   m_SizeDelta: {x: 205, y: 415}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1575832048
@@ -7347,6 +7347,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1669120941}
+  - component: {fileID: 1669120942}
+  - component: {fileID: 1669120943}
   m_Layer: 5
   m_Name: GoddnessVision__Panel
   m_TagString: Untagged
@@ -7374,6 +7376,48 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -1306}
   m_SizeDelta: {x: 0, y: 23}
   m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &1669120942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669120940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22e4faa2d62e5824caecbd3de39eb41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  haveGoddess: 0
+  charge: 0
+  GP: {fileID: 1669120943}
+  BM: {fileID: 0}
+  GoddessFunctionCanUse: 0
+--- !u!114 &1669120943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669120940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b6264a648718f49ac1679dd9d15fe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 
+  Name: 
+  AttiList:
+    agile: 0
+    stamina: 0
+    recovery: 0
+    leader: 0
+  CurrentGoddess: {fileID: 0}
+  chargeSpeed: 0
+  newFatigueAddNum: 0
+  mpRegendNum: 0
+  heroAttiUp: 0
+  GSkill: {fileID: 0}
 --- !u!1 &1747275323
 GameObject:
   m_ObjectHideFlags: 0
@@ -8018,7 +8062,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: 0}
+  m_AnchoredPosition: {x: 25, y: -484}
   m_SizeDelta: {x: 470, y: -350}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &1918582230
@@ -9303,6 +9347,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BM: {fileID: 1281051875}
+  GM: {fileID: 0}
   HeroPos:
   - {fileID: 1957505892}
   - {fileID: 205220564}
@@ -9334,6 +9379,7 @@ MonoBehaviour:
   imgBlack: {fileID: 522911691}
   startEnemyGroup: []
   LBM: {fileID: 721928382}
+  FatigueAddNum: 0
   introPanel: {fileID: 0}
   gameEndLayer: {fileID: 1945246311}
   gameBonusLayer: {fileID: 0}
@@ -9717,10 +9763,10 @@ RectTransform:
   m_Father: {fileID: 508857923}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 712.0625, y: -142.5}
+  m_SizeDelta: {x: 164.875, y: 285}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2110317562
 CanvasRenderer:
@@ -9883,7 +9929,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2140813565}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1669120942}
+        m_MethodName: GoddessBtnClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2140813565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9897,7 +9954,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.3882353}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.7647059}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

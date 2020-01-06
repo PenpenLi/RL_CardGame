@@ -13,8 +13,8 @@ public class SDHeroDetail : BasicRoleProperty
     //public string Id;
     public int Hashcode;
     public int Status;
-    public int careerIndex;
-    public int raceIndex;
+    public Job careerIndex;
+    public Race raceIndex;
 
     public SDHero _hero;
     public SDHeroSelect heroSelect;
@@ -102,7 +102,7 @@ public class SDHeroDetail : BasicRoleProperty
             setJewelry(Hashcode , true);
             setWeapon(Hashcode);
             InitHeroBasicProperties();
-            RALPanel.initRAL(this.RoleBasicRA,this.RARate, Type
+            RALPanel.initRAL(this.RoleBasicRA, Type
                 , SDDataManager.Instance.getLevelByExp(hero.exp));//视觉展示属性
             setRoleBaseMessiage();
 
@@ -111,11 +111,9 @@ public class SDHeroDetail : BasicRoleProperty
                 int exp = hero.exp;
                 int lv = SDDataManager.Instance.getLevelByExp(exp);
                 LvText.text = SDGameManager.T("Lv.") + lv;
-                e0 = exp - SDDataManager.Instance.getExpByLevel(lv);
-                e1 = (lv + 1) * SDConstants.MinExpPerLevel;
                 if(ExpSlider)
                 ExpSlider.localScale 
-                        = Vector3.up + Vector3.forward + Vector3.right * (e0 * 1f / e1);
+                        = Vector3.up + Vector3.forward + Vector3.right * (SDDataManager.Instance.getExpRateByExp(exp));
 
             }
             showRoleModelPanel();
@@ -145,18 +143,17 @@ public class SDHeroDetail : BasicRoleProperty
         raceIndex = SDDataManager.Instance.getHeroRaceById(id);
 
         ROHeroData dal = SDDataManager.Instance.getHeroDataByID(id, heroData.starNumUpgradeTimes);
-        CareerText.text = "" + SDDataManager.Instance.getCareerStr(careerIndex, raceIndex, Type);
+        CareerText.text = "" + SDDataManager.Instance.getCareerStr(careerIndex, (int)raceIndex, Type);
         //CareerIconImg.sprite = 
-        RaceText.text = "" + SDDataManager.Instance.getRaceStr(raceIndex, Type);
+        RaceText.text = "" + SDDataManager.Instance.getRaceStr((int)raceIndex, Type);
         RarityText.text = SDDataManager.Instance.rarityString(dal.quality);
         //RaceIconImg.sprite =
         int grade = SDDataManager.Instance.getLevelByExp(heroData.exp);
-        _hero.initData_Hero((Job)careerIndex, (Race)raceIndex, grade, dal.quality, dal.starNum
-            , dal.BasicRAL, dal.RALRate
-            , dal.CRI, dal.CRIDmg, dal.DmgReduction, dal.DmgReflection, dal.RewardRate
-            , dal.BarChartRegendPerTurn, ID, dal.Name, heroData.wakeNum);
-
-        //print("name is " + name);
+        _hero.gender = dal.Info.Sex;
+        _hero.initData_Hero((Job)careerIndex, raceIndex, grade, dal.quality, dal.starNum
+            , dal.ExportRAL
+            , dal.CRIDmg, dal.DmgReduction, dal.DmgReflection, dal.RewardRate
+            , dal.BarChartRegendPerTurn, ID, dal.Info.Name, heroData.wakeNum);
     }
     public void setHelmet(int hashcode)
     {
@@ -166,32 +163,16 @@ public class SDHeroDetail : BasicRoleProperty
             equipList.initPosEquipVisionEmpty(EquipPosition.Head);
             _helmet.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("equip");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                string id = s["id"];
-                int rarity = SDDataManager.Instance.getEquipRarityById(id);
-                equipList.helmetD.initEquipVision("Sprites/EquipImage/" + s["image"], rarity);
-                //
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.RALByDictionary(s);
-                basicRAL = SDDataManager.Instance.getRALByUpLv(basicRAL, upLv);
-                string name = s["name"];
-
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                _helmet.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0
-                    , new RoleBarChart(), id, name, 0);
-                _helmet.PassiveEffectInit(passiveEffect);
-                _helmet.armorType = (SDConstants.ArmorType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-                break;
-            }
+            _helmet.initDataEmpty(); return;
         }
+        //
+        _helmet.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        _helmet.PassiveEffectInit(Item.PassiveEffect);
+        _helmet.armorRank = Item.ArmorRank;
     }
     public void setBreastplate(int hashcode)
     {
@@ -201,31 +182,16 @@ public class SDHeroDetail : BasicRoleProperty
             equipList.initPosEquipVisionEmpty(EquipPosition.Breast);
             _breastplate.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("equip");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                string id = s["id"];
-                int rarity = SDDataManager.Instance.getEquipRarityById(id);
-                equipList.breastplateD.initEquipVision("Sprites/EquipImage/" + s["image"], rarity);
-                //
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.RALByDictionary(s);
-                basicRAL = SDDataManager.Instance.getRALByUpLv(basicRAL, upLv);
-                string name = s["name"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                _breastplate.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0
-                    , new RoleBarChart(), id, name, 0);
-                _breastplate.PassiveEffectInit(passiveEffect);
-                _breastplate.armorType = (SDConstants.ArmorType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-                break;
-            }
+            _breastplate.initDataEmpty(); return;
         }
+        //
+        _breastplate.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        _breastplate.PassiveEffectInit(Item.PassiveEffect);
+        _breastplate.armorRank = Item.ArmorRank;
     }
     public void setGardebras(int hashcode)
     {
@@ -235,30 +201,16 @@ public class SDHeroDetail : BasicRoleProperty
             equipList.initPosEquipVisionEmpty(EquipPosition.Arm);
             _gardebras.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("equip");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                string id = s["id"];
-                int rarity = SDDataManager.Instance.getEquipRarityById(id);
-                equipList.gardebrasD.initEquipVision("Sprites/EquipImage/" + s["image"],rarity);
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.RALByDictionary(s);
-                basicRAL = SDDataManager.Instance.getRALByUpLv(basicRAL, upLv);
-                string name = s["name"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                _gardebras.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, RoleBarChart.zero
-                    , id, name, 0);
-                _gardebras.PassiveEffectInit(passiveEffect);
-                _gardebras.armorType = (SDConstants.ArmorType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-                break;
-            }
+            _gardebras.initDataEmpty(); return;
         }
+        //
+        _gardebras.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        _gardebras.PassiveEffectInit(Item.PassiveEffect);
+        _gardebras.armorRank = Item.ArmorRank;
     }
     public void setLegging(int hashcode)
     {
@@ -268,31 +220,16 @@ public class SDHeroDetail : BasicRoleProperty
             equipList.initPosEquipVisionEmpty(EquipPosition.Leg);
             _legging.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("equip");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                string id = s["id"];
-                int rarity = SDDataManager.Instance.getEquipRarityById(id);
-                equipList.leggingD.initEquipVision("Sprites/EquipImage/" + s["image"],rarity);
-
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.RALByDictionary(s);
-                basicRAL = SDDataManager.Instance.getRALByUpLv(basicRAL, upLv);
-                string name = s["name"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                _legging.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, RoleBarChart.zero
-                    , id, name, 0);
-                _legging.PassiveEffectInit(passiveEffect);
-                _legging.armorType = (SDConstants.ArmorType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-                break;
-            }
+            _legging.initDataEmpty(); return;
         }
+        //
+        _legging.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        _legging.PassiveEffectInit(Item.PassiveEffect);
+        _legging.armorRank = Item.ArmorRank;
     }
     public void setJewelry(int hashcode, bool isSecondPos = false)
     {
@@ -304,32 +241,16 @@ public class SDHeroDetail : BasicRoleProperty
                 equipList.initPosEquipVisionEmpty(EquipPosition.Finger, false);
                 _jewelry0.initDataEmpty(); return;
             }
-            List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("jewelry");
-            for (int i = 0; i < itemDatas.Count; i++)
+            EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+            if (Item == null)
             {
-                Dictionary<string, string> s = itemDatas[i];
-                if (s["id"] == armor.id)
-                {
-                    string id = s["id"];
-                    int rarity = SDDataManager.Instance.getEquipRarityById(id);
-                    equipList.jewelry0D.initEquipVision("Sprites/EquipImage/" + s["image"],rarity);
-
-                    int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                    int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                    //主副属性类型装备读取
-                    RoleAttributeList basicRAL = SDDataManager.Instance.EquipRALByDictionary(s);
-                    basicRAL = SDDataManager.Instance.getRALByUpLv(basicRAL, upLv);
-                    string name = s["name"];
-                    string passiveEffect = s["passiveEffect"];
-                    RoleAttributeList rateRAL = new RoleAttributeList();
-                    _jewelry0.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0
-                        , new RoleBarChart(), id, name, 0);
-                    _jewelry0.PassiveEffectInit(passiveEffect);
-                    _jewelry0._jewelryType = (SDConstants.JewelryType)
-                        SDDataManager.Instance.getInteger(s["type"]);
-                    break;
-                }
+                _jewelry0.initDataEmpty(); return;
             }
+            //
+            _jewelry0.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+                , Item.ID, Item.NAME, 0);
+            _jewelry0.PassiveEffectInit(Item.PassiveEffect);
+            _jewelry0.armorRank = Item.ArmorRank;
         }
         else
         {
@@ -338,32 +259,16 @@ public class SDHeroDetail : BasicRoleProperty
                 equipList.initPosEquipVisionEmpty(EquipPosition.Finger, true);
                 _jewelry1.initDataEmpty(); return;
             }
-            List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("jewelry");
-            for (int i = 0; i < itemDatas.Count; i++)
+            EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+            if (Item == null)
             {
-                Dictionary<string, string> s = itemDatas[i];
-                if (s["id"] == armor.id)
-                {
-                    string id = s["id"];
-                    int rarity = SDDataManager.Instance.getEquipRarityById(id);
-                    equipList.jewelry1D.initEquipVision("Sprites/EquipImage/" + s["image"],rarity);
-
-                    int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                    int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                    //主副属性类型装备读取
-                    RoleAttributeList basicRAL = SDDataManager.Instance.EquipRALByDictionary(s);
-                    basicRAL = SDDataManager.Instance.getRALByUpLv(basicRAL, upLv);
-                    string name = s["name"];
-                    string passiveEffect = s["passiveEffect"];
-                    RoleAttributeList rateRAL = new RoleAttributeList();
-                    _jewelry1.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, RoleBarChart.zero
-                        , id, name, 0);
-                    _jewelry1.PassiveEffectInit(passiveEffect);
-                    _jewelry1._jewelryType = (SDConstants.JewelryType)
-                        SDDataManager.Instance.getInteger(s["type"]);
-                    break;
-                }
+                _jewelry1.initDataEmpty(); return;
             }
+            //
+            _jewelry1.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+                , Item.ID, Item.NAME, 0);
+            _jewelry1.PassiveEffectInit(Item.PassiveEffect);
+            _jewelry1.armorRank = Item.ArmorRank;
         }
     }
     public void setWeapon(int hashcode)
@@ -374,32 +279,16 @@ public class SDHeroDetail : BasicRoleProperty
             equipList.initPosEquipVisionEmpty(EquipPosition.Hand);
             _weapon.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("weapon");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                string id = s["id"];
-                int rarity = SDDataManager.Instance.getEquipRarityById(id);
-                equipList.weaponD.initEquipVision("Sprites/EquipImage/" + s["image"],rarity);
-
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                //主副属性类型装备读取
-                RoleAttributeList basicRAL = SDDataManager.Instance.EquipRALByDictionary(s);
-                basicRAL = SDDataManager.Instance.getRALByUpLv(basicRAL, upLv);
-                string name = s["name"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                _weapon.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0
-                    , new RoleBarChart(), id, name, 0);
-                _weapon.PassiveEffectInit(passiveEffect);
-                _weapon._weaponType = (SDConstants.WeaponType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-                break;
-            }
+            _weapon.initDataEmpty(); return;
         }
+        //
+        _weapon.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        _weapon.PassiveEffectInit(Item.PassiveEffect);
+        _weapon.armorRank = Item.ArmorRank;
     }
 
     public void InitHeroBasicProperties()
@@ -407,8 +296,6 @@ public class SDHeroDetail : BasicRoleProperty
         if (_hero)
         {
             this.RoleBasicRA = _hero.RoleBasicRA;
-            this.RARate = _hero.RARate;
-            this.CRI = _hero.CRI;
             this.CRIDmg = _hero.CRIDmg;
             this.DmgReduction = _hero.DmgReduction;
             this.DmgReflection = _hero.DmgReflection;
@@ -423,8 +310,6 @@ public class SDHeroDetail : BasicRoleProperty
         if (_helmet)
         {
             this.RoleBasicRA += _helmet.RoleBasicRA;
-            this.RARate += _helmet.RARate;
-            this.CRI += _helmet.CRI;
             this.CRIDmg += _helmet.CRIDmg;
             this.DmgReduction += _helmet.DmgReduction;
             this.DmgReflection += _helmet.DmgReflection;
@@ -434,8 +319,6 @@ public class SDHeroDetail : BasicRoleProperty
         if (_breastplate)
         {
             this.RoleBasicRA += _breastplate.RoleBasicRA;
-            this.RARate += _breastplate.RARate;
-            this.CRI += _breastplate.CRI;
             this.CRIDmg += _breastplate.CRIDmg;
             this.DmgReduction += _breastplate.DmgReduction;
             this.DmgReflection += _breastplate.DmgReflection;
@@ -445,8 +328,6 @@ public class SDHeroDetail : BasicRoleProperty
         if (_gardebras)
         {
             this.RoleBasicRA += _gardebras.RoleBasicRA;
-            this.RARate += _gardebras.RARate;
-            this.CRI += _gardebras.CRI;
             this.CRIDmg += _gardebras.CRIDmg;
             this.DmgReduction += _gardebras.DmgReduction;
             this.DmgReflection += _gardebras.DmgReflection;
@@ -456,8 +337,6 @@ public class SDHeroDetail : BasicRoleProperty
         if (_legging)
         {
             this.RoleBasicRA += _legging.RoleBasicRA;
-            this.RARate += _legging.RARate;
-            this.CRI += _legging.CRI;
             this.CRIDmg += _legging.CRIDmg;
             this.DmgReduction += _legging.DmgReduction;
             this.DmgReflection += _legging.DmgReflection;
@@ -467,8 +346,6 @@ public class SDHeroDetail : BasicRoleProperty
         if (_jewelry0)
         {
             this.RoleBasicRA += _jewelry0.RoleBasicRA;
-            this.RARate += _jewelry0.RARate;
-            this.CRI += _jewelry0.CRI;
             this.CRIDmg += _jewelry0.CRIDmg;
             this.DmgReduction += _jewelry0.DmgReduction;
             this.DmgReflection += _jewelry0.DmgReflection;
@@ -478,8 +355,6 @@ public class SDHeroDetail : BasicRoleProperty
         if (_jewelry1)
         {
             this.RoleBasicRA += _jewelry1.RoleBasicRA;
-            this.RARate += _jewelry1.RARate;
-            this.CRI += _jewelry1.CRI;
             this.CRIDmg += _jewelry1.CRIDmg;
             this.DmgReduction += _jewelry1.DmgReduction;
             this.DmgReflection += _jewelry1.DmgReflection;
@@ -489,8 +364,6 @@ public class SDHeroDetail : BasicRoleProperty
         if (_weapon)
         {
             this.RoleBasicRA += _weapon.RoleBasicRA;
-            this.RARate += _weapon.RARate;
-            this.CRI += _weapon.CRI;
             this.CRIDmg += _weapon.CRIDmg;
             this.DmgReduction += _weapon.DmgReduction;
             this.DmgReflection += _weapon.DmgReflection;

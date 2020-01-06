@@ -42,8 +42,10 @@ public class OneAltarData : MonoBehaviour
         }
         else if (altarPoolType == PoolType.theme)
         {
-            int oneTimeCouponNum = SDDataManager.Instance.getMaterialNum("M_M#3010017");
-            int tenTimeCouponNum = SDDataManager.Instance.getMaterialNum("M_M#3010018");
+            int oneTimeCouponNum = SDDataManager.Instance.getConsumableNum
+                (SAP.Coupon_n_oneTime.ID);
+            int tenTimeCouponNum = SDDataManager.Instance.getConsumableNum
+                (SAP.Coupon_n_tenTimes.ID);
             int damondNum = SDDataManager.Instance.PlayerData.damond;
             //单抽按钮是否可用
             if (oneTimeCouponNum > 0 || damondNum >= SDConstants.altarDamondCost)
@@ -60,7 +62,8 @@ public class OneAltarData : MonoBehaviour
         }
         else if(altarPoolType == PoolType.rare)
         {
-            int rareRoleCouponNum = SDDataManager.Instance.getMaterialNum("M_M#3010019");
+            int rareRoleCouponNum = SDDataManager.Instance.getConsumableNum
+                (SAP.Coupon_r_oneTimes.ID);
             if(rareRoleCouponNum > 0)
             {
                 BtnOneTime.interactable = true;
@@ -76,12 +79,16 @@ public class OneAltarData : MonoBehaviour
 
     public void BtnCallOneTime()
     {
-        SAP.SummonOneTime();
+        if(altarPoolType == PoolType.rare)
+        {
+            SAP.SummonOneTime_r();
+        }
+        else SAP.SummonOneTime_n();
         refreshThisPool();
     }
     public void BtnCallTenTimes()
     {
-        SAP.SumonTenTimes();
+        SAP.SumonTenTimes_n();
         refreshThisPool();
     }
     public void BtnShowDetail()

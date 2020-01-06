@@ -236,18 +236,40 @@ public class ActionPanelController : MonoBehaviour
     }
     public void addSkill(OneSkill skill,Transform trans, string heroId)
     {
-        if (skill.SkillFunctionID < 0)
+        Transform s;
+        if (!skill.UseAppointedPrefab)
         {
-            return;
+            if (skill.SkillFunctionID < 0)
+            {
+                return;
+            }
+            int index = skill.SkillFunctionID;
+            s = Instantiate(SDL.AllSkillList[index]) as Transform;
         }
-        int index = skill.SkillFunctionID;
-        Transform s = Instantiate(SDL.AllSkillList[index]) as Transform;
+        else
+        {
+            s = Instantiate(skill.SkillPrefab) as Transform;
+            HSExportDmgModifity HSE = s.GetComponent<HSExportDmgModifity>();
+            if (HSE)
+            {
+                HSE.BCPerformDataUsingRA = skill.DataSet.BCPerformDataUsingRA;
+                HSE.PDUsingRA_PerLevel = skill.DataSet.PDUsingRA_PerLevel;
+                HSE.PDUsingRA_PerSkillGrade = skill.DataSet.PDUsingRA_PerSkillGrade;
+            }
+            SkillFunction sf = s.GetComponent<SkillFunction>();
+            if (sf)
+            {
+                sf.UseState = skill.DataSet.UseState;
+                sf._standardState = skill.DataSet._standardState;
+            }
+        }
+
         s.GetComponentInChildren<HSkilInfo>().HSDetail = skill;
         s.SetParent(trans);
         s.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         s.localScale = Vector3.one;
         HSkilInfo info = s.GetComponent<HSkilInfo>();
-        if (skill.Breed != SkillBreed.End) info.breed = skill.Breed;
+        info.breed = skill.Breed;
         if (skill.Kind != SkillKind.End) info.kind = skill.Kind;
         if (skill.SkillAoe != SDConstants.AOEType.End)
             info.AOEType = skill.SkillAoe;
@@ -258,7 +280,7 @@ public class ActionPanelController : MonoBehaviour
         if (skill.Aim!= SkillAim.End) basicSkillController.ThisSkillAim = skill.Aim;
 
         basicSkillController.SkillGrade = skill.lv;
-        basicSkillController.IsRare = skill.isOmegaSkill;
+        basicSkillController.IsOmega = skill.isOmegaSkill;
 
 
         if(skill.BulletImg!=null && skill.BulletImg != "")

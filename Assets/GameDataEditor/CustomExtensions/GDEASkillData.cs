@@ -34,15 +34,15 @@ namespace GameDataEditor
         }
 
         static string IdKey = "Id";
-		int _Id;
-        public int Id
+		string _Id;
+        public string Id
         {
             get { return _Id; }
             set {
                 if (_Id != value)
                 {
                     _Id = value;
-					GDEDataManager.SetInt(_key, IdKey, _Id);
+					GDEDataManager.SetString(_key, IdKey, _Id);
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace GameDataEditor
 			else
 			{
                 dict.TryGetInt(LvKey, out _Lv);
-                dict.TryGetInt(IdKey, out _Id);
+                dict.TryGetString(IdKey, out _Id);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -84,7 +84,7 @@ namespace GameDataEditor
 			_key = dataKey;
 			
             _Lv = GDEDataManager.GetInt(_key, LvKey, _Lv);
-            _Id = GDEDataManager.GetInt(_key, IdKey, _Id);
+            _Id = GDEDataManager.GetString(_key, IdKey, _Id);
         }
 
         public GDEASkillData ShallowClone()
@@ -119,7 +119,7 @@ namespace GameDataEditor
 
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(IdKey, out _Id);
+            dict.TryGetString(IdKey, out _Id);
         }
 
         public void ResetAll()

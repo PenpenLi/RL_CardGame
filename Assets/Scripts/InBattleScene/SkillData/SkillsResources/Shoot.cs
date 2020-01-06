@@ -12,9 +12,7 @@ public class Shoot : SkillFunction
             }
             return SkillKind.Physical;
         } }
-    protected SkillBreed _skillBreed = SkillBreed.Remote;
-    [Header("ExtraStateAdd"),Space(25)]
-    public StandardState _standardState;
+
     public override void StartSkill(BattleRoleData source, BattleRoleData target)
     {
         base.StartSkill(source, target);
@@ -23,15 +21,11 @@ public class Shoot : SkillFunction
         IsUsed = true;
         CalculateBeforeFunction(source, target);
 
-        List<BattleRoleData> list = DealWithAOEAction(source, target);
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
         for(int i = 0; i < list.Count; i++)
         {
             StartCoroutine(IEStartSkill(source, list[i], dmgCaused(source, list[i])));
-            if (_standardState)
-            {
-                _standardState.StartState(this, source, list[i]
-                    , dmgCaused(source,target) / 5 );
-            }
+            stateWork(source, list[i]);
         }
 
     }

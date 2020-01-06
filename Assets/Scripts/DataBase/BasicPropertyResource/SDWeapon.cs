@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SDWeapon : BasicRoleProperty
+public class SDWeapon : SDArmor
 {
     protected EquipPosition equipPos = EquipPosition.Hand;
-    public SDConstants.WeaponType _weaponType;
-    public int grade;
+    public SDConstants.WeaponClass _weaponType;
     private void Start()
     {
 
-    }
-    public void initGradeShow(int grade)
-    {
-        this.grade = grade;
-        AddMultiplier(this.grade);
     }
 }

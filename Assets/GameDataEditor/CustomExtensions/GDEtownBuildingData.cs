@@ -19,16 +19,16 @@ namespace GameDataEditor
 {
     public class GDEtownBuildingData : IGDEData
     {
-        static string expKey = "exp";
-		int _exp;
-        public int exp
+        static string levelKey = "level";
+		int _level;
+        public int level
         {
-            get { return _exp; }
+            get { return _level; }
             set {
-                if (_exp != value)
+                if (_level != value)
                 {
-                    _exp = value;
-					GDEDataManager.SetInt(_key, expKey, _exp);
+                    _level = value;
+					GDEDataManager.SetInt(_key, levelKey, _level);
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace GameDataEditor
 			var dict = new Dictionary<string, object>();
 			dict.Add(GDMConstants.SchemaKey, "townBuilding");
 			
-            dict.Merge(true, exp.ToGDEDict(expKey));
+            dict.Merge(true, level.ToGDEDict(levelKey));
             dict.Merge(true, id.ToGDEDict(idKey));
 
             dict.Merge(true, NPC.ToGDEDict(NPCKey));
@@ -91,7 +91,7 @@ namespace GameDataEditor
 				LoadFromSavedData(dataKey);
 			else
 			{
-                dict.TryGetInt(expKey, out _exp);
+                dict.TryGetInt(levelKey, out _level);
                 dict.TryGetString(idKey, out _id);
 
                 string customDataKey;
@@ -105,7 +105,7 @@ namespace GameDataEditor
 		{
 			_key = dataKey;
 			
-            _exp = GDEDataManager.GetInt(_key, expKey, _exp);
+            _level = GDEDataManager.GetInt(_key, levelKey, _level);
             _id = GDEDataManager.GetString(_key, idKey, _id);
 
             _NPC = GDEDataManager.GetCustom(_key, NPCKey, _NPC);
@@ -116,7 +116,7 @@ namespace GameDataEditor
 			string newKey = Guid.NewGuid().ToString();
 			GDEtownBuildingData newClone = new GDEtownBuildingData(newKey);
 
-            newClone.exp = exp;
+            newClone.level = level;
             newClone.id = id;
 
             newClone.NPC = NPC;
@@ -131,13 +131,13 @@ namespace GameDataEditor
             return newClone;
 		}
 
-        public void Reset_exp()
+        public void Reset_level()
         {
-            GDEDataManager.ResetToDefault(_key, expKey);
+            GDEDataManager.ResetToDefault(_key, levelKey);
 
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(expKey, out _exp);
+            dict.TryGetInt(levelKey, out _level);
         }
 
         public void Reset_id()
@@ -170,8 +170,8 @@ namespace GameDataEditor
              #else
 
             GDEDataManager.ResetToDefault(_key, idKey);
-            GDEDataManager.ResetToDefault(_key, expKey);
             GDEDataManager.ResetToDefault(_key, NPCKey);
+            GDEDataManager.ResetToDefault(_key, levelKey);
 
             Reset_NPC();
 

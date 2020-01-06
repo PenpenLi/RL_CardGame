@@ -98,7 +98,7 @@ public class RoleDetailPanel : MonoBehaviour
         List<Dictionary<string, string>> list = SDDataManager.Instance.ReadFromCSV("nameBefore");
         foreach(Dictionary<string,string> s in list)
         {
-            if(SDDataManager.Instance.getInteger(s["id"]) == id)
+            if(s["id"] == id.ToString())
             {
                 return s["name"];
             }

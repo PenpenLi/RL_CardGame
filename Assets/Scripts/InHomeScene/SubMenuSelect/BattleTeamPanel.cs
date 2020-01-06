@@ -9,21 +9,14 @@ public class BattleTeamPanel : BasicSubMenuPanel
 { 
     public SDHeroSelect HS;
     [Space(25)]
-    public Transform SelectUnitTeamPanel;
+    //public Transform SelectUnitTeamPanel;
     //public Transform OneTeam;
     public ScrollRect TeamsScrolrect;
-    public OneUnitTeam CurrentTeamVision;
+    //public OneUnitTeam CurrentTeamVision;
     public Transform TeamListParent;
     //public List<OneUnitTeam> Teams;
     [Space(10)]
     public Transform EditUnitTeamPanel;
-    public enum panelContent
-    {
-        main,edit,end
-    }
-    public panelContent currentPanelContent = panelContent.end;
-    //public bool isFromLevelEnterPanel;
-    public HomeScene.HomeSceneSubMenu panelFrom = HomeScene.HomeSceneSubMenu.End;
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();
@@ -31,18 +24,18 @@ public class BattleTeamPanel : BasicSubMenuPanel
     }
     public void WhenOpenThisMenu()
     {
-        currentPanelContent = panelContent.main;
         BasicHeroSelect bhs = HS.heroesSelectPanel.GetComponent<BasicHeroSelect>();
         bhs.pageController.scrollRectReset();
         if (string.IsNullOrEmpty(SDGameManager.Instance.currentHeroTeamId))
         {
             SDGameManager.Instance.currentHeroTeamId = "TEAM#" + 1;
         }
-        OpenSelectUnitTeamPanel(SDGameManager.Instance.currentHeroTeamId);
-        EditUnitTeamPanel.localScale = Vector3.zero;
+        SetupSelectUnitTeamPanel();
+        //EditUnitTeamPanel.localScale = Vector3.zero;
         showTeamId(SDGameManager.Instance.currentHeroTeamId);
+        openEditUnitTeamPanel(SDGameManager.Instance.currentHeroTeamId);
     }
-    public void OpenSelectUnitTeamPanel(string teamId)
+    void SetupSelectUnitTeamPanel()
     {
         if (SDDataManager.Instance.getHeroGroup().Count != SDConstants.MaxBattleTeamNum)
         {
@@ -59,34 +52,29 @@ public class BattleTeamPanel : BasicSubMenuPanel
                 SDDataManager.Instance.PlayerData.Set_heroesTeam();
             }
         }
-        GDEunitTeamData Team = SDDataManager.Instance.getHeroTeamByTeamId(teamId);
-        CurrentTeamVision.initThisUnitTeam(Team);
-        showTHisUnitTeamOtherData(Team);
-    }
-    public void showTHisUnitTeamOtherData(GDEunitTeamData team)
-    {
-
+        //GDEunitTeamData Team = SDDataManager.Instance.getHeroTeamByTeamId(teamId);
+        //CurrentTeamVision.initThisUnitTeam(Team);
+        //showTHisUnitTeamOtherData(Team);
     }
     public void openEditUnitTeamPanel(string teamId)
     {
-        currentPanelContent = panelContent.edit;
         SelectTeamUnitPanel STUP = EditUnitTeamPanel.GetComponent<SelectTeamUnitPanel>();
         STUP.CurrentTeamId = teamId;
         STUP.whenOpenThisPanel();
-        UIEffectManager.Instance.showAnimFadeIn(EditUnitTeamPanel);
+        //UIEffectManager.Instance.showAnimFadeIn(EditUnitTeamPanel);
         HS.heroPanelInit();
         HS.heroItemsInTeam[0].heroBtnTapped();
-        //EditUnitTeamPanel.GetComponent<SelectTeamUnitPanel>().usingIEcannotTap = false;
     }
     public void refreshCurrentUnitTeam()
     {
         PageView pv = TeamsScrolrect.GetComponent<PageView>();
         int _pvIndex = pv.currentIndex + 1;
         string pvIndex = "TEAM#" + _pvIndex;
-        GDEunitTeamData Team = SDDataManager.Instance.getHeroTeamByTeamId(pvIndex);
-        CurrentTeamVision.initThisUnitTeam(Team);
-        showTHisUnitTeamOtherData(Team);
+        //GDEunitTeamData Team = SDDataManager.Instance.getHeroTeamByTeamId(pvIndex);
+        //CurrentTeamVision.initThisUnitTeam(Team);
+        //showTHisUnitTeamOtherData(Team);
         showTeamId(pvIndex);
+        openEditUnitTeamPanel(pvIndex);
     }
     public void showTeamId(string teamId)
     {
@@ -142,26 +130,18 @@ public class BattleTeamPanel : BasicSubMenuPanel
 
 
     public override void commonBackAction()
-    {     
-        if(currentPanelContent == panelContent.main)
+    {
+        base.commonBackAction();
+        homeScene.SubMenuClose();
+        if (panelFrom != HomeScene.HomeSceneSubMenu.End)
         {
-            base.commonBackAction();
-            homeScene.SubMenuClose();
-            if (panelFrom != HomeScene.HomeSceneSubMenu.End)
-            {
-                homeScene.CurrentSubMenuType = panelFrom;
-            }
-        }
-        else if(currentPanelContent == panelContent.edit)
-        {
-            currentPanelContent = panelContent.main;
-            EditUnitTeamPanel.localScale = Vector3.zero;
-            showTeamId(SDGameManager.Instance.currentHeroTeamId);
-        }
-        else if(currentPanelContent == panelContent.end)
-        {
-
+            homeScene.CurrentSubMenuType = panelFrom;
         }
     }
+
+
+
+
+
 
 }

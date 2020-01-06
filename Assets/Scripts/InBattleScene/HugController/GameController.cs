@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
 {
     public static GameController Instantce;
     public BattleManager BM;
+    public GoddessManager GM;
     public Transform[] HeroPos;
     public Transform[] HeroEmptyEffect;
     public Transform[] EnemyPos;
@@ -36,6 +37,8 @@ public class GameController : MonoBehaviour
     public List<string> startEnemyGroup;
     [Space(25)]
     public LevelbarManager LBM;
+    [Space(15)]
+    public int FatigueAddNum = SDConstants.fatigueAddNum;
     #region 结算页面
     [Header("结算UI")]
     public Transform introPanel;
@@ -62,7 +65,7 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         registerGameObjectPoolEffects();
-        setupHeroes();
+        setupHeroTeam();
         playLevelStartAnim();
         StartCoroutine(IEStartGame());
     }
@@ -71,11 +74,12 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         setCurrentLevel();
     }
-    public void setupHeroes()
+    public void setupHeroTeam()
     {
         GDEunitTeamData team 
             = SDDataManager.Instance.getHeroTeamByTeamId
             (SDGameManager.Instance.currentHeroTeamId);
+        GM.initCurrentGoddess(team.goddess);
         List<GDEHeroData> all = SDDataManager.Instance.getHerosFromTeam
             (SDGameManager.Instance.currentHeroTeamId);
         if (all.Count <= 0)
@@ -196,21 +200,22 @@ public class GameController : MonoBehaviour
     {
         //关卡视觉显示详细
         levelText.text = "";
+        int FAddNum = FatigueAddNum;
         if(SDGameManager.Instance.gameType == SDConstants.GameType.Normal)
         {
             levelText.text = "主线";
-            addAllHeroesFatigue(1);
         }
         else if(SDGameManager.Instance.gameType == SDConstants.GameType.Dungeon)
         {
             levelText.text = "地牢";
-            addAllHeroesFatigue(3);
+            FAddNum = (int)(FAddNum * 1.5f);
         }
         else if(SDGameManager.Instance.gameType == SDConstants.GameType.DimensionBoss)
         {
             levelText.text = "BOSS";
-            addAllHeroesFatigue(5);
+            FAddNum = (int)(FAddNum * 2.25f);
         }
+        addAllHeroesFatigue(FAddNum);
         //
         LBM.setupLevelAnim();
         foreach (Transform t in enemyParent) Destroy(t.gameObject);
@@ -257,34 +262,27 @@ public class GameController : MonoBehaviour
             return;//生成boss
         }
 
-        List<string> enemiesId = new List<string>();
+        List<string> enemies = new List<string>();
 
-        List<Dictionary<string, string>> enemydatas = SDDataManager.Instance.ReadFromCSV("enemy");
+        List<EnemyInfo> enemydatas = SDDataManager.Instance.AllEnemyList;
         for(int i = 0; i < enemydatas.Count; i++)
         {
-            Dictionary<string, string> s = enemydatas[i];
-            int weight = SDDataManager.Instance.getInteger(s["weight"]);
-            if (enemyBuild.CanBeUsedInThisLevel(weight) && s["class"] != "boss")
+            EnemyInfo s = enemydatas[i];
+            int weight = s.weight;
+            if (enemyBuild.CanBeUsedInThisLevel(weight) && s.EnemyRank.Index < 3)
             {
-                string enemyId = (s["id"]);
-                int appearWeight = SDDataManager.Instance.getInteger(s["appearWeight"]);
-                for(int j = 0; j < appearWeight; j++)
-                {
-                    enemiesId.Add(enemyId);
-                    Debug.Log("关卡可用enemy id:" + enemiesId[j]);
-                }
+                enemies.Add(enemydatas[i].ID);
             }
         }
         startEnemyGroup.Clear();
         List<int> selectList = RandomIntger.NumListReturn
-            ( SDConstants.MaxOtherNum, enemiesId.Count );
-        for(int i = 0; i < enemiesId.Count; i++)
+            ( SDConstants.MaxOtherNum, enemies.Count );
+        int groupNum = Mathf.Min(SDGameManager.Instance.currentLevel + 1, SDConstants.MaxOtherNum);
+        for(int i = 0; i < groupNum; i++)
         {
-            if (selectList.Contains(i))
-            {
-                startEnemyGroup.Add(enemiesId[i]);
-                Debug.Log("选中的Enemy id:" +  enemiesId[i]);
-            }
+            string s = enemies[Random.Range(0, enemies.Count)];
+            startEnemyGroup.Add(s);
+            Debug.Log("选中的Enemy id:" + s);
         }
 
         int num = enemyBuild.createCareerByLevel();
@@ -414,8 +412,7 @@ public class GameController : MonoBehaviour
     public void AddDrop(GDEItemData drop)
     {
         string id = drop.id;
-        if(SDDataManager.Instance.getItemTypeById(id) == SDConstants.ItemType.Material
-            || SDDataManager.Instance.getItemTypeById(id) == SDConstants.ItemType.Prop)
+        if(SDDataManager.Instance.getItemTypeById(id) == SDConstants.ItemType.Consumable)
         {
             bool flag = false;
             for (int i = 0; i < allDropsGet.Count; i++)
@@ -444,29 +441,34 @@ public class GameController : MonoBehaviour
             string id = allDropsGet[i].id;
             int num = allDropsGet[i].num;
             SDConstants.ItemType it = SDDataManager.Instance.getItemTypeById(id);
-            if(it == SDConstants.ItemType.Material)
+            if(it == SDConstants.ItemType.Consumable)
             {
-                SDDataManager.Instance.addMaterial(id, num);
-            }
-            else if(it == SDConstants.ItemType.Prop)
-            {
-                SDDataManager.Instance.addProp(id, num);
+                SDDataManager.Instance.addConsumable(id, num);
             }
             else if(it == SDConstants.ItemType.Equip)
             {
-                SDDataManager.Instance.addEquip(id);
+                for (int e = 0; e < num; e++)
+                {
+                    SDDataManager.Instance.addEquip(id);
+                }
             }
             else if(it == SDConstants.ItemType.Hero)
             {
-                SDDataManager.Instance.addHero(id);
-            }
-            else if(it == SDConstants.ItemType.Goddess)
-            {
-                //SDDataManager.Instance.
+                for (int e = 0; e < num; e++)
+                {
+                    SDDataManager.Instance.addHero(id);
+                }
             }
             else if(it == SDConstants.ItemType.Badge)
             {
 
+            }
+            else if(it == SDConstants.ItemType.Rune)
+            {
+                for(int e = 0; e < num; e++)
+                {
+                    SDDataManager.Instance.AddRune(id);
+                }
             }
         }
     }

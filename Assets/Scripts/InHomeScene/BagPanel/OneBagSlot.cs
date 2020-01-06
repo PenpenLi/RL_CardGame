@@ -100,8 +100,8 @@ public class OneBagSlot : MonoBehaviour
                 propId = prop.id;
                 num = prop.num;
 
-                ROMaterialData D = SDDataManager.Instance.getMaterialDataById(propId);
-                nameText.text = D.name;
+                consumableItem D = SDDataManager.Instance.getConsumableById(propId);
+                nameText.text = D.NAME;
                 numText.text = "" + num;
             }
         }

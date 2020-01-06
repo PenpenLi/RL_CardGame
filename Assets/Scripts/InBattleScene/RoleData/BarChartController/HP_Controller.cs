@@ -213,6 +213,8 @@ public class HP_Controller : MonoBehaviour
             }
             checkHpFull();
         }
+        //
+        _unit.CheckStatesWithTag_beAtked();
     }
     public void getExtraDamage(int dmg, bool isCounter = false)
     {
@@ -234,6 +236,8 @@ public class HP_Controller : MonoBehaviour
             _unit.playHurtAnimation();
         }
         checkHpFull();
+        //
+        _unit.CheckStatesWithTag_beAtked();
     }
 
     public void FadeAndDisappear()

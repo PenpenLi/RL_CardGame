@@ -21,6 +21,11 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
     private float initDelay = 0.05f;
     public void OnBeginDrag(PointerEventData data)
     {
+        if (RoleGroup.childCount <= currentMGIndex)
+        {
+            GetComponent<Image>().raycastTarget = false;return;
+        }
+
         Ray targetChooseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         Vector2 origin = new Vector2(targetChooseRay.origin.x, targetChooseRay.origin.y);
         int index = 0;
@@ -37,6 +42,8 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
     }
     public void OnEndDrag(PointerEventData data)
     {
+        if (RoleGroup.childCount <= currentMGIndex) return;
+
         Vector2 origin = RoleGroup.GetChild(currentMGIndex).position;
         int index = 0;//确认角色新位置
         for (int i = 0; i < AllEnablePosPlace.Length; i++)
@@ -52,6 +59,8 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
     }
     public void OnDrag(PointerEventData data)
     {
+        if (RoleGroup.childCount <= currentMGIndex) return;
+
         Ray targetChooseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         Vector2 origin = new Vector2(targetChooseRay.origin.x, targetChooseRay.origin.y);
         RoleGroup.GetChild(currentMGIndex).position = origin;

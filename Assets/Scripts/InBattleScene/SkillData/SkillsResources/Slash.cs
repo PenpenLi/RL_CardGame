@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Slash : SkillFunction
 {
-    [Header("ExtraStateAdd"), Space(100)]
-    public StandardState _standardState;
     public override void StartSkill(BattleRoleData source, BattleRoleData target)
     {
         base.StartSkill(source, target);
@@ -14,12 +12,11 @@ public class Slash : SkillFunction
         CalculateBeforeFunction(source, target);
 
 
-        List<BattleRoleData> list = DealWithAOEAction(source, target);
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
         for (int i = 0; i < list.Count; i++)
         {
             StartCoroutine(IEStartSkill(source, list[i]));
-            if (_standardState) _standardState.StartState(this, source, list[i] 
-                , dmgCaused(source,list[i]) / 10 );
+            stateWork(source, list[i]);
         }
 
 

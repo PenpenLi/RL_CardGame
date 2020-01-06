@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97996d293ffa5f84fa9ef5c569f1997e, type: 3}
+  m_Name: "003\u51B0\u5DDD\u68D8\u523A"
+  m_EditorClassIdentifier: 
+  _ID: '@SH_CASTER#003'
+  _NAME: "\u51B0\u5DDD\u68D8\u523A"
+  _DESC: 
+  isOmegaSkill: 0
+  aim: 2
+  breed: 0
+  kind: 0
+  skillAoe: 10
+  mptpAddType: 0
+  UseAppointedAtb: 0
+  Atb: 0
+  UseAppointedPrefab: 1
+  functionId: 0
+  appointedSkillClass: 0
+  extraDataSet:
+    BCPerformDataUsingRA: 575
+    PDUsingRA_PerLevel: 15
+    PDUsingRA_PerSkillGrade: 15
+    UseState: 1
+    _standardState:
+      AllChangesInRAL:
+      - Title: "\u7269\u9632\u4E0B\u964D"
+        IsForAD: 0
+        ADTag: 4
+        STag: 0
+        UseDataType: 0
+        ChangeData:
+          dataTag: 1
+          DATA: -15
+        OtherAtb: 0
+        UsePercent: 0
+        UsePos: 0
+      - Title: "\u9B54\u9632\u4E0B\u964D"
+        IsForAD: 0
+        ADTag: 6
+        STag: 0
+        UseDataType: 0
+        ChangeData:
+          dataTag: 1
+          DATA: -15
+        OtherAtb: 0
+        UsePercent: 0
+        UsePos: 0
+      ChangeInBarChart:
+        HP:
+          dataTag: 0
+          DATA: 0
+        MP:
+          dataTag: 0
+          DATA: 0
+        TP:
+          dataTag: 0
+          DATA: 0
+      UseSourceAToDmg: 0
+      ExtraDmg:
+        dataTag: 0
+        DATA: 0
+      UsePercent: 0
+      aimAtSelf: 0
+      stateAOE: 12
+      SkillGrade: 0
+      NAME: 
+      Success: 0
+      stateEndType: 0
+      StateLastTime: 2
+      stateTag: 3
+      stateKind: 0
+      StatePossibilityBuff: 75
+  extraSkillWork:
+    m_PersistentCalls:
+      m_Calls: []
+  iconImg: 
+  bulletImg: 
+  skillAnimId: 0
+  _skillCost:
+    _COST_intger:
+      DATA: {x: 0, y: 0, z: 0}
+    _COST_pc:
+      DATA: {x: 0, y: 60, z: 25}

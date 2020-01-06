@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbf95ce61c3a03c4492e0790fb1cd787, type: 3}
+  m_Name: "1_001_\u65E0\u540DC"
+  m_EditorClassIdentifier: 
+  _ID: H_RANGER#000001
+  _Name: "\u65E0\u540DC"
+  _DESC: 
+  sex: 0
+  characterType: 0
+  faceIcon: {fileID: 0}
+  _LEVEL: 0
+  skeleton: 0
+  weaponRaceList:
+  - {fileID: 11400000, guid: e861875e5d429db488c11aad20ff5ed5, type: 2}
+  - {fileID: 11400000, guid: e7dc34fea4b56714aa1ad99e0d21d01b, type: 2}
+  _RAL:
+    AllAttributeData: 4b0000001e000000280000000f0000000a0000000a0000000500000004000000030000000f000000030000000500000005000000
+    AllResistData: 0a0000000a0000000a0000000a0000000a0000000a0000000a0000000a000000
+  _career: {fileID: 11400000, guid: e19143b614ea08e4eb322118e9b288d7, type: 2}
+  _race: {fileID: 11400000, guid: ebc3206fa017ce94a8b3c5926c479d25, type: 2}
+  specialStr: 
+  personalSkillList: []

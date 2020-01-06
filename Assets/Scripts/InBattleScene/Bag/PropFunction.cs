@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -7,7 +6,195 @@ using UnityEngine;
 /// </summary>
 public class PropFunction : MonoBehaviour
 {
-    public void addHp(BattleRoleData currentActionUnit,BattleRoleData propTargetUnit, int param
+    bool UseState;
+    StandardState _state = new StandardState();
+    List<string> functionsWithoutState = new List<string>();
+    public void checkSpecialStr(string specialStr,string propid)
+    {
+        UseState = false;
+        _state = new StandardState(propid);
+        functionsWithoutState = new List<string>();
+        //state
+        int lastTime = 0;
+        List<StandardState.ChangeInRAL> ralList = new List<StandardState.ChangeInRAL>();
+        //
+        string[] strings = specialStr.Split('|');
+        for(int i = 0; i < strings.Length; i++)
+        {
+            string[] tmp = strings[i].Split(':');
+            string fn = tmp[0];
+            string[] paramStr = tmp[1].Split(',');
+            if(fn.Contains("add") && paramStr.Length > 1)
+            {
+                UseState = true;
+                int time = SDDataManager.Instance.getInteger(paramStr[1]);
+                lastTime = Mathf.Max(lastTime, time);
+                int d = SDDataManager.Instance.getInteger(paramStr[0]);
+                NumberData D = new NumberData(d);
+                if (fn.Contains("_pc")) D.dataTag = NumberData.DataType.percent;
+                //
+                if (fn.Contains("HP")) _state.ChangeInBarChart.HP = D;
+                else if (fn.Contains("MP")) _state.ChangeInBarChart.MP = D;
+                else if (fn.Contains("TP")) _state.ChangeInBarChart.TP = D;
+            }
+            else if (fn.Contains("up_"))
+            {
+                UseState = true;
+                int time = SDDataManager.Instance.getInteger(paramStr[1]);
+                lastTime = Mathf.Max(lastTime, time);
+                int d = SDDataManager.Instance.getInteger(paramStr[0]);
+                NumberData D = new NumberData(d);
+                if (fn.Contains("_pc")) D.dataTag = NumberData.DataType.percent;
+                StandardState.ChangeInRAL cral;
+                bool isad = ROHelp.CheckStringIsADElseST(fn.Split('_')[1]
+                    , out AttributeData ad, out StateTag st);
+                if (isad)
+                {
+                    cral = new StandardState.ChangeInRAL(D, ad);
+                }
+                else
+                {
+                    cral = new StandardState.ChangeInRAL(D, st);
+                }
+                ralList.Add(cral);
+            }
+            else if (fn.Contains("debuff_"))
+            {
+                StateTag tag = ROHelp.STATE_TAG(fn.Split('_')[1]);
+                if(fn.Split('_')[1].ToLower() == "random")
+                {
+                    tag = (StateTag)(UnityEngine.Random.Range(0, (int)StateTag.End));
+                }
+                _state.stateTag = tag;
+            }
+            else if (fn.Contains("stateDmg"))
+            {
+                UseState = true;
+                int time = SDDataManager.Instance.getInteger(paramStr[1]);
+                lastTime = Mathf.Max(lastTime, time);
+                int d = SDDataManager.Instance.getInteger(paramStr[0]);
+                NumberData D = new NumberData(d);
+                if (fn.Contains("_pc")) D.dataTag = NumberData.DataType.percent;
+                _state.ExtraDmg = D;
+            }
+            //其余转为直接影响列表
+            else
+            {
+                functionsWithoutState.Add(strings[i]);
+            }
+        }
+    }
+    void UsePropWithoutState(string FN,SDConstants.AOEType AOE
+        , BattleRoleData currentActionUnit, BattleRoleData propTargetUnit)
+    {
+        string[] fns = FN.Split(':');
+        string[] fnElements = fns[0].Split('_');
+        string[] paramstrs = fns[1].Split(',');
+        int p0 = 0; int p1 = 0;
+        p0 = SDDataManager.Instance.getInteger(paramstrs[0]);
+        if (paramstrs.Length > 1) p1 = SDDataManager.Instance.getInteger(paramstrs[1]);
+
+        NumberData param0 = new NumberData(p0);NumberData param1 = new NumberData(p1);
+        string functionName = fns[0];
+        if (functionName.Contains("addHP"))
+        {
+            addHp(currentActionUnit, propTargetUnit, param0
+                , AOE);
+        }
+        else if (functionName.Contains("addMP"))
+        {
+            addMp(currentActionUnit, propTargetUnit, param0
+                , AOE);
+        }
+        else if (functionName.Contains("addTP"))
+        {
+            addTp(currentActionUnit, propTargetUnit, param0
+                , AOE);
+        }
+        else if (functionName.Contains( "revive"))
+        {
+            bool flag = false;
+            if (propTargetUnit.IsDead)
+            {
+                flag = true;
+            }
+            else
+            {
+                List<BattleRoleData> lit = DealWithAOEAction(currentActionUnit
+                    , propTargetUnit, AOE);
+                foreach (BattleRoleData unit in lit)
+                {
+                    if (unit.IsDead)
+                    {
+                        flag = true;
+                        propTargetUnit = unit;
+                        break;
+                    }
+                }
+            }
+            if (flag)
+            {
+                revive(currentActionUnit, propTargetUnit, param0, param1
+                    , AOE);
+            }
+        }
+        else if (functionName.Contains("catch"))
+        {
+            if (!propTargetUnit.IsDead
+                && propTargetUnit.HpController.CurrentHp * 1f / propTargetUnit.HpController.MaxHp
+                <= 0.2f)
+            {
+                catchSlave(currentActionUnit, propTargetUnit, param0);
+            }
+        }
+        else if (functionName.Contains("remove"))
+        {
+            List<BattleRoleData> list = DealWithAOEAction
+                    (currentActionUnit, propTargetUnit, AOE);
+            if (fnElements[1].ToLower() != "all")
+            {
+                StateTag tag = ROHelp.STATE_TAG(fnElements[1]);
+                if (fnElements[1].ToLower() == "random")
+                {
+                    tag = (StateTag)(UnityEngine.Random.Range(0, (int)StateTag.End));
+                }               
+                for(int i = 0; i < list.Count; i++)
+                {
+                    list[i].clearPerTagStates(tag);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    list[i].clearAllStates();
+                }
+            }
+
+        }
+        else if (functionName.Contains("damage"))
+        {
+            damage(currentActionUnit, propTargetUnit, param0, AOE);
+        }
+    }
+
+    public void UseProp(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
+        ,SDConstants.AOEType AOE)
+    {
+        //立即触发之效果
+        for(int i = 0; i < functionsWithoutState.Count; i++)
+        {
+            UsePropWithoutState(functionsWithoutState[i], AOE, currentActionUnit, propTargetUnit);
+        }
+        //建立道具添加的状态
+        if (UseState)
+        {
+            addState(currentActionUnit, propTargetUnit, _state, AOE);
+        }
+    }
+
+    #region AllFunctions
+    public void addHp(BattleRoleData currentActionUnit,BattleRoleData propTargetUnit, NumberData param
         ,SDConstants.AOEType aoe = SDConstants.AOEType.None)
     {
         AddHeal heal;
@@ -18,7 +205,7 @@ public class PropFunction : MonoBehaviour
         }
         heal.PropStartSkill(currentActionUnit, propTargetUnit, param,aoe);
     }
-    public void addMp(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit, int param
+    public void addMp(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit, NumberData param
         ,SDConstants.AOEType aoe = SDConstants.AOEType.None)
     {
         AddBarChart barchart;
@@ -27,10 +214,11 @@ public class PropFunction : MonoBehaviour
         {
             barchart = gameObject.AddComponent<AddBarChart>();
         }
-        RoleBarChart nc = new RoleBarChart() { DATA = new Vector3(0, param, 0) };
+        NDBarChart nc = NDBarChart.zero;
+        nc.MP = param;
         barchart.PropStartSkill(currentActionUnit, propTargetUnit, nc,aoe);
     }
-    public void addTp(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit, int param
+    public void addTp(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit, NumberData param
         ,SDConstants.AOEType AOEType = SDConstants.AOEType.None)
     {
         AddBarChart barchart;
@@ -39,11 +227,12 @@ public class PropFunction : MonoBehaviour
         {
             barchart = gameObject.AddComponent<AddBarChart>();
         }
-        RoleBarChart nc = new RoleBarChart() { DATA = new Vector3(0, 0, param) };
+        NDBarChart nc = NDBarChart.zero;
+        nc.TP = param;
         barchart.PropStartSkill(currentActionUnit, propTargetUnit, nc, AOEType);
     }
     public void addBarchart(BattleRoleData currentActionUnit,BattleRoleData propTargetUnit
-        , List<int> param, SDConstants.AOEType aoeType = SDConstants.AOEType.None)
+        , List<NumberData> param, SDConstants.AOEType aoeType = SDConstants.AOEType.None)
     {
         AddBarChart barchart;
         barchart = gameObject.GetComponent<AddBarChart>();
@@ -52,76 +241,55 @@ public class PropFunction : MonoBehaviour
             barchart = gameObject.AddComponent<AddBarChart>();
         }
 
-        RoleBarChart nc = new RoleBarChart() { DATA = new Vector3(param[0], param[1], param[2]) };
+        NDBarChart nc = NDBarChart.zero;
+        nc.HP = param[0];nc.MP = param[1];nc.TP = param[2];
         barchart.PropStartSkill(currentActionUnit, propTargetUnit, nc, aoeType);
     }
-    public void hpRegendPerTurn(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
-        , int param0, int param1, SDConstants.AOEType aoeType = SDConstants.AOEType.None)
-    {
-        HpRegend regen;
-        regen = gameObject.GetComponent<HpRegend>();
-        if (regen == null) regen = gameObject.AddComponent<HpRegend>();
-        regen.PropStartSkill(currentActionUnit, propTargetUnit, param0, param1
-            , aoeType);
-    }
-    public void mpRegendPerTurn(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
-    , int param0, int param1, SDConstants.AOEType aoeType = SDConstants.AOEType.None)
-    {
-        MpRegend regen;
-        regen = gameObject.GetComponent<MpRegend>();
-        if (regen == null) regen = gameObject.AddComponent<MpRegend>();
-        regen.PropStartSkill(currentActionUnit, propTargetUnit, param0, param1
-            , aoeType);
-    }
-    public void tpRegendPerTurn(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
-    , int param0, int param1, SDConstants.AOEType aoeType = SDConstants.AOEType.None)
-    {
-        TpRegend regen;
-        regen = gameObject.GetComponent<TpRegend>();
-        if (regen == null) regen = gameObject.AddComponent<TpRegend>();
-        regen.PropStartSkill(currentActionUnit, propTargetUnit, param0, param1, aoeType);
-    }
     public void revive(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
-    , int param0, int param1, SDConstants.AOEType aoeType = SDConstants.AOEType.None)
+    , NumberData param0, NumberData param1, SDConstants.AOEType aoeType = SDConstants.AOEType.None)
     {
         ReviveOne r;
         r = gameObject.GetComponent<ReviveOne>();
         if (r == null) r = gameObject.AddComponent<ReviveOne>();
-        RoleBarChart bc = new RoleBarChart() { DATA = new Vector3(param0, param1, 0) };
+        NDBarChart bc = NDBarChart.Build(param0, param1, NumberData.zero);
         r.PropStartSkill(currentActionUnit, propTargetUnit, bc, aoeType);
     }
-
     public void addState(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
-        , StateTag state_tag
-        , int param0, int param1, SDConstants.AOEType aoeType = SDConstants.AOEType.None)
-    {        
-        StandardState s;
-        s = gameObject.GetComponent<StandardState>();
-        if (s == null) s = gameObject.AddComponent<StandardState>();
-        s.stateTag = state_tag;
-        s.stateKind = SkillKind.Elemental;
-        s.stateBreed = SkillBreed.Absence;
+        , StandardState state
+        , SDConstants.AOEType aoeType = SDConstants.AOEType.None)
+    {
+        if (state.AimAtSelf)
+        {
+            propTargetUnit = currentActionUnit;
+        }
         List<BattleRoleData> list 
             = DealWithAOEAction(currentActionUnit, propTargetUnit, aoeType);
         for(int i = 0; i < list.Count; i++)
         {
-            s.StateFunctionWork(currentActionUnit, list[i], param0, param1);
+            state.SimpleStartState(currentActionUnit, list[i]);
         }
     }
-
     public void catchSlave(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
-    , int param)
+    , NumberData param)
     {
         CatchSlave c;
         c = gameObject.GetComponent<CatchSlave>();
         if (c == null) c = gameObject.AddComponent<CatchSlave>();
         c.PropStartSkill(currentActionUnit, propTargetUnit, param);
     }
-
+    public void damage(BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
+    , NumberData param,SDConstants.AOEType aoe = SDConstants.AOEType.None)
+    {
+        NormalAttack n;
+        n = gameObject.GetComponent<NormalAttack>();
+        if (n == null) n = gameObject.AddComponent<NormalAttack>();
+        n.PropStartSkill(currentActionUnit, propTargetUnit, param, aoe);
+    }
+    #endregion
 
     public List<BattleRoleData> DealWithAOEAction
         (BattleRoleData currentActionUnit, BattleRoleData propTargetUnit
-        , SDConstants.AOEType AOE)
+        , SDConstants.AOEType AOE, bool isRevive = false)
     {
         BattleManager BM = FindObjectOfType<BattleManager>();
         List<BattleRoleData> results = new List<BattleRoleData>();
@@ -141,7 +309,7 @@ public class PropFunction : MonoBehaviour
                 .GetComponent<BattleRoleData>();
 
             bool flag = false;
-            if (next.IsDead && this.name.Contains("Revive"))
+            if (next.IsDead && isRevive)
             {
                 flag = true;
             }
@@ -156,13 +324,13 @@ public class PropFunction : MonoBehaviour
             BattleRoleData unit0
                 = propTargetUnit.transform.parent.GetChild(0).GetComponent<BattleRoleData>();
             bool flag0 = false;
-            if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+            if (unit0.IsDead && isRevive) flag0 = true;
             else if (!unit0.IsDead) flag0 = true;
             if (flag0) results.Add(unit0);
             BattleRoleData unit1
                 = propTargetUnit.transform.parent.GetChild(2).GetComponent<BattleRoleData>();
             bool flag1 = false;
-            if (unit1.IsDead && this.name.Contains("Revive")) flag1 = true;
+            if (unit1.IsDead && isRevive) flag1 = true;
             else if (!unit1.IsDead) flag1 = true;
             if (flag1) results.Add(unit1);
         }
@@ -171,13 +339,13 @@ public class PropFunction : MonoBehaviour
             BattleRoleData unit0
                 = propTargetUnit.transform.parent.GetChild(1).GetComponent<BattleRoleData>();
             bool flag0 = false;
-            if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+            if (unit0.IsDead && isRevive) flag0 = true;
             else if (!unit0.IsDead) flag0 = true;
             if (flag0) results.Add(unit0);
             BattleRoleData unit1
                 = propTargetUnit.transform.parent.GetChild(3).GetComponent<BattleRoleData>();
             bool flag1 = false;
-            if (unit1.IsDead && this.name.Contains("Revive")) flag1 = true;
+            if (unit1.IsDead && isRevive) flag1 = true;
             else if (!unit1.IsDead) flag1 = true;
             if (flag1) results.Add(unit1);
         }
@@ -197,7 +365,7 @@ public class PropFunction : MonoBehaviour
                 .GetComponent<BattleRoleData>();
 
             bool flag = false;
-            if (next.IsDead && this.name.Contains("Revive"))
+            if (next.IsDead && isRevive)
             {
                 flag = true;
             }
@@ -214,13 +382,13 @@ public class PropFunction : MonoBehaviour
             BattleRoleData unit0
                 = propTargetUnit.transform.parent.GetChild(2).GetComponent<BattleRoleData>();
             bool flag0 = false;
-            if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+            if (unit0.IsDead && isRevive) flag0 = true;
             else if (!unit0.IsDead) flag0 = true;
             if (flag0) results.Add(unit0);
             BattleRoleData unit1
                 = propTargetUnit.transform.parent.GetChild(3).GetComponent<BattleRoleData>();
             bool flag1 = false;
-            if (unit1.IsDead && this.name.Contains("Revive")) flag1 = true;
+            if (unit1.IsDead && isRevive) flag1 = true;
             else if (!unit1.IsDead) flag1 = true;
             if (flag1) results.Add(unit1);
         }
@@ -229,13 +397,13 @@ public class PropFunction : MonoBehaviour
             BattleRoleData unit0
                 = propTargetUnit.transform.parent.GetChild(0).GetComponent<BattleRoleData>();
             bool flag0 = false;
-            if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+            if (unit0.IsDead && isRevive) flag0 = true;
             else if (!unit0.IsDead) flag0 = true;
             if (flag0) results.Add(unit0);
             BattleRoleData unit1
                 = propTargetUnit.transform.parent.GetChild(1).GetComponent<BattleRoleData>();
             bool flag1 = false;
-            if (unit1.IsDead && this.name.Contains("Revive")) flag1 = true;
+            if (unit1.IsDead && isRevive) flag1 = true;
             else if (!unit1.IsDead) flag1 = true;
             if (flag1) results.Add(unit1);
         }
@@ -247,7 +415,7 @@ public class PropFunction : MonoBehaviour
             for (int i = 0; i < list.Length; i++)
             {
                 bool flag = false;
-                if (list[i].IsDead && this.name.Contains("Revive"))
+                if (list[i].IsDead && isRevive)
                 {
                     flag = true;
                 }
@@ -267,7 +435,7 @@ public class PropFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -285,7 +453,7 @@ public class PropFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -303,7 +471,7 @@ public class PropFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -322,7 +490,7 @@ public class PropFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -337,7 +505,7 @@ public class PropFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }

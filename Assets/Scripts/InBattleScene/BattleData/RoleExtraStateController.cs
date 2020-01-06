@@ -9,15 +9,9 @@ public class RoleExtraStateController : MonoBehaviour
     {
         get { return GetComponent<BattleRoleData>(); }
     }
-    public enum ExtraStateTag 
-    {
-        intervene,
-        reflect,
-
-    }
-    //[Header("intervene_state")]
     public ExtraStateData interveneState;
     public ExtraStateData reflectState;
+    public List<OneStateController> StartStateList;
     public void checkExtraStates()
     {
         //援护状态设置

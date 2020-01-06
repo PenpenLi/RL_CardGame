@@ -22,11 +22,12 @@ public class ConditionalHideAttribute : PropertyAttribute
         Negate = negate;
     }
 
-    public ConditionalHideAttribute(string conditionalSourceField, int enumCondition, bool hideInInspector = false)
+    public ConditionalHideAttribute(string conditionalSourceField, int enumCondition, bool hideInInspector = false,bool negate = false)
     {
         ConditionalSourceField = conditionalSourceField;
         HideInInspector = hideInInspector;
         EnumCondition = enumCondition;
+        Negate = negate;
     }
 }
 #endif

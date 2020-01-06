@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8adf3104497edf49af9210e373b7490, type: 3}
+  m_Name: heroAnimImgList0
+  m_EditorClassIdentifier: 
+  skeleton: 0
+  allEnableList:
+  - slot: hair1
+    atlasAsset: {fileID: 11400000, guid: 56e7960fa7542c340acd6577b21740ee, type: 2}
+    AllRegionList:
+    - region: hair/hair05
+      useExtraData: 1
+      positionOffset: {x: -98.6, y: -0.35}
+      scale: {x: 1, y: 1}
+    - region: hair/hair08
+      useExtraData: 1
+      positionOffset: {x: -71.342, y: -6.618}
+      scale: {x: 1, y: 1}
+    - region: hair/hair09
+      useExtraData: 1
+      positionOffset: {x: -95.136, y: -5.711}
+      scale: {x: 1, y: 1}
+    - region: hair/hair15
+      useExtraData: 1
+      positionOffset: {x: -84.703, y: 5.42}
+      scale: {x: 1, y: 1}
+    - region: hair/hair24
+      useExtraData: 1
+      positionOffset: {x: -59.543, y: 5.813}
+      scale: {x: 1, y: 1}
+    - region: hair1
+      useExtraData: 0
+      positionOffset: {x: -59.543, y: 5.813}
+      scale: {x: 1, y: 1}
+  - slot: body
+    atlasAsset: {fileID: 11400000, guid: 56e7960fa7542c340acd6577b21740ee, type: 2}
+    AllRegionList:
+    - region: body/body01
+      useExtraData: 0
+      positionOffset: {x: 0, y: 0}
+      scale: {x: 1, y: 1}
+    - region: body/body18
+      useExtraData: 0
+      positionOffset: {x: 0, y: 0}
+      scale: {x: 1, y: 1}
+    - region: body
+      useExtraData: 0
+      positionOffset: {x: 0, y: 0}
+      scale: {x: 1, y: 1}

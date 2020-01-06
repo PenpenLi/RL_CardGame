@@ -32,9 +32,9 @@ public class OneUnitTeam : MonoBehaviour
                 //
                 if (!string.IsNullOrEmpty(Team.goddess))
                 {
+                    GoddessInfo goddess = SDDataManager.Instance.getGoddessInfoById(Team.goddess);
                     TeamGoddess.GetComponentInChildren<Image>().sprite
-                        = Resources.Load<Sprite>("Sprites/"
-                        + SDDataManager.Instance.getGoddessSpriteById(Team.goddess));
+                        = goddess.FaceIcon;
                 }
                 else { }
                 //

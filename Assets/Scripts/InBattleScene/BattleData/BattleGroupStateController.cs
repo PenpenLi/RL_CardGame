@@ -74,13 +74,13 @@ public class BattleGroupStateController : MonoBehaviour
             {
                 if(b.id == "BUILD#"+16 && kind == SkillKind.Physical)
                 {
-                    int lv = SDDataManager.Instance.getLevelByExp(b.exp);
+                    int lv = b.level;
                     int dmg = (int)(oldDmg * (1 + lv * SDConstants.BuffBuildingImproveFigureByLv));
                     return dmg;
                 }
                 else if(b.id == "BUILD#"+17 && kind == SkillKind.Elemental)
                 {
-                    int lv = SDDataManager.Instance.getLevelByExp(b.exp);
+                    int lv = b.level;
                     int dmg = (int)(oldDmg * (1 + lv * SDConstants.BuffBuildingImproveFigureByLv));
                     return dmg;
                 }

@@ -61,6 +61,90 @@ namespace GameDataEditor
             }
         }
 
+        static string rune0Key = "rune0";
+		int _rune0;
+        public int rune0
+        {
+            get { return _rune0; }
+            set {
+                if (_rune0 != value)
+                {
+                    _rune0 = value;
+					GDEDataManager.SetInt(_key, rune0Key, _rune0);
+                }
+            }
+        }
+
+        static string rune1Key = "rune1";
+		int _rune1;
+        public int rune1
+        {
+            get { return _rune1; }
+            set {
+                if (_rune1 != value)
+                {
+                    _rune1 = value;
+					GDEDataManager.SetInt(_key, rune1Key, _rune1);
+                }
+            }
+        }
+
+        static string rune2Key = "rune2";
+		int _rune2;
+        public int rune2
+        {
+            get { return _rune2; }
+            set {
+                if (_rune2 != value)
+                {
+                    _rune2 = value;
+					GDEDataManager.SetInt(_key, rune2Key, _rune2);
+                }
+            }
+        }
+
+        static string rune3Key = "rune3";
+		int _rune3;
+        public int rune3
+        {
+            get { return _rune3; }
+            set {
+                if (_rune3 != value)
+                {
+                    _rune3 = value;
+					GDEDataManager.SetInt(_key, rune3Key, _rune3);
+                }
+            }
+        }
+
+        static string indexKey = "index";
+		int _index;
+        public int index
+        {
+            get { return _index; }
+            set {
+                if (_index != value)
+                {
+                    _index = value;
+					GDEDataManager.SetInt(_key, indexKey, _index);
+                }
+            }
+        }
+
+        static string skillGradeKey = "skillGrade";
+		int _skillGrade;
+        public int skillGrade
+        {
+            get { return _skillGrade; }
+            set {
+                if (_skillGrade != value)
+                {
+                    _skillGrade = value;
+					GDEDataManager.SetInt(_key, skillGradeKey, _skillGrade);
+                }
+            }
+        }
+
         static string idKey = "id";
 		string _id;
         public string id
@@ -75,18 +159,39 @@ namespace GameDataEditor
             }
         }
 
+        static string NAMEKey = "NAME";
+		string _NAME;
+        public string NAME
+        {
+            get { return _NAME; }
+            set {
+                if (_NAME != value)
+                {
+                    _NAME = value;
+					GDEDataManager.SetString(_key, NAMEKey, _NAME);
+                }
+            }
+        }
+
+        static string attitubeKey = "attitube";
+		GDEgoddessAttiData _attitube;
+        public GDEgoddessAttiData attitube
+        {
+            get { return _attitube; }
+            set {
+                if (_attitube != value)
+                {
+                    _attitube = value;
+					GDEDataManager.SetCustom(_key, attitubeKey, _attitube);
+                }
+            }
+        }
+
         static string UseTeamIdKey = "UseTeamId";
 		public List<int>      UseTeamId;
 		public void Set_UseTeamId()
         {
 	        GDEDataManager.SetIntList(_key, UseTeamIdKey, UseTeamId);
-		}
-		
-        static string StonesEquippedKey = "StonesEquipped";
-		public List<int>      StonesEquipped;
-		public void Set_StonesEquipped()
-        {
-	        GDEDataManager.SetIntList(_key, StonesEquippedKey, StonesEquipped);
 		}
 		
 
@@ -102,15 +207,25 @@ namespace GameDataEditor
             dict.Merge(true, star.ToGDEDict(starKey));
             dict.Merge(true, volume.ToGDEDict(volumeKey));
             dict.Merge(true, exp.ToGDEDict(expKey));
+            dict.Merge(true, rune0.ToGDEDict(rune0Key));
+            dict.Merge(true, rune1.ToGDEDict(rune1Key));
+            dict.Merge(true, rune2.ToGDEDict(rune2Key));
+            dict.Merge(true, rune3.ToGDEDict(rune3Key));
+            dict.Merge(true, index.ToGDEDict(indexKey));
+            dict.Merge(true, skillGrade.ToGDEDict(skillGradeKey));
             dict.Merge(true, id.ToGDEDict(idKey));
+            dict.Merge(true, NAME.ToGDEDict(NAMEKey));
 
             dict.Merge(true, UseTeamId.ToGDEDict(UseTeamIdKey));
-            dict.Merge(true, StonesEquipped.ToGDEDict(StonesEquippedKey));
+
+            dict.Merge(true, attitube.ToGDEDict(attitubeKey));
             return dict;
 		}
 
         public override void UpdateCustomItems(bool rebuildKeyList)
         {
+            GDEDataManager.UpdateItem(attitube, rebuildKeyList);
+            attitube.UpdateCustomItems(rebuildKeyList);
         }
 
         public override void LoadFromDict(string dataKey, Dictionary<string, object> dict)
@@ -124,10 +239,20 @@ namespace GameDataEditor
                 dict.TryGetInt(starKey, out _star);
                 dict.TryGetInt(volumeKey, out _volume);
                 dict.TryGetInt(expKey, out _exp);
+                dict.TryGetInt(rune0Key, out _rune0);
+                dict.TryGetInt(rune1Key, out _rune1);
+                dict.TryGetInt(rune2Key, out _rune2);
+                dict.TryGetInt(rune3Key, out _rune3);
+                dict.TryGetInt(indexKey, out _index);
+                dict.TryGetInt(skillGradeKey, out _skillGrade);
                 dict.TryGetString(idKey, out _id);
+                dict.TryGetString(NAMEKey, out _NAME);
+
+                string customDataKey;
+                dict.TryGetString(attitubeKey, out customDataKey);
+				_attitube = new GDEgoddessAttiData(customDataKey);
 
                 dict.TryGetIntList(UseTeamIdKey, out UseTeamId);
-                dict.TryGetIntList(StonesEquippedKey, out StonesEquipped);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -139,10 +264,18 @@ namespace GameDataEditor
             _star = GDEDataManager.GetInt(_key, starKey, _star);
             _volume = GDEDataManager.GetInt(_key, volumeKey, _volume);
             _exp = GDEDataManager.GetInt(_key, expKey, _exp);
+            _rune0 = GDEDataManager.GetInt(_key, rune0Key, _rune0);
+            _rune1 = GDEDataManager.GetInt(_key, rune1Key, _rune1);
+            _rune2 = GDEDataManager.GetInt(_key, rune2Key, _rune2);
+            _rune3 = GDEDataManager.GetInt(_key, rune3Key, _rune3);
+            _index = GDEDataManager.GetInt(_key, indexKey, _index);
+            _skillGrade = GDEDataManager.GetInt(_key, skillGradeKey, _skillGrade);
             _id = GDEDataManager.GetString(_key, idKey, _id);
+            _NAME = GDEDataManager.GetString(_key, NAMEKey, _NAME);
+
+            _attitube = GDEDataManager.GetCustom(_key, attitubeKey, _attitube);
 
             UseTeamId = GDEDataManager.GetIntList(_key, UseTeamIdKey, UseTeamId);
-            StonesEquipped = GDEDataManager.GetIntList(_key, StonesEquippedKey, StonesEquipped);
         }
 
         public GDEgoddessData ShallowClone()
@@ -153,12 +286,19 @@ namespace GameDataEditor
             newClone.star = star;
             newClone.volume = volume;
             newClone.exp = exp;
+            newClone.rune0 = rune0;
+            newClone.rune1 = rune1;
+            newClone.rune2 = rune2;
+            newClone.rune3 = rune3;
+            newClone.index = index;
+            newClone.skillGrade = skillGrade;
             newClone.id = id;
+            newClone.NAME = NAME;
+
+            newClone.attitube = attitube;
 
             newClone.UseTeamId = new List<int>(UseTeamId);
 			newClone.Set_UseTeamId();
-            newClone.StonesEquipped = new List<int>(StonesEquipped);
-			newClone.Set_StonesEquipped();
 
             return newClone;
 		}
@@ -166,6 +306,7 @@ namespace GameDataEditor
         public GDEgoddessData DeepClone()
 		{
 			GDEgoddessData newClone = ShallowClone();
+            newClone.attitube = attitube.DeepClone();
             return newClone;
 		}
 
@@ -196,6 +337,60 @@ namespace GameDataEditor
             dict.TryGetInt(expKey, out _exp);
         }
 
+        public void Reset_rune0()
+        {
+            GDEDataManager.ResetToDefault(_key, rune0Key);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(rune0Key, out _rune0);
+        }
+
+        public void Reset_rune1()
+        {
+            GDEDataManager.ResetToDefault(_key, rune1Key);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(rune1Key, out _rune1);
+        }
+
+        public void Reset_rune2()
+        {
+            GDEDataManager.ResetToDefault(_key, rune2Key);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(rune2Key, out _rune2);
+        }
+
+        public void Reset_rune3()
+        {
+            GDEDataManager.ResetToDefault(_key, rune3Key);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(rune3Key, out _rune3);
+        }
+
+        public void Reset_index()
+        {
+            GDEDataManager.ResetToDefault(_key, indexKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(indexKey, out _index);
+        }
+
+        public void Reset_skillGrade()
+        {
+            GDEDataManager.ResetToDefault(_key, skillGradeKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(skillGradeKey, out _skillGrade);
+        }
+
         public void Reset_id()
         {
             GDEDataManager.ResetToDefault(_key, idKey);
@@ -203,6 +398,15 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetString(idKey, out _id);
+        }
+
+        public void Reset_NAME()
+        {
+            GDEDataManager.ResetToDefault(_key, NAMEKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetString(NAMEKey, out _NAME);
         }
 
         public void Reset_UseTeamId()
@@ -214,15 +418,20 @@ namespace GameDataEditor
 	        dict.TryGetIntList(UseTeamIdKey, out UseTeamId);
         }
 		
-        public void Reset_StonesEquipped()
-        {
-	        GDEDataManager.ResetToDefault(_key, StonesEquippedKey);
 
-	        Dictionary<string, object> dict;
+        public void Reset_attitube()
+		{
+			GDEDataManager.ResetToDefault(_key, attitubeKey);
+
+			Dictionary<string, object> dict;
 	        GDEDataManager.Get(_key, out dict);
-	        dict.TryGetIntList(StonesEquippedKey, out StonesEquipped);
-        }
-		
+
+			string customDataKey;
+            dict.TryGetString(attitubeKey, out customDataKey);
+			_attitube = new GDEgoddessAttiData(customDataKey);
+
+			attitube.ResetAll();
+		}
 
         public void ResetAll()
         {
@@ -235,8 +444,16 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, UseTeamIdKey);
             GDEDataManager.ResetToDefault(_key, volumeKey);
             GDEDataManager.ResetToDefault(_key, expKey);
-            GDEDataManager.ResetToDefault(_key, StonesEquippedKey);
+            GDEDataManager.ResetToDefault(_key, rune0Key);
+            GDEDataManager.ResetToDefault(_key, rune1Key);
+            GDEDataManager.ResetToDefault(_key, rune2Key);
+            GDEDataManager.ResetToDefault(_key, rune3Key);
+            GDEDataManager.ResetToDefault(_key, attitubeKey);
+            GDEDataManager.ResetToDefault(_key, indexKey);
+            GDEDataManager.ResetToDefault(_key, NAMEKey);
+            GDEDataManager.ResetToDefault(_key, skillGradeKey);
 
+            Reset_attitube();
 
             #endif
 

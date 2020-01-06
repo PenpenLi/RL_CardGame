@@ -31,6 +31,8 @@ public class BattleManager : MonoBehaviour
     public GameController GC;
     [HideInInspector]
     public SkillDetailsList SDL;
+    [HideInInspector]
+    public GoddessManager GM;
     public Transform[] HeroStatusGroup;
     [Header("战斗阶段控制")]
     public bool IsWaitingPlayerAction = false;
@@ -45,10 +47,9 @@ public class BattleManager : MonoBehaviour
     [Header("使用道具时设定")]
     //public SkillAim PropTarget;
     public string _PropTarget;
-    public string _PropRange;
-    public string PropFunictionName;
-    public int param0;
-    public int param1;
+    public SDConstants.AOEType _PropRange;
+    public string PropSpecialStr;
+    //
     public BattleRoleData PropTargetUnit;
     public Button UsingPropBtn;
     public Button CancelBtn;
@@ -70,6 +71,8 @@ public class BattleManager : MonoBehaviour
         ABM = GetComponentInChildren<ActionBarManager>();
         GC = GetComponentInParent<GameController>();
         SDL = GetComponentInChildren<SkillDetailsList>();
+        GM = GC.GM;
+        GC.GM.BM = this;
     }
     #region 显示或隐藏技能信息面板
     public void BtnToCloseSDP()
@@ -330,7 +333,7 @@ public class BattleManager : MonoBehaviour
                     {
                         ActionConfirm = false;
                         CountDownTime = 0.5f;
-                        startUseProp(PropFunictionName);
+                        startUseProp();
                         CancelBtn.interactable = false;
                         hideOptionTarget();
                         SelectController.ResetTarget();
@@ -653,6 +656,8 @@ public class BattleManager : MonoBehaviour
             _currentSkill.StartSkill(_currentBattleUnit, _currentTargetUnit);
             BtnToCloseSDP();
         }
+        //
+        _currentBattleUnit.CheckStatesWithTag_skill();
     }
     #region 使用道具
     public void BtnToOpenPropPanel()
@@ -666,77 +671,36 @@ public class BattleManager : MonoBehaviour
     {
         UIEffectManager.Instance.hideAnimFadeOut(PropPanel);
     }
-    public void WhenClickOnPropSlot()
+    public void refreshPropEnableTarget()
     {
-
+        foreach (BattleRoleData unit in AllSRL_Array)
+        {
+            unit.IsOptionTarget = false;
+            if (!PropSpecialStr.Contains("receive") && unit.IsDead)
+            {
+                continue;
+            }
+            if (_PropTarget == SDConstants.HERO_TAG)
+            {
+                unit.IsOptionTarget = true;
+            }
+        }
+        foreach(BattleRoleData unit in AllORL_Array)
+        {
+            unit.IsOptionTarget = false;
+            if (!PropSpecialStr.Contains("receive") && unit.IsDead)
+            {
+                continue;
+            }
+            if (_PropTarget == SDConstants.ENEMY_TAG)
+            {
+                unit.IsOptionTarget = true;
+            }
+        }
     }
-    public void startUseProp(string functionName)
+    public void startUseProp()
     {
-        if(functionName == "addHP")
-        {
-            PF.addHp(_currentBattleUnit, PropTargetUnit, param0
-                , SDDataManager.Instance.AOE_TYPE(_PropRange));
-        }
-        else if(functionName == "addMP")
-        {
-            PF.addMp(_currentBattleUnit, PropTargetUnit, param0
-                , SDDataManager.Instance.AOE_TYPE(_PropRange));
-        }
-        else if(functionName == "addTP")
-        {
-            PF.addTp(_currentBattleUnit, PropTargetUnit, param0
-                , SDDataManager.Instance.AOE_TYPE(_PropRange));
-        }
-        else if(functionName == "hpRegenPerTurn")
-        {
-            PF.hpRegendPerTurn(_currentBattleUnit, PropTargetUnit, param0
-                , param1, SDDataManager.Instance.AOE_TYPE(_PropRange));
-        }
-        else if (functionName == "mpRegenPerTurn")
-        {
-            PF.mpRegendPerTurn(_currentBattleUnit, PropTargetUnit, param0
-                , param1, SDDataManager.Instance.AOE_TYPE(_PropRange));
-        }
-        else if (functionName == "tpRegenPerTurn")
-        {
-            PF.tpRegendPerTurn(_currentBattleUnit, PropTargetUnit, param0
-                , param1, SDDataManager.Instance.AOE_TYPE(_PropRange));
-        }
-        else if(functionName == "revive")
-        {
-            bool flag = false;
-            if (PropTargetUnit.IsDead)
-            {
-                flag = true;
-            }
-            else
-            {
-                List<BattleRoleData> lit = PF.DealWithAOEAction(_currentBattleUnit
-                    , PropTargetUnit, SDDataManager.Instance.AOE_TYPE(_PropRange));
-                foreach(BattleRoleData unit in lit)
-                {
-                    if (unit.IsDead)
-                    {
-                        flag = true;
-                        break;
-                    }
-                }
-            }
-            if (flag)
-            {
-                PF.revive(_currentBattleUnit, PropTargetUnit, param0, param1
-                    , SDDataManager.Instance.AOE_TYPE(_PropRange));
-            }
-        }
-        else if(functionName == "catch")
-        {
-            if (!PropTargetUnit.IsDead 
-                && PropTargetUnit.HpController.CurrentHp * 1f/ PropTargetUnit.HpController.MaxHp 
-                <= AllRandomSetClass.SimplePercentToDecimal(param1))
-            {
-                PF.catchSlave(_currentBattleUnit, PropTargetUnit,param0);
-            }
-        }
+        PF.UseProp(_currentBattleUnit, PropTargetUnit, _PropRange);
     }
     #endregion
     #region 全局型状态
@@ -895,6 +859,7 @@ public class BattleManager : MonoBehaviour
     public void whenOneRoundEnd()
     {
         round_end_event?.Invoke();
+        GM.goddessCharging();
     }
     public event BattleDamageListener heroToEnemyDmg_event;
     public event BattleDamageListener enemyToHeroDmg_event;

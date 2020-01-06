@@ -8,9 +8,6 @@ public class BasicRoleProperty : MonoBehaviour
     public int Quality = 0;
     //
     public RoleAttributeList RoleBasicRA;//角色数据
-    public RoleAttributeList RARate = new RoleAttributeList();//属性加成()%
-    //public int SPEED = 0;//速度,修正值(对_role内的speed进行加减)
-    public int CRI = 0;//暴击率()%
     public int CRIDmg = 0;//暴击伤害()%
     public int DmgReduction = 0;//(-∞,100)% 伤害修正
     public int DmgReflection = 0;//(0,x)% 伤害反射
@@ -25,24 +22,21 @@ public class BasicRoleProperty : MonoBehaviour
     public RoleBarChart BarChartRegendPerTurn = RoleBarChart.zero;//每回合三项可视化值回复量
     public string ID = string.Empty;
     public string Name = "";//名字
-    int UpGradeGap = 3;//大幅提升的等级差
+    [HideInInspector]
+    public int UpGradeGap = 3;//大幅提升的等级差
 
     /// <summary>
     /// 生成用于战斗的角色信息
     /// </summary>
     public OneRoleClassData _role;
     
-    public virtual void initData(int level,RoleAttributeList dataRA,RoleAttributeList rateRA
-        ,int cri,int criDmg,int dmgReduction,int dmgReflection,int RewardRate
+    public virtual void initData(int level,RoleAttributeList dataRA
+        ,int criDmg,int dmgReduction,int dmgReflection,int RewardRate
         ,RoleBarChart bcRegendPerTurn,string id,string name, int wakeNum)
     {
         LEVEL = level;
         RoleBasicRA = dataRA;
-        //
-        if (rateRA != null)
-            RARate = rateRA;
-        else RARate = RoleAttributeList.zero;
-        CRI = cri;CRIDmg = criDmg;
+        CRIDmg = criDmg;
         DmgReduction = dmgReduction;
         DmgReflection = dmgReflection;
         this.RewardRate = RewardRate;
@@ -51,7 +45,7 @@ public class BasicRoleProperty : MonoBehaviour
     }
     public void initDataEmpty()
     {
-        initData(0, new RoleAttributeList(), new RoleAttributeList(), 0, 0, 0, 0, 0
+        initData(0, new RoleAttributeList(), 0, 0, 0, 0
             , new RoleBarChart(), string.Empty, "",0);
     }
     /// <summary>
@@ -75,17 +69,14 @@ public class BasicRoleProperty : MonoBehaviour
     /// <param name="wakeNum"></param>
     public virtual void initData_Hero(Job heroJob, Race heroRace, int grade
         , int quality, int Level
-        , RoleAttributeList ra,RoleAttributeList raRate
-        , int cri, int criDmg, int dmgReduction, int dmgReflection, int RewardRate
+        , RoleAttributeList ra
+        , int criDmg, int dmgReduction, int dmgReflection, int RewardRate
         , RoleBarChart bcRegendPerTurn, string id, string name, int wakeNum)
     {
         LEVEL = Level;
         Quality = quality;
         RoleBasicRA = ra;
-        if (raRate != null)
-            RARate = raRate;
-        else RARate = RoleAttributeList.zero;
-        CRI = cri; CRIDmg = criDmg;
+        CRIDmg = criDmg;
         DmgReduction = dmgReduction; DmgReflection = dmgReflection;
         this.RewardRate = RewardRate;
         BarChartRegendPerTurn = bcRegendPerTurn;
@@ -151,7 +142,7 @@ public class BasicRoleProperty : MonoBehaviour
         RoleBasicRA = ra + gradeEffect;//等级加成
         AddTempleMultiplier(Job.Ranger);
         //额外效果
-        CRIDmg += 5;
+        CRIDmg += 25;
     }
     public void initData_supplement_H_Priest(RoleAttributeList ra, int grade)
     {
@@ -179,7 +170,7 @@ public class BasicRoleProperty : MonoBehaviour
         RoleBasicRA = ra + gradeEffect;//等级加成
         AddTempleMultiplier(Job.Priest);
         //额外效果
-        CRI += 5;
+        CRIDmg += 25;
     }
     #endregion
     #region 种族(阵营)
@@ -259,17 +250,7 @@ public class BasicRoleProperty : MonoBehaviour
     }
     public void initRoleClassData()
     {
-        RoleAttributeList a = RoleBasicRA;
-        for(int i = 0; i < (int)AttributeData.End; i++)
-        {
-            a.AddPerc(RARate.read((AttributeData)i), (AttributeData)i);
-        }
-        for(int i = 0; i < (int)StateTag.End; i++)
-        {
-            a.AddPerc(RARate.read((StateTag)i), (StateTag)i);
-        }
-
-        _role.ThisRoleAttributes = a;
+        _role.ThisRoleAttributes = RoleBasicRA;
     }
 
 
@@ -279,15 +260,11 @@ public class BasicRoleProperty : MonoBehaviour
         if (notRisist)
         {
             int s = _role.ReadCurrentRoleRA((AttributeData)index);
-            s = (int)(s * AllRandomSetClass.SimplePercentToDecimal
-                (100 + RARate.AllAttributeData[index]));
             return s;
         }
         else
         {
             int s = _role.ReadCurrentRoleRA((StateTag)index);
-            s = (int)(s * AllRandomSetClass.SimplePercentToDecimal
-                (100 + RARate.AllResistData[index]));
             return s;
         }
     }

@@ -6,7 +6,7 @@ using GameDataEditor;
 using System;
 
 /// <summary>
-/// 通用武器选择项
+/// 通用物件选择项
 /// </summary>
 public class SingleItem : MonoBehaviour
 {
@@ -30,8 +30,6 @@ public class SingleItem : MonoBehaviour
     public int hireBtnIndex;
     public ItemStarVision starVision;
     public Transform slider;
-
-    [HideInInspector]
     public int index;
     [HideInInspector]
     public bool extraTrigger;
@@ -136,6 +134,10 @@ public class SingleItem : MonoBehaviour
                     {
                         chooseHeroToTreat();
                     }
+                    else if(SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Altar)
+                    {
+
+                    }
                     else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.All)
                     {
                         chooseHeroToDetail();
@@ -165,26 +167,34 @@ public class SingleItem : MonoBehaviour
             {
                 chooseGoddessToShowDetail();
             }
-            else if(type == SDConstants.ItemType.Prop)
-            {
-                if(SDGameManager.Instance.stockUseType == SDConstants.StockUseType.detail)
-                {
-                    choosePropToShowDetail();
-                }
-                else if(SDGameManager.Instance.stockUseType == SDConstants.StockUseType.work)
-                {
-                    choosePropToChangeSlot();
-                }
-                else if(SDGameManager.Instance.stockUseType == SDConstants.StockUseType.sell)
-                {
-                    choosePropToSell();
-                }
-            }
-            else if(type == SDConstants.ItemType.Material)
+            else if(type == SDConstants.ItemType.Consumable)
             {
                 if (SDGameManager.Instance.stockUseType == SDConstants.StockUseType.detail)
                 {
-                    chooseMaterialToShowDetail();
+                    chooseConsumableToShowDetail();
+                }
+                else if (SDGameManager.Instance.stockUseType == SDConstants.StockUseType.work)
+                {
+                    choosePropToChangeSlot();
+                }
+                else if (SDGameManager.Instance.stockUseType == SDConstants.StockUseType.detail)
+                {
+                    chooseConsumableToShowDetail();
+                }
+            }
+            else if(type == SDConstants.ItemType.Rune)
+            {
+                if(SDGameManager.Instance.stockUseType == SDConstants.StockUseType.detail)
+                {
+                    chooseRuneToShowDetail();
+                }
+                else if(SDGameManager.Instance.stockUseType == SDConstants.StockUseType.work)
+                {
+                    chooseEquipedRune();
+                }
+                else if(SDGameManager.Instance.stockUseType == SDConstants.StockUseType.sell)
+                {
+
                 }
             }
             else if(type == SDConstants.ItemType.NPC)
@@ -323,7 +333,7 @@ public class SingleItem : MonoBehaviour
 
         upText.gameObject.SetActive(true);
         upText.text = SDGameManager.T("Lv.") + SDDataManager.Instance.getLevelByExp(hero.exp);
-        downText.text = SDGameManager.T(dal.Name);
+        downText.text = SDGameManager.T(dal.Info.Name);
         slider?.gameObject.SetActive(false);
         //
         int status = SDDataManager.Instance.getHeroStatus(hero.hashCode);
@@ -362,7 +372,7 @@ public class SingleItem : MonoBehaviour
 
         upText.gameObject.SetActive(true);
         upText.text = "Lv." + SDDataManager.Instance.getLevelByExp(hero.exp);
-        downText.text = SDGameManager.T(dal.Name);
+        downText.text = SDGameManager.T(dal.Info.Name);
         slider?.gameObject.SetActive(true);
         //
         int status = SDDataManager.Instance.getHeroStatus(hero.hashCode);
@@ -402,7 +412,11 @@ public class SingleItem : MonoBehaviour
             (SDDataManager.Instance.getHeroCareerById(itemId));
         ROHeroData roh = SDDataManager.Instance.getHeroDataByID(itemId,hero.starNumUpgradeTimes);
         //if (frameImg != null) frameImg.gameObject.SetActive(false);
-        characterModel?.initCharacterModel(itemHashcode,animType,SDConstants.HERO_MODEL_BIG_RATIO);
+        if (characterModel != null)
+        {
+            characterModel.initCharacterModel(itemHashcode, animType, SDConstants.HERO_MODEL_BIG_RATIO);
+            //ReadAnimImgList.initCharaModelByGDE(characterModel.CurrentCharacterModel);
+        }
         itemLevel = SDDataManager.Instance.getLevelByExp(hero.exp);
         if (upText)
         {
@@ -411,7 +425,7 @@ public class SingleItem : MonoBehaviour
         }
         if (downText)
         {
-            downText.text = SDGameManager.T(roh.Name);
+            downText.text = SDGameManager.T(roh.Info.Name);
         }
         slider?.gameObject.SetActive(false);
         if(starVision) starVision.StarNum = roh.starNum;
@@ -493,13 +507,13 @@ public class SingleItem : MonoBehaviour
                 + SDDataManager.Instance.getLevelByExp(equip.exp);
         }
 
-        int rarity = SDDataManager.Instance.getEquipRarityById(itemId);
+        //int rarity = SDDataManager.Instance.getEquipRarityById(itemId);
         //frameImg;
     }
     #endregion
-    #region 目标为Prop
-    #region prop效果
-    public void choosePropToShowDetail()
+    #region 目标为Consumable
+    #region consumable效果
+    public void chooseConsumableToShowDetail()
     {
         DepositoryPanel dp = GetComponentInParent<DepositoryPanel>();
         if (dp)
@@ -516,72 +530,92 @@ public class SingleItem : MonoBehaviour
             bagController.selectPropToChangeCurrentSlot(itemId);
         }
     }
-    public void choosePropToSell()
-    {
-
-    }
-    #endregion
-    public void initProp(GDEItemData prop, bool showTaken = false)
-    {
-        itemId = prop.id;
-        type = SDConstants.ItemType.Prop;
-        itemHashcode = 0;
-        ROPropData P = SDDataManager.Instance.getPropDataById(itemId);
-
-        fightForceText?.gameObject.SetActive(false);
-        itemUpLv = 0;
-        upText?.gameObject.SetActive(true);
-        upText.text = P.name;
-        itemNum = prop.num;
-        downText.gameObject.SetActive(true);
-        downText.text = "" + prop.num;
-        slider?.gameObject.SetActive(false);
-
-
-        int rarity = P.rarity;
-        if(starVision != null)
-            starVision.StarNum = rarity;
-
-        if(showTaken) isSelected = SDDataManager.Instance.checkIfPropIsTaken(itemId);
-    }
-    #endregion
-    #region 目标为Material
-    #region material效果
-    public void chooseMaterialToShowDetail()
-    {
-        DepositoryPanel dp = GetComponentInParent<DepositoryPanel>();
-        if (dp)
-        {
-            dp.showCurrentItemDetail(itemId, itemNum);
-            sourceController.Select_None();
-            isSelected = true;
-        }
-    }
     public void chooseMaterialToSell()
     {
 
     }
     #endregion
-    public void initMateiral(GDEItemData M)
+    public void initConsumable(GDEItemData M, bool showTaken = false)
     {
         itemId = M.id;
-        type = SDConstants.ItemType.Material;
+        type = SDConstants.ItemType.Consumable;
         itemHashcode = 0;
-        ROMaterialData P = SDDataManager.Instance.getMaterialDataById(itemId);
+        consumableItem P = SDDataManager.Instance.getConsumableById(itemId);
 
         fightForceText?.gameObject.SetActive(false);
         itemUpLv = 0;
         upText?.gameObject.SetActive(true);
-        upText.text = P.name;
+        upText.text = P.NAME;
         itemNum = M.num;
         downText.gameObject.SetActive(true);
         downText.text = "" + M.num;
         slider?.gameObject.SetActive(false);
 
-        int rarity = P.rarity;
+        int rarity = P.LEVEL;
         if (starVision != null)
             starVision.StarNum = rarity;
+
+        if (showTaken) isSelected = SDDataManager.Instance.checkIfPropIsTaken(itemId);
     }
+    #endregion
+    #region 目标为Rune
+    #region Rune效果
+    public void chooseRuneToShowDetail()
+    {
+        RunePanel RP = GetComponentInParent<RunePanel>();
+        if (RP == null) return;
+        RP.currentRuneHashcode = itemHashcode;
+        RP.refreshPage();
+    }
+    public void chooseEquipedRune()
+    {
+        GoddessDetailPanel GDP = GetComponentInParent<GoddessDetailPanel>();
+        if (GDP == null) return;
+        SDDataManager.Instance.addRuneToGoddessSlot(itemHashcode, GDP.CurrentGoddess.ID
+            ,GDP.currentGoddessRunePos);
+        GDP.refreshGoddessList();
+        //
+        HEWPageController page = GDP.runePanel.GetComponentInChildren<HEWPageController>();
+        page.ItemsInit(SDConstants.ItemType.Rune);
+        //Debug.Log("C--R");
+        GDP.RDP.initDetailPanel(SDDataManager.Instance.getRuneOwnedByHashcode(itemHashcode));
+    }
+    #endregion
+    public void initRuneInPage(GDERuneData E)
+    {
+        if (E == null || E.hashcode <= 0)
+        {
+            isEmpty = true; return;
+        }
+        isEmpty = false;
+        if (upText)
+        {
+            upText.text = SDGameManager.T("Lv.")
+                + E.level;
+        }
+        if (starVision)
+        {
+            starVision.StarNum = E.star;
+        }
+        itemHashcode = E.hashcode;
+        itemId = E.id;
+
+        GoddessDetailPanel GDP = GetComponentInParent<GoddessDetailPanel>();
+        if (GDP == null) return;
+        string goddessId = GDP.CurrentGoddess.ID;
+        if (SDDataManager.Instance.checkRuneEquippedByGoddess(itemHashcode,goddessId,out int pos))
+        {
+            isSelected = true;
+            index = pos;
+            upText.text += "-----" + index;
+        }
+        else if (SDDataManager.Instance.checkRuneStatus(itemHashcode))
+        {
+            isSelected = true;
+
+        }
+    }
+
     #endregion
     #region 目标为Drop
     public void initDrop(GDEItemData drop)
@@ -591,7 +625,7 @@ public class SingleItem : MonoBehaviour
         if (fightForceText) fightForceText.gameObject.SetActive(false);
         if (upText) upText.gameObject.SetActive(false);
         SDConstants.ItemType it = SDDataManager.Instance.getItemTypeById(itemId);
-        if (it == SDConstants.ItemType.Material || it == SDConstants.ItemType.Prop)
+        if (it == SDConstants.ItemType.Consumable)
         {
             if (downText) downText.text = "X" + drop.num;
         }
@@ -650,13 +684,14 @@ public class SingleItem : MonoBehaviour
     {
         type = SDConstants.ItemType.Goddess;
         itemId = goddess.id;
-        RoGoddessData g = SDDataManager.Instance.getGoddessData(goddess);
+        //RoGoddessData g = SDDataManager.Instance.getGoddessData(goddess);
+        GoddessInfo g = SDDataManager.Instance.getGoddessInfoById(goddess.id);
         //itemHashcode = goddess.GetHashCode();
         upText.gameObject.SetActive(true);
-        upText.text = SDGameManager.T("Lv.") + g.lv;
-        starVision.StarNum = g.star;
+        upText.text = SDGameManager.T("Lv.") + SDDataManager.Instance.getLevelByExp(goddess.exp);
+        starVision.StarNum = goddess.star;
         downText.text = SDGameManager.T(g.name);
-        itemNum = g.volume;
+        itemNum = goddess.volume;
         SelectTeamUnitPanel STUP = GetComponentInParent<SelectTeamUnitPanel>();
         if (STUP)
         {
@@ -731,26 +766,22 @@ public class SingleItem : MonoBehaviour
         SDConstants.ItemType item_type = SDDataManager.Instance.getItemTypeById(itemId);
         type = item_type;
         int bpg = 0;
-        if (type == SDConstants.ItemType.Material)
+        if (type == SDConstants.ItemType.Consumable)
         {
-            ROMaterialData data = SDDataManager.Instance.getMaterialDataById(itemId);
+            consumableItem data = SDDataManager.Instance.getConsumableById(itemId);
             if (upText) upText.text = SDGameManager.T(data.name);
             string downT = "";
             if (!useDamond)
             {
-                bpg = data.buyPrice_gold * Purchase.num;
+                bpg = data.buyPrice_coin * Purchase.num;
                 downT = SDGameManager.T("金币") + " - " + bpg;
             }
             else
             {
-                bpg = data.buyPrice_damond * Purchase.num;
+                bpg = data.buyPrice_diamond * Purchase.num;
                 downT = SDGameManager.T("钻石") + " - " + bpg;
             }
             if (downText) downText.text = downT;
-        }
-        else if(type == SDConstants.ItemType.Prop)
-        {
-
         }
 
 

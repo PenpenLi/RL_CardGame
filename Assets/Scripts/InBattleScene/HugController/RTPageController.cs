@@ -59,11 +59,11 @@ public class RTPageController : MonoBehaviour
     public bool showDropMaterials()
     {
         bool flag = false;
-        for(int i = 0; i < SDConstants.materialTypeNum; i++)
+        for(int i = 0; i < (int)SDConstants.MaterialType.end; i++)
         {
             int tmp = i;
             items[i].gameObject.SetActive(true);
-            if(tmp < SDConstants.materialTypeNum)
+            if(tmp < (int)SDConstants.MaterialType.end)
             {
                 int num = SDGameManager.Instance.DropMaterials[i];
                 if (num > 0)

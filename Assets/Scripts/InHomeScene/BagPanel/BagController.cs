@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using DG.Tweening;
 
 public class BagController : MonoBehaviour
 {
@@ -10,7 +11,6 @@ public class BagController : MonoBehaviour
     public ScrollRect scrollRect;
     public List<OneBagSlot> allSlots;
     public HEWPageController page;
-    public int currentSlotIndex;
     public enum useType
     {
         change, use, end,
@@ -29,12 +29,30 @@ public class BagController : MonoBehaviour
         }
     }
     [Header("CurrentProp")]
-    public string specialStr;
-    public string target;
-    public string range;
+    public int currentSlotIndex;
+    public consumableItem CurrentPropItem;
+
     public BattleManager BM;
-
-
+    [Header("UI_anim")]
+    public Button minimizeBtn;
+    [SerializeField,ReadOnly]
+    private bool _ismini;
+    public bool IsMini
+    {
+        get { return _ismini; }
+        set
+        {
+            _ismini = value;
+            if (_ismini)
+            {
+                scrollRect.transform.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InBack);
+            }
+            else
+            {
+                scrollRect.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
+            }
+        }
+    }
     public void InitBag(useType use_type)
     {
         currentUseType = use_type;
@@ -96,11 +114,13 @@ public class BagController : MonoBehaviour
     public void initPropList()
     {
         SDGameManager.Instance.stockUseType = SDConstants.StockUseType.work;
-        page.ItemsInit(SDConstants.ItemType.Prop);
+        page.ConsumableType = SDConstants.ConsumableType.prop;
+        page.ItemsInit(SDConstants.ItemType.Consumable);
         foreach (SingleItem s in page.items)
         {
             s.bagController = this;
         }
+        IsMini = false;
     }
     public void selectPropToChangeCurrentSlot(string id)
     {
@@ -117,7 +137,7 @@ public class BagController : MonoBehaviour
                 oldPropId = P.id;
                 P.id = id;
                 int volume = SDDataManager.Instance.propTakenVolume(id);
-                int allNum = SDDataManager.Instance.getPropOwned(id).num;
+                int allNum = SDDataManager.Instance.getConsumableNum(id);
                 if (allNum >= volume) P.num = volume;
                 else P.num = allNum;
                 SDDataManager.Instance.PlayerData.propsTeam[i] = P;
@@ -135,7 +155,7 @@ public class BagController : MonoBehaviour
                     {
                         P.id = oldPropId;
                         int volume = SDDataManager.Instance.propTakenVolume(oldPropId);
-                        int allNum = SDDataManager.Instance.getPropOwned(oldPropId).num;
+                        int allNum = SDDataManager.Instance.getConsumableNum(oldPropId);
                         if (allNum >= volume) P.num = volume;
                         else P.num = allNum;
                         SDDataManager.Instance.PlayerData.propsTeam[i] = P;
@@ -151,30 +171,25 @@ public class BagController : MonoBehaviour
 
     public void item_use(OneBagSlot slot)
     {
+        currentSlotIndex = slot.index;
         GDEItemData P = SDDataManager.Instance.PlayerData.propsTeam[currentSlotIndex];
         if (P!=null && string.IsNullOrEmpty(P.id))
         {
-            ROPropData Prop = SDDataManager.Instance.getPropDataById(P.id);
-            specialStr = Prop.specialStr;
-            target = Prop.target;
+            consumableItem item = SDDataManager.Instance.getConsumableById(P.id);
+            if (!item.isProp) return;
+            CurrentPropItem = item;
+            BM._PropTarget = item.AIM;
+            BM.refreshPropEnableTarget();
+            BM._PropRange = item.AOE;
             SDGameManager.Instance.isUsingProp = true;
-            parseSpecialStr();
+            BM.PropSpecialStr = item.SpecialStr;
+            BM.PF.checkSpecialStr(item.SpecialStr, P.id);
         }
     }
 
-    public void parseSpecialStr()
-    {
-        string[] strings = specialStr.Split('|');
-        //
-        for(int i = 0; i < strings.Length; i++)
-        {
-            string[] tmp = strings[i].Split(':');
-            BM.PropFunictionName = tmp[0];
-            string[] paramsStr = tmp[1].Split(',');
-            BM.param0 = SDDataManager.Instance.getInteger(paramsStr[0]);
-            if (paramsStr.Length > 1) BM.param1 = SDDataManager.Instance.getInteger(paramsStr[1]);
-        }
-        
 
+    public void changeSRSize()
+    {
+        IsMini = !IsMini;
     }
 }

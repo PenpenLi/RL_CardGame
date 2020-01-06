@@ -45,8 +45,6 @@ public class EnemyController : BasicRoleProperty
             //SDDataManager.Instance.addMaterial(M.id,M.num);
             string message = SDDataManager.Instance.getMaterialNameById(M.id) + " +"
                 + M.num;
-
-            int rarity = SDDataManager.Instance.getMaterialRarityById(M.id);
             //dropItemImg.sprite = 
 
             StartCoroutine(IEShowDropItemAnim());
@@ -88,8 +86,6 @@ public class EnemyController : BasicRoleProperty
         if (_enemy)
         {
             this.RoleBasicRA = _enemy.RoleBasicRA;
-            this.RARate = _enemy.RARate;
-            this.CRI = _enemy.CRI;
             this.CRIDmg = _enemy.CRIDmg;
             this.DmgReduction = _enemy.DmgReduction;
             this.DmgReflection = _enemy.DmgReflection;

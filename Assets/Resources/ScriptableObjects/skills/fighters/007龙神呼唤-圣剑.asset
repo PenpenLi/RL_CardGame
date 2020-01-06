@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97996d293ffa5f84fa9ef5c569f1997e, type: 3}
+  m_Name: "007\u9F99\u795E\u547C\u5524-\u5723\u5251"
+  m_EditorClassIdentifier: 
+  _ID: '@SH_FIGHTER#007'
+  _NAME: "\u9F99\u795E\u547C\u5524:\u5723\u5251"
+  _DESC: 
+  isOmegaSkill: 1
+  aim: 0
+  breed: 1
+  kind: 1
+  skillAoe: 0
+  mptpAddType: 2
+  UseAppointedAtb: 0
+  Atb: 0
+  UseAppointedPrefab: 1
+  functionId: 0
+  appointedSkillClass: 0
+  extraDataSet:
+    BCPerformDataUsingRA: 400
+    PDUsingRA_PerLevel: 15
+    PDUsingRA_PerSkillGrade: 20
+    UseState: 1
+    _standardState:
+      AllChangesInRAL:
+      - Title: "\u7269\u9632\u4E0B\u964D"
+        IsForAD: 0
+        ADTag: 4
+        STag: 0
+        UseDataType: 0
+        ChangeData:
+          dataTag: 1
+          DATA: -20
+        OtherAtb: 0
+        UsePercent: 0
+        UsePos: 0
+      - Title: "\u9B54\u9632\u4E0B\u964D"
+        IsForAD: 0
+        ADTag: 6
+        STag: 0
+        UseDataType: 0
+        ChangeData:
+          dataTag: 1
+          DATA: -20
+        OtherAtb: 0
+        UsePercent: 0
+        UsePos: 0
+      ChangeInBarChart:
+        HP:
+          dataTag: 0
+          DATA: 0
+        MP:
+          dataTag: 0
+          DATA: 0
+        TP:
+          dataTag: 0
+          DATA: 0
+      UseSourceAToDmg: 0
+      ExtraDmg:
+        dataTag: 0
+        DATA: 0
+      UsePercent: 0
+      aimAtSelf: 0
+      stateAOE: 0
+      SkillGrade: 0
+      NAME: 
+      Success: 0
+      stateEndType: 0
+      StateLastTime: 0
+      stateTag: 2
+      stateKind: 0
+      StatePossibilityBuff: 75
+  extraSkillWork:
+    m_PersistentCalls:
+      m_Calls: []
+  iconImg: 
+  bulletImg: 
+  skillAnimId: 0
+  _skillCost:
+    _COST_intger:
+      DATA: {x: 0, y: 0, z: 0}
+    _COST_pc:
+      DATA: {x: 15, y: 50, z: 20}

@@ -32,5 +32,8 @@ namespace GameDataEditor
         public static string Achievement_newAchievement = "newAchievement";
         public static string Anim_EmptyAnim = "EmptyAnim";
         public static string NPC_noone = "noone";
+        public static string Rune_RuneEmpty = "RuneEmpty";
+        public static string goddessAtti_emptyGAtti = "emptyGAtti";
+        public static string HeroAltarPool_emptyPool = "emptyPool";
     }
 }

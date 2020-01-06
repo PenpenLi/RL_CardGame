@@ -7,7 +7,7 @@ public class SDHero : BasicRoleProperty
     public Job _heroJob;
     public Race _heroRace;
     public int grade;
-    public int gender = -1;
+    public CharacterSex gender = CharacterSex.Unknown;
     //
     public int nameBeforeId;
     //
@@ -16,12 +16,12 @@ public class SDHero : BasicRoleProperty
         
     }
     public override void initData_Hero(Job heroJob, Race heroRace, int grade, int quality, int Level
-    , RoleAttributeList ra, RoleAttributeList raRate, int cri, int criDmg
+    , RoleAttributeList ra, int criDmg
     , int dmgReduction, int dmgReflection, int RewardRate
     , RoleBarChart bcRegendPerTurn, string id, string name, int wakeNum)
     {
         base.initData_Hero(heroJob, heroRace, grade, quality, Level
-            , ra, raRate, cri, criDmg, dmgReduction, dmgReflection, RewardRate
+            , ra, criDmg, dmgReduction, dmgReflection, RewardRate
             , bcRegendPerTurn, id, name, wakeNum);
         Debug.Log(name + " " + heroJob + " & " + heroRace);
         this._heroJob = heroJob;

@@ -12,8 +12,9 @@ public class HEWPageController : MonoBehaviour
     public Transform SItem;
     public List<SingleItem> items = new List<SingleItem>();
     public SDConstants.ItemType CurrentType = SDConstants.ItemType.End;
-    public Job jobType = Job.End;
+    public int currentHeroHashcode;
     public EquipPosition EquipPos = EquipPosition.End;
+    public SDConstants.ConsumableType ConsumableType;
     public int pageIndex;
     public int itemCount;
     //
@@ -48,12 +49,11 @@ public class HEWPageController : MonoBehaviour
     /// </summary>
     /// <param name="type"></param>
     /// <param name="ePos"></param>
-    public void ItemsInit(SDConstants.ItemType type, EquipPosition ePos = EquipPosition.End)
+    public void ItemsInit(SDConstants.ItemType type)
     {
         Debug.Log("不同类型列表会进行刷新");
         itemCount = 0;
         CurrentType = type;
-        EquipPos = ePos;
         if (type == SDConstants.ItemType.Hero)
         {
             SDConstants.HeroSelectType st = SDGameManager.Instance.heroSelectType;
@@ -125,13 +125,20 @@ public class HEWPageController : MonoBehaviour
                 showAllEquipsOwned();
             }
         }
-        else if(type == SDConstants.ItemType.Prop)
+        else if(type == SDConstants.ItemType.Consumable)
         {
-            showPropsOwned(true);
-        }
-        else if(type == SDConstants.ItemType.Material)
-        {
-            showMaterialOwned();
+            if(ConsumableType == SDConstants.ConsumableType.material)
+            {
+                showMaterialOwned();
+            }
+            else if(ConsumableType == SDConstants.ConsumableType.prop)
+            {
+                showPropsOwned(true);
+            }
+            else
+            {
+                showConsumableOwned(true);
+            }
         }
         else if(type == SDConstants.ItemType.Goddess)
         {
@@ -145,11 +152,25 @@ public class HEWPageController : MonoBehaviour
         {
 
         }
+        else if(type == SDConstants.ItemType.Rune)
+        {
+            showRuneOwned();
+        }
         else if(type == SDConstants.ItemType.NPC)
         {
             showNPCOwned();
         }
     }
+    public void ItemsInit(SDConstants.ItemType type,EquipPosition pos)
+    {
+        EquipPos = pos;
+        ItemsInit(type);
+    }
+    public void ItemsInit(SDConstants.ItemType type,SDConstants.ConsumableType ctype)
+    {
+        ConsumableType = ctype;ItemsInit(type);
+    }
+
     public void showEmptyItem(SDConstants.ItemType Type)
     {
         Transform s = Instantiate(SItem) as Transform;
@@ -279,18 +300,16 @@ public class HEWPageController : MonoBehaviour
     public void showOnePosEquipsOwned(EquipPosition pos)
     {
         ResetPage();
+        string id = SDDataManager.Instance.getHeroIdByHashcode(currentHeroHashcode);
         List<GDEEquipmentData> allEquips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
-            (pos, jobType);
+            (pos, id);
         itemCount = allEquips.Count;
-        //if (itemCount <= 0) equipSelect.refreshEmptyEquipPanel(true);
-        //else equipSelect.refreshEmptyEquipPanel(false);
         for (int i = 0; i < itemCount; i++)
         {
             Transform s = Instantiate(SItem) as Transform;
             s.transform.SetParent(scrollRect.content);
             s.transform.localScale = Vector3.one;
             SingleItem _s = s.GetComponent<SingleItem>();
-            //_s.initEquip(allEquips[i].equipId, allEquips[i].upLv);
             _s.sourceController = this;
             _s.initEquip(allEquips[i]);
             items.Add(_s);
@@ -325,7 +344,7 @@ public class HEWPageController : MonoBehaviour
     public void showPropsOwned(bool showTaken = false)
     {
         ResetPage();
-        List<GDEItemData> props = SDDataManager.Instance.PlayerData.props;
+        List<GDEItemData> props = SDDataManager.Instance.getPropsOwned;
         itemCount = props.Count;
         for(int i = 0; i < itemCount; i++)
         {
@@ -336,7 +355,7 @@ public class HEWPageController : MonoBehaviour
             SingleItem _s = s.GetComponent<SingleItem>();
             _s.sourceController = this;
             _s.index = i;
-            _s.initProp(props[i], showTaken);
+            _s.initConsumable(props[i], showTaken);
             items.Add(_s);
         }
     }
@@ -345,7 +364,7 @@ public class HEWPageController : MonoBehaviour
     public void showMaterialOwned()
     {
         ResetPage();
-        List<GDEItemData> ms = SDDataManager.Instance.PlayerData.materials;
+        List<GDEItemData> ms = SDDataManager.Instance.getMaterialsOwned;
         itemCount = ms.Count;
         for(int i = 0; i < itemCount; i++)
         {
@@ -356,7 +375,47 @@ public class HEWPageController : MonoBehaviour
             SingleItem _s = s.GetComponent<SingleItem>();
             _s.sourceController = this;
             _s.index = i;
-            _s.initMateiral(ms[i]);
+            _s.initConsumable(ms[i]);
+            items.Add(_s);
+        }
+    }
+    #endregion
+    #region ConsumableClass
+    public void showConsumableOwned(bool showTaken = false)
+    {
+        ResetPage();
+        List<GDEItemData> props = SDDataManager.Instance.PlayerData.consumables;
+        itemCount = props.Count;
+        for (int i = 0; i < itemCount; i++)
+        {
+            Transform s = Instantiate(SItem) as Transform;
+            s.transform.SetParent(scrollRect.content);
+            s.transform.localScale = Vector3.one;
+            s.gameObject.SetActive(true);
+            SingleItem _s = s.GetComponent<SingleItem>();
+            _s.sourceController = this;
+            _s.index = i;
+            _s.initConsumable(props[i], showTaken);
+            items.Add(_s);
+        }
+    }
+    #endregion
+    #region RuneClass
+    public void showRuneOwned()
+    {
+        ResetPage();
+        List<GDERuneData> runes = SDDataManager.Instance.PlayerData.RunesOwned;
+        itemCount = runes.Count;
+        for(int i = 0; i < itemCount; i++)
+        {
+            Transform s = Instantiate(SItem) as Transform;
+            s.transform.SetParent(scrollRect.content);
+            s.transform.localScale = Vector3.one;
+            s.gameObject.SetActive(true);
+            SingleItem _s = s.GetComponent<SingleItem>();
+            _s.sourceController = this;
+            _s.index = i;
+            _s.initRuneInPage(runes[i]);
             items.Add(_s);
         }
     }

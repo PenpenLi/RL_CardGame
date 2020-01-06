@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ce464e92bc160546bca5f7a7bca4abf, type: 3}
+  m_Name: "016\u5C0F\u94B1\u888B"
+  m_EditorClassIdentifier: 
+  _ID: M_M#3010016
+  _NAME: "\u5C0F\u94B1\u888B"
+  _DESC: 
+  itemtype: 2
+  _LEVEL: 0
+  stackAble: 0
+  discardAble: 1
+  useable: 1
+  sellAble: 1
+  inexhaustible: 0
+  maxDurability: 100
+  specialStr: 
+  materialType: 4
+  consumableType: 0
+  data: 
+  AOE: 0
+  AIM: 
+  buyPrice_coin: 5000
+  buyPrice_diamond: 0
+  minLv: 0
+  maxLv: 99
+  exchangeType: 2
+  weight: 5

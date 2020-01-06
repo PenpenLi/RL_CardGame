@@ -11,33 +11,27 @@ public class CatchSlave : SkillFunction
         IsUsed = true;
         CalculateBeforeFunction(source, target);
 
-        List<BattleRoleData> list = DealWithAOEAction(source, target);
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
         foreach(BattleRoleData t in list)
         {
-            StartCoroutine(IEStartSkill(source, t, valCaused(source, t)));
+            StartCoroutine(IEStartSkill(source, t, NumberData.Build(valCaused(source, t))));
         }
     }
-    public void PropStartSkill(BattleRoleData source,BattleRoleData target,int val
-        ,SDConstants.AOEType aoeType = SDConstants.AOEType.None)
+    public void PropStartSkill(BattleRoleData source, BattleRoleData target, NumberData val
+        , SDConstants.AOEType aoeType = SDConstants.AOEType.None)
     {
         base.StartSkill(source, target);
         IsProcessing = true;
         IsUsed = true;
-        if (GetComponent<HSkilInfo>())
+
+        AOEType = aoeType;
+        List<BattleRoleData> list = DealWithAOEAction(source, target,aoeType);
+        for (int i = 0; i < list.Count; i++)
         {
-            GetComponent<HSkilInfo>().AOEType = aoeType;
-            List<BattleRoleData> list = DealWithAOEAction(source, target);
-            for (int i = 0; i < list.Count; i++)
-            {
-                StartCoroutine(IEStartSkill(source, list[i], val));
-            }
-        }
-        else
-        {
-            StartCoroutine(IEStartSkill(source, target, val));
+            StartCoroutine(IEStartSkill(source, list[i], val));
         }
     }
-    public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target,int val)
+    public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target,NumberData _val)
     {
         source.playMoveTowardAnimation(target.transform.position);
         yield return new WaitForSeconds(moveTowardAndBackTime);
@@ -47,7 +41,22 @@ public class CatchSlave : SkillFunction
         SLEffectManager.Instance.playCommonEffectSlash(target.transform.position);
         yield return new WaitForSeconds(SDConstants.AnimTime_ATTACK - hitTime);
         //
-        float r = AllRandomSetClass.SimplePercentToDecimal(val);
+        float r = 0;
+        if (_val.dataTag == NumberData.DataType.integer)
+            r = AllRandomSetClass.SimplePercentToDecimal(_val.DATA);
+        else
+        {
+            r = _val.DECIMAL;
+        }
+
+        //目标敌人级别越高成功率越低
+        int level = target.ThisBasicRoleProperty().LEVEL;
+        for(int i = 0; i < level; i++)
+        {
+            r *= 0.8f;
+        }
+
+        //
         if (UnityEngine.Random.Range(0, 1) < r)//捕获成功
         {
             SDDataManager.Instance.AddSlave(target.ThisBasicRoleProperty().ID);

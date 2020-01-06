@@ -20,7 +20,6 @@ public class SDLikability : MonoBehaviour
     public void initLikabilityVision()
     {
         resetThisPanel();
-        int quality = SDDataManager.Instance.getHeroQualityById(heroDetail.ID);
         int likabiliyExp 
             = SDDataManager.Instance.GetHeroOwnedByHashcode(heroDetail.Hashcode).likability;
         heartLevel = 0;

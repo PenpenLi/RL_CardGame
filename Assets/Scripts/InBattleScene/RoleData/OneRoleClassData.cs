@@ -92,17 +92,17 @@ public class OneRoleClassData
 public enum Job
 {
     Fighter=0,
-    Ranger,
-    Priest,
-    Caster,
+    Ranger =1,
+    Priest=2,
+    Caster=3,
     End,
 }
 public enum Race
 {
     Human=0,
-    Elf,
-    Dragonborn,
-    End,
+    Elf=1,
+    Dragonborn=2,
+    End=3,
 }
 [System.Serializable]
 public class RoleBarChart
@@ -197,163 +197,132 @@ public class RoleBarChart
         TP = 0,
         DATA = Vector3.zero
     };
+    public RoleBarChart()
+    {
+        ResetSelf();
+    }
+    public RoleBarChart(int hp,int mp,int tp)
+    {
+        HP = hp; MP = mp;TP = tp;
+    }
 }
 
 /// <summary>
 /// 角色基底
 /// </summary>
 [System.Serializable]
-public class ROHeroData
+public class ROUnitData
 {
-    public string Name = "基础人";//名字
-    public int starNum=0;//LEVEL
-
-    public RoleAttributeList BasicRAL = RoleAttributeList.zero;
     public RoleAttributeList RALRate = RoleAttributeList.zero;//选择属性加成
-
-    public int CRI = 10;
+    public virtual RoleAttributeList ExportRAL
+    {
+        get
+        {
+            RoleAttributeList L = RoleAttributeList.zero;
+            L.AffectedByRate(RALRate);
+            return L;
+        }
+    }
+    //public string careerClass;
     public int CRIDmg = 150;
     public int DmgReduction = 0;//(-∞,100)% 伤害修正
     public int DmgReflection = 0;//(0,x)% 伤害反射
-    public int RewardRate = 0;//奖励获得概率变动()%
-    public int GoldRate = 0;//奖金数量变动()%
-    //public int HireCost = 0;//雇佣价格
     public RoleBarChart BarChartRegendPerTurn;//每回合四项可视化值回复量
-    public string ID = string.Empty;
-    public int gender = -1;
-    public int quality = 0;
-    public bool isRare = false;
+    public virtual int quality
+    {
+        get { return 0; }
+    }
+    public virtual bool isRare
+    {
+        get { return false; }
+    }
+    
 }
 /// <summary>
-/// 守护者基底
+/// 英雄基底
 /// </summary>
 [System.Serializable]
-public class RoGoddessData
+public class ROHeroData:ROUnitData
 {
-    public string name;
-    public int lv;
-    public int star;
-    public int volume;
-    public string sprite;
-    public string ID = string.Empty;
-    public int gender = -1;
-    public int quality;
-    public int race;
-    public string mainEffect;
-    public string sideEffect;
-    public string passiveEffect;
-    public List<int> teamIdsUsed;
-}
-
-[System.Serializable]
-public class ROPropData
-{
-    public string name;
-    public string id;
-    public int level;
-    public int rarity;
-    public string image;
-    public int mode;
-    public SDConstants.ItemType itemType = SDConstants.ItemType.Prop;
-    public int canUseInGame;
-    public string des;
-    public string specialStr;
-    public string target;
-    public int buyPrice_gold;
-    public int buyPrice_damond;
-}
-
-[System.Serializable]
-public class ROMaterialData
-{
-    public string name;
-    public string id;
-    public int level;
-    public int rarity;
-    public string materialType;
-    public string image;
-    public int mode;
-    public string kind;
-    public SDConstants.ItemType itemType = SDConstants.ItemType.Material;
-    public int canUseInGame;
-    public string des;
-    public string specialStr;
-    #region normalMaterial
-    public int figure;
-    public int exchangeType;
-    public int maxStack;
-    public int weight;
-    #endregion
-    #region propMaterial
-    public string range;
-    public string target;
-    #endregion
-    public int buyPrice_gold;
-    public int buyPrice_damond;
-
-    public int minLv;
-    public int maxLv;
-}
-
-[System.Serializable]
-public class ROEquipData
-{
-    public string name;
-    public string id; 
-    public int pos;
-    //public int quality;
-    public int rarity;
-    public string image;
-    public int type;
-    public string passiveEffect;
-    public bool isArmor;
-    public string mainEffect;
-    public string sideEffect;
-    public RoleAttributeList RAL;
+    public HeroInfo Info;
+    public int starNumUpGradeTimes = 0;//后天提升的星级
+    public int starNum
+    {
+        get { if (Info) return Info.LEVEL + starNumUpGradeTimes; else return 0; }
+    }
+    public override RoleAttributeList ExportRAL
+    {
+        get
+        {
+            if (Info)
+            {
+                RoleAttributeList L = Info.RAL;
+                L.AffectedByRate(RALRate);
+                return L;
+            }
+            else return RoleAttributeList.zero;
+        }
+    }
+    public override int quality 
+    {
+        get 
+        {
+            if (Info) return Info.LEVEL;
+            else return 0;
+        }
+    }
+    public override bool isRare
+    {
+        get
+        {
+            if (Info) return Info.LEVEL >= 2;
+            else return false;
+        }
+    }
+    public int RewardRate = 0;//奖励获得概率变动()%
+    public int GoldRate = 0;//奖金数量变动()%
+    public ROHeroData() { }
 }
 /// <summary>
 /// 敌人基底
 /// </summary>
 [System.Serializable]
-public class ROEnemyData
+public class ROEnemyData : ROUnitData
 {
-    public string name;
-    public string id;
-    public int race;
-    public string Class;
-
-    private int _rank = -1;
-    public int rank
+    public EnemyInfo Info;
+    public override int quality
     {
-        get 
-        {
-            if (_rank < 0)
-            {
-                _rank = 0;
-                for (int i = 0; i < (int)SDConstants.EnemyType.end; i++)
-                {
-                    if(Class == ((SDConstants.EnemyType)i).ToString())
-                    {
-                        _rank = i;
-                    }
-                }
-            }
-            return _rank;
+        get {
+            if (Info) return Info.EnemyRank.Index;
+            else return 0;
         }
     }
-
-    public int gender;
-    public int skeleton;
-    public int quality;
-    //public string _class;
-    public int weight;
-    public int appearWeight;
-    //[HideInInspector]
-    public int dropRate;
-    public string dropItems;
-    public RoleAttributeList RAL;
+    public override bool isRare
+    {
+        get
+        {
+            if (Info) return Info.EnemyRank.Index > 1;
+            else return false;
+        }
+    }
+    public override RoleAttributeList ExportRAL
+    {
+        get
+        {
+            if (Info)
+            {
+                RoleAttributeList L = Info.RAL;
+                L.AffectedByRate(RALRate);
+                return L;
+            }
+            else return RoleAttributeList.zero;
+        }
+    }
+    public List<string> dropItems = new List<string>();
+    public int dropCoins = 5;
+    //
+    public ROEnemyData() { }
 }
-
 
 
 
@@ -382,4 +351,17 @@ public class ROTaskData
         taskConditions = _taskConditions;
         taskClass = _class;
     }
+}
+
+
+
+[System.Serializable]
+public class ROHeroAltarPool
+{
+    public HeroAltarPool Pool;
+    public int HaveAltarTimes;
+    public int HaveAlartSNum;
+    public int PoolCapacity;
+    public bool Unable;
+    public bool NotNormalPool;
 }

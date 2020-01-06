@@ -34,9 +34,10 @@ public class SDEquipSelect : MonoBehaviour
 
     public void initPosEquipSelectPanel(EquipPosition Pos, bool isSecondJPos=false)
     {
-        careerType = (Job)heroDetail.careerIndex;
+        careerType = heroDetail.careerIndex;
         equipPos = Pos;
 
+        pageController.currentHeroHashcode = heroDetail.Hashcode;
         SDGameManager.Instance.stockUseType = SDConstants.StockUseType.work;
         if(Pos == EquipPosition.Head)
         {
@@ -68,7 +69,7 @@ public class SDEquipSelect : MonoBehaviour
     {
         titleText.text = "Helmet";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
-            (EquipPosition.Head, careerType);
+            (EquipPosition.Head, heroDetail.ID);
         GDEEquipmentData helmet = SDDataManager.Instance.getHeroEquipHelmet(heroDetail.Hashcode);
         if(helmet == null || string.IsNullOrEmpty(helmet.id))
         {
@@ -82,14 +83,13 @@ public class SDEquipSelect : MonoBehaviour
             refreshSelectedEquipmentDetail(helmet.hashcode);
             //helmet.
         }
-        pageController.jobType = careerType;
         pageController.ItemsInit(SDConstants.ItemType.Equip,EquipPosition.Head);
     }
     public void initBreastplateSelectPanel()
     {
         titleText.text = "Breastplate";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
-            (EquipPosition.Breast, careerType);
+            (EquipPosition.Breast,heroDetail.ID);
         GDEEquipmentData breastplate = SDDataManager.Instance.getHeroEquipBreastplate(heroDetail.Hashcode);
         if (breastplate == null || string.IsNullOrEmpty(breastplate.id))
         {
@@ -103,14 +103,13 @@ public class SDEquipSelect : MonoBehaviour
             refreshSelectedEquipmentDetail(breastplate.hashcode);
             //breastplate.
         }
-        pageController.jobType = careerType;
         pageController.ItemsInit(SDConstants.ItemType.Equip,EquipPosition.Breast);
     }
     public void initGardebrasSelectPanel()
     {
         titleText.text = "Gardebras";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
-            (EquipPosition.Arm, careerType);
+            (EquipPosition.Arm, heroDetail.ID);
         GDEEquipmentData gardebras = SDDataManager.Instance.getHeroEquipGardebras(heroDetail.Hashcode);
         if (gardebras == null || string.IsNullOrEmpty(gardebras.id))
         {
@@ -124,14 +123,13 @@ public class SDEquipSelect : MonoBehaviour
             refreshSelectedEquipmentDetail(gardebras.hashcode);
             //gardebras.
         }
-        pageController.jobType = careerType;
         pageController.ItemsInit(SDConstants.ItemType.Equip,EquipPosition.Arm);
     }
     public void initLeggingSelectPanel()
     {
         titleText.text = "Legging";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
-            (EquipPosition.Leg, careerType);
+            (EquipPosition.Leg, heroDetail.ID);
         GDEEquipmentData legging = SDDataManager.Instance.getHeroEquipLegging(heroDetail.Hashcode);
         if (legging == null || string.IsNullOrEmpty(legging.id))
         {
@@ -145,14 +143,13 @@ public class SDEquipSelect : MonoBehaviour
             refreshSelectedEquipmentDetail(legging.hashcode);
             //legging.
         }
-        pageController.jobType = careerType;
         pageController.ItemsInit(SDConstants.ItemType.Equip,EquipPosition.Leg);
     }
     public void initJewelrySelectPanel()
     {
         titleText.text = "Jewelry";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
-            (EquipPosition.Finger, careerType);
+            (EquipPosition.Finger, heroDetail.ID);
         GDEEquipmentData jewelry = SDDataManager.Instance.getHeroEquipJewelry(heroDetail.Hashcode);
         if (jewelry == null || string.IsNullOrEmpty(jewelry.id))
         {
@@ -166,14 +163,13 @@ public class SDEquipSelect : MonoBehaviour
             refreshSelectedEquipmentDetail(jewelry.hashcode);
             //jewelry.
         }
-        pageController.jobType = careerType;
         pageController.ItemsInit(SDConstants.ItemType.Equip,EquipPosition.Finger);
     }
     public void initWeaponSelectPanel()
     {
         titleText.text = "Weapon";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
-            (EquipPosition.Hand, careerType);
+            (EquipPosition.Hand, heroDetail.ID);
         GDEEquipmentData weapon = SDDataManager.Instance.getHeroWeapon(heroDetail.Hashcode);
         if (weapon == null || string.IsNullOrEmpty(weapon.id))
         {
@@ -187,7 +183,6 @@ public class SDEquipSelect : MonoBehaviour
             refreshSelectedEquipmentDetail(weapon.hashcode);
             //weapon.
         }
-        pageController.jobType = careerType;
         pageController.ItemsInit(SDConstants.ItemType.Equip,EquipPosition.Hand);
     }
     public void refreshSelectedEquipmentDetail(int hashcode)

@@ -47,34 +47,6 @@ namespace GameDataEditor
             }
         }
 
-        static string itemHashcodeKey = "itemHashcode";
-		int _itemHashcode;
-        public int itemHashcode
-        {
-            get { return _itemHashcode; }
-            set {
-                if (_itemHashcode != value)
-                {
-                    _itemHashcode = value;
-					GDEDataManager.SetInt(_key, itemHashcodeKey, _itemHashcode);
-                }
-            }
-        }
-
-        static string taskTypeKey = "taskType";
-		int _taskType;
-        public int taskType
-        {
-            get { return _taskType; }
-            set {
-                if (_taskType != value)
-                {
-                    _taskType = value;
-					GDEDataManager.SetInt(_key, taskTypeKey, _taskType);
-                }
-            }
-        }
-
         static string timeTypeKey = "timeType";
 		int _timeType;
         public int timeType
@@ -113,6 +85,20 @@ namespace GameDataEditor
                 {
                     _newData = value;
 					GDEDataManager.SetInt(_key, newDataKey, _newData);
+                }
+            }
+        }
+
+        static string itemHashcodeKey = "itemHashcode";
+		int _itemHashcode;
+        public int itemHashcode
+        {
+            get { return _itemHashcode; }
+            set {
+                if (_itemHashcode != value)
+                {
+                    _itemHashcode = value;
+					GDEDataManager.SetInt(_key, itemHashcodeKey, _itemHashcode);
                 }
             }
         }
@@ -159,6 +145,14 @@ namespace GameDataEditor
             }
         }
 
+        static string taskRewardsKey = "taskRewards";
+		public List<string>      taskRewards;
+		public void Set_taskRewards()
+        {
+	        GDEDataManager.SetStringList(_key, taskRewardsKey, taskRewards);
+		}
+		
+
         public GDEtimeTaskData(string key) : base(key)
         {
             GDEDataManager.RegisterItem(this.SchemaName(), key);
@@ -170,14 +164,15 @@ namespace GameDataEditor
 			
             dict.Merge(true, keepWorking.ToGDEDict(keepWorkingKey));
             dict.Merge(true, isEmpty.ToGDEDict(isEmptyKey));
-            dict.Merge(true, itemHashcode.ToGDEDict(itemHashcodeKey));
-            dict.Merge(true, taskType.ToGDEDict(taskTypeKey));
             dict.Merge(true, timeType.ToGDEDict(timeTypeKey));
             dict.Merge(true, oldData.ToGDEDict(oldDataKey));
             dict.Merge(true, newData.ToGDEDict(newDataKey));
+            dict.Merge(true, itemHashcode.ToGDEDict(itemHashcodeKey));
             dict.Merge(true, itemId.ToGDEDict(itemIdKey));
             dict.Merge(true, startTime.ToGDEDict(startTimeKey));
             dict.Merge(true, taskId.ToGDEDict(taskIdKey));
+
+            dict.Merge(true, taskRewards.ToGDEDict(taskRewardsKey));
             return dict;
 		}
 
@@ -195,14 +190,15 @@ namespace GameDataEditor
 			{
                 dict.TryGetBool(keepWorkingKey, out _keepWorking);
                 dict.TryGetBool(isEmptyKey, out _isEmpty);
-                dict.TryGetInt(itemHashcodeKey, out _itemHashcode);
-                dict.TryGetInt(taskTypeKey, out _taskType);
                 dict.TryGetInt(timeTypeKey, out _timeType);
                 dict.TryGetInt(oldDataKey, out _oldData);
                 dict.TryGetInt(newDataKey, out _newData);
+                dict.TryGetInt(itemHashcodeKey, out _itemHashcode);
                 dict.TryGetString(itemIdKey, out _itemId);
                 dict.TryGetString(startTimeKey, out _startTime);
                 dict.TryGetString(taskIdKey, out _taskId);
+
+                dict.TryGetStringList(taskRewardsKey, out taskRewards);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -213,14 +209,15 @@ namespace GameDataEditor
 			
             _keepWorking = GDEDataManager.GetBool(_key, keepWorkingKey, _keepWorking);
             _isEmpty = GDEDataManager.GetBool(_key, isEmptyKey, _isEmpty);
-            _itemHashcode = GDEDataManager.GetInt(_key, itemHashcodeKey, _itemHashcode);
-            _taskType = GDEDataManager.GetInt(_key, taskTypeKey, _taskType);
             _timeType = GDEDataManager.GetInt(_key, timeTypeKey, _timeType);
             _oldData = GDEDataManager.GetInt(_key, oldDataKey, _oldData);
             _newData = GDEDataManager.GetInt(_key, newDataKey, _newData);
+            _itemHashcode = GDEDataManager.GetInt(_key, itemHashcodeKey, _itemHashcode);
             _itemId = GDEDataManager.GetString(_key, itemIdKey, _itemId);
             _startTime = GDEDataManager.GetString(_key, startTimeKey, _startTime);
             _taskId = GDEDataManager.GetString(_key, taskIdKey, _taskId);
+
+            taskRewards = GDEDataManager.GetStringList(_key, taskRewardsKey, taskRewards);
         }
 
         public GDEtimeTaskData ShallowClone()
@@ -230,14 +227,16 @@ namespace GameDataEditor
 
             newClone.keepWorking = keepWorking;
             newClone.isEmpty = isEmpty;
-            newClone.itemHashcode = itemHashcode;
-            newClone.taskType = taskType;
             newClone.timeType = timeType;
             newClone.oldData = oldData;
             newClone.newData = newData;
+            newClone.itemHashcode = itemHashcode;
             newClone.itemId = itemId;
             newClone.startTime = startTime;
             newClone.taskId = taskId;
+
+            newClone.taskRewards = new List<string>(taskRewards);
+			newClone.Set_taskRewards();
 
             return newClone;
 		}
@@ -264,24 +263,6 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetBool(isEmptyKey, out _isEmpty);
-        }
-
-        public void Reset_itemHashcode()
-        {
-            GDEDataManager.ResetToDefault(_key, itemHashcodeKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(itemHashcodeKey, out _itemHashcode);
-        }
-
-        public void Reset_taskType()
-        {
-            GDEDataManager.ResetToDefault(_key, taskTypeKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(taskTypeKey, out _taskType);
         }
 
         public void Reset_timeType()
@@ -311,6 +292,15 @@ namespace GameDataEditor
             dict.TryGetInt(newDataKey, out _newData);
         }
 
+        public void Reset_itemHashcode()
+        {
+            GDEDataManager.ResetToDefault(_key, itemHashcodeKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(itemHashcodeKey, out _itemHashcode);
+        }
+
         public void Reset_itemId()
         {
             GDEDataManager.ResetToDefault(_key, itemIdKey);
@@ -338,6 +328,16 @@ namespace GameDataEditor
             dict.TryGetString(taskIdKey, out _taskId);
         }
 
+        public void Reset_taskRewards()
+        {
+	        GDEDataManager.ResetToDefault(_key, taskRewardsKey);
+
+	        Dictionary<string, object> dict;
+	        GDEDataManager.Get(_key, out dict);
+	        dict.TryGetStringList(taskRewardsKey, out taskRewards);
+        }
+		
+
         public void ResetAll()
         {
              #if !UNITY_WEBPLAYER
@@ -345,15 +345,15 @@ namespace GameDataEditor
              #else
 
             GDEDataManager.ResetToDefault(_key, startTimeKey);
-            GDEDataManager.ResetToDefault(_key, taskTypeKey);
             GDEDataManager.ResetToDefault(_key, timeTypeKey);
             GDEDataManager.ResetToDefault(_key, taskIdKey);
             GDEDataManager.ResetToDefault(_key, oldDataKey);
             GDEDataManager.ResetToDefault(_key, newDataKey);
-            GDEDataManager.ResetToDefault(_key, itemHashcodeKey);
             GDEDataManager.ResetToDefault(_key, itemIdKey);
             GDEDataManager.ResetToDefault(_key, keepWorkingKey);
             GDEDataManager.ResetToDefault(_key, isEmptyKey);
+            GDEDataManager.ResetToDefault(_key, taskRewardsKey);
+            GDEDataManager.ResetToDefault(_key, itemHashcodeKey);
 
 
             #endif

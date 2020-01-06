@@ -14,13 +14,13 @@ public class TpRegend : SkillFunction
         IsUsed = true;
         CalculateBeforeFunction(source, target);
 
-        List<BattleRoleData> list = DealWithAOEAction(source, target);
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
         for (int i = 0; i < list.Count; i++)
         {
-            StartCoroutine(IEStartSkill(source, list[i], ValCaused(source, list[i]), lastTime));
+            StartCoroutine(IEStartSkill(source, list[i], NumberData.Build(ValCaused(source, list[i])), lastTime));
         }
     }
-    public void PropStartSkill(BattleRoleData source, BattleRoleData target, int val
+    public void PropStartSkill(BattleRoleData source, BattleRoleData target, NumberData val
         , int lastTime, SDConstants.AOEType AOEType = SDConstants.AOEType.None)
     {
         base.StartSkill(source, target);
@@ -30,7 +30,7 @@ public class TpRegend : SkillFunction
         if (GetComponent<HSkilInfo>())
         {
             GetComponent<HSkilInfo>().AOEType = AOEType;
-            List<BattleRoleData> list = DealWithAOEAction(source, target);
+            List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
             for (int i = 0; i < list.Count; i++)
             {
                 StartCoroutine(IEStartSkill(source, list[i], val, lastTime));
@@ -42,7 +42,7 @@ public class TpRegend : SkillFunction
         }
     }
     public IEnumerator IEStartSkill(BattleRoleData source, BattleRoleData target
-        , int val, int lastTime)
+        , NumberData _val, int lastTime)
     {
         source.unit_character_model.CurrentCharacterModel.ChangeModelAnim
             (source.unit_character_model.CurrentCharacterModel.anim_cast, false);
@@ -54,9 +54,22 @@ public class TpRegend : SkillFunction
 
         source.unit_character_model.CurrentCharacterModel
             .ChangeModelAnim(source.unit_character_model.CurrentCharacterModel.anim_idle, true);
-
-        Debug.Log(source.name + " heal cause " + val + " to " + target.name);
-        target.ControlRegendVisual(_stateTag, lastTime, val);
+        int val = _val.DATA;
+        if (_val.dataTag == NumberData.DataType.percent)
+        {
+            val = (int)(target.TpController.maxTp * _val.DECIMAL);
+        }
+        OneStateController state = new OneStateController()
+        {
+            ID = name + "#" + _stateTag.ToString().ToUpper(),
+            NAME = name,
+            BarChart = new RoleBarChart() { TP = val, },
+            StateTag = StateTag.End,
+            LastTime = lastTime,
+        };
+        if(target.AddStandardState(state))
+            Debug.Log(source.name + " heal cause " + val + " to " + target.name);
+        //target.ControlRegendVisual(_stateTag, lastTime, val);
 
         yield return new WaitForSeconds(skillLastTime);
         StartCoroutine(IEWaitForShortEnd(source));

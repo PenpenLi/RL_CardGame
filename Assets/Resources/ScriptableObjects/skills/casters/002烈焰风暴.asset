@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97996d293ffa5f84fa9ef5c569f1997e, type: 3}
+  m_Name: "002\u70C8\u7130\u98CE\u66B4"
+  m_EditorClassIdentifier: 
+  _ID: '@SH_CASTER#002'
+  _NAME: "\u70C8\u7130\u98CE\u66B4"
+  _DESC: 
+  isOmegaSkill: 1
+  aim: 2
+  breed: 0
+  kind: 0
+  skillAoe: 12
+  mptpAddType: 6
+  UseAppointedAtb: 0
+  Atb: 0
+  UseAppointedPrefab: 1
+  functionId: 0
+  appointedSkillClass: 0
+  extraDataSet:
+    BCPerformDataUsingRA: 460
+    PDUsingRA_PerLevel: 10
+    PDUsingRA_PerSkillGrade: 10
+    UseState: 1
+    _standardState:
+      AllChangesInRAL: []
+      ChangeInBarChart:
+        HP:
+          dataTag: 0
+          DATA: 0
+        MP:
+          dataTag: 0
+          DATA: 0
+        TP:
+          dataTag: 0
+          DATA: 0
+      UseSourceAToDmg: 1
+      ExtraDmg:
+        dataTag: 1
+        DATA: 35
+      UsePercent: 0
+      aimAtSelf: 0
+      stateAOE: 0
+      SkillGrade: 0
+      NAME: 
+      Success: 0
+      stateEndType: 0
+      StateLastTime: 3
+      stateTag: 2
+      stateKind: 0
+      StatePossibilityBuff: 75
+  extraSkillWork:
+    m_PersistentCalls:
+      m_Calls: []
+  iconImg: 
+  bulletImg: 
+  skillAnimId: 0
+  _skillCost:
+    _COST_intger:
+      DATA: {x: 0, y: 0, z: 0}
+    _COST_pc:
+      DATA: {x: 0, y: 50, z: 25}

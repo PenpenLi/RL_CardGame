@@ -1,0 +1,202 @@
+
+GUJIA.png
+size: 789,789
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+HAIR/hair01
+  rotate: false
+  xy: 2, 303
+  size: 238, 229
+  orig: 238, 229
+  offset: 0, 0
+  index: -1
+HAIR/hair02
+  rotate: false
+  xy: 278, 386
+  size: 230, 170
+  orig: 230, 170
+  offset: 0, 0
+  index: -1
+HAIR/hair06
+  rotate: false
+  xy: 2, 534
+  size: 274, 253
+  orig: 276, 253
+  offset: 0, 0
+  index: -1
+HAIR/hair12
+  rotate: false
+  xy: 2, 99
+  size: 238, 202
+  orig: 239, 202
+  offset: 0, 0
+  index: -1
+HAIR/hair18
+  rotate: false
+  xy: 518, 409
+  size: 237, 198
+  orig: 237, 198
+  offset: 0, 0
+  index: -1
+L_hand_a
+  rotate: false
+  xy: 382, 25
+  size: 61, 56
+  orig: 61, 56
+  offset: 0, 0
+  index: -1
+L_hand_b
+  rotate: false
+  xy: 598, 13
+  size: 49, 56
+  orig: 49, 56
+  offset: 0, 0
+  index: -1
+L_hand_c
+  rotate: false
+  xy: 331, 17
+  size: 49, 58
+  orig: 49, 58
+  offset: 0, 0
+  index: -1
+L_jiao
+  rotate: false
+  xy: 462, 29
+  size: 134, 101
+  orig: 134, 102
+  offset: 0, 0
+  index: -1
+L_leg_a
+  rotate: false
+  xy: 598, 71
+  size: 55, 93
+  orig: 55, 93
+  offset: 0, 0
+  index: -1
+L_leg_b
+  rotate: false
+  xy: 373, 83
+  size: 87, 128
+  orig: 87, 128
+  offset: 0, 0
+  index: -1
+R_leg_a
+  rotate: false
+  xy: 724, 73
+  size: 44, 87
+  orig: 44, 88
+  offset: 0, 1
+  index: -1
+R_leg_b
+  rotate: false
+  xy: 655, 42
+  size: 67, 118
+  orig: 68, 118
+  offset: 0, 0
+  index: -1
+body/body01
+  rotate: false
+  xy: 462, 132
+  size: 112, 116
+  orig: 112, 116
+  offset: 0, 0
+  index: -1
+body/body09
+  rotate: false
+  xy: 558, 287
+  size: 120, 120
+  orig: 120, 120
+  offset: 0, 0
+  index: -1
+body/body22
+  rotate: false
+  xy: 680, 282
+  size: 107, 125
+  orig: 107, 125
+  offset: 0, 0
+  index: -1
+cloth_back
+  rotate: false
+  xy: 649, 14
+  size: 76, 26
+  orig: 76, 26
+  offset: 0, 0
+  index: -1
+eyes1
+  rotate: false
+  xy: 242, 77
+  size: 129, 134
+  orig: 130, 134
+  offset: 1, 0
+  index: -1
+eyes2
+  rotate: false
+  xy: 428, 250
+  size: 128, 134
+  orig: 129, 134
+  offset: 1, 0
+  index: -1
+faceother
+  rotate: false
+  xy: 242, 504
+  size: 22, 28
+  orig: 22, 28
+  offset: 0, 0
+  index: -1
+hair1
+  rotate: false
+  xy: 278, 558
+  size: 238, 229
+  orig: 238, 229
+  offset: 0, 0
+  index: -1
+hair_back
+  rotate: false
+  xy: 742, 181
+  size: 40, 99
+  orig: 40, 99
+  offset: 0, 0
+  index: -1
+handR
+  rotate: false
+  xy: 576, 166
+  size: 85, 119
+  orig: 85, 119
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 242, 213
+  size: 184, 171
+  orig: 184, 172
+  offset: 0, 0
+  index: -1
+hips
+  rotate: false
+  xy: 203, 7
+  size: 126, 68
+  orig: 126, 68
+  offset: 0, 0
+  index: -1
+lageB/L_leg_b06
+  rotate: false
+  xy: 663, 162
+  size: 77, 118
+  orig: 77, 118
+  offset: 0, 0
+  index: -1
+toukui
+  rotate: false
+  xy: 2, 14
+  size: 199, 83
+  orig: 199, 84
+  offset: 0, 0
+  index: -1
+wuqi
+  rotate: false
+  xy: 518, 609
+  size: 267, 178
+  orig: 267, 178
+  offset: 0, 0
+  index: -1

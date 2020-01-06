@@ -21,6 +21,8 @@ public class ActionBarManager : MonoBehaviour
     public bool IsWaitingAction = false;
     [HideInInspector]
     public BattleManager BM;
+    [HideInInspector]
+    public GoddessManager GM;
     //
     //public float ABMaxTime = 0.75f;
     //[HideInInspector]
@@ -32,6 +34,7 @@ public class ActionBarManager : MonoBehaviour
     {
         Random.InitState((int)System.DateTime.Now.Ticks);
         BM = GetComponentInParent<BattleManager>();
+        GM = BM.GM;
         standardSpeedArray = new int[SDConstants.MaxSelfNum + SDConstants.MaxOtherNum];
         speedLevels = new int[SDConstants.MaxSelfNum + SDConstants.MaxOtherNum];
         for (int i = 0; i < speedLevels.Length; i++)
@@ -276,6 +279,7 @@ public class ActionBarManager : MonoBehaviour
                 }
             }
         }
+
     }
 
 

@@ -18,6 +18,8 @@ public class PageView : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     [HideInInspector]
     public float endHorizontal;
     [SerializeField]
+    public UnityEvent DragStartEvent = new UnityEvent();
+    [SerializeField]
     public UnityEvent DragEndEvent = new UnityEvent();
 
     #region 滑动切换梯队
@@ -25,6 +27,7 @@ public class PageView : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     {
         if (rect == null) rect = GetComponent<ScrollRect>();
         startHorizontal = rect.horizontalNormalizedPosition;
+        DragStartEvent?.Invoke();
     }
     public void OnEndDrag(PointerEventData eventData)
     {
@@ -35,12 +38,12 @@ public class PageView : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         if (endHorizontal - startHorizontal > minMoveHorizontal)//右移
         {
             currentIndex = Mathf.Clamp(currentIndex + 1, minIndex, maxIndex);
-            DragEndEvent.Invoke();
+            DragEndEvent?.Invoke();
         }
         else if(endHorizontal - startHorizontal < -minMoveHorizontal)//左移
         {
             currentIndex = Mathf.Clamp(currentIndex - 1, minIndex, maxIndex);
-            DragEndEvent.Invoke();
+            DragEndEvent?.Invoke();
         }
         else//不变
         {

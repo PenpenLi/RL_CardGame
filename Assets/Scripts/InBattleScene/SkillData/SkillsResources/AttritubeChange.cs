@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class AttritubeChange : SkillFunction
 {
-    [Space(100)]
-    public int changeDataInPc;
-    public AttributeData TargetTag;
-    public StateTag TargetState;
-    public int changeLastTime;
+    public AttritubeChange()
+    {
+        UseState = true;
+    }
 
     public override void StartSkill(BattleRoleData source, BattleRoleData target)
     {
@@ -16,6 +15,8 @@ public class AttritubeChange : SkillFunction
         IsProcessing = true;
         IsUsed = true;
         CalculateBeforeFunction(source, target);
+
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
 
         StartCoroutine(IEStartSkill(source, target));
     }
@@ -26,15 +27,18 @@ public class AttritubeChange : SkillFunction
         SLEffectManager.Instance.playCommonEffectCast(source.transform.position);
         yield return new WaitForSeconds(castLastTime);
 
-        target.ControlStateVisual(TargetState, true, changeLastTime);
-        target.OneState(TargetState).UniqueEffectInRA.AddPerc(valCaused(source,target), TargetTag);
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
+        for (int i = 0; i < list.Count; i++)
+        {
+            stateWork(source, list[i]);
+            if (_standardState.Success)
+            {
+                Debug.Log("成功为 " + target.name + " 添加状态 " + _standardState.NAME);
+            }
+        }
 
         yield return new WaitForSeconds(skillLastTime);
         StartCoroutine(IEWaitForEnd(source));
-    }
-    public int valCaused(BattleRoleData source, BattleRoleData target)
-    {
-        return (int)(changeDataInPc * (1 + 0.25f * SkillGrade));
     }
     public override void EndSkill()
     {

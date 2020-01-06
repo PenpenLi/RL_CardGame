@@ -89,6 +89,48 @@ namespace GameDataEditor
             }
         }
 
+        static string workPower0Key = "workPower0";
+		int _workPower0;
+        public int workPower0
+        {
+            get { return _workPower0; }
+            set {
+                if (_workPower0 != value)
+                {
+                    _workPower0 = value;
+					GDEDataManager.SetInt(_key, workPower0Key, _workPower0);
+                }
+            }
+        }
+
+        static string workPower1Key = "workPower1";
+		int _workPower1;
+        public int workPower1
+        {
+            get { return _workPower1; }
+            set {
+                if (_workPower1 != value)
+                {
+                    _workPower1 = value;
+					GDEDataManager.SetInt(_key, workPower1Key, _workPower1);
+                }
+            }
+        }
+
+        static string workPower2Key = "workPower2";
+		int _workPower2;
+        public int workPower2
+        {
+            get { return _workPower2; }
+            set {
+                if (_workPower2 != value)
+                {
+                    _workPower2 = value;
+					GDEDataManager.SetInt(_key, workPower2Key, _workPower2);
+                }
+            }
+        }
+
         static string idKey = "id";
 		string _id;
         public string id
@@ -117,6 +159,9 @@ namespace GameDataEditor
             dict.Merge(true, hashcode.ToGDEDict(hashcodeKey));
             dict.Merge(true, exp.ToGDEDict(expKey));
             dict.Merge(true, likability.ToGDEDict(likabilityKey));
+            dict.Merge(true, workPower0.ToGDEDict(workPower0Key));
+            dict.Merge(true, workPower1.ToGDEDict(workPower1Key));
+            dict.Merge(true, workPower2.ToGDEDict(workPower2Key));
             dict.Merge(true, id.ToGDEDict(idKey));
             return dict;
 		}
@@ -138,6 +183,9 @@ namespace GameDataEditor
                 dict.TryGetInt(hashcodeKey, out _hashcode);
                 dict.TryGetInt(expKey, out _exp);
                 dict.TryGetInt(likabilityKey, out _likability);
+                dict.TryGetInt(workPower0Key, out _workPower0);
+                dict.TryGetInt(workPower1Key, out _workPower1);
+                dict.TryGetInt(workPower2Key, out _workPower2);
                 dict.TryGetString(idKey, out _id);
                 LoadFromSavedData(dataKey);
 			}
@@ -152,6 +200,9 @@ namespace GameDataEditor
             _hashcode = GDEDataManager.GetInt(_key, hashcodeKey, _hashcode);
             _exp = GDEDataManager.GetInt(_key, expKey, _exp);
             _likability = GDEDataManager.GetInt(_key, likabilityKey, _likability);
+            _workPower0 = GDEDataManager.GetInt(_key, workPower0Key, _workPower0);
+            _workPower1 = GDEDataManager.GetInt(_key, workPower1Key, _workPower1);
+            _workPower2 = GDEDataManager.GetInt(_key, workPower2Key, _workPower2);
             _id = GDEDataManager.GetString(_key, idKey, _id);
         }
 
@@ -165,6 +216,9 @@ namespace GameDataEditor
             newClone.hashcode = hashcode;
             newClone.exp = exp;
             newClone.likability = likability;
+            newClone.workPower0 = workPower0;
+            newClone.workPower1 = workPower1;
+            newClone.workPower2 = workPower2;
             newClone.id = id;
 
             return newClone;
@@ -221,6 +275,33 @@ namespace GameDataEditor
             dict.TryGetInt(likabilityKey, out _likability);
         }
 
+        public void Reset_workPower0()
+        {
+            GDEDataManager.ResetToDefault(_key, workPower0Key);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(workPower0Key, out _workPower0);
+        }
+
+        public void Reset_workPower1()
+        {
+            GDEDataManager.ResetToDefault(_key, workPower1Key);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(workPower1Key, out _workPower1);
+        }
+
+        public void Reset_workPower2()
+        {
+            GDEDataManager.ResetToDefault(_key, workPower2Key);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(workPower2Key, out _workPower2);
+        }
+
         public void Reset_id()
         {
             GDEDataManager.ResetToDefault(_key, idKey);
@@ -242,6 +323,9 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, expKey);
             GDEDataManager.ResetToDefault(_key, likabilityKey);
             GDEDataManager.ResetToDefault(_key, ShowInBagKey);
+            GDEDataManager.ResetToDefault(_key, workPower0Key);
+            GDEDataManager.ResetToDefault(_key, workPower1Key);
+            GDEDataManager.ResetToDefault(_key, workPower2Key);
 
 
             #endif

@@ -29,7 +29,7 @@ public class BuiildingSimpleDetailVesion : MonoBehaviour
                 //buildingImg
                 //NPCImg
                 NameText.text = thisTag.ToString() + "·" + SDGameManager.T("Lv.")
-                    + SDDataManager.Instance.getLevelByExp(P.exp);
+                    + P.Level;
                 break;
             }
         }

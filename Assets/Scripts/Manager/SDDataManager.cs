@@ -8,6 +8,8 @@ using System.Net;
 using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.U2D;
+using Spine.Unity;
+using Spine;
 
 /// <summary>
 /// 数据管理类，包括游戏内所有记录数据
@@ -21,22 +23,23 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public int heroNum = 0;
     public int equipNum = 0;
     public int slaveNum = 0;
+    public int runeNum = 0;
 
     public DateTime OpenTime;
-    void Awake()
+    public override void Awake()
     {
         base.Awake();
         if (Instance == this)
         {
             GDEDataManager.Init("gde_data");
             SetupDatas();
-            //gameObject.AddComponent<ResourceManager>();
+            gameObject.AddComponent<ResourceManager>();
         }
     }
     private void Start()
     {
         SetupDatas();
-        StartCoroutine(IELoadFileAsynchronously());
+        //StartCoroutine(IELoadFileAsynchronously());
     }
     #region Infor
 
@@ -95,7 +98,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         return getTempleByJob(job).AllAttributeData[(int)templeType];
     }
-
     public RoleAttributeList getTempleByJob(Job job)
     {
         RoleAttributeList RL = new RoleAttributeList();
@@ -144,7 +146,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
         }
     }
-
     public string getHeroIdByHashcode(int Hashcode)
     {
         foreach (GDEHeroData item in PlayerData.herosOwned)
@@ -161,18 +162,9 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         GDEHeroData hero = getHeroByHashcode(Hashcode);
         //
         ROHeroData heroData = getHeroOriginalDataById(hero.id);
-        RoleAttributeList ral = heroData.BasicRAL;
+        RoleAttributeList ral = heroData.ExportRAL;
         //
         return ral.BattleForce;
-    }
-    public int getHeroCareerById(string id)
-    {
-        if (id.Contains("FIGHTER")) return (int)Job.Fighter;
-        else if (id.Contains("RANGER")) return (int)Job.Ranger;
-        else if (id.Contains("PRIEST")) return (int)Job.Priest;
-        else if (id.Contains("CASTER")) return (int)Job.Caster;
-
-        return 0;
     }
     public GDEHeroData GetHeroOwnedByHashcode(int hashCode)
     {
@@ -187,101 +179,23 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     public ROHeroData getHeroDataByID(string id, int starNumUpGradeTimes)
     {
-        //id以10w来区别职业，以2w来区分星级
-        //每个职业星级有2w个可能性
-        int heroCareer = getHeroCareerById(id);
-        //0=fighter; 1=ranger; 2=priest; 3=caster;
-        int starNum = getHeroLevelById(id);
-
+        HeroInfo info = getHeroInfoById(id);
         ROHeroData dal = new ROHeroData();
-        dal.starNum = starNum + starNumUpGradeTimes;
-
-        dal.ID = id;
-
-        int gender = -1;
-        string n = "无名";
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(heroCareer);
-        foreach (Dictionary<string, string> s in list)
-        {
-            if (s["id"] == id)
-            {
-                gender = getInteger(s["gender"]);
-                n = s["name"];
-                dal.quality = getInteger(s["quality"]);
-                break;
-            }
-        }
-        dal.gender = gender;
-        dal.Name = n;
-        dal.BasicRAL = getRALById(dal.ID);
-        dal.RALRate = RoleAttributeList.zero;
-
-        int _id = id.Contains("#") ? getInteger(id.Split('#')[1]) : getInteger(id);
-
-        dal.CRI = Rand(dal.starNum, dal.starNum * 2, _id, 1);
-        dal.CRIDmg = 100 + Rand(dal.starNum * 2, dal.starNum * 3, _id, 2);
-        dal.DmgReduction = Rand(0, dal.starNum, _id, 3) * 5;
+        dal.Info = info;
+        dal.starNumUpGradeTimes = starNumUpGradeTimes;
+        dal.CRIDmg = 125 + 25 * dal.starNum;
+        dal.DmgReduction = 0;
         dal.DmgReflection = 0;
         dal.GoldRate = dal.RewardRate = 0;
         dal.BarChartRegendPerTurn = RoleBarChart.zero;
-        //
-        //下面是分别制定职业及星级的基础数据,基本属性的Rand key一定要一致
-        //不然会导致所有相关数据重新随机,加入新的属性时可以添加新的key
-        //如果要让属性有相关性,例如攻击力高的人物,必然防御力高,可以用一样的key
-        //sol
-
-        //特殊属性，小概率出现极品
-        int t = 0; int d = 0;
-        if (Rand(0, 100, _id, 11) < 5)
-        {
-            t += 10;
-        }
-        if (Rand(0, 100, _id, 12) < 5)
-        {
-            d += 10;
-        }
-        if (heroCareer == 0 || heroCareer == 1)
-        {
-            //dal.RALRate.AT += t;dal.RALRate.AD += d;
-        }
-        else if (heroCareer == 2 || heroCareer == 3)
-        {
-            //dal.RALRate.MT += t; dal.RALRate.MD += d;
-        }
         return dal;
     }
     public ROHeroData getHeroOriginalDataById(string id)
     {
-        int heroCareer = getHeroCareerById(id);
+        HeroInfo info = getHeroInfoById(id);
         ROHeroData dal = new ROHeroData();
-        dal.starNum = getHeroLevelById(id);
-
-        dal.ID = id;
-
-        int gender = -1;
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(heroCareer);
-        foreach (Dictionary<string, string> s in list)
-        {
-            if (s["id"] == id)
-            {
-                gender = getInteger(s["gender"]);
-                dal.Name = s["name"];
-                dal.quality = getInteger(s["quality"]);
-                break;
-            }
-        }
-        dal.gender = gender;
-        dal.BasicRAL = getRALById(dal.ID);
+        dal.Info = info;
         dal.RALRate = RoleAttributeList.zero;
-
-        int _id = id.Contains("#") ? getInteger(id.Split('#')[1]) : getInteger(id);
-
-        dal.CRI = Rand(dal.starNum, dal.starNum * 2, _id, 1);
-        dal.CRIDmg = 100 + Rand(dal.starNum * 2, dal.starNum * 3, _id, 2);
-        dal.DmgReduction = Rand(0, dal.starNum, _id, 3) * 5;
-        dal.DmgReflection = 0;
-        dal.GoldRate = dal.RewardRate = 0;
-        dal.BarChartRegendPerTurn = RoleBarChart.zero;
         return dal;
     }
     public int getHeroStatus(int hashcode)
@@ -349,7 +263,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
         }
     }
-    public void addHero(string id)
+    public int addHero(string id)
     {
         Instance.heroNum++;
         //
@@ -367,7 +281,15 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
 ,
             exp = 0
         };
-
+        //ral
+        RoleAttributeList ral = RoleAttributeList.RandomSet
+            (
+            new ScopeInt(-15, 15)//三项Barchart
+            , new ScopeInt(-5, 5)//四项攻防
+            , new ScopeInt(-1, 1)//其他
+            , new ScopeInt(-10, 10)//抗性
+            );
+        hero.RoleAttritubeList = ral.TurnIntoGDEData;
         //skill
         List<GDEASkillData> list = SDDataManager.Instance.addStartSkillsWhenSummoning(hero.id);
         for (int i = 0; i < list.Count; i++)
@@ -379,7 +301,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
             else
             {
-                if (hero.skill0Id > 0)
+                if(!string.IsNullOrEmpty (hero.skill0Id))
                 {
                     if (SDDataManager.Instance.checkHeroEnableSkill1ById(hero.id))
                     {
@@ -394,7 +316,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
 
         //animImg
-        int qual = SDDataManager.Instance.getHeroQualityById(id);
+        int level = getHeroLevelById(id);
         hero.AnimData = new GDEAnimData(GDEItemKeys.Anim_EmptyAnim)
         {
             isRare = true,
@@ -415,32 +337,87 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             R_leg_a = string.Empty,
             R_leg_b = string.Empty,
         };
-
-        if (qual < 4)
+        if (level < 2)
         {
             hero.AnimData.isRare = false;
-
-            hero.AnimData.body = getRandomImgAddressForAnim(nameof(hero.AnimData.body));
-            hero.AnimData.eyes = getRandomImgAddressForAnim(nameof(hero.AnimData.eyes));
-            hero.AnimData.faceother = getRandomImgAddressForAnim(nameof(hero.AnimData.faceother));
-            hero.AnimData.hair = getRandomImgAddressForAnim(nameof(hero.AnimData.hair));
-            hero.AnimData.handR = getRandomImgAddressForAnim(nameof(hero.AnimData.handR));
-            hero.AnimData.head = getRandomImgAddressForAnim(nameof(hero.AnimData.head));
-            hero.AnimData.hips = getRandomImgAddressForAnim(nameof(hero.AnimData.hips));
-            hero.AnimData.L_hand_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_a));
-            hero.AnimData.L_hand_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_b));
-            hero.AnimData.L_hand_c = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_c));
-            hero.AnimData.L_jiao = getRandomImgAddressForAnim(nameof(hero.AnimData.L_jiao));
-            hero.AnimData.L_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_a));
-            hero.AnimData.L_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_b));
-            hero.AnimData.liuhai = getRandomImgAddressForAnim(nameof(hero.AnimData.liuhai));
-            hero.AnimData.R_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_a));
-            hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b));
+            int skeleton = getHeroSkeletonById(id);
+            hero.AnimData.skeletonIndex = skeleton;
+            hero.AnimData.body = getRandomImgAddressForAnim(nameof(hero.AnimData.body), skeleton);
+            hero.AnimData.eyes = getRandomImgAddressForAnim(nameof(hero.AnimData.eyes), skeleton);
+            hero.AnimData.faceother = getRandomImgAddressForAnim(nameof(hero.AnimData.faceother), skeleton);
+            hero.AnimData.hair = getRandomImgAddressForAnim(nameof(hero.AnimData.hair) + 1, skeleton);
+            hero.AnimData.handR = getRandomImgAddressForAnim(nameof(hero.AnimData.handR), skeleton);
+            hero.AnimData.head = getRandomImgAddressForAnim(nameof(hero.AnimData.head), skeleton);
+            hero.AnimData.hips = getRandomImgAddressForAnim(nameof(hero.AnimData.hips), skeleton);
+            hero.AnimData.L_hand_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_a), skeleton);
+            hero.AnimData.L_hand_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_b), skeleton);
+            hero.AnimData.L_hand_c = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_c), skeleton);
+            hero.AnimData.L_jiao = getRandomImgAddressForAnim(nameof(hero.AnimData.L_jiao), skeleton);
+            hero.AnimData.L_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_a), skeleton);
+            hero.AnimData.L_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_b), skeleton);
+            hero.AnimData.liuhai = getRandomImgAddressForAnim(nameof(hero.AnimData.liuhai), skeleton);
+            hero.AnimData.R_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_a), skeleton);
+            hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b), skeleton);
         }
 
 
         Instance.PlayerData.herosOwned.Add(hero);
         Instance.PlayerData.Set_herosOwned();
+
+        initSkillListForHero(hero);
+        Instance.PlayerData.Set_herosOwned();
+        return hero.hashCode;
+    }
+    public void addHeroByConsumeHero(string costId)
+    {
+        HeroInfo costHero = getHeroInfoById(costId);
+        if (costHero.LEVEL > 0) return;
+        List<HeroInfo> all = getHeroInfoList;
+        all = all.FindAll(x => x.LEVEL > 0 && x.Race.Race == costHero.Race.Race);
+        //HeroInfo target = all[UnityEngine.Random.Range(0, all.Count)];
+        float[] ra = new float[] { 0.6f, 0.3f, 0.1f };
+        int le = RandomIntger.Choose(ra)+1;
+        all = all.FindAll(x => x.LEVEL == le);
+        HeroInfo target = all[UnityEngine.Random.Range(0, all.Count)];
+        //return target.ID;
+        int hc = addHero(target.ID);
+        RoleAttributeList ral = RoleAttributeList.GDEToRAL
+            (getHeroByHashcode(hc).RoleAttritubeList);
+
+
+    }
+    public void initSkillListForHero(GDEHeroData hero)
+    {
+        HeroInfo info = getHeroInfoById(hero.id);
+        List<OneSkill> all = SkillDetailsList.WriteOneSkillList(info.ID);
+
+        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
+            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+            {
+                Id = all[0].skillId
+                ,
+                Lv = 0
+            });
+        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
+
+        List<int> otherMayGetList = RandomIntger.NumListReturn(2, all.Count - 1);
+        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
+            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+            {
+                Id = all[otherMayGetList[0] + 1].skillId
+                ,
+                Lv = 0
+            });
+        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
+
+        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
+            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+            {
+                Id = all[otherMayGetList[1] + 1].skillId
+                ,
+                Lv = 0
+            });
+        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
     }
     public bool checkHeroEnableSkill1ByHashcode(int hashcode)
     {
@@ -449,7 +426,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     public bool checkHeroEnableSkill1ById(string id)
     {
-        int qual = getHeroQualityById(id);
+        int qual = getHeroLevelById(id);
         if (qual < 2) return false;
         else return true;
     }
@@ -507,7 +484,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             {
                 int lv = hero.lv;
                 ROHeroData h = getHeroDataByID(hero.id, hero.starNumUpgradeTimes);
-                int maxF = (int)((SDConstants.fatigueBasicNum + lv)
+                int maxF = (int)((SDConstants.fatigueBasicNum + lv * 2)
                     * Mathf.Max(h.quality * 1f / 2, 1));
                 return maxF;
             }
@@ -555,31 +532,529 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
         }
     }
-
-
-    public IEnumerable<GDEHeroData> FindAllHerosById(string id,bool onlyUnlocked = true)
+    public IEnumerable<GDEHeroData> FindAllHerosById(string id, bool onlyUnlocked = true)
     {
         return PlayerData.herosOwned.FindAll(
             x => x.id == id && (onlyUnlocked ? true : !x.locked)).AsEnumerable();
     }
+    public bool checkHeroCanImprove(int hashcode, SDConstants.MaterialType mtype)
+    {
+        GDEHeroData data = getHeroByHashcode(hashcode);
+        ROHeroData ro = getHeroOriginalDataById(data.id);
+        if (mtype == SDConstants.MaterialType.exp)
+        {
+            int lv = getLevelByExp(data.exp);
+            int limitLv = heroMaxLvByStar(data.starNumUpgradeTimes + ro.starNum);
+            return lv < limitLv;
+        }
+        else if(mtype == SDConstants.MaterialType.star)
+        {
+            return data.starNumUpgradeTimes + ro.starNum < SDConstants.UnitMAxStarNum;
+        }
+        else if(mtype == SDConstants.MaterialType.skill)
+        {
+            List<GDEASkillData> all = data.skillsOwned;
+            return all.FindAll(a => a.Lv < SDConstants.SkillMaxGrade).Count > 0;
+        }
+        else { return false; }
+    }
+    public List<HeroInfo> getHeroInfoList
+    {
+        get
+        {
+            List<HeroInfo> results = new List<HeroInfo>();
+            HeroInfo[] all = Resources.LoadAll<HeroInfo>("ScriptableObjects/heroes");
+            for (int i = 0; i < all.Length; i++)
+            {
+                results.Add(all[i]);
+            }
+            return results;
+        }
+    }
+    public HeroInfo getHeroInfoById(string id)
+    {
+        HeroInfo[] all = Resources.LoadAll<HeroInfo>("ScriptableObjects/heroes");
+        foreach (HeroInfo info in all)
+        {
+            if (info.ID == id) return info;
+        }
+        return null;
+    }
+    public bool CheckHaveHeroById(string id)
+    {
+        return PlayerData.herosOwned.Exists(x => x.id == id);
+    }
+    public Job getHeroCareerById(string id)
+    {
+        List<HeroInfo> list = getHeroInfoList;
+        foreach (HeroInfo info in list)
+        {
+            if (info.ID == id) return info.Career.Career;
+        }
+        return Job.End;
+    }
+    public Race getHeroRaceById(string id)
+    {
+        List<HeroInfo> list = getHeroInfoList;
+        foreach (HeroInfo info in list)
+        {
+            if (info.ID == id) return info.Race.Race;
+        }
+        return Race.End;
+    }
+    public CharacterSex getHeroGenderById(string id)
+    {
+        List<HeroInfo> list = getHeroInfoList;
+        foreach (HeroInfo info in list)
+        {
+            if (info.ID == id) return info.Sex;
+        }
+        return CharacterSex.Unknown;
+    }
+    public int getHeroLevelById(string id)
+    {
+        //List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(id));
+        List<HeroInfo> list = getHeroInfoList;
+        foreach (HeroInfo info in list)
+        {
+            if (info.ID == id) return info.LEVEL;
+        }
+        return 0;
+    }
+    public int getHeroSkeletonById(string id)
+    {
+        List<HeroInfo> list = getHeroInfoList;
+        foreach (HeroInfo info in list)
+        {
+            if (info.ID == id) return info.Skeleton;
+        }
+        return 0;
+    }
+    public GDEHeroData getHeroByHashcode(int hashcode)
+    {
+        return GetHeroOwnedByHashcode(hashcode);
+    }
+    public RoleAttributeList RALByDictionary(Dictionary<string, string> s)
+    {
+        RoleAttributeList RAL = new RoleAttributeList();
+        RAL.Hp = getInteger(s["hp"]);
+        RAL.Mp = getInteger(s["mp"]);
+        RAL.Tp = getInteger(s["tp"]);
+        RAL.AT = getInteger(s["at"]);
+        RAL.AD = getInteger(s["ad"]);
+        RAL.MT = getInteger(s["mt"]);
+        RAL.MD = getInteger(s["md"]);
+        RAL.Speed = getInteger(s["speed"]);
+        RAL.Taunt = getInteger(s["taunt"]);
+        RAL.Accur = getInteger(s["accur"]);
+        RAL.Evo = getInteger(s["evo"]);
+        RAL.Crit = getInteger(s["crit"]);
+        RAL.Expect = getInteger(s["expect"]);
+
+        RAL.Bleed_Def = getInteger(s["bleed_def"]);
+        RAL.Mind_Def = getInteger(s["mind_def"]);
+        RAL.Fire_Def = getInteger(s["fire_def"]);
+        RAL.Frost_Def = getInteger(s["frost_def"]);
+        RAL.Corrosion_Def = getInteger(s["corrosion_def"]);
+        RAL.Hush_Def = getInteger(s["hush_def"]);
+        RAL.Dizzy_Def = getInteger(s["dizzy_def"]);
+        RAL.Confuse_Def = getInteger(s["confuse_def"]);
+        return RAL;
+    }
+    public int getRoleRAMaxNumPerLv(AttributeData tag, int lv)
+    {
+        int up = lv / 10 + 1;
+        int basicRal = SDConstants.RoleAttritubeMaxNum;
+        if (tag == AttributeData.Hp) return (int)(basicRal * 5 * up);
+        else if (tag == AttributeData.Mp) return (int)(basicRal * 3.5f * up);
+        else if (tag == AttributeData.Tp) return (int)(basicRal * 2.5f * up);
+        else if (tag == AttributeData.AD) return (int)(basicRal * 1f * up);
+        else if (tag == AttributeData.AT) return (int)(basicRal * 1f * up);
+        else if (tag == AttributeData.MD) return (int)(basicRal * 1f * up);
+        else if (tag == AttributeData.MT) return (int)(basicRal * 1f * up);
+        else if (tag == AttributeData.Speed) return (int)(basicRal * 0.25f * up);
+        else if (tag == AttributeData.Accur) return (int)(basicRal * 1f * up);
+        else if (tag == AttributeData.Evo) return (int)(basicRal * 1f * up);
+        else if (tag == AttributeData.Crit) return (int)(basicRal * 0.25f * up);
+        else if (tag == AttributeData.Expect) return (int)(basicRal * 0.5f * up);
+        else if (tag == AttributeData.Taunt) return (int)(basicRal * 1f * up);
+        else return basicRal * 1 * up;
+    }
+    public int getRoleSRMaxNumPerLv(int lv)
+    {
+        int up = lv / 10 + 1;
+        int basicRal = SDConstants.RoleAttritubeMaxNum;
+
+        return (int)(basicRal * 0.5f * up);
+    }
+    public void dressEquipment(int heroHashcode, int itemHashcode, bool isSecondJewelry = false)
+    {
+        int oldEquipHashcode = 0;
+        foreach (GDEHeroData hero in SDDataManager.Instance.PlayerData.herosOwned)
+        {
+            if (hero.hashCode == heroHashcode)
+            {
+                GDEEquipmentData equip
+                    = SDDataManager.Instance.getEquipmentByHashcode(itemHashcode);
+                equip.OwnerHashcode = heroHashcode;
+                #region add equip
+                int pos = SDDataManager.Instance.getEquipPosById(equip.id);
+                if (pos == (int)EquipPosition.Head)
+                {
+                    oldEquipHashcode
+                        = hero.equipHelmet != null ? hero.equipHelmet.hashcode : 0;
+                    hero.equipHelmet = equip;
+                }
+                else if (pos == (int)EquipPosition.Breast)
+                {
+                    oldEquipHashcode
+                        = hero.equipBreastplate != null ? hero.equipBreastplate.hashcode : 0;
+                    hero.equipBreastplate = equip;
+                }
+                else if (pos == (int)EquipPosition.Arm)
+                {
+                    oldEquipHashcode
+                        = hero.equipGardebras != null ? hero.equipGardebras.hashcode : 0;
+                    hero.equipGardebras = equip;
+                }
+                else if (pos == (int)EquipPosition.Leg)
+                {
+                    oldEquipHashcode
+                        = hero.equipLegging != null ? hero.equipLegging.hashcode : 0;
+                    hero.equipLegging = equip;
+                }
+                else if (pos == (int)EquipPosition.Finger)
+                {
+                    if (!isSecondJewelry)
+                    {
+                        oldEquipHashcode
+                            = hero.jewelry0 != null ? hero.jewelry0.hashcode : 0;
+                        hero.jewelry0 = equip;
+                    }
+                    else
+                    {
+                        oldEquipHashcode
+                            = hero.jewelry1 != null ? hero.jewelry1.hashcode : 0;
+                        hero.jewelry1 = equip;
+                    }
+                }
+                else if (pos == (int)EquipPosition.Hand)
+                {
+                    oldEquipHashcode
+                        = hero.equipWeapon != null ? hero.equipWeapon.hashcode : 0;
+                    hero.equipWeapon = equip;
+                }
+                #endregion
+                break;
+            }
+        }
+        foreach (GDEEquipmentData e in SDDataManager.Instance.PlayerData.equipsOwned)
+        {
+            if (e.hashcode == itemHashcode)
+            {
+                e.OwnerHashcode = heroHashcode;
+            }
+            if (e.hashcode == oldEquipHashcode && oldEquipHashcode > 0)
+            {
+                e.OwnerHashcode = 0;
+            }
+        }
+        SDDataManager.Instance.PlayerData.Set_equipsOwned();
+    }
+    public void disrobeEquipment(int heroHashcode, EquipPosition pos, bool isSecondJPos = false)
+    {
+        int equipHashcode = 0;
+        foreach (GDEHeroData hero in SDDataManager.Instance.PlayerData.herosOwned)
+        {
+            if (hero.hashCode == heroHashcode)
+            {
+                if (pos == EquipPosition.Head)
+                {
+                    equipHashcode = hero.equipHelmet.hashcode;
+                    hero.equipHelmet = Instance.equipEmpty();
+                }
+                else if (pos == EquipPosition.Breast)
+                {
+                    equipHashcode = hero.equipBreastplate.hashcode;
+                    hero.equipBreastplate = Instance.equipEmpty();
+                }
+                else if (pos == EquipPosition.Arm)
+                {
+                    equipHashcode = hero.equipGardebras.hashcode;
+                    hero.equipGardebras = Instance.equipEmpty();
+                }
+                else if (pos == EquipPosition.Leg)
+                {
+                    equipHashcode = hero.equipLegging.hashcode;
+                    hero.equipLegging = Instance.equipEmpty();
+                }
+                else if (pos == EquipPosition.Finger)
+                {
+                    if (!isSecondJPos)
+                    {
+                        equipHashcode = hero.jewelry0.hashcode;
+                        hero.jewelry0 = Instance.equipEmpty();
+                    }
+                    else
+                    {
+                        equipHashcode = hero.jewelry1.hashcode;
+                        hero.jewelry1 = Instance.equipEmpty();
+                    }
+                }
+                else if (pos == EquipPosition.Hand)
+                {
+                    equipHashcode = hero.equipWeapon.hashcode;
+                    hero.equipWeapon = Instance.equipEmpty();
+                }
+                break;
+            }
+        }
+        foreach (GDEEquipmentData e in SDDataManager.Instance.PlayerData.equipsOwned)
+        {
+            if (e.hashcode == equipHashcode)
+            {
+                e.OwnerHashcode = 0;
+                break;
+            }
+        }
+        SDDataManager.Instance.PlayerData.Set_herosOwned();
+        GDEEquipmentData _e
+            = SDDataManager.Instance.getHeroEquipmentByPos(heroHashcode, pos, isSecondJPos);
+    }
+    #region Level-&&-Exp-=>-Caculate
+    public int getLevelByExp(int exp)
+    {
+        int lv = 0;
+        int V = 0;
+        while (lv < SDConstants.MaxIncreasingExpLevel)
+        {
+            V += ExpBulkPerLevel(lv);
+            if (V <= exp)
+            {
+                lv++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return lv;
+    }
+    public int ExpBulkPerLevel(int lv)
+    {
+        if (lv < 50) return lv * SDConstants.MinExpPerLevel;
+        else return 50 * SDConstants.MinExpPerLevel;
+    }
+    public int getMinExpReachLevel(int lv)
+    {
+        int V = 0;
+        for (int i = 1; i < lv; i++)
+        {
+            V += ExpBulkPerLevel(i);
+        }
+        return V;
+    }
+    public float getExpRateByExp(int exp)
+    {
+        int currentLv = getLevelByExp(exp);
+        int expOld = getMinExpReachLevel(currentLv);
+        int expLength = ExpBulkPerLevel(currentLv);
+        return (exp - expOld) * 1f / expLength;
+    }
+    #endregion
+    public void addExpToHeroByHashcode(int hashcode, int exp = 1)
+    {
+        foreach (GDEHeroData h in PlayerData.herosOwned)
+        {
+            if (h.hashCode == hashcode)
+            {
+                int starNum = getHeroLevelById(h.id) + h.starNumUpgradeTimes;
+                h.exp = HeroOverflowExp(h.exp + exp, starNum);
+                PlayerData.Set_herosOwned();
+                break;
+            }
+        }
+
+    }
+    public int heroMaxLvByStar(int star)
+    {
+        int limitedLv = 10;
+        if (star == 0) limitedLv = 10;
+        else if (star == 1) limitedLv = 20;
+        else if (star == 2) limitedLv = 30;
+        else if (star == 3) limitedLv = 50;
+        else if (star == 4) limitedLv = 70;
+        else if (star == 5) limitedLv = 100;
+        return limitedLv;
+    }
+    public bool checkHeroExpIfOverflow(int currentExp, int star)
+    {
+        int limitedLv = heroMaxLvByStar(star);
+        int limitedExp = getMinExpReachLevel(limitedLv);
+        if (currentExp >= limitedExp) return true;
+        return false;
+    }
+    public int HeroOverflowExp(int oldExp, int star)
+    {
+        int limitedLv = heroMaxLvByStar(star);
+        int limitedExp = getMinExpReachLevel(limitedLv);
+        if (oldExp >= limitedExp) return limitedExp;
+        return oldExp;
+    }
+    /// <summary>
+    /// likability
+    /// </summary>
+    /// <param name="hashcode"></param>
+    /// <param name="likability"></param>
+    public void addLikabilityToHeroByHashcode(int hashcode, int likability = 1)
+    {
+        foreach (GDEHeroData h in PlayerData.herosOwned)
+        {
+            if (h.hashCode == hashcode)
+            {
+                h.likability += likability; break;
+            }
+        }
+    }
+    public int getLikeByLikability(int L, out float RateToNext)
+    {
+        if (L >= SDConstants.MinHeartVolume * 8.5f)
+        {
+            RateToNext = 0; return 3;
+        }
+        if (L >= SDConstants.MinHeartVolume * 3.5f)
+        {
+            RateToNext = (L - SDConstants.MinHeartVolume * 3.5f) * 1f
+                / (SDConstants.MinHeartVolume * 5f);
+            return 2;
+        }
+        if (L >= SDConstants.MinHeartVolume)
+        {
+            RateToNext = (L - SDConstants.MinHeartVolume) * 1f
+                / (SDConstants.MinHeartVolume * 2.5f);
+            return 1;
+        }
+        RateToNext = L * 1f / SDConstants.MinHeartVolume;
+        return 0;
+    }
+    public string getCareerStr(Job career, int raceIndex = 0
+        , SDConstants.CharacterType type = SDConstants.CharacterType.Hero)
+    {
+        string s = "";
+        int careerIndex = (int)career;
+        if (type == SDConstants.CharacterType.Hero)
+        {
+            if (careerIndex == 0) s = SDGameManager.T("fighter");
+            else if (careerIndex == 1) s = SDGameManager.T("ranger");
+            else if (careerIndex == 2) s = SDGameManager.T("priest");
+            else if (careerIndex == 3) s = SDGameManager.T("caster");
+        }
+        else if (type == SDConstants.CharacterType.Goddess)
+        {
+
+        }
+        else if (type == SDConstants.CharacterType.Enemy)
+        {
+            if (raceIndex == 0)
+            {
+
+            }
+        }
+        return s;
+    }
+    public string getRaceStr(int raceIndex, SDConstants.CharacterType type)
+    {
+        string s = "";
+        if (type == SDConstants.CharacterType.Hero)
+        {
+            if (raceIndex == 0) s = SDGameManager.T("human");
+            else if (raceIndex == 1) s = SDGameManager.T("elf");
+            else if (raceIndex == 2) s = SDGameManager.T("dragonborn");
+        }
+        else if (type == SDConstants.CharacterType.Goddess)
+        {
+
+        }
+        else if (type == SDConstants.CharacterType.Enemy)
+        {
+            if (raceIndex == 0) s = SDGameManager.T("elemental");
+            else if (raceIndex == 1) s = SDGameManager.T("goblin");
+            else if (raceIndex == 2) s = SDGameManager.T("orc");
+            else if (raceIndex == 3) s = SDGameManager.T("beast");
+        }
+        return s;
+    }
+    public bool getHeroIfLocked(int hashcode)
+    {
+        GDEHeroData h = getHeroByHashcode(hashcode);
+        if (h != null)
+        {
+            return h.locked;
+        }
+        return true;
+    }
+    public int getHeroExpPrice(int hashcode)
+    {
+        GDEHeroData h = getHeroByHashcode(hashcode);
+        int _exp = h.exp;
+        string id = h.id;
+        ROHeroData dal = getHeroDataByID(id, h.starNumUpgradeTimes);
+        int baseExp = (int)(25 * (1 + 0.2f * dal.quality + 0.2f * dal.starNum));
+        return baseExp + _exp;
+    }
     #endregion
     #region Hero_Anim_Infor
-    public string getRandomImgAddressForAnim(string parent)
+    public string getRandomImgAddressForAnim(string parent, int skeletonIndex = 0)
     {
         //Sprite[] all_body = Resources.LoadAll<Sprite>("Sprites/AnimImage/" + parent);
         //return all_body[UnityEngine.Random.Range(0, all_body.Length-1)].name;
+        HeroAnimImgList hail = null;
+        HeroAnimImgList[] allHAIL = Resources.LoadAll<HeroAnimImgList>("ScriptableObjects");
+        for (int i = 0; i < allHAIL.Length; i++)
+        {
+            if (allHAIL[i].Skeleton == skeletonIndex)
+            {
+                hail = allHAIL[i];
+                break;
+            }
+        }
+        if (hail == null) return string.Empty;
 
-        SpriteAtlas atlas = Resources.Load<SpriteAtlas>("Sprites/AnimImage/" + parent);
-        int all = atlas.spriteCount; int c = Mathf.Max(all.ToString().Length, 2);
-        int re = UnityEngine.Random.Range(0, all) + 1;
-        string reST = string.Format("{0:D" + c + "}", re);
-        return parent + reST;
+        HeroAnimImgList.SlotRegionPairList list = null;
+        foreach (var L in hail.AllEnableList)
+        {
+            if (L.slot == parent)
+            {
+                list = L; break;
+            }
+        }
+        if (list == null) return string.Empty;
+        //
+        int count = list.AllRegionList.Count;
+        int selectedIndex = UnityEngine.Random.Range(0, count);
+        return list.AllRegionList[selectedIndex].Region;
     }
     public Sprite getSpriteFromAtlas(string atlasAddress, string spriteName)
     {
         //Debug.Log("ATLAS==--=="+atlasAddress + "===---===" + spriteName);
         SpriteAtlas atlas = Resources.Load<SpriteAtlas>("Sprites/AnimImage/" + atlasAddress);
         return atlas.GetSprite(spriteName);
+    }
+    public HeroAnimImgList.SlotRegionPair GetPairBySlotAndRegion(int skeletonIndex, string slot, string region)
+    {
+        HeroAnimImgList hail = null;
+        HeroAnimImgList[] allHAIL = Resources.LoadAll<HeroAnimImgList>("ScriptableObjects/heroAnimImgList");
+        for (int i = 0; i < allHAIL.Length; i++)
+        {
+            if (allHAIL[i].Skeleton == skeletonIndex)
+            {
+                hail = allHAIL[i]; break;
+            }
+        }
+        if (hail == null) return null;
+        HeroAnimImgList.SlotRegionPairList list = hail.AllEnableList.Find(x => x.slot == slot);
+        if (list == null) return null;
+        return list.AllRegionList.Find(x => x.region == region);
     }
     #endregion
     #region HeroTeamInfor
@@ -606,7 +1081,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public void setHeroTeam(string teamId, int index, int hashcode)
     {
         GDEunitTeamData Team = getHeroTeamByTeamId(teamId);
-        if(Team == null)
+        if (Team == null)
         {
             Team = new GDEunitTeamData(GDEItemKeys.unitTeam_emptyHeroTeam);
             Team.id = teamId;
@@ -628,10 +1103,10 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
 
         foreach (GDEHeroData H in PlayerData.herosOwned)
         {
-            
-            if(H.hashCode == hashcode)
+
+            if (H.hashCode == hashcode)
             {
-                H.teamIdBelongTo = teamId;H.TeamOrder = index;
+                H.teamIdBelongTo = teamId; H.TeamOrder = index;
                 H.status = 1;
                 PlayerData.Set_herosOwned();
                 break;
@@ -641,9 +1116,9 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public void setHeroTeamPos(int hashcode, int newPos)
     {
         int P = newPos % SDConstants.MaxSelfNum;
-        foreach(GDEHeroData H in PlayerData.herosOwned)
+        foreach (GDEHeroData H in PlayerData.herosOwned)
         {
-            if(H.hashCode == hashcode)
+            if (H.hashCode == hashcode)
             {
                 H.teamPos = P;
                 PlayerData.Set_herosOwned();
@@ -693,9 +1168,9 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public List<int> getHerosHashcodeFromTeam(string id)
     {
         List<int> list = new List<int>();
-        IEnumerable<GDEHeroData> all 
+        IEnumerable<GDEHeroData> all
             = PlayerData.herosOwned.FindAll(x => x.teamIdBelongTo == id).AsEnumerable();
-        foreach(var a in all)
+        foreach (var a in all)
         {
             list.Add(a.hashCode);
         }
@@ -712,7 +1187,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return list;
     }
-    public GDEHeroData getHeroFromTeamByOrder(string teamId,int order)
+    public GDEHeroData getHeroFromTeamByOrder(string teamId, int order)
     {
         List<GDEHeroData> all = getHerosFromTeam(teamId);
         return all.Find(x => x.TeamOrder == order);
@@ -744,33 +1219,49 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
     }
     #endregion
-    #region PropInfor
-    public int addProp(string id, int num = 1)
+    #region ConsumableInfor
+    public int addConsumable(string id, int num = 1)
     {
-        //bool find = false;
         add_Item(id, num);
-        foreach (GDEItemData _m in PlayerData.props)
+        foreach (GDEItemData M in PlayerData.consumables)
         {
-            if (_m.id == id)
+            if (M.id == id)
             {
-                //find = true;
-                _m.num += num;
-                PlayerData.Set_props();
-                //break;
-                return _m.num;
+                M.num += num;
+                PlayerData.Set_consumables();
+                return M.num;
             }
         }
-        GDEItemData m = new GDEItemData(GDEItemKeys.Item_MaterialEmpty);
+        consumableItem[] allPs = Resources.LoadAll<consumableItem>
+            ("ScriptableObjects/Items/Consumables");
+        if (allPs.Select(x => x.ID == id).Count() <= 0)
+        {
+            Debug.Log("不存在该道具"); return 0;
+        }
+
+        GDEItemData m = new GDEItemData("Material" + id);
         m.id = id;
         m.num = num;
-        m.index = PlayerData.props.Count;
-        PlayerData.props.Add(m);
-        PlayerData.Set_props();
+        PlayerData.consumables.Add(m);
+        PlayerData.Set_consumables();
         return m.num;
     }
-    public bool consumeProp(string id, out int residue, int num = 1)
+    public int getConsumableNum(string id)
     {
-        foreach (GDEItemData m in PlayerData.props)
+        GDEItemData item = PlayerData.consumables.Find(x => x.id == id);
+        if (item != null)
+        {
+            return item.num;
+        }
+        return 0;
+    }
+    public List<GDEItemData> getConsumablesOwned
+    {
+        get { return PlayerData.consumables; }
+    }
+    public bool consumeConsumable(string id, out int residue, int num = 1)
+    {
+        foreach (GDEItemData m in PlayerData.consumables)
         {
             if (m.id == id)
             {
@@ -785,9 +1276,9 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
                     consume_Item(id, out int left, num);
                     if (m.num <= 0)
                     {
-                        PlayerData.props.Remove(m);
+                        PlayerData.consumables.Remove(m);
                     }
-                    PlayerData.Set_props();
+                    PlayerData.Set_consumables();
                     residue = m.num;
                     return true;
                 }
@@ -796,41 +1287,78 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         residue = 0;
         return false;
     }
-    public ROPropData getPropDataById(string id)
+    public List<consumableItem> AllConsumableList
     {
-        ROPropData p = new ROPropData();
-        List<Dictionary<string, string>> list = ReadFromCSV("prop");
-        foreach (Dictionary<string, string> s in list)
+        get 
         {
-            if (s["id"] == id.ToString())
-            {
-                p = new ROPropData()
-                {
-                    name = s["name"],
-                    id = id,
-                    level = getInteger(s["level"]),
-                    rarity = getInteger(s["rarity"]),
-                    image = s["image"],
-                    mode = getInteger(s["mode"]),
-                    itemType = SDConstants.ItemType.Prop,
-                    canUseInGame = getInteger(s["canUseInGame"]),
-                    des = s["des"],
-                    specialStr = s["special"],
-                    target = s["target"],
-                    buyPrice_gold = getInteger(s["buyPrice-gold"]),
-                    buyPrice_damond = getInteger(s["buyPrice-diamond"])
-                };
-            }
+            consumableItem[] all = Resources.LoadAll<consumableItem>
+                ("ScriptableObjects/Items/Consumables");
+            return all.ToList();
         }
-        return p;
     }
-    public GDEItemData getPropOwned(string id)
+    public consumableItem getConsumableItemById(string id)
     {
-        foreach (GDEItemData p in PlayerData.props)
+        consumableItem[] all = Resources.LoadAll<consumableItem>
+            ("ScriptableObjects/Items/Consumables");
+        foreach (consumableItem item in all)
         {
-            if (p.id == id) return p;
+            if (item.ID == id) return item;
         }
         return null;
+    }
+    /// <summary>
+    /// getConsumableById替补
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public consumableItem getConsumableById(string id)
+    {
+        return getConsumableItemById(id);
+    }
+    public GDEItemData getConsumeableDataById(string id)
+    {
+        foreach (GDEItemData data in getConsumablesOwned)
+        {
+            if (data.id == id) return data;
+        }
+        return null;
+    }
+    public string getConsumableStrById(string id)
+    {
+        consumableItem item = getConsumableItemById(id);
+        if (item != null) return item.SpecialStr;
+        return string.Empty;
+    }
+
+    public bool checkIfHaveOpKey(SDConstants.MaterialType type, out string keyId)
+    {
+        consumableItem key = AllConsumableList.Find
+            (x =>
+            {
+                string s = x.SpecialStr.ToLower();
+                string t = type.ToString().ToLower();
+                return s.Contains(t) && x.MaterialType == SDConstants.MaterialType.key;
+            });
+        if (key)
+        {
+            string ID = key.ID;
+            keyId = ID;
+            if (PlayerData.consumables.Exists(x => x.id == ID)) return true;
+        }else keyId = string.Empty;
+        return false;
+    }
+    #endregion
+    #region PropInfor
+    public List<GDEItemData> getPropsOwned
+    {
+        get
+        {
+            return getConsumablesOwned.FindAll(x =>
+            {
+                consumableItem item = getConsumableItemById(x.id);
+                return item.isProp;
+            });
+        }
     }
     public bool checkIfPropIsTaken(string id)
     {
@@ -842,8 +1370,9 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     public int propTakenVolume(string id)
     {
-        ROPropData p = getPropDataById(id);
-        int level = p.level;
+        consumableItem p = getConsumableById(id);
+        if (!p.isProp) return 0;
+        int level = p.LEVEL;
         if (level == 0) return 10;
         else if (level == 1) return 5;
         else if (level == 2) return 3;
@@ -871,425 +1400,104 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     #endregion
     #region MaterialInfor
-    public List<GDEItemData> getMaterials()
+    public List<consumableItem> allRaws
     {
-        return PlayerData.materials;
-    }
-    public int getMaterialNum(string materialId)
-    {
-        int sum = 0;
-        foreach (GDEItemData m in PlayerData.materials)
+        get
         {
-            if (m.id == materialId)
+            consumableItem[] all = Resources.LoadAll<consumableItem>
+                ("ScriptableObjects/Items/Consumables");
+            List<consumableItem> results = new List<consumableItem>();
+            for(int i = 0; i < all.Length; i++)
             {
-                sum = m.num;
-                break;
-            }
-        }
-        return sum;
-    }
-    public int addMaterial(string id, int num = 1)
-    {
-        add_Item(id, num);
-        foreach (GDEItemData M in PlayerData.materials)
-        {
-            if (M.id == id)
-            {
-                M.num += num;
-                PlayerData.Set_materials();
-                return M.num;
-            }
-        }
-        GDEItemData m = new GDEItemData("Material" + id);
-        m.id = id;
-        m.num = num;
-        PlayerData.materials.Add(m);
-        PlayerData.Set_materials();
-        return m.num;
-    }
-    public bool consumeMaterial(string id, out int residue, int num = 1)
-    {
-        foreach (GDEItemData m in PlayerData.materials)
-        {
-            if (m.id == id)
-            {
-                if (m.num < num)
+                if(all[i].MaterialType == SDConstants.MaterialType.raw)
                 {
-                    residue = m.num;
-                    return false;
-                }
-                else
-                {
-                    m.num -= num;
-                    consume_Item(id, out int left, num);
-                    if (m.num <= 0)
-                    {
-                        PlayerData.materials.Remove(m);
-                    }
-                    PlayerData.Set_materials();
-                    residue = m.num;
-                    return true;
+                    results.Add(all[i]);
                 }
             }
+            return results;
         }
-        residue = 0;
-        return false;
+    }
+    public List<GDEItemData> getMaterialsOwned
+    {
+        get {
+            return getConsumablesOwned.FindAll(x =>
+                {
+                    consumableItem item = getConsumableItemById(x.id);
+                    return item.isProp;
+                });
+        }
     }
     public string getMaterialNameById(string id)
     {
-        string name = "";
-        List<Dictionary<string, string>> itemDatas
-            = SDDataManager.Instance.ReadFromCSV("material");
-        for (int i = 0; i < itemDatas.Count; i++)
+        List<consumableItem> list = AllConsumableList;
+        foreach(consumableItem item in list)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == id)
-            {
-                name = s["name"];
-                break;
-            }
+            if (item.ID == id) return item.NAME;
         }
-        return name;
+        return string.Empty;
     }
-    public string getMaterialTypeById(string id)
+    public SDConstants.MaterialType getMaterialTypeById(string id)
     {
-        List<Dictionary<string, string>> materials
-            = SDDataManager.Instance.ReadFromCSV("material");
-        foreach (Dictionary<string, string> m in materials)
+        consumableItem item = getConsumableById(id);
+        if (item)
         {
-            if (m["id"] == id.ToString())
-            {
-                return m["materialType"];
-            }
+            return item.MaterialType;
         }
-        return null;
+        return SDConstants.MaterialType.end;
     }
     public int getMaterialLevelById(string id)
     {
-        List<Dictionary<string, string>> materials
-            = SDDataManager.Instance.ReadFromCSV("material");
-        foreach (Dictionary<string, string> m in materials)
+        List<consumableItem> list = AllConsumableList;
+        foreach (var m in list)
         {
-            if (m["id"] == id.ToString())
+            if (m.ID == id)
             {
-                return getInteger(m["level"]);
-            }
-        }
-        return 0;
-    }
-    public int getMaterialRarityById(string id)
-    {
-        List<Dictionary<string, string>> materials
-            = SDDataManager.Instance.ReadFromCSV("material");
-        foreach (Dictionary<string, string> m in materials)
-        {
-            if (m["id"] == id.ToString())
-            {
-                return getInteger(m["rarity"]);
-            }
-        }
-        return 0;
-    }
-    public int getMaterialFigureById(string id)
-    {
-        List<Dictionary<string, string>> materials
-            = SDDataManager.Instance.ReadFromCSV("material");
-        foreach (Dictionary<string, string> m in materials)
-        {
-            if (m["id"] == id.ToString())
-            {
-                Debug.Log("使用材料id:" + id + "__输出数据:" + getInteger(m["figure"]));
-                return getInteger(m["figure"]);
+                return m.LEVEL;
             }
         }
         return 0;
     }
     public int getMaterialWeightById(string id)
     {
-        List<Dictionary<string, string>> materials
-            = SDDataManager.Instance.ReadFromCSV("material");
-        foreach (Dictionary<string, string> m in materials)
+        if(AllConsumableList.Exists(x=>x.ID == id))
         {
-            if (m["id"] == id.ToString())
-            {
-                return getInteger(m["weight"]);
-            }
+            consumableItem item = getConsumableItemById(id);
+            return 5 - item.LEVEL;
         }
         return 1;
     }
-    public ROMaterialData getMaterialDataById(string id)
+
+
+    public bool checkConsumableIfProp(string id)
     {
-        ROMaterialData P = new ROMaterialData();
-        List<Dictionary<string, string>> list = ReadFromCSV("material");
-        foreach (Dictionary<string, string> M in list)
+        consumableItem item = getConsumableById(id);
+        if (item)
         {
-            if (M["id"] == id.ToString())
-            {
-                P = new ROMaterialData()
-                {
-                    name = M["name"],
-                    id = id,
-                    level = getInteger(M["level"]),
-                    rarity = getInteger(M["rarity"]),
-                    materialType = M["materialType"],
-                    image = M["image"],
-                    mode = getInteger(M["mode"]),
-                    itemType = SDConstants.ItemType.Material,
-                    canUseInGame = getInteger(M["canUseInGame"]),
-                    des = M["des"],
-                    specialStr = M["special"],
-                    figure = getInteger(M["figure"]),
-                    buyPrice_gold = getInteger(M["buyPrice-gold"]),
-                    buyPrice_damond = getInteger(M["buyPrice-diamond"]),
-                    exchangeType = getInteger(M["exchangeType"]),
-                    maxStack = getInteger(M["maxStack"]),
-                    weight = getInteger(M["weight"]),
-                    minLv = getInteger(M["minLv"]),
-                    maxLv = getInteger(M["maxLv"]),
-                };
-                return P;
-            }
+            return item.isProp;
         }
-        List<Dictionary<string, string>> propAll = ReadFromCSV("prop");
-        foreach (Dictionary<string, string> M in propAll)
-        {
-            if (M["id"] == id.ToString())
-            {
-                P = new ROMaterialData()
-                {
-                    name = M["name"],
-                    id = id,
-                    level = getInteger(M["level"]),
-                    rarity = getInteger(M["rarity"]),
-                    materialType = M["materialType"],
-                    image = M["image"],
-                    mode = getInteger(M["mode"]),
-                    kind = M["kind"],
-                    itemType = SDConstants.ItemType.Prop,
-                    canUseInGame = getInteger(M["canUseInGame"]),
-                    des = M["des"],
-                    specialStr = M["special"],
-                    figure = 0,
-                    range = M["range"],
-                    target = M["target"],
-
-                    buyPrice_gold = getInteger(M["buyPrice-gold"]),
-                    buyPrice_damond = getInteger(M["buyPrice-diamond"]),
-
-                    exchangeType = 0,
-                    maxStack = 0,
-                    weight = 0,
-                    minLv = 0,
-                    maxLv = 99,
-                };
-                return P;
-            }
-        }
-        return P;
+        return false;
     }
     #region MaterialFunction
-    public bool UseChestToGetEquip(ROMaterialData A, out List<string> getEquipIds)
+    public int getFigureFromMaterial(consumableItem item)
     {
-        if (SDDataManager.Instance.consumeMaterial(A.id, out int residue))//成功消耗
+        if (item.MaterialType == SDConstants.MaterialType.exp
+            || item.MaterialType == SDConstants.MaterialType.likability
+            || item.MaterialType == SDConstants.MaterialType.equip_exp)
         {
-            Debug.Log("成功消耗" + A.name + " 剩余" + residue);
-            List<ROEquipData> allPossibilities = new List<ROEquipData>();
-            List<Dictionary<string, string>> all = SDDataManager.Instance.ReadFromCSV("equip");
-            if (A.specialStr == "equip")
-            {
-
-            }
-            else if (A.specialStr == "weapon")
-            {
-                all = SDDataManager.Instance.ReadFromCSV("weapon");
-            }
-            else if (A.specialStr == "jewelry")
-            {
-                all = SDDataManager.Instance.ReadFromCSV("jewelry");
-            }
-            //
-            if (A.level == 0)
-            {
-                for (int i = 0; i < all.Count; i++)
-                {
-                    Dictionary<string, string> e = all[i];
-                    if (SDDataManager.Instance.getInteger(e["rarity"]) < 2)
-                    {
-                        ROEquipData n = new ROEquipData()
-                        {
-                            id = e["id"],
-                            rarity = SDDataManager.Instance.getInteger(e["rarity"]),
-                        };
-                        allPossibilities.Add(n);
-                    }
-                }
-            }
-            else if (A.level == 1)
-            {
-                for (int i = 0; i < all.Count; i++)
-                {
-                    Dictionary<string, string> e = all[i];
-                    if (SDDataManager.Instance.getInteger(e["rarity"]) > 0
-                        && SDDataManager.Instance.getInteger(e["rarity"]) <= 2)
-                    {
-                        ROEquipData n = new ROEquipData()
-                        {
-                            id = e["id"],
-                            rarity = SDDataManager.Instance.getInteger(e["rarity"]),
-                        };
-                        allPossibilities.Add(n);
-                    }
-                }
-            }
-            else if (A.level == 2)
-            {
-                for (int i = 0; i < all.Count; i++)
-                {
-                    Dictionary<string, string> e = all[i];
-                    if (SDDataManager.Instance.getInteger(e["rarity"]) >= 2)
-                    {
-                        ROEquipData n = new ROEquipData()
-                        {
-                            id = e["id"],
-                            rarity = SDDataManager.Instance.getInteger(e["rarity"]),
-                        };
-                        allPossibilities.Add(n);
-                    }
-                }
-            }
-            //
-            List<float> AllPs = new List<float>();
-            for (int i = 0; i < allPossibilities.Count; i++)
-            {
-                ROEquipData E = allPossibilities[i];
-                if (A.level == 0)
-                {
-                    if (E.rarity == 0) { AllPs.Add(0.85f); }
-                    else if (E.rarity == 1) { AllPs.Add(0.15f); }
-                }
-                else if (A.level == 1)
-                {
-                    if (E.rarity == 1) { AllPs.Add(0.6f); }
-                    else if (E.rarity == 2) { AllPs.Add(0.4f); }
-                }
-                else if (A.level == 2)
-                {
-                    if (E.rarity == 2) { AllPs.Add(0.5f); }
-                    else { AllPs.Add(0.5f); }
-                }
-            }
-            List<int> result = RandomIntger.NumListReturn(A.figure, AllPs);
-            //
-            List<string> show = new List<string>();
-            for (int i = 0; i < result.Count; i++)
-            {
-                SDDataManager.Instance.addEquip(allPossibilities[result[i]].id);
-                show.Add(allPossibilities[result[i]].id);
-            }
-            getEquipIds = show;
-            return true;
+            return getInteger(item.SpecialStr);
         }
-        getEquipIds = new List<string>();
-        return false;
+        return 0;
     }
-    public bool UseChestToGetEquip(string MaterialId, out List<string> getEquipIds)
+    public int getFigureFromMaterial(string itemId)
     {
-        return UseChestToGetEquip(getMaterialDataById(MaterialId), out getEquipIds);
+        consumableItem item = getConsumableById(itemId);
+        return getFigureFromMaterial(item);
     }
-    public bool UseChestToGetProp(ROMaterialData A, out List<GDEItemData> getProps)
+    public string getMaterialSpecialStr(string id)
     {
-        if (consumeMaterial(A.id, out int residue))
-        {
-            Debug.Log("成功消耗" + A.name + " 剩余" + residue);
-            List<ROMaterialData> allPossibilities = new List<ROMaterialData>();
-            List<Dictionary<string, string>> all = ReadFromCSV("prop");
-            if (A.level == 0)
-            {
-                for (int i = 0; i < all.Count; i++)
-                {
-                    Dictionary<string, string> e = all[i];
-                    if (getInteger(e["rarity"]) <= 2)
-                    {
-                        ROMaterialData P = new ROMaterialData()
-                        {
-                            id = e["id"],
-                            rarity = SDDataManager.Instance.getInteger(e["rarity"]),
-                        };
-                        allPossibilities.Add(P);
-                    }
-                }
-            }
-            else if (A.level == 1)
-            {
-                for (int i = 0; i < all.Count; i++)
-                {
-                    Dictionary<string, string> e = all[i];
-                    if (getInteger(e["rarity"]) <= 3 && getInteger(e["rarity"]) > 0)
-                    {
-                        ROMaterialData P = new ROMaterialData()
-                        {
-                            id = e["id"],
-                            rarity = SDDataManager.Instance.getInteger(e["rarity"]),
-                        };
-                        allPossibilities.Add(P);
-                    }
-                }
-            }
-            List<float> AllPs = new List<float>();
-            for (int i = 0; i < allPossibilities.Count; i++)
-            {
-                ROMaterialData E = allPossibilities[i];
-                if (A.level == 0)
-                {
-                    if (E.rarity == 0) { AllPs.Add(0.4f); }
-                    else if (E.rarity == 1) { AllPs.Add(0.35f); }
-                    else if (E.rarity == 2) { AllPs.Add(0.25f); }
-                }
-                else if (A.level == 1)
-                {
-                    if (E.rarity == 1) { AllPs.Add(0.35f); }
-                    else if (E.rarity == 2) { AllPs.Add(0.35f); }
-                    else if (E.rarity == 3) { AllPs.Add(0.3f); }
-                }
-            }
-
-            #region 道具箱获得道具种类随机
-            int F = A.figure;
-            float[] allF = new float[Mathf.Max(2, F - 1)];
-            for (int i = 0; i < allF.Length; i++)
-            {
-                allF[i] = i * 0.2f + 0.2f;
-            }
-            F = RandomIntger.Choose(allF) + 2;
-            #endregion
-            List<int> result = RandomIntger.NumListReturn(F, AllPs);
-            //
-            List<GDEItemData> show = new List<GDEItemData>();
-            for (int i = 0; i < result.Count; i++)
-            {
-                GDEItemData D = new GDEItemData(GDEItemKeys.Item_MaterialEmpty)
-                {
-                    id = allPossibilities[result[i]].id,
-                    num = 1,
-                };
-                #region 每种道具获得数量随机
-                int R = allPossibilities[result[i]].rarity;
-                int N = Mathf.Max(1, 6 - R);
-                D.num = Mathf.Max(1, UnityEngine.Random.Range(0, N));
-                #endregion
-                addProp(allPossibilities[result[i]].id, D.num);
-                show.Add(D);
-            }
-            getProps = show;
-            return true;
-        }
-        getProps = new List<GDEItemData>();
-        return false;
-    }
-    public bool UseChestToGetProp(string MaterialId, out List<GDEItemData> getProps)
-    {
-        ROMaterialData D = getMaterialDataById(MaterialId);
-        return UseChestToGetProp(D, out getProps);
+        consumableItem item = getConsumableById(id);
+        if (item) return item.SpecialStr;
+        return string.Empty;
     }
     #endregion
     #endregion
@@ -1441,83 +1649,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     List<Dictionary<string, string>> dataListResult27;
     List<Dictionary<string, string>> dataListResult28;
     List<Dictionary<string, string>> dataListResult29;
-    //
-
-    //
-    List<Dictionary<string, string>> dataListResultItem;
-    public List<Dictionary<string, string>> DataListResultItem
-    {
-        get
-        {
-            if (dataListResultItem == null)
-            {
-                dataListResultItem = new List<Dictionary<string, string>>();
-                //HERO
-                for (int i = 0; i < (int)Job.End; i++)
-                {
-                    List<Dictionary<string, string>> L_ = ReadHeroFromCSV(i);
-                    for (int j = 0; j < L_.Count; j++)
-                    {
-                        dataListResultItem.Add(L_[j]);
-                    }
-                }
-                //EQUIP
-                List<Dictionary<string, string>> L = ReadFromCSV("equip");
-                for (int i = 0; i < L.Count; i++)
-                {
-                    dataListResultItem.Add(L[i]);
-                }
-                List<Dictionary<string, string>> L1 = ReadFromCSV("jewelry");
-                for (int i = 0; i < L1.Count; i++)
-                {
-                    dataListResultItem.Add(L1[i]);
-                }
-                List<Dictionary<string, string>> L2 = ReadFromCSV("weapon");
-                for (int i = 0; i < L2.Count; i++)
-                {
-                    dataListResultItem.Add(L2[i]);
-                }
-                //PROP
-                List<Dictionary<string, string>> L3 = ReadFromCSV("prop");
-                for (int i = 0; i < L3.Count; i++)
-                {
-                    dataListResultItem.Add(L3[i]);
-                }
-                //MATERIAL
-                List<Dictionary<string, string>> L4 = ReadFromCSV("material");
-                for (int i = 0; i < L4.Count; i++)
-                {
-                    dataListResultItem.Add(L4[i]);
-                }
-                //GODDESS
-                List<Dictionary<string, string>> L5 = ReadFromCSV("goddess");
-                for (int i = 0; i < L5.Count; i++)
-                {
-                    dataListResultItem.Add(L5[i]);
-                }
-                //BADGE
-                List<Dictionary<string, string>> L6 = ReadFromCSV("badge");
-                for (int i = 0; i < L6.Count; i++)
-                {
-                    dataListResultItem.Add(L6[i]);
-                }
-                //ENEMY
-                List<Dictionary<string, string>> L7 = ReadFromCSV("enemy");
-                for (int i = 0; i < L7.Count; i++)
-                {
-                    dataListResultItem.Add(L7[i]);
-                }
-                List<Dictionary<string, string>> L8 = ReadFromCSV("boss");
-                for (int i = 0; i < L8.Count; i++)
-                {
-                    dataListResultItem.Add(L8[i]);
-                }
-                //QUEST
-                //...
-            }
-            return dataListResultItem;
-        }
-    }
+    
     #endregion
     public List<Dictionary<string, string>> ReadFromCSV(string filename)
     {
@@ -1545,11 +1677,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             if (dataListResult4 == null) { dataListResult4 = ReadDataFromCSV("material"); }
             return dataListResult4;
         }
-        else if (filename == "prop")
-        {
-            if (dataListResult5 == null) { dataListResult5 = ReadDataFromCSV("prop"); }
-            return dataListResult5;
-        }
         else if (filename == "heroLvUp")
         {
             if (dataListResult6 == null) { dataListResult6 = ReadDataFromCSV("heroLvUp"); }
@@ -1559,16 +1686,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         {
             if (dataListResult7 == null) { dataListResult7 = ReadDataFromCSV("nameBefore"); }
             return dataListResult7;
-        }
-        else if (filename == "jewelry")
-        {
-            if (dataListResult8 == null) { dataListResult8 = ReadDataFromCSV("jewelry"); }
-            return dataListResult8;
-        }
-        else if (filename == "weapon")
-        {
-            if (dataListResult9 == null) { dataListResult9 = ReadDataFromCSV("weapon"); }
-            return dataListResult9;
         }
         else if (filename == "goddess")
         {
@@ -1635,23 +1752,19 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
         dataListResult9 = ReadDataFromCSV("weapon");
         yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-
-
-        hero0List = ReadDataFromCSV("hero0");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        hero1List = ReadDataFromCSV("hero1");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        hero2List = ReadDataFromCSV("hero2");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        hero3List = ReadDataFromCSV("hero3");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        //Debug.Log("Dictionary加载完毕");
     }
     public SDConstants.ItemType getItemTypeById(string id)
     {
-        int _id = getInteger(id.Split('#')[1]);
-        SDConstants.ItemType flag = (SDConstants.ItemType)(_id % 1000000);
-        return flag;
+        string Sign = id.ToCharArray()[0].ToString().ToUpper();
+        if (Sign == "M") return SDConstants.ItemType.Consumable;
+        else if (Sign == "D") return SDConstants.ItemType.Enemy;
+        else if (Sign == "E") return SDConstants.ItemType.Equip;
+        else if (Sign == "H") return SDConstants.ItemType.Hero;
+        else if (Sign == "G") return SDConstants.ItemType.Goddess;
+        else if (Sign == "R") return SDConstants.ItemType.Rune;
+        else if (Sign == "N") return SDConstants.ItemType.NPC;
+
+        return SDConstants.ItemType.End;
     }
     public string rarityString(int quality)
     {
@@ -1662,536 +1775,70 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         return n;
     }
     #endregion
-    #region HeroData_Infor
-    List<Dictionary<string, string>> hero0List;
-    List<Dictionary<string, string>> hero1List;
-    List<Dictionary<string, string>> hero2List;
-    List<Dictionary<string, string>> hero3List;
-    List<Dictionary<string, string>> hero4List;
-
-    public List<Dictionary<string, string>> ReadHeroFromCSV(int career)
+    #region HeroAlarPoolInfor
+    public List<HeroAltarPool> GetAllHeroAltarPoolList
     {
-        if (career == 0)
+        get
         {
-            if (hero0List == null) hero0List = ReadDataFromCSV("hero0");
-            return hero0List;
-        }
-        else if (career == 1)
-        {
-            if (hero1List == null) hero1List = ReadDataFromCSV("hero1");
-            return hero1List;
-        }
-        else if (career == 2)
-        {
-            if (hero2List == null) hero2List = ReadDataFromCSV("hero2");
-            return hero2List;
-        }
-        else if (career == 3)
-        {
-            if (hero3List == null) hero3List = ReadDataFromCSV("hero3");
-            return hero3List;
-        }
-        else
-        {
-            return ReadDataFromCSV("hero" + career);
+            return Resources.LoadAll<HeroAltarPool>("ScriptableObjects/pools").ToList();
         }
     }
-    public int getHeroRaceById(string heroId)
+    public HeroAltarPool GetHeroAltarPoolById(string id)
     {
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(heroId));
-        for (int i = 0; i < list.Count; i++)
+        return GetAllHeroAltarPoolList.Find(x => x.ID == id);
+    }
+    public List<GDEHeroAltarPoolData> GetAllHeroPool()
+    {
+        return PlayerData.AltarPoolList;
+    }
+    public GDEHeroAltarPoolData GetHeroPoolDataById(string id)
+    {
+        return GetAllHeroPool().Find(x => x.ID == id);
+    }
+    public HeroInfo AltarInOnePool(float[] Possibilities, string poolId, bool MustS = false)
+    {
+        int L = RandomIntger.Choose(Possibilities);
+        GDEHeroAltarPoolData PoolData = GetHeroPoolDataById(poolId);
+        PoolData.AltarTimes++;
+        PlayerData.Set_AltarPoolList();
+        if(PoolData.AltarTimes>= 10)
         {
-            Dictionary<string, string> s = list[i];
-            if (s["id"] == heroId)
+            if (PoolData.GetSNum == 0) L = 3;
+        }
+        HeroAltarPool Pool = GetHeroAltarPoolById(poolId);
+        List<int> LEVELList = Pool.HeroList.Select(x => x.LEVEL).ToList();
+        LEVELList.Sort();
+        if (MustS) L = LEVELList.Max();
+        if (!LEVELList.Contains(L))
+        {
+            if (L < LEVELList.Count)
             {
-                return getInteger(s["race"]);
+                L = LEVELList[L];
+            }
+            else 
+            {
+                L = LEVELList[UnityEngine.Random.Range(0, LEVELList.Count)];
+            } 
+        }
+        if (L >= 3)
+        {
+            PoolData.GetSNum++;
+            PlayerData.Set_AltarPoolList();
+        }
+        List<HeroInfo> list = Pool.HeroList.FindAll(x => x.LEVEL == L);
+        List<HeroInfo> _list = Pool.HeroesUsingSpecialPossibility.FindAll(x => x.LEVEL == L);
+        if (_list.Count > 0)
+        {
+            float R = UnityEngine.Random.Range(0, 1f);
+            if (R < 0.5f)
+            {
+                return _list[UnityEngine.Random.Range(0, _list.Count)];
             }
         }
-        return 0;
-    }
-    public int getHeroQualityById(string id)
-    {
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(id));
-        for (int i = 0; i < list.Count; i++)
-        {
-            Dictionary<string, string> s = list[i];
-            if (s["id"] == id)
-            {
-                return getInteger(s["quality"]);
-            }
-        }
-        return 0;
-    }
-    public int getHeroGenderById(string id)
-    {
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(id));
-        for (int i = 0; i < list.Count; i++)
-        {
-            Dictionary<string, string> s = list[i];
-            if (s["id"] == id)
-            {
-                return getInteger(s["gender"]);
-            }
-        }
-        return 0;
-    }
-    public int getHeroLevelById(string id)
-    {
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(id));
-        for (int i = 0; i < list.Count; i++)
-        {
-            Dictionary<string, string> s = list[i];
-            if (s["id"] == id)
-            {
-                return getInteger(s["level"]);
-            }
-        }
-        return 0;
-    }
-    public int getHeroSkeletonById(string id)
-    {
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(id));
-        for (int i = 0; i < list.Count; i++)
-        {
-            Dictionary<string, string> s = list[i];
-            if (s["id"] == id)
-            {
-                return getInteger(s["skeleton"]);
-            }
-        }
-        return 0;
-    }
-    public int getHeroStartStarNumById(string id)
-    {
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(id));
-        for (int i = 0; i < list.Count; i++)
-        {
-            Dictionary<string, string> s = list[i];
-            if (s["id"] == id)
-            {
-                return getInteger(s["gender"]);
-            }
-        }
-        return 0;
-    }
-    public GDEHeroData getHeroByHashcode(int hashcode)
-    {
-        return GetHeroOwnedByHashcode(hashcode);
-    }
-    public Dictionary<string, string> readHeroFromCSVById(string id)
-    {
-        List<Dictionary<string, string>> all = new List<Dictionary<string, string>>();
-        for (int i = 0; i < (int)Job.End; i++)
-        {
-            List<Dictionary<string, string>> list = SDDataManager.Instance.ReadHeroFromCSV(i);
-            for (int k = 0; k < list.Count; k++)
-            {
-                all.Add(list[k]);
-            }
-        }
-        foreach (Dictionary<string, string> d in all)
-        {
-            if (d["id"] == id.ToString()) { return d; }
-        }
-        return null;
-    }
-    public RoleAttributeList getRALById(string heroId)
-    {
-        RoleAttributeList RAL = new RoleAttributeList();
-        List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(heroId));
-        for (int i = 0; i < list.Count; i++)
-        {
-            Dictionary<string, string> s = list[i];
-            if (s["id"] == heroId)
-            {
-                RAL = RALByDictionary(s);
-            }
-        }
-        return RAL;
-    }
-    public RoleAttributeList getRALByUpLv(RoleAttributeList basicRAL, int upLv)
-    {
-        basicRAL.AddPercAll(20 * upLv);
-        return basicRAL;
-    }
-    public RoleAttributeList RALByDictionary(Dictionary<string, string> s)
-    {
-        RoleAttributeList RAL = new RoleAttributeList();
-        RAL.Hp = getInteger(s["hp"]);
-        RAL.Mp = getInteger(s["mp"]);
-        RAL.Tp = getInteger(s["tp"]);
-        RAL.AT = getInteger(s["at"]);
-        RAL.AD = getInteger(s["ad"]);
-        RAL.MT = getInteger(s["mt"]);
-        RAL.MD = getInteger(s["md"]);
-        RAL.Speed = getInteger(s["speed"]);
-        RAL.Taunt = getInteger(s["taunt"]);
-        RAL.Accur = getInteger(s["accur"]);
-        RAL.Evo = getInteger(s["evo"]);
-        RAL.Crit = getInteger(s["crit"]);
-        RAL.Expect = getInteger(s["expect"]);
-
-        RAL.Bleed_Def = getInteger(s["bleed_def"]);
-        RAL.Mind_Def = getInteger(s["mind_def"]);
-        RAL.Fire_Def = getInteger(s["fire_def"]);
-        RAL.Frost_Def = getInteger(s["frost_def"]);
-        RAL.Corrosion_Def = getInteger(s["corrosion_def"]);
-        RAL.Hush_Def = getInteger(s["hush_def"]);
-        RAL.Dizzy_Def = getInteger(s["dizzy_def"]);
-        RAL.Confuse_Def = getInteger(s["confuse_def"]);
-        return RAL;
-    }
-
-    public int getRoleRAMaxNumPerLv(AttributeData tag, int lv)
-    {
-        int up = lv / 10 + 1;
-        int basicRal = SDConstants.RoleAttritubeMaxNum;
-        if (tag == AttributeData.Hp) return (int)(basicRal * 5 * up);
-        else if (tag == AttributeData.Mp) return (int)(basicRal * 3.5f * up);
-        else if (tag == AttributeData.Tp) return (int)(basicRal * 2.5f * up);
-        else if (tag == AttributeData.AD) return (int)(basicRal * 1f * up);
-        else if (tag == AttributeData.AT) return (int)(basicRal * 1f * up);
-        else if (tag == AttributeData.MD) return (int)(basicRal * 1f * up);
-        else if (tag == AttributeData.MT) return (int)(basicRal * 1f * up);
-        else if (tag == AttributeData.Speed) return (int)(basicRal * 0.25f * up);
-        else if (tag == AttributeData.Accur) return (int)(basicRal * 1f * up);
-        else if (tag == AttributeData.Evo) return (int)(basicRal * 1f * up);
-        else if (tag == AttributeData.Crit) return (int)(basicRal * 0.25f * up);
-        else if (tag == AttributeData.Expect) return (int)(basicRal * 0.5f * up);
-        else if (tag == AttributeData.Taunt) return (int)(basicRal * 1f * up);
-        else return basicRal * 1 * up;
-    }
-    public int getRoleSRMaxNumPerLv(int lv)
-    {
-        int up = lv / 10 + 1;
-        int basicRal = SDConstants.RoleAttritubeMaxNum;
-
-        return (int)(basicRal * 0.5f * up);
-    }
-
-    public void dressEquipment(int heroHashcode, int itemHashcode, bool isSecondJewelry = false)
-    {
-        int oldEquipHashcode = 0;
-        foreach (GDEHeroData hero in SDDataManager.Instance.PlayerData.herosOwned)
-        {
-            if (hero.hashCode == heroHashcode)
-            {
-                GDEEquipmentData equip
-                    = SDDataManager.Instance.getEquipmentByHashcode(itemHashcode);
-                equip.OwnerHashcode = heroHashcode;
-                #region add equip
-                int pos = SDDataManager.Instance.getEquipPosById(equip.id);
-                if (pos == (int)EquipPosition.Head)
-                {
-                    oldEquipHashcode
-                        = hero.equipHelmet != null ? hero.equipHelmet.hashcode : 0;
-                    hero.equipHelmet = equip;
-                }
-                else if (pos == (int)EquipPosition.Breast)
-                {
-                    oldEquipHashcode
-                        = hero.equipBreastplate != null ? hero.equipBreastplate.hashcode : 0;
-                    hero.equipBreastplate = equip;
-                }
-                else if (pos == (int)EquipPosition.Arm)
-                {
-                    oldEquipHashcode
-                        = hero.equipGardebras != null ? hero.equipGardebras.hashcode : 0;
-                    hero.equipGardebras = equip;
-                }
-                else if (pos == (int)EquipPosition.Leg)
-                {
-                    oldEquipHashcode
-                        = hero.equipLegging != null ? hero.equipLegging.hashcode : 0;
-                    hero.equipLegging = equip;
-                }
-                else if (pos == (int)EquipPosition.Finger)
-                {
-                    if (!isSecondJewelry)
-                    {
-                        oldEquipHashcode
-                            = hero.jewelry0 != null ? hero.jewelry0.hashcode : 0;
-                        hero.jewelry0 = equip;
-                    }
-                    else
-                    {
-                        oldEquipHashcode
-                            = hero.jewelry1 != null ? hero.jewelry1.hashcode : 0;
-                        hero.jewelry1 = equip;
-                    }
-                }
-                else if (pos == (int)EquipPosition.Hand)
-                {
-                    oldEquipHashcode
-                        = hero.equipWeapon != null ? hero.equipWeapon.hashcode : 0;
-                    hero.equipWeapon = equip;
-                }
-                #endregion
-                break;
-            }
-        }
-        foreach (GDEEquipmentData e in SDDataManager.Instance.PlayerData.equipsOwned)
-        {
-            if (e.hashcode == itemHashcode)
-            {
-                e.OwnerHashcode = heroHashcode;
-            }
-            if (e.hashcode == oldEquipHashcode && oldEquipHashcode > 0)
-            {
-                e.OwnerHashcode = 0;
-            }
-        }
-        SDDataManager.Instance.PlayerData.Set_equipsOwned();
-    }
-    public void disrobeEquipment(int heroHashcode, EquipPosition pos, bool isSecondJPos = false)
-    {
-        int equipHashcode = 0;
-        foreach (GDEHeroData hero in SDDataManager.Instance.PlayerData.herosOwned)
-        {
-            if (hero.hashCode == heroHashcode)
-            {
-                if (pos == EquipPosition.Head)
-                {
-                    equipHashcode = hero.equipHelmet.hashcode;
-                    hero.equipHelmet = Instance.equipEmpty();
-                }
-                else if (pos == EquipPosition.Breast)
-                {
-                    equipHashcode = hero.equipBreastplate.hashcode;
-                    hero.equipBreastplate = Instance.equipEmpty();
-                }
-                else if (pos == EquipPosition.Arm)
-                {
-                    equipHashcode = hero.equipGardebras.hashcode;
-                    hero.equipGardebras = Instance.equipEmpty();
-                }
-                else if (pos == EquipPosition.Leg)
-                {
-                    equipHashcode = hero.equipLegging.hashcode;
-                    hero.equipLegging = Instance.equipEmpty();
-                }
-                else if (pos == EquipPosition.Finger)
-                {
-                    if (!isSecondJPos)
-                    {
-                        equipHashcode = hero.jewelry0.hashcode;
-                        hero.jewelry0 = Instance.equipEmpty();
-                    }
-                    else
-                    {
-                        equipHashcode = hero.jewelry1.hashcode;
-                        hero.jewelry1 = Instance.equipEmpty();
-                    }
-                }
-                else if (pos == EquipPosition.Hand)
-                {
-                    equipHashcode = hero.equipWeapon.hashcode;
-                    hero.equipWeapon = Instance.equipEmpty();
-                }
-                break;
-            }
-        }
-        foreach (GDEEquipmentData e in SDDataManager.Instance.PlayerData.equipsOwned)
-        {
-            if (e.hashcode == equipHashcode)
-            {
-                e.OwnerHashcode = 0;
-                break;
-            }
-        }
-        SDDataManager.Instance.PlayerData.Set_herosOwned();
-        GDEEquipmentData _e
-            = SDDataManager.Instance.getHeroEquipmentByPos(heroHashcode, pos, isSecondJPos);
-    }
-    public int getLevelByExp(int exp)
-    {
-        int lv = 0;
-        while (lv < 50)
-        {
-            if (lv * (lv + 1) / 2 * SDConstants.MinExpPerLevel <= exp)
-            {
-                lv++;
-            }
-            else
-            {
-                break;
-            }
-        }
-        return lv;
-    }
-    public int getExpByLevel(int lv)
-    {
-        if (lv < 50)
-        {
-            int ral = lv * (lv - 1) / 2 * SDConstants.MinExpPerLevel;
-            return ral;
-        }
-        else
-        {
-            int extraExp = (lv - 50) * 1250;
-            return extraExp + 30625;
-        }
-    }
-    public int getExpLengthByLevel(int lv)
-    {
-        if (lv < 50) return lv * SDConstants.MinExpPerLevel;
-        else return 50 * SDConstants.MinExpPerLevel;
-    }
-    public void addExpToHeroByHashcode(int hashcode, int exp = 1)
-    {
-        foreach (GDEHeroData h in PlayerData.herosOwned)
-        {
-            if (h.hashCode == hashcode)
-            {
-                int starNum = getHeroLevelById(h.id) + h.starNumUpgradeTimes;
-                h.exp = HeroOverflowExp(h.exp + exp, starNum);
-                PlayerData.Set_herosOwned();
-                break; }
-        }
-
-    }
-    public bool checkHeroExpIfOverflow(int currentExp, int star)
-    {
-        int limitedLv = 10;
-        if (star == 0) limitedLv = 10;
-        else if (star == 1) limitedLv = 20;
-        else if (star == 2) limitedLv = 30;
-        else if (star == 3) limitedLv = 50;
-        else if (star == 4) limitedLv = 70;
-        else if (star == 5) limitedLv = 100;
-        int limitedExp = getExpByLevel(limitedLv);
-        if (currentExp >= limitedExp) return true;
-        return false;
-    }
-    public int HeroOverflowExp(int oldExp, int star)
-    {
-        int limitedLv = 10;
-        if (star == 0) limitedLv = 10;
-        else if (star == 1) limitedLv = 20;
-        else if (star == 2) limitedLv = 30;
-        else if (star == 3) limitedLv = 50;
-        else if (star == 4) limitedLv = 70;
-        else if (star == 5) limitedLv = 100;
-        int limitedExp = getExpByLevel(limitedLv);
-        if (oldExp >= limitedExp) return limitedExp;
-        return oldExp;
-    }
-
-    public void addLikabilityToHeroByHashcode(int hashcode, int likability = 1)
-    {
-        foreach (GDEHeroData h in PlayerData.herosOwned)
-        {
-            if (h.hashCode == hashcode)
-            {
-                h.likability += likability; break;
-            }
-        }
-    }
-    public string getCareerStr(int careerIndex, int raceIndex = 0
-        , SDConstants.CharacterType type = SDConstants.CharacterType.Hero)
-    {
-        string s = "";
-        if (type == SDConstants.CharacterType.Hero)
-        {
-            if (careerIndex == 0) s = SDGameManager.T("fighter");
-            else if (careerIndex == 1) s = SDGameManager.T("ranger");
-            else if (careerIndex == 2) s = SDGameManager.T("priest");
-            else if (careerIndex == 3) s = SDGameManager.T("caster");
-        }
-        else if (type == SDConstants.CharacterType.Goddess)
-        {
-
-        }
-        else if (type == SDConstants.CharacterType.Enemy)
-        {
-            if (raceIndex == 0)
-            {
-
-            }
-        }
-        return s;
-    }
-    public string getRaceStr(int raceIndex, SDConstants.CharacterType type)
-    {
-        string s = "";
-        if (type == SDConstants.CharacterType.Hero)
-        {
-            if (raceIndex == 0) s = SDGameManager.T("human");
-            else if (raceIndex == 1) s = SDGameManager.T("elf");
-            else if (raceIndex == 2) s = SDGameManager.T("dragonborn");
-        }
-        else if (type == SDConstants.CharacterType.Goddess)
-        {
-
-        }
-        else if (type == SDConstants.CharacterType.Enemy)
-        {
-            if (raceIndex == 0) s = SDGameManager.T("elemental");
-            else if (raceIndex == 1) s = SDGameManager.T("goblin");
-            else if (raceIndex == 2) s = SDGameManager.T("orc");
-            else if (raceIndex == 3) s = SDGameManager.T("beast");
-        }
-        return s;
-    }
-    public bool getHeroIfLocked(int hashcode)
-    {
-        GDEHeroData h = getHeroByHashcode(hashcode);
-        if (h != null)
-        {
-            return h.locked;
-        }
-        return true;
-    }
-    public int getHeroExpPrice(int hashcode)
-    {
-        GDEHeroData h = getHeroByHashcode(hashcode);
-        int _exp = h.exp;
-        string id = h.id;
-        ROHeroData dal = getHeroDataByID(id, h.starNumUpgradeTimes);
-        int baseExp = (int)(25 * (1 + 0.2f * dal.quality + 0.2f * dal.starNum));
-        return baseExp + _exp;
+        return list[UnityEngine.Random.Range(0, list.Count)];
     }
     #endregion
     #region Goddess_Infor
-    public string getGoddessSpriteById(string goddessId)
-    {
-        List<Dictionary<string, string>> list = ReadFromCSV("goddess");
-        foreach (Dictionary<string, string> g in list)
-        {
-            if (g["id"] == goddessId.ToString())
-            {
-                return g["image"];
-            }
-        }
-        return null;
-    }
-    public RoGoddessData getGoddessData(GDEgoddessData goddess)
-    {
-        string id = goddess.id;
-        List<Dictionary<string, string>> list = ReadFromCSV("goddess");
-        RoGoddessData data = new RoGoddessData();
-        foreach (Dictionary<string, string> d in list)
-        {
-            if (d["id"] == id.ToString())
-            {
-                data.name = d["name"];
-                data.gender = SDDataManager.Instance.getInteger(d["gender"]);
-                data.ID = id;
-                data.lv = SDDataManager.Instance.getLevelByExp(goddess.exp);
-                data.star = SDDataManager.Instance.getInteger(d["level"]) + goddess.star;
-                data.volume = goddess.volume;
-                data.quality = getInteger(d["quality"]);
-                data.sprite = d["image"];
-                data.race = getInteger(d["race"]);
-                data.mainEffect = d["mainEffect"];
-                data.sideEffect = d["sideEffect"];
-                data.passiveEffect = d["passiveEffect"];
-                data.teamIdsUsed = goddess.UseTeamId;
-                break;
-            }
-        }
-        return data;
-    }
     public GDEgoddessData getGDEGoddessDataById(string goddessId)
     {
         foreach (GDEgoddessData g in PlayerData.goddessOwned)
@@ -2203,6 +1850,109 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return null;
     }
+    public GoddessInfo getGoddessInfoById(string id)
+    {
+        GoddessInfo[] All = Resources.LoadAll<GoddessInfo>("ScriptableObjects/生物列表");
+        for(int i = 0; i < All.Length; i++)
+        {
+            if (All[i].ID == id) return All[i];
+        }
+        return null;
+    }
+    public bool addGoddess(GoddessInfo info)
+    {
+        foreach (GDEgoddessData g in PlayerData.goddessOwned)
+        {
+            if (g.id == info.ID)
+            {
+                g.attitube.agile = info.GoddessAtti.Agile;
+                g.attitube.stamina = info.GoddessAtti.Stamina;
+                g.attitube.recovery = info.GoddessAtti.Recovery;
+                g.attitube.leader = info.GoddessAtti.Leader;
+                g.index = info.Index;
+                PlayerData.Set_goddessOwned();
+                return false;
+            }
+        }
+        //
+        GDEgoddessData data = new GDEgoddessData(GDEItemKeys.goddess_baseGoddess)
+        {
+            id = info.ID,
+            star = 0,
+            volume = 0,
+            exp = 0,
+            rune0 = 0,
+            rune1 = 0,
+            rune2 = 0,
+            rune3 = 0,
+            index = info.Index,
+            UseTeamId = new List<int>(),
+        };
+        data.attitube.agile = info.GoddessAtti.Agile;
+        data.attitube.stamina = info.GoddessAtti.Stamina;
+        data.attitube.recovery = info.GoddessAtti.Recovery;
+        data.attitube.leader = info.GoddessAtti.Leader;
+        PlayerData.goddessOwned.Add(data);
+        PlayerData.Set_goddessOwned();
+        return true;
+    }
+    public void addExpToGoddess(string goddessId,int exp)
+    {
+        foreach(GDEgoddessData goddess in PlayerData.goddessOwned)
+        {
+            if(goddess.id == goddessId)
+            {
+                goddess.exp += exp;
+                PlayerData.Set_goddessOwned();
+                break;
+            }
+        }
+    }
+
+    #region Integrity-&&-Volume-=>-Caculate
+    public int getIntegrityByVolume(int volume, int quality)
+    {
+        int integrity = 0;
+        int V = 0;
+        while(integrity < SDConstants.goddessMaxIntegrity)
+        {
+            V += VolumeBulkPerIntegrity(integrity, quality);
+            if (V < volume)
+            {
+                integrity++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return integrity;
+    }
+    public int VolumeBulkPerIntegrity(int integrity, int quality)
+    {
+        int result = SDConstants.MinVolumePerIntegrity * (integrity + 1) * (5 + quality * 2);
+        return result;
+    }
+    public int getMinVolumeReachIntegrity(int integrity,int quality)
+    {
+        int V = 0;
+        for(int i = 0; i < integrity; i++)
+        {
+            V += VolumeBulkPerIntegrity(i,quality);
+        }
+        return V;
+    }
+    public float getRateAppraochIntegrity(int volume, int quality)
+    {
+        int integrity = getIntegrityByVolume(volume, quality);
+
+        int vOld = 0; 
+        vOld = getMinVolumeReachIntegrity(integrity, quality);
+        int minV = VolumeBulkPerIntegrity(integrity, quality);
+        return (volume - vOld) * 1f / minV;
+    }
+    #endregion
+
     #endregion
     #region TimeTask_Infor
     public bool haveTimeTaskByTaskId(string taskId, out GDEtimeTaskData task)
@@ -2268,7 +2018,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
                 {
                     setHeroStatus(Hashcode, 3);
                     taskData.oldData = status;
-                    taskData.taskType = (int)(mainTimeType * fatigueRate * 0.8f);
+                    taskData.timeType = (int)(mainTimeType * fatigueRate * 0.8f);
                     PlayerData.TimeTaskList.Add(taskData);
                     PlayerData.Set_TimeTaskList();
                 }
@@ -2277,7 +2027,39 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
 
                 }
             }
-
+        }
+        else if(taskType == SDConstants.timeTaskType.FACT)
+        {
+            consumableItem M = getConsumableById(itemId);
+            SDConstants.MaterialType mt = M.MaterialType;
+            int mainTimeType = (M.LEVEL + 1) * 2;
+            GDENPCData slave = SDDataManager.Instance.GetNPCOwned(Hashcode);
+            if (slave!=null)
+            {
+                int lv = getLevelByExp(slave.exp);
+                int like = getLikeByLikability(slave.likability,out float rate);
+                mainTimeType = Mathf.Max(2, mainTimeType - lv);
+                //taskData.oldData = like;
+                if (mt == SDConstants.MaterialType.exp)
+                {
+                    taskData.oldData = slave.workPower0;
+                }
+                else if(mt == SDConstants.MaterialType.equip_exp)
+                {
+                    taskData.oldData = slave.workPower1;
+                }
+                else
+                {
+                    taskData.oldData = slave.workPower2;
+                }
+            }
+            else
+            {
+                taskData.oldData = 0;
+                //taskData.newData = 0;
+            }
+            PlayerData.TimeTaskList.Add(taskData);
+            PlayerData.Set_TimeTaskList();
         }
     }
     public bool AbandonTimeTask(string taskId)
@@ -2358,7 +2140,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
                     {
                         TimeSpan leaveT = TimeSpan.FromMinutes(span.Minutes % task.timeType);
                         int num = span.Minutes / task.timeType;
-                        addMaterial(task.itemId, num);
+                        addConsumable(task.itemId, num);
                         T.startTime = (DateTime.Now - leaveT).ToString();
                         PlayerData.Set_TimeTaskList();
                         string MN = getMaterialNameById(task.itemId);
@@ -2477,6 +2259,25 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     //public 
     #endregion
     #region Equipments_Infor
+    public EquipPosition getPosByString(string s)
+    {
+        for(int i = 0; i < (int)EquipPosition.End; i++)
+        {
+            if(s.ToLower() == ((EquipPosition)i).ToString().ToLower())
+            {
+                return (EquipPosition)i;
+            }
+        }
+        return EquipPosition.End;
+    }
+    public Job getJobByString(string s)
+    {
+        for(int i = 0; i < (int)Job.End; i++)
+        {
+            if (s.ToLower() == ((Job)i).ToString().ToLower()) return (Job)i;
+        }
+        return Job.End;
+    }
     public GDEEquipmentData getHeroEquipHelmet(int heroHashcode)
     {
         foreach (GDEHeroData hero in PlayerData.herosOwned)
@@ -2785,26 +2586,17 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             int[] arrProperties = new int[equips.Count];
             int[] arrIndex = new int[equips.Count];
             for (int i = 0; i < arrIndex.Length; i++) { arrIndex[i] = i; }
-            List<Dictionary<string, string>> itemsData;
-            if (Pos == EquipPosition.Finger)
-            {
-                itemsData = SDDataManager.Instance.ReadFromCSV("jewelry");
-            }
-            else if (Pos == EquipPosition.Hand)
-            {
-                itemsData = SDDataManager.Instance.ReadFromCSV("weapon");
-            }
-            else
-            {
-                itemsData = SDDataManager.Instance.ReadFromCSV("equip");
-            }
+            List<EquipItem> itemsData;
+            List<EquipItem> all = AllEquipList;
+            itemsData = all.FindAll(x => x.EquipPos == Pos);
+
             for (int i = 0; i < equips.Count; i++)
             {
                 GDEEquipmentData e = equips[i];
                 for (int j = 0; j < itemsData.Count; j++)
                 {
-                    Dictionary<string, string> s = itemsData[i];
-                    if (s["id"] == e.id.ToString())
+                    EquipItem s = itemsData[i];
+                    if (s.ID == e.id)
                     {
                         arrProperties[i] = Instance.getEquipBattleForceByHashCode(e.hashcode);
                         break;
@@ -2835,21 +2627,19 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         return outData;
     }
     public List<GDEEquipmentData> GetPosOwnedEquipsByCareer(EquipPosition Pos
-        , Job career, bool listOrder = false)
+        ,string heroId, bool listOrder = false)
     {
         List<GDEEquipmentData> allEquips = SDDataManager.Instance.getOwnedEquipsByPos(Pos, listOrder);
         if (Pos == EquipPosition.Hand)
         {
-            List<GDEEquipmentData> AllEs = new List<GDEEquipmentData>();
-            for (int i = 0; i < allEquips.Count; i++)
-            {
-                string id = allEquips[i].id;
-                List<int> careerList = SDDataManager.Instance.getWeaponEnableCareer(id);
-                if (careerList.Contains((int)career))
+            List<WeaponRace> heroCanUse = getHeroInfoById(heroId).WeaponRaceList;
+            List<GDEEquipmentData> AllEs = allEquips.FindAll
+                (x => 
                 {
-                    AllEs.Add(allEquips[i]);
-                }
-            }
+                    if (string.IsNullOrEmpty(heroId)) return true;
+                    WeaponRace race = GetEquipItemById(x.id).WeaponRace;
+                    return heroCanUse.Contains(race);
+                });
             return AllEs;
         }
         else
@@ -2858,75 +2648,62 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
     }
 
+    public List<EquipItem> AllEquipList
+    {
+        get
+        {
+            EquipItem[] all = Resources.LoadAll<EquipItem>
+                ("ScriptableObjects/items/Equips");
+            List<EquipItem> results = new List<EquipItem>();
+            for(int i = 0; i < all.Length; i++)
+            {
+                results.Add(all[i]);
+            }
+            return results;
+        }
+    }
+    public EquipItem GetEquipItemById(string id)
+    {
+        List<EquipItem> all = AllEquipList;
+        foreach(EquipItem item in all)
+        {
+            if (item.ID == id) return item;
+        }
+        return null;
+    }
     public int getEquipPosById(string id)
     {
-        if (id.Contains("HELMET")) return (int)EquipPosition.Head;
-        else if (id.Contains("BREASTPLATE")) return (int)EquipPosition.Breast;
-        else if (id.Contains("GARDEBRAS")) return (int)EquipPosition.Arm;
-        else if (id.Contains("LEGGING")) return (int)EquipPosition.Leg;
-        else if (id.Contains("JEWELRY")) return (int)EquipPosition.Finger;
-        else if (id.Contains("WEAPON")) return (int)EquipPosition.Hand;
-        else return (int)EquipPosition.End;
+        List<EquipItem> all = AllEquipList;
+        foreach(EquipItem item in all)
+        {
+            if(item.ID == id)
+            {
+                return (int)item.EquipPos;
+            }
+        }
+        return (int)EquipPosition.End;
     }
+    /// <summary>
+    /// same as LEVEL for equip
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public int getEquipRarityById(string id)
     {
-        int _id = getInteger(id.Split('#')[1]);
-        int p = (_id % 100000) / 10000; return p;
+        List<EquipItem> all = AllEquipList;
+        foreach (EquipItem item in all)
+        {
+            if (item.ID == id)
+            {
+                return item.LEVEL;
+            }
+        }
+        return 0;
     }
     public int getEquipBaiscBattleForceById(string id)
     {
-        int equipPos = SDDataManager.Instance.getEquipPosById(id);
-        if (equipPos == (int)EquipPosition.Finger)
-        {
-            List<Dictionary<string, string>> itemsData
-                = SDDataManager.Instance.ReadFromCSV("jewelry");
-            for (int i = 0; i < itemsData.Count; i++)
-            {
-                Dictionary<string, string> s = itemsData[i];
-                if (s["id"] == id.ToString())
-                {
-                    int mainF = OneAttritube.ReadEffectString(s["mainEffect"]).BattleForce;
-                    int sideF = OneAttritube.ReadEffectString(s["sideEffect"]).BattleForce;
-                    //passiveEffect拥有的battlefore读取
-                    //然而现在没有设计
-                    return mainF + sideF;
-                }
-            }
-            return 0;
-        }
-        else if (equipPos == (int)EquipPosition.Hand)
-        {
-            List<Dictionary<string, string>> itemsData
-                = SDDataManager.Instance.ReadFromCSV("weapon");
-            for (int i = 0; i < itemsData.Count; i++)
-            {
-                Dictionary<string, string> s = itemsData[i];
-                if (s["id"] == id.ToString())
-                {
-                    int mainF = OneAttritube.ReadEffectString(s["mainEffect"]).BattleForce;
-                    int sideF = OneAttritube.ReadEffectString(s["sideEffect"]).BattleForce;
-                    //passiveEffect拥有的battlefore读取
-                    //然而现在没有设计
-                    return mainF + sideF;
-                }
-            }
-            return 0;
-        }
-        else
-        {
-            List<Dictionary<string, string>> itemsData
-                = SDDataManager.Instance.ReadFromCSV("equip");
-            for (int i = 0; i < itemsData.Count; i++)
-            {
-                Dictionary<string, string> s = itemsData[i];
-                if (s["id"] == id.ToString())
-                {
-                    RoleAttributeList list = SDDataManager.Instance.RALByDictionary(s);
-                    return list.BattleForce;
-                }
-            }
-            return 0;
-        }
+        EquipItem item = GetEquipItemById(id);
+        return item.BattleForce;
     }
     public int getEquipBattleForceByHashCode(int itemHashcode)
     {
@@ -2936,56 +2713,12 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         int flag = (int)(basic * (1 + level * 0.15f));
         return flag;
     }
-    public List<int> getWeaponEnableCareer(string id)
-    {
-        List<int> careerList = new List<int>();
-        List<Dictionary<string, string>> itemsData = SDDataManager.Instance.ReadFromCSV("weapon");
-        for (int i = 0; i < itemsData.Count; i++)
-        {
-            Dictionary<string, string> s = itemsData[i];
-            if (s["id"] == id.ToString())
-            {
-                string l = s["career"];
-                string[] _l = l.Split('&');
-                for (int j = 0; j < _l.Length; j++)
-                {
-                    int a = SDDataManager.Instance.getInteger(_l[j]);
-                    careerList.Add(a);
-                }
-                return careerList;
-            }
-        }
-        careerList.Add(0);
-        return careerList;
-    }
     public string getEquipNameByHashcode(int itemHashcode)
     {
         GDEEquipmentData e = SDDataManager.Instance.getEquipmentByHashcode(itemHashcode);
         string id = e.id;
-        if (!string.IsNullOrEmpty(id))
-        {
-            int equipPos = SDDataManager.Instance.getEquipPosById(id);
-            List<Dictionary<string, string>> itemsData;
-            if (equipPos == 4)
-            {
-                itemsData = SDDataManager.Instance.ReadFromCSV("jewelry");
-            }
-            else if (equipPos == 5)
-            {
-                itemsData = SDDataManager.Instance.ReadDataFromCSV("weapon");
-            }
-            else
-            {
-                itemsData = SDDataManager.Instance.ReadFromCSV("equip");
-            }
-            foreach (Dictionary<string, string> s in itemsData)
-            {
-                if (s["id"] == id.ToString())
-                {
-                    return SDGameManager.T(s["name"]);
-                }
-            }
-        }
+        EquipItem item = GetEquipItemById(id);
+        if (item) return item.NAME;
         return SDGameManager.T("无此装备");
     }
     public bool checkEquipFixIfSuccess(int hashcode)
@@ -3017,6 +2750,17 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return 0;
     }
+
+
+    public float getPossibleLvupByTargetLevel(int targetLevel,out int visualRate)
+    {
+        float m = 1 - targetLevel * targetLevel * 0.01f;
+        visualRate = (int)(((m * 100) / 10) * 10);
+        if (targetLevel <= 5) { m += 0.15f; }
+        else { m -= 0.25f; }
+        return m;
+    }
+
     public void addExpToEquipByHashcode(int hashcode, int figure)
     {
         foreach (GDEEquipmentData equip in PlayerData.equipsOwned)
@@ -3029,6 +2773,8 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
         }
     }
+
+
     public void addEquip(GDEEquipmentData equip)
     {
         Instance.equipNum++;
@@ -3046,15 +2792,18 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         //
         add_Item(id);
         //
+        int level = GetEquipItemById(id).LEVEL;
         GDEEquipmentData e = new GDEEquipmentData(GDEItemKeys.Equipment_EquipEmpty)
         {
             id = id,
             hashcode = Instance.equipNum,
             OwnerHashcode = 0,
-            locked = false,
+            locked = level<2?false:true,
             exp = 0,
             num = 1,
             index = 0,
+            quality = UnityEngine.Random.Range(0, SDConstants.equipMaxQuality),
+            initialQuality = UnityEngine.Random.Range(0, 1),
         };
         Instance.PlayerData.equipsOwned.Add(e);
         Instance.PlayerData.Set_equipsOwned();
@@ -3075,99 +2824,18 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         return false;
     }
 
-
-    public ROEquipData getEquipDataById(string id)
+    public EquipItem getEquipDataById(string id)
     {
-        List<Dictionary<string, string>> list = ReadFromCSV("equip");
-        foreach (Dictionary<string, string> d in list)
+        EquipItem[] allequips = Resources.LoadAll<EquipItem>("ScriptableObjects/Items/Equips");
+        foreach(EquipItem item in allequips)
         {
-            if (d["id"] == id.ToString())
+            if(item.ID == id)
             {
-                ROEquipData ROD = new ROEquipData();
-                ROD.name = d["name"];
-                ROD.id = id;
-                ROD.pos = getInteger(d["pos"]);
-                //ROD.quality = getInteger(d["quality"]);
-                ROD.rarity = getInteger(d["rarity"]);
-                ROD.image = d["image"];
-                ROD.type = getInteger(d["type"]);
-                ROD.passiveEffect = d["passiveEffect"];
-
-                ROD.RAL = new RoleAttributeList()
-                {
-                    Hp = getInteger(d["hp"]),
-                    Mp = getInteger(d["mp"]),
-                    Tp = getInteger(d["tp"]),
-                    AT = getInteger(d["at"]),
-                    AD = getInteger(d["ad"]),
-                    MT = getInteger(d["mt"]),
-                    MD = getInteger(d["md"]),
-                    Speed = getInteger(d["speed"]),
-                    Taunt = getInteger(d["taunt"]),
-                    Accur = getInteger(d["accur"]),
-                    Evo = getInteger(d["evo"]),
-                    Crit = getInteger(d["crit"]),
-                    Expect = getInteger(d["expect"]),
-
-                    Bleed_Def = getInteger(d["bleed_def"]),
-                    Mind_Def = getInteger(d["mind_def"]),
-                    Fire_Def = getInteger(d["fire_def"]),
-                    Frost_Def = getInteger(d["frost_def"]),
-                    Corrosion_Def = getInteger(d["corrosion_def"]),
-                    Hush_Def = getInteger(d["hush_def"]),
-                    Dizzy_Def = getInteger(d["dizzy_def"]),
-                    Confuse_Def = getInteger(d["confuse_def"]),
-                };
-                ROD.isArmor = true;
-                return ROD;
-            }
-        }
-        List<Dictionary<string, string>> list1 = ReadFromCSV("weapon");
-        foreach (Dictionary<string, string> d in list1)
-        {
-            if (d["id"] == id.ToString())
-            {
-                ROEquipData ROD = new ROEquipData();
-                ROD.name = d["name"];
-                ROD.id = id;
-                ROD.pos = getInteger(d["pos"]);
-                //ROD.quality = getInteger(d["quality"]);
-                ROD.rarity = getInteger(d["rarity"]);
-                ROD.image = d["image"];
-                ROD.type = getInteger(d["type"]);
-                ROD.passiveEffect = d["passiveEffect"];
-
-                ROD.mainEffect = d["mainEffect"];
-                ROD.sideEffect = d["sideEffect"];
-                ROD.isArmor = false;
-                return ROD;
-            }
-        }
-        List<Dictionary<string, string>> list2 = ReadFromCSV("jewelry");
-        foreach (Dictionary<string, string> d in list2)
-        {
-            if (d["id"] == id.ToString())
-            {
-                ROEquipData ROD = new ROEquipData();
-                ROD.name = d["name"];
-                ROD.id = id;
-                ROD.pos = getInteger(d["pos"]);
-                //ROD.quality = getInteger(d["quality"]);
-                ROD.rarity = getInteger(d["rarity"]);
-                ROD.image = d["image"];
-                ROD.type = getInteger(d["type"]);
-                ROD.passiveEffect = d["passiveEffect"];
-
-                ROD.mainEffect = d["mainEffect"];
-                ROD.sideEffect = d["sideEffect"];
-                ROD.isArmor = false;
-                return ROD;
+                return item;
             }
         }
         return null;
     }
-
-
     public IEnumerable<GDEEquipmentData> FindAllArmorsById(string id, bool onlyUnlocked = true)
     {
         return PlayerData.equipsOwned.FindAll(x => x.id == id
@@ -3232,75 +2900,67 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     #region Skill_Infor
     public List<GDEASkillData> addStartSkillsWhenSummoning(string heroId)
     {
-        Job _job = (Job)getHeroCareerById(heroId);
-        Race _race = (Race)getHeroRaceById(heroId);
         List<OneSkill> all
-            = SkillDetailsList.WriteOneSkillList(_job, _race, getHeroQualityById(heroId));
+            = SkillDetailsList.WriteOneSkillList(heroId);
 
         int skillNum = UnityEngine.Random.Range(2, 4);
-        skillNum = Mathf.Min(skillNum, all.Count);
+        skillNum = Mathf.Min(skillNum, all.Count-1);
+
         List<int> finalList = RandomIntger.NumListReturn(skillNum, all.Count);
         List<GDEASkillData> list = new List<GDEASkillData>();
-        for (int i = 0; i < finalList.Count; i++)
+        for (int i = 0; i < all.Count; i++)
         {
+            bool flag = finalList.Contains(i);
             GDEASkillData s = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
             {
                 Id = all[i].skillId
                 ,
-                Lv = 0
+                Lv = flag?0:-1,                
             };
             list.Add(s);
         }
+        list.Sort((x, y) =>
+        {
+            return (-x.Lv).CompareTo(-y.Lv);
+        });
         return list;
     }
+    /// <summary>
+    /// 英雄所有已经解锁的技能
+    /// </summary>
+    /// <param name="hashcode"></param>
+    /// <returns></returns>
     public List<GDEASkillData> OwnedSkillsByHero(int hashcode)
     {
         GDEHeroData hero = getHeroByHashcode(hashcode);
-        List<GDEASkillData> owns = hero.skillsOwned;
+        List<GDEASkillData> owns = hero.skillsOwned.FindAll(x=>x.Lv>=0);
         return owns;
     }
     public List<OneSkill> getAllSkillsByHashcode(int heroHashcode)
     {
         GDEHeroData hero = getHeroByHashcode(heroHashcode);
-        ROHeroData rod = getHeroDataByID(hero.id, hero.starNumUpgradeTimes);
-        Job _job = (Job)getHeroCareerById(hero.id);
-        Race _race = (Race)getHeroRaceById(hero.id);
-        List<OneSkill> all
-            = SkillDetailsList.WriteOneSkillList(_job, _race, rod.quality);
-        for (int i = 0; i < all.Count; i++)
+        List<OneSkill> all = SkillDetailsList.WriteOneSkillList(hero.id);
+        List<GDEASkillData> ownedSkills = hero.skillsOwned;
+        List<OneSkill> _all = all;
+        //
+        for(int i = 0; i < _all.Count; i++)
         {
-            bool isUsedInOwnedSkill = false;
-            foreach (GDEASkillData s in OwnedSkillsByHero(heroHashcode))
-            {
-                if (s.Id == all[i].skillId)
-                {
-                    isUsedInOwnedSkill = true;
-                    all[i].isUnlocked = true;
-                    all[i].lv = s.Lv;
-                    break;
-                }
-            }
-            if (!isUsedInOwnedSkill)
-            {
-                all[i].isUnlocked = false;
-                all[i].lv = -1;
-            }
+            GDEASkillData s = ownedSkills.Find(x => x.Id == _all[i].skillId);
+            if (s != null) _all[i].lv = s.Lv;
+            else _all[i].lv = -1;
         }
-        return all;
+        return _all;
     }
-    public OneSkill getOwnedSkillById(int skillId, int heroHashcode)
+    public OneSkill getOwnedSkillById(string skillId, int heroHashcode)
     {
-        if (skillId == 0) return OneSkill.empty;
+        if (string.IsNullOrEmpty(skillId)) return OneSkill.empty;
         GDEHeroData hero = getHeroByHashcode(heroHashcode);
-        ROHeroData rod = getHeroDataByID(hero.id, hero.starNumUpgradeTimes);
-        Job _job = (Job)getHeroCareerById(hero.id);
-        Race _race = (Race)getHeroRaceById(hero.id);
         List<OneSkill> all
-            = SkillDetailsList.WriteOneSkillList(_job, _race, rod.quality);
+            = SkillDetailsList.WriteOneSkillList(hero.id);
         OneSkill s = OneSkill.normalAttack;
         foreach (OneSkill Skill in all)
         {
-            if (Skill.skillId == skillId) { s = Skill; break; }
+            if (Skill.skillId == skillId) { s = Skill;s.lv = -1 ; break; }
         }
         List<GDEASkillData> owns = hero.skillsOwned;
         foreach (GDEASkillData _skill in owns)
@@ -3308,18 +2968,16 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             if (_skill.Id == skillId)
             {
                 s.lv = _skill.Lv;
-                s.isUnlocked = true;
                 return s;
             }
         }
         return s;
     }
-    public OneSkill getSkillByHeroId(int skillId, string heroId)
+    public OneSkill getSkillByHeroId(string skillId, string heroId)
     {
-        Job _job = (Job)getHeroCareerById(heroId);
-        Race _race = (Race)getHeroRaceById(heroId);
+        HeroInfo info = getHeroInfoById(heroId);
         List<OneSkill> all
-            = SkillDetailsList.WriteOneSkillList(_job, _race, getHeroQualityById(heroId));
+            = SkillDetailsList.WriteOneSkillList(heroId);
         foreach (OneSkill s in all)
         {
             if (s.skillId == skillId)
@@ -3329,7 +2987,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return null;
     }
-    public int getDeployedSkillId(int skillPos, int heroHashcode)
+    public string getDeployedSkillId(int skillPos, int heroHashcode)
     {
         GDEHeroData hero = getHeroByHashcode(heroHashcode);
         if (hero != null)
@@ -3341,11 +2999,13 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             else if (skillPos == 1) { return hero.skill1Id; }
             else if (skillPos == 2) { return hero.skillOmegaId; }
         }
-        return 0;
+        return string.Empty;
     }
-    public bool ifDeployThisSkill(int skillId, int heroHashcode)
+    public bool ifDeployThisSkill(string skillId, int heroHashcode)
     {
         GDEHeroData hero = getHeroByHashcode(heroHashcode);
+        OneSkill skill = getOwnedSkillById(skillId, heroHashcode);
+        if (skill.lv < 0) return false;
         if (hero.skill0Id == skillId
             || hero.skillOmegaId == skillId)
         {
@@ -3357,7 +3017,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return false;
     }
-    public void UnDeploySkillById(int skillId, int heroHashcode)
+    public void UnDeploySkillById(string skillId, int heroHashcode)
     {
         foreach (GDEHeroData hero in PlayerData.herosOwned)
         {
@@ -3365,22 +3025,22 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             {
                 if (hero.skill0Id == skillId)
                 {
-                    hero.skill0Id = 0;
+                    hero.skill0Id = string.Empty;
                 }
                 else if (hero.skill1Id == skillId)
                 {
-                    hero.skill1Id = 0;
+                    hero.skill1Id = string.Empty;
                 }
                 else if (hero.skillOmegaId == skillId)
                 {
-                    hero.skillOmegaId = 0;
+                    hero.skillOmegaId = string.Empty;
                 }
                 PlayerData.Set_herosOwned();
                 break;
             }
         }
     }
-    public void changeEquipedSkill(int newSkillId, int skillPos, int heroHashcode)
+    public void changeEquipedSkill(string newSkillId, int skillPos, int heroHashcode)
     {
         foreach (GDEHeroData hero in PlayerData.herosOwned)
         {
@@ -3405,13 +3065,13 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     #endregion
     #region Building_Infor
-    public bool AddExpToBuilding(string id, int exp = 1)
+    public bool LvUpBuilding(string id, int level = 1)
     {
         foreach (GDEtownBuildingData B in PlayerData.buildingsOwned)
         {
             if (B.id == id)
             {
-                B.exp += exp;
+                B.level += level;
                 PlayerData.Set_buildingsOwned();
             }
         }
@@ -3420,31 +3080,394 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     #endregion
     #region Enemy_Infor
     public ROEnemyData getEnemyDataById(string id)
-    {        
-        List<Dictionary<string, string>> AllEs = ReadFromCSV("enemy");
-        foreach(Dictionary<string,string> L in AllEs)
+    {
+        ROEnemyData d = new ROEnemyData();
+        EnemyInfo enemy = SDDataManager.Instance.getEnemyInfoById(id);
+        if (enemy)
         {
-            if(L["id"] == id)
-            {
-                ROEnemyData ED = new ROEnemyData();
-                ED.RAL = RALByDictionary(L);
-                ED.name = L["name"];
-                ED.id = id;
-                ED.race = SDDataManager.Instance.getInteger(L["race"]);
-                ED.Class = L["class"];
-                ED.gender = SDDataManager.Instance.getInteger(L["gender"]);
-                ED.skeleton = SDDataManager.Instance.getInteger(L["skeleton"]);
-                ED.quality = SDDataManager.Instance.getInteger(L["quality"]);
-                //
-                ED.weight = SDDataManager.Instance.getInteger(L["weight"]);
-                ED.appearWeight = SDDataManager.Instance.getInteger(L["appearWeight"]);
-                ED.dropRate = SDDataManager.Instance.getInteger(L["dropRate"]);
-                ED.dropItems = L["dropItems"];
-                //
-                return ED;
-            }
+            d.Info = enemy;
+            d.CRIDmg = 175;
+            d.DmgReduction = 0;
+            d.DmgReflection = 0;
+            d.dropCoins = 5 * enemy.EnemyRank.Index + 5;
+            return d;
         }
         return null;
+    }
+    public List<EnemyInfo> AllEnemyList
+    {
+        get 
+        {
+            List<EnemyInfo> results = new List<EnemyInfo>();
+            EnemyInfo[] all = Resources.LoadAll<EnemyInfo>
+                ("ScriptableObjects/enemies");
+            for(int i = 0; i < all.Length; i++)
+            {
+                results.Add(all[i]);
+            }
+            return results;
+        }
+    }
+    public EnemyInfo getEnemyInfoById(string id)
+    {
+        return AllEnemyList.Find(x => x.ID == id);
+    }
+    public EnemyRank getEnemyRankByIndex(int race)
+    {
+        EnemyRank[] allranks = Resources.LoadAll<EnemyRank>("");
+        foreach (EnemyRank rank in allranks)
+        {
+            if (rank.Index == race) return rank;
+        }
+        return null;
+    }
+    #endregion
+    #region Rune_Infor
+    public List<RuneItem> AllRuneList
+    {
+        get
+        {
+            List<RuneItem> results = new List<RuneItem>();
+            RuneItem[] all = Resources.LoadAll<RuneItem>("ScriptableObjects/Items/Runes");
+            for( int i = 0; i < all.Length; i++)
+            {
+                results.Add(all[i]);
+            }
+            return results;
+        }
+    }
+    public RuneItem getRuneItemById(string id)
+    {
+        return AllRuneList.Find(x => x.ID == id);
+    }
+    public GDERuneData getRuneOwnedByHashcode(int hashcode)
+    {
+        return PlayerData.RunesOwned.Find(x => x.hashcode == hashcode);
+    }
+    public bool getRuneEquippedByPosAndGoddess(int pos, string ownerId, out GDERuneData data)
+    {
+        GDEgoddessData goddess = getGDEGoddessDataById(ownerId);
+        if(pos == 0)
+        {
+            GDERuneData _data = getRuneOwnedByHashcode(goddess.rune0);
+            if (_data != null)
+            {
+                data = _data;
+                return true;
+            }
+        }
+        else if(pos == 1)
+        {
+            GDERuneData _data = getRuneOwnedByHashcode(goddess.rune1);
+            if (_data != null)
+            {
+                data = _data;
+                return true;
+            }
+        }
+        else if(pos == 2)
+        {
+            GDERuneData _data = getRuneOwnedByHashcode(goddess.rune2);
+            if (_data != null)
+            {
+                data = _data;
+                return true;
+            }
+        }
+        else if(pos == 3)
+        {
+            GDERuneData _data = getRuneOwnedByHashcode(goddess.rune3);
+            if (_data != null)
+            {
+                data = _data;
+                return true;
+            }
+        }
+        data = null;return false;
+    }
+    public bool checkRuneEquippedByGoddess(int hashcode,string ownerId,out int pos)
+    {
+        GDEgoddessData goddess = getGDEGoddessDataById(ownerId);
+        if (goddess == null)
+        {
+            pos = 0;return false;
+        }
+        if (goddess.rune0 == hashcode)
+        {
+            pos = 0; return true;
+        }
+        else if (goddess.rune1 == hashcode)
+        {
+            pos = 1; return true;
+        }
+        else if (goddess.rune2 == hashcode)
+        {
+            pos = 2; return true;
+        }
+        else if(goddess.rune3 == hashcode)
+        {
+            pos = 3;return true;
+        }
+        pos = 0;
+        return false;
+    }
+    public void AddRune(string runeId)
+    {
+        Instance.runeNum++;
+        add_Item(runeId);
+        RuneItem item = getRuneItemById(runeId);
+        if (item)
+        {
+            GDERuneData _rune = new GDERuneData(GDEItemKeys.Rune_RuneEmpty)
+            {
+                id = runeId,
+                hashcode = Instance.runeNum,
+                posInOwner = 0,
+                ownerId = string.Empty,
+                quality = item.Quality,
+                level = 0,
+                initalQuality = 0,
+                locked = false,
+                //
+                attitube = new GDEgoddessAttiData
+                    (GDEItemKeys.goddessAtti_emptyGAtti)
+                {
+                    stamina = UnityEngine.Random.Range(0, 2) + item.Atti.Stamina,
+                    agile = UnityEngine.Random.Range(0, 2) + item.Atti.Agile,
+                    recovery = UnityEngine.Random.Range(0, 2) + item.Atti.Recovery,
+                    leader = UnityEngine.Random.Range(0, 2) + item.Atti.Leader,
+                }
+            };
+            PlayerData.RunesOwned.Add(_rune);
+            PlayerData.Set_RunesOwned();
+        }
+        GDERuneData rune = new GDERuneData(GDEItemKeys.Rune_RuneEmpty)
+        {
+            id = runeId,
+            hashcode = Instance.runeNum,
+        };
+        PlayerData.RunesOwned.Add(rune);
+        PlayerData.Set_RunesOwned();
+    }
+    public bool ConsumeRune(int hashcode)
+    {
+        foreach(GDERuneData rune in PlayerData.RunesOwned)
+        {
+            if(rune.hashcode == hashcode)
+            {
+                PlayerData.RunesOwned.Remove(rune);
+                PlayerData.Set_RunesOwned();
+                consume_Item(rune.id, out int leftamount);
+                return true;
+            }
+        }
+        return false;
+    }
+    public void addRuneToGoddessSlot(int runeHashcode,string goddessId, int pos)
+    {
+        GDERuneData rune = getRuneOwnedByHashcode(runeHashcode);
+        int oldRune = 0;
+        if (rune != null)
+        {
+            //从原始所有者上卸下
+            if (PlayerData.goddessOwned.Exists(x => x.id == rune.ownerId))
+            {
+                foreach (GDEgoddessData g in PlayerData.goddessOwned)
+                {
+                    if (g.id == rune.ownerId)
+                    {
+                        if (g.rune0 == runeHashcode) { g.rune0 = 0; }
+                        if (g.rune1 == runeHashcode) { g.rune1 = 0; }
+                        if (g.rune2 == runeHashcode) { g.rune2 = 0; }
+                        if (g.rune3 == runeHashcode) { g.rune3 = 0; }
+                        PlayerData.Set_goddessOwned();
+                        break;
+                    }
+                }
+            }
+            //装至目标身上
+            foreach (GDEgoddessData goddess in PlayerData.goddessOwned)
+            {
+                if(goddess.id == goddessId)
+                {
+                    if(pos == 0)
+                    {
+                        oldRune = goddess.rune0;
+                        goddess.rune0 = runeHashcode;
+                    }
+                    else if(pos == 1)
+                    {
+                        oldRune = goddess.rune1;
+                        goddess.rune1 = runeHashcode;
+                    }
+                    else if(pos == 2)
+                    {
+                        oldRune = goddess.rune2;
+                        goddess.rune2 = runeHashcode;
+                    }
+                    else if(pos == 3)
+                    {
+                        oldRune = goddess.rune3;
+                        goddess.rune3 = runeHashcode;
+                    }
+                    PlayerData.Set_goddessOwned();
+                    break;
+                }
+            }
+            //修改原装备信息
+            foreach(GDERuneData R in PlayerData.RunesOwned)
+            {
+                if(R.hashcode == oldRune)
+                {
+                    R.ownerId = string.Empty;
+                    PlayerData.Set_RunesOwned();
+                    break;
+                }
+            }
+            //修改新装备信息
+            foreach (GDERuneData _r in PlayerData.RunesOwned)
+            {
+                if (_r.hashcode == runeHashcode)
+                {
+                    _r.ownerId = goddessId;
+                    break;
+                }
+            }
+        }
+    }
+    public bool checkRuneStatus(int hashcode)
+    {
+        GDERuneData rune = getRuneOwnedByHashcode(hashcode);
+        if (rune!=null)
+        {
+            if(PlayerData.goddessOwned.Exists(x=>x.id == rune.ownerId))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool lvUpRune(int hashcode, int levelUp = 1)
+    {
+        GDERuneData rune = getRuneOwnedByHashcode(hashcode);
+        if (rune.level + levelUp >= SDConstants.RuneMaxLevel) return false;
+        RuneItem r = getRuneItemById(rune.id);
+        //int coinWill = getCoinWillImproveCost(rune.level,rune.quality);
+        int coinWill = getCoinWillImproveCost(rune.level,rune.quality,levelUp);
+        if (PlayerData.coin < coinWill) return false;
+        //
+        foreach(GDERuneData R in PlayerData.RunesOwned)
+        {
+            if(R.hashcode == hashcode)
+            {
+                R.level += levelUp;
+                R.attitube = chooseAttiElementToImprove(r,R, levelUp);
+                PlayerData.coin -= coinWill;
+                PlayerData.Set_RunesOwned();
+                return true;
+            }
+        }
+        return false;
+    }
+    GDEgoddessAttiData chooseAttiElementToImprove(RuneItem r,GDERuneData R,int levelUp)
+    {
+        GDEgoddessAttiData GA = R.attitube;
+        int up = (int)((R.quality + 1) * levelUp);
+        if (r.AttiType == GoddessAttiType.agile) GA.agile += up;
+        else if (r.AttiType == GoddessAttiType.stamina) GA.stamina += up;
+        else if (r.AttiType == GoddessAttiType.recovery) GA.recovery += up;
+        else if (r.AttiType == GoddessAttiType.leader) GA.leader += up;
+        return GA;
+    }
+    public int getCoinWillImproveCost(int level, int quality, int levelUp = 1)
+    {
+        int result = 0;
+        for(int i = 0; i < levelUp; i++)
+        {
+            result += (level + i + 1) 
+                * SDConstants.BaseCoinSillImproveCost * (quality + 1);
+        }
+        return result;
+    }
+    public bool CheckIfCanComposeToCreateNewRune(GDERuneData rune0,GDERuneData rune1,GDERuneData rune2
+        ,out string newRuneId)
+    {
+        if (rune0 != null && rune1 != null && rune2 != null)
+        {
+            int[] quals = new int[] { rune0.quality, rune1.quality, rune2.quality };
+            int wholeQ = rune0.quality + rune1.quality + rune2.quality;
+            RuneItem[] all = Resources.LoadAll<RuneItem>("ScriptableObjects/Items/Runes");
+            List<RuneItem> rewards = new List<RuneItem>();
+            if(quals.Min() == 0)
+            {
+                //0---1---2
+                int d = 1;
+                float r = SDConstants.composeBasicFigure;
+                for(int i = 0; i < wholeQ; i++)
+                {
+                    r *= SDConstants.composeChangeFigure;
+                }
+                if(UnityEngine.Random.Range(0,1f) >= r)
+                {
+                    d = 2;
+                }
+                //
+                for (int i = 0; i < all.Length; i++)
+                {
+                    if (all[i].Quality < d)
+                    {
+                        rewards.Add(all[i]);
+                    }
+                }
+            }
+            else if(quals.Min() == 1)
+            {
+                //3---4---5
+                int d = 1;
+                float r = SDConstants.composeBasicFigure;
+                for (int i = 0; i < wholeQ-3; i++)
+                {
+                    r *= SDConstants.composeChangeFigure;
+                }
+                if (UnityEngine.Random.Range(0, 1f) >= r)
+                {
+                    d = 2;
+                }
+                //
+                for (int i = 0; i < all.Length; i++)
+                {
+                    if (all[i].Quality >= d)
+                    {
+                        rewards.Add(all[i]);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < all.Length; i++)
+                {
+                    if (all[i].Quality > 1)
+                    {
+                        rewards.Add(all[i]);
+                    }
+                }
+            }
+            RuneItem RI = rewards[UnityEngine.Random.Range(0, rewards.Count)];
+
+            newRuneId = RI.ID;
+            return true;
+        }
+        else
+        {
+            newRuneId = string.Empty;return false;
+        }
+    }
+    public GoddessAttritube GetGoddessAttiByGDE(GDEgoddessAttiData atti)
+    {
+        if (atti == null) return GoddessAttritube.zero;
+        GoddessAttritube GA = new GoddessAttritube
+            (atti.agile,atti.stamina,atti.recovery,atti.leader);
+        return GA;
     }
     #endregion
     #region Item_Infor(全物品记录)
@@ -3524,19 +3547,12 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
             else if (Sign == "M")
             {
-                if (id.Contains("PROP"))
-                {
-                    addProp(id, amount);
-                }
-                else if (id.Contains("MATERIAL"))
-                {
-                    addMaterial(id, amount);
-                }
+                addConsumable(id, amount);
             }
         }
         else
         {
-            addMaterial(id, amount);
+            addConsumable(id, amount);
         }
     }
 
@@ -3571,16 +3587,8 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
                 }
                 else if(Sign == "M")
                 {
-                    if (id.Contains("PROP"))
-                    {
-                        consumeProp(id, out int left, amount);
-                        return true;
-                    }
-                    else if (id.Contains("MATERIAL"))
-                    {
-                        consumeMaterial(id, out int left, amount);
-                        return true;
-                    }
+                    consumeConsumable(id, out int left, amount);
+                    return true;
                 }
             }
         }
@@ -3637,25 +3645,12 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         PlayerData.NPCList.Add(slave);
         PlayerData.Set_NPCList();
     }
-
-    #endregion
-    public SDConstants.AOEType AOE_TYPE(string data)
+    public GDENPCData GetNPCOwned(int hashcode)
     {
-        if (data == "none") return SDConstants.AOEType.None;
-        else if (data == "horizontal") return SDConstants.AOEType.Horizontal;
-        else if (data == "horizontal1") return SDConstants.AOEType.Horizontal1;
-        else if (data == "horizontal2") return SDConstants.AOEType.Horizontal2;
-        else if (data == "vertical") return SDConstants.AOEType.Vertical;
-        else if (data == "vertical1") return SDConstants.AOEType.Vertical1;
-        else if (data == "vertical2") return SDConstants.AOEType.Vertical2;
-        else if (data == "random1") return SDConstants.AOEType.Random1;
-        else if (data == "random2") return SDConstants.AOEType.Random2;
-        else if (data == "random3") return SDConstants.AOEType.Random3;
-        else if (data == "continuous2") return SDConstants.AOEType.Continuous2;
-        else if (data == "continuous3") return SDConstants.AOEType.Continuous3;
-        else if (data == "all") return SDConstants.AOEType.All;
-        return SDConstants.AOEType.None;
+        return PlayerData.NPCList.Find(x => x.hashcode == hashcode);
     }
+    #endregion
+
     /// <summary>
     /// 生成受百分比函数影响的数据
     /// </summary>
@@ -3673,7 +3668,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         else return getInteger(id);
     }
     #endregion
-
 }
 
 
@@ -3696,6 +3690,91 @@ public class ROHelp
             results.Add(d);
         }
         return results;
+    }
+    public static SDConstants.AOEType AOE_TYPE(string data)
+    {
+        for(int i = 0; i < (int)SDConstants.AOEType.End; i++)
+        {
+            if(data.ToLower() == ((SDConstants.AOEType)i).ToString().ToLower())
+            {
+                return (SDConstants.AOEType)i;
+            }
+        }
+        return SDConstants.AOEType.None;
+        /*
+        if (data == "none") return SDConstants.AOEType.None;
+        else if (data == "horizontal") return SDConstants.AOEType.Horizontal;
+        else if (data == "horizontal1") return SDConstants.AOEType.Horizontal1;
+        else if (data == "horizontal2") return SDConstants.AOEType.Horizontal2;
+        else if (data == "vertical") return SDConstants.AOEType.Vertical;
+        else if (data == "vertical1") return SDConstants.AOEType.Vertical1;
+        else if (data == "vertical2") return SDConstants.AOEType.Vertical2;
+        else if (data == "random1") return SDConstants.AOEType.Random1;
+        else if (data == "random2") return SDConstants.AOEType.Random2;
+        else if (data == "random3") return SDConstants.AOEType.Random3;
+        else if (data == "continuous2") return SDConstants.AOEType.Continuous2;
+        else if (data == "continuous3") return SDConstants.AOEType.Continuous3;
+        else if (data == "all") return SDConstants.AOEType.All;
+        return SDConstants.AOEType.None;
+        */
+    }
+    public static StateTag STATE_TAG(string s)
+    {
+        for (int i = 0; i < (int)StateTag.End; i++)
+        {
+            if (s.ToLower() == ((StateTag)i).ToString().ToLower())
+            {
+                return (StateTag)i;
+            }
+        }
+        return StateTag.End;
+    }
+    public static AttributeData AD_TAG(string s)
+    {
+        for (int i = 0; i < (int)AttributeData.End; i++)
+        {
+            if (s.ToLower() == ((AttributeData)i).ToString().ToLower())
+            {
+                return (AttributeData)i;
+            }
+        }
+        return AttributeData.End;
+    }
+    public static bool CheckStringIsADElseST(string s,out AttributeData ad,out StateTag st)
+    {
+        ad = AD_TAG(s);st = STATE_TAG(s);
+        if (ad == AttributeData.End && st != StateTag.End)
+        {
+            return false;
+        }
+        else return true;
+    }
+    public static EquipPosition EQUIP_POS(string s)
+    {
+        for(int i = 0; i < (int)EquipPosition.End; i++)
+        {
+            if(s.ToLower() == ((EquipPosition)i).ToString().ToLower())
+            {
+                return (EquipPosition)i;
+            }
+        }
+        return EquipPosition.End;
+    }
+
+    public static List<T> RandomList<T>(List<T> originalList)
+    {
+        List<T> oldList = originalList;
+        List<T> list = new List<T>();
+        while (list.Count < oldList.Count)
+        {
+            int a = UnityEngine.Random.Range(0, oldList.Count - 1);
+            if (!list.Contains(oldList[a]))
+            {
+                list.Add(oldList[a]);
+                oldList.RemoveAt(a);
+            }
+        }
+        return list;
     }
 }
 

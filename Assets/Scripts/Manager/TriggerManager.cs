@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public delegate void TriggerStateListner(string name, bool value);
+public delegate void SimpleTriggerListener();
 public class TriggerManager : PersistentSingleton<TriggerManager>
 {
     #region 标准监听器

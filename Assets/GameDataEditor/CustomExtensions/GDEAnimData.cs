@@ -33,6 +33,20 @@ namespace GameDataEditor
             }
         }
 
+        static string skeletonIndexKey = "skeletonIndex";
+		int _skeletonIndex;
+        public int skeletonIndex
+        {
+            get { return _skeletonIndex; }
+            set {
+                if (_skeletonIndex != value)
+                {
+                    _skeletonIndex = value;
+					GDEDataManager.SetInt(_key, skeletonIndexKey, _skeletonIndex);
+                }
+            }
+        }
+
         static string bodyKey = "body";
 		string _body;
         public string body
@@ -267,6 +281,7 @@ namespace GameDataEditor
 			dict.Add(GDMConstants.SchemaKey, "Anim");
 			
             dict.Merge(true, isRare.ToGDEDict(isRareKey));
+            dict.Merge(true, skeletonIndex.ToGDEDict(skeletonIndexKey));
             dict.Merge(true, body.ToGDEDict(bodyKey));
             dict.Merge(true, eyes.ToGDEDict(eyesKey));
             dict.Merge(true, faceother.ToGDEDict(faceotherKey));
@@ -299,6 +314,7 @@ namespace GameDataEditor
 			else
 			{
                 dict.TryGetBool(isRareKey, out _isRare);
+                dict.TryGetInt(skeletonIndexKey, out _skeletonIndex);
                 dict.TryGetString(bodyKey, out _body);
                 dict.TryGetString(eyesKey, out _eyes);
                 dict.TryGetString(faceotherKey, out _faceother);
@@ -324,6 +340,7 @@ namespace GameDataEditor
 			_key = dataKey;
 			
             _isRare = GDEDataManager.GetBool(_key, isRareKey, _isRare);
+            _skeletonIndex = GDEDataManager.GetInt(_key, skeletonIndexKey, _skeletonIndex);
             _body = GDEDataManager.GetString(_key, bodyKey, _body);
             _eyes = GDEDataManager.GetString(_key, eyesKey, _eyes);
             _faceother = GDEDataManager.GetString(_key, faceotherKey, _faceother);
@@ -348,6 +365,7 @@ namespace GameDataEditor
 			GDEAnimData newClone = new GDEAnimData(newKey);
 
             newClone.isRare = isRare;
+            newClone.skeletonIndex = skeletonIndex;
             newClone.body = body;
             newClone.eyes = eyes;
             newClone.faceother = faceother;
@@ -381,6 +399,15 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetBool(isRareKey, out _isRare);
+        }
+
+        public void Reset_skeletonIndex()
+        {
+            GDEDataManager.ResetToDefault(_key, skeletonIndexKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(skeletonIndexKey, out _skeletonIndex);
         }
 
         public void Reset_body()
@@ -550,6 +577,7 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, liuhaiKey);
             GDEDataManager.ResetToDefault(_key, R_leg_aKey);
             GDEDataManager.ResetToDefault(_key, R_leg_bKey);
+            GDEDataManager.ResetToDefault(_key, skeletonIndexKey);
 
 
             #endif

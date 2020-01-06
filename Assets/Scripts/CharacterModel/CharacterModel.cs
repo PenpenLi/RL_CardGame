@@ -48,8 +48,9 @@ public class CharacterModel : MonoBehaviour
     public Spine.AnimationState spineAnimationState;
     public Spine.Skeleton skeleton;
     [Space(15)]
-    public Chara_mixAndMatch mixAndMatch;
+    public List<Chara_atlasRegionAttacher> ARAList = new List<Chara_atlasRegionAttacher>();
     public Model_ColorInitialize colorInitialize;
+    public int SkeletonIndex;
     private void OnEnable()
     {
         skeletonAnimation = GetComponent<SkeletonAnimation>();
@@ -59,11 +60,12 @@ public class CharacterModel : MonoBehaviour
             skeleton = skeletonAnimation.Skeleton;
         }
     }
-    public virtual void initCharacterModel()
+    public virtual void initCharacterModel(int _skeletonIndex)
     {
-        mixAndMatch = GetComponent<Chara_mixAndMatch>();
+        SkeletonIndex = _skeletonIndex;
+        //mixAndMatch = GetComponent<Chara_mixAndMatch>();
         colorInitialize = GetComponent<Model_ColorInitialize>();
-        anim_idle = "hold";
+        anim_idle = "animation";
         anim_attack = "hit";
         anim_cast = "hit";
         anim_hurt = "hurt";
@@ -78,8 +80,22 @@ public class CharacterModel : MonoBehaviour
         {
             GetComponent<MeshRenderer>().sortingLayerName = "Role";
         }
-        mixAndMatch.initThisMatch();
+        //mixAndMatch.initThisMatch();
+        ReadAnimImgList.initCharaModelByGDE(this);
+        StartCoroutine(applyARA());
     }
+    IEnumerator applyARA()
+    {
+        yield return new WaitForSeconds(0.05f);
+        for(int i = 0; i < ARAList.Count; i++)
+        {
+            ARAList[i].CM = this;
+            ARAList[i].StartToApply(skeletonAnimation);
+            yield return null;
+        }
+    }
+
+
     public void testBtn()
     {
         ChangeModelAnim(anim_attack);

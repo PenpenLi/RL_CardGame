@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class ItemBase :ScriptableObject
+public class ItemBase : ScriptableObject
 {
+    #region 基本信息
     [SerializeField]
     private string _ID;
-    public string ID { get { return _ID; } }
+    public string ID { get { return _ID; } protected set { _ID = value; } }
 
     [SerializeField]
     private string _NAME;
-    public string NAME { get { return _NAME; } }
+    public string NAME { get { return _NAME; } protected set { _NAME = value; } }
 
-    [SerializeField,TextArea]
+    [SerializeField, TextArea]
     private string _DESC;
-    public string DESC { get { return _DESC; } }
+    public string DESC { get { return _DESC; } protected set { _DESC = value; } }
 
-    [SerializeField,ReadOnly]
+    [SerializeField, ReadOnly]
     private SDConstants.ItemType itemtype;
     public SDConstants.ItemType ItemType
     {
@@ -27,7 +28,7 @@ public class ItemBase :ScriptableObject
 
     [SerializeField]
     private int _LEVEL;
-    public int LEVEL { get { return _LEVEL; } }
+    public int LEVEL { get { return _LEVEL; } protected set { _LEVEL = value; } }
 
     public interface IUsable { void OnUse(); }
 
@@ -55,7 +56,7 @@ public class ItemBase :ScriptableObject
 
     [SerializeField]
     protected bool sellAble;//是否可出售
-    private bool SellAble
+    public bool SellAble
     {
         get { return sellAble; }
     }
@@ -68,13 +69,44 @@ public class ItemBase :ScriptableObject
     }
 
     [SerializeField]
-    private int maxDurability=100;//耐久度
+    private int maxDurability = 100;//耐久度
     public int MaxDurability
     {
-        get { return maxDurability; }
+        get { return maxDurability; }protected set { maxDurability = value; }
     }
 
+    [SerializeField]
+    private string specialStr;
+    public string SpecialStr
+    { get { return specialStr; } protected set { specialStr = value; } }
+    public virtual void initData(string id,string name,string desc,int level
+        ,bool stackable,bool discardable
+        ,bool useable, bool sellable, bool inexhaustible,string specialStr
+        , SDConstants.ItemType itemtype)
+    {
+        this.ID = id;this.NAME = name;this.DESC = desc;this.ItemType = itemtype;this.LEVEL = level;
+        this.stackAble = stackable;this.discardAble = discardable;this.useable = useable;this.sellAble = sellable;
+        this.SpecialStr = specialStr;
+        this.inexhaustible = inexhaustible;
+    }
 
+    #endregion
+
+
+    # region 身份验证
+    public bool isConsumable
+    {
+        get { return this is consumableItem; }
+    }
+    public bool isRune
+    {
+        get { return this is RuneItem; }
+    }
+    public bool isEquip
+    {
+        get { return this is EquipItem; }
+    }
+    #endregion
 }
 
 #region 道具信息相关
@@ -105,6 +137,15 @@ public class ItemInfo // 在此进行拓展，如强化、词缀、附魔
             else return string.Empty;
         }
     }
+    public string ItemName
+    {
+        get
+        {
+            if (item) return item.NAME;
+            else return string.Empty;
+        }
+    }
+
     public ItemInfo()
     {
         amount = 1;

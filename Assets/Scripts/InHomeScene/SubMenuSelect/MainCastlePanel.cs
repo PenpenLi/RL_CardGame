@@ -57,7 +57,7 @@ public class MainCastlePanel : BasicSubMenuPanel
                         (new GDEtownBuildingData(GDEItemKeys.townBuilding_newTownBuilding)
                         {
                             id = Menu.buildingId,
-                            exp = 0,
+                            level = 0,
                             NPC = null,
                         });
                     SDDataManager.Instance.PlayerData.Set_buildingsOwned();
@@ -70,20 +70,20 @@ public class MainCastlePanel : BasicSubMenuPanel
             {
                 if(b.id == AllBuildings[i].buildingId)
                 {
-                    AllBuildings[i].exp = b.exp;
-                    if (AllBuildings[i].ShowNPC)
+                    AllBuildings[i].Level = b.level;
+                    if (AllBuildings[i].ShowNPC && AllBuildings[i].RepresentNPC!=null)
                     {
                         if (b.NPC == null)
                         {
                             b.NPC = new GDENPCData(GDEItemKeys.NPC_noone)
                             {
-                                id = AllBuildings[i].RepresentNPCId,
+                                id = AllBuildings[i].RepresentNPC.TalkerID,
                             };
                             SDDataManager.Instance.PlayerData.Set_buildingsOwned();
                         }
-                        else if(b.NPC.id != AllBuildings[i].RepresentNPCId)
+                        else if(b.NPC.id != AllBuildings[i].RepresentNPC.TalkerID)
                         {
-                            b.NPC.id = AllBuildings[i].RepresentNPCId;
+                            b.NPC.id = AllBuildings[i].RepresentNPC.TalkerID;
                             SDDataManager.Instance.PlayerData.Set_buildingsOwned();
                         }
                     }
@@ -126,4 +126,7 @@ public class MainCastlePanel : BasicSubMenuPanel
         }
         AllCards.Clear();
     }
+
+
+    //public void 
 }

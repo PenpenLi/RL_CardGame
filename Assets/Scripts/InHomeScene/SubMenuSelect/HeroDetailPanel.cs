@@ -24,10 +24,6 @@ public class HeroDetailPanel : BasicSubMenuPanel
     public Transform equipedSkillsPanel;
     public SkillDetailsList skillDetailList;
     public SkillSlot[] skillSlots;
-    /// <summary>
-    /// 简易历史记录
-    /// </summary>
-    public HomeScene.HomeSceneSubMenu panelFrom = HomeScene.HomeSceneSubMenu.End;
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();

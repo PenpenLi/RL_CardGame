@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GameDataEditor;
 using UnityEngine.UI;
+
 public class StorePanel : BasicSubMenuPanel
 {
     [Space(50)]
@@ -128,28 +129,28 @@ public class StorePanel : BasicSubMenuPanel
     {
         SDConstants.ItemType type = SDDataManager.Instance.getItemTypeById(itemId);
         int allConsume = 0;
-        if (type == SDConstants.ItemType.Material)
+        if (type == SDConstants.ItemType.Consumable)
         {
-            ROMaterialData data = SDDataManager.Instance.getMaterialDataById(itemId);
+            consumableItem data = SDDataManager.Instance.getConsumableItemById(itemId);
             if (!useDamond)
             {
-                allConsume = data.buyPrice_gold * itemNum;
+                allConsume = data.buyPrice_coin * itemNum;
             }
             else
             {
-                allConsume = data.buyPrice_damond * itemNum;
+                allConsume = data.buyPrice_diamond * itemNum;
             }
         }
-        else if (type == SDConstants.ItemType.Prop)
+        else if (type == SDConstants.ItemType.Consumable)
         {
-            ROMaterialData DATA = SDDataManager.Instance.getMaterialDataById(itemId);
+            consumableItem DATA = SDDataManager.Instance.getConsumableItemById(itemId);
             if (!useDamond)
             {
-                allConsume = DATA.buyPrice_gold * itemNum;
+                allConsume = DATA.buyPrice_coin * itemNum;
             }
             else
             {
-                allConsume = DATA.buyPrice_damond * itemNum;
+                allConsume = DATA.buyPrice_diamond * itemNum;
             }
         }
         else if (type == SDConstants.ItemType.Equip)
@@ -209,7 +210,7 @@ public class StorePanel : BasicSubMenuPanel
             //购买手续
             SDDataManager.Instance.PlayerData.coin -= allConsume;
             //
-            SDDataManager.Instance.addMaterial(itemId, itemNum);
+            SDDataManager.Instance.addConsumable(itemId, itemNum);
             surplus = SDDataManager.Instance.PlayerData.coin;
             return true;
         }
@@ -227,7 +228,7 @@ public class StorePanel : BasicSubMenuPanel
             //购买手续
             SDDataManager.Instance.PlayerData.damond -= allConsume;
             //
-            SDDataManager.Instance.addMaterial(itemId, itemNum);
+            SDDataManager.Instance.addConsumable(itemId, itemNum);
             surplus = SDDataManager.Instance.PlayerData.damond;
             return true;
         }

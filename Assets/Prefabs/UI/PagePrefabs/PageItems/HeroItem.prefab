@@ -193,7 +193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heroHashcode: 0
   AllSkeletonDataAssets:
-  - {fileID: 11400000, guid: 4f08315998f61a24280821cd94103f8c, type: 2}
+  - {fileID: 11400000, guid: 0dca486a840cb244bbb42b65bacd0140, type: 2}
   ModelParent: {fileID: 5385144631257405722}
   CurrentCharacterModel: {fileID: 0}
   scaleRate: 1

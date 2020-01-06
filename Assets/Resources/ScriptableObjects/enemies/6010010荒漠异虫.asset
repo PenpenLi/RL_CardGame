@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0db3073cff4fb5c479fd1764d3490df3, type: 3}
+  m_Name: "6010010\u8352\u6F20\u5F02\u866B"
+  m_EditorClassIdentifier: 
+  _ID: D_NROMAL#6010010
+  _Name: "\u8352\u6F20\u5F02\u866B"
+  _DESC: 
+  sex: 0
+  characterType: 1
+  faceIcon: {fileID: 0}
+  race:
+  - {fileID: 11400000, guid: feb08eec3e459ae40815d2cfb6ec4cbd, type: 2}
+  - {fileID: 11400000, guid: ea21d6adf574ed545a9a65271cecb9bd, type: 2}
+  enemyRank: {fileID: 11400000, guid: 29708ae65b8ac68478f72fde80137986, type: 2}
+  _RAL:
+    AllAttributeData: 0901000064000000640000003c00000032000000280000001e000000080000000100000019000000080000001400000005000000
+    AllResistData: 1900000019000000190000001900000019000000190000001900000019000000
+  specialStr: 
+  weight: 15
+  dropPercent: 5
+  dropItems: []

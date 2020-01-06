@@ -19,7 +19,7 @@ public class RTSingleStockItem : MonoBehaviour
     public Text NameText;
     public Text NumText;
     public SDConstants.StockType stockType;
-    public SDConstants.MaterialType materialType = SDConstants.MaterialType.all;
+    public SDConstants.MaterialType materialType = SDConstants.MaterialType.end;
     public string itemId;
     public int hashcode;
     public int itemNum;
@@ -86,7 +86,8 @@ public class RTSingleStockItem : MonoBehaviour
             {
                 chooseMaterialToSell();
             }
-            if (materialType == SDConstants.MaterialType.all)
+
+            if (materialType == SDConstants.MaterialType.end)
             {
 
             }
@@ -164,7 +165,7 @@ public class RTSingleStockItem : MonoBehaviour
         itemLv = SDDataManager.Instance.getLevelByExp(data.exp);
         ROHeroData roh = SDDataManager.Instance.getHeroDataByID(itemId, data.starNumUpgradeTimes);
         starVision.StarNum = roh.starNum;
-        itemName = roh.Name;
+        itemName = roh.Info.Name;
         //if (NameText) NameText.text = SDDataManager.Instance.getMaterialNameById(itemId);
         if (lvText) lvText.text = SDGameManager.T("Lv.") + itemLv;
         if (NumText) NumText.gameObject.SetActive(false);
@@ -172,7 +173,7 @@ public class RTSingleStockItem : MonoBehaviour
     }
     public void initStock(GDEItemData data
                 , SDConstants.StockType SType = SDConstants.StockType.material
-        , SDConstants.MaterialType MType = SDConstants.MaterialType.all)
+        , SDConstants.MaterialType MType = SDConstants.MaterialType.end)
 
     {
         stockType = SType;

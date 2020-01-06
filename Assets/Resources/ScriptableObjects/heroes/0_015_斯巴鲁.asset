@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbf95ce61c3a03c4492e0790fb1cd787, type: 3}
+  m_Name: "0_015_\u65AF\u5DF4\u9C81"
+  m_EditorClassIdentifier: 
+  _ID: H_FIGHTER#000015
+  _Name: "\u65AF\u5DF4\u9C81"
+  _DESC: 
+  sex: 1
+  characterType: 0
+  faceIcon: {fileID: 0}
+  _LEVEL: 0
+  skeleton: 0
+  weaponRaceList:
+  - {fileID: 11400000, guid: 4f19ff9be42d1a042b87bbbb5c5fbb2d, type: 2}
+  - {fileID: 11400000, guid: d88bb7b8bd14b6747bc60d768a92195a, type: 2}
+  - {fileID: 11400000, guid: 4bdc534047031624bb74bf5b036a3fd3, type: 2}
+  _RAL:
+    AllAttributeData: fa0000001b0000003c000000180000001f0000000f0000000a00000002000000130000000a000000010000000500000003000000
+    AllResistData: 0f0000000f0000000f0000000f0000000f0000000f0000000f0000000f000000
+  _career: {fileID: 11400000, guid: 9e316a61e6d86e642a829727cbc40b54, type: 2}
+  _race: {fileID: 11400000, guid: 3a5e14e5e1548394899ba3163db69621, type: 2}
+  specialStr: 
+  personalSkillList:
+  - {fileID: 11400000, guid: f9edee87409c60941821fa20af1834b4, type: 2}
+  - {fileID: 11400000, guid: d9a40c68556f4bb4dac23d32e170dcd4, type: 2}

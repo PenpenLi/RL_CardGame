@@ -72,9 +72,16 @@ public class Chara_mixAndMatch : MonoBehaviour
             Attachment newAttachment = templateAttachment.GetRemappedClone
                 (Pair.newSprite, sourceMaterial);// STEP 1.2 - 1.3
 
-
             if (newAttachment != null)
+            {
+                RegionAttachment ra = newAttachment as RegionAttachment;
+                ra = (RegionAttachment)ra.Copy();
+                float scale = 1f / Pair.newSprite.pixelsPerUnit;
+                ra.Width = ra.RegionWidth * scale;
+                ra.Height = ra.RegionHeight * scale;
+
                 customSkin.SetAttachment(slotIndex, Pair.Key, newAttachment);//STEP 1.4
+            }
         }
 
         if (repack)

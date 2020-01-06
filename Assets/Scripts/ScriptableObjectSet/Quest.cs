@@ -818,18 +818,18 @@ public class KillObjective : Objective
         else if(ObjectiveType == KillObjectiveType.Race)
         {
             ROEnemyData ED = SDDataManager.Instance.getEnemyDataById(id);
-            if (ED.race == Race.Index) flag = true;
+            if (ED.Info.Race.Contains(Race)) flag = true;
         }
         else if(ObjectiveType == KillObjectiveType.Rank)
         {
             ROEnemyData ED = SDDataManager.Instance.getEnemyDataById(id);
-            if (ED.rank == EnemyRank.Index) flag = true;
+            if (ED.Info.EnemyRank == EnemyRank) flag = true;
         }
         else if(ObjectiveType == KillObjectiveType.Specific)
         {
             ROEnemyData ED = SDDataManager.Instance.getEnemyDataById(id);
-            if (Enemy != null && ED.id == Enemy.ID) flag = true;
-            else if (Enemy == null && ED.id == EnemyID) flag = true;
+            if (Enemy != null && ED.Info.ID == Enemy.ID) flag = true;
+            else if (Enemy == null && ED.Info.ID == EnemyID) flag = true;
         }
         //
         if(flag)

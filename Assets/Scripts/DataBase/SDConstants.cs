@@ -33,6 +33,11 @@ public class SDConstants
     /// 背包最大格子数
     /// </summary>
     public static int BagMaxVolume = 8;
+
+    /// <summary>
+    /// 升级消耗金币的基本数
+    /// </summary>
+    public static int BaseCoinSillImproveCost = 1000;
     /// <summary>
     /// 最大队伍数量
     /// </summary>
@@ -52,6 +57,10 @@ public class SDConstants
     public static int LevelNumPerChapter = 125;
 
     /// <summary>
+    /// 经验值变动最大等级
+    /// </summary>
+    public static int MaxIncreasingExpLevel = 50;
+    /// <summary>
     /// 当角色等级达到50级以上时每级所需经验
     /// </summary>
     static public int MaxExpPerLevel = 1250;
@@ -59,6 +68,11 @@ public class SDConstants
     /// 角色最小升级用经验值
     /// </summary>
     static public int MinExpPerLevel = 25;
+    /// <summary>
+    /// 完整性最小填充常数
+    /// </summary>
+    public static int MinVolumePerIntegrity = 5;
+
     /// <summary>
     /// 暴击算法内常数
     /// </summary>
@@ -86,17 +100,27 @@ public class SDConstants
     /// <summary>
     /// 疲劳度基础常数
     /// </summary>
-    public static int fatigueBasicNum = 50;
+    public static int fatigueBasicNum = 200;
+    /// <summary>
+    /// 单场提升疲劳度
+    /// </summary>
+    public static int fatigueAddNum = 10;
+
+    /// <summary>
+    /// 合成时稀有度概率基数
+    /// </summary>
+    public static float composeBasicFigure = 0.8f;
+    /// <summary>
+    /// 合成时稀有度概率随quality变化常数
+    /// </summary>
+    public static float composeChangeFigure = 0.6f;
 
     /// <summary>
     /// 装备最大品阶
     /// </summary>
     public static int equipMaxQuality = 5;
 
-    /// <summary>
-    /// 材料总类数
-    /// </summary>
-    public static int materialTypeNum = 100;
+
     /// <summary>
     /// 玩家存档内容读取间隔
     /// </summary>
@@ -130,6 +154,55 @@ public class SDConstants
     /// 最小心形容量
     /// </summary>
     public static int MinHeartVolume = 100;
+    /// <summary>
+    /// 角色最大附着状态数量
+    /// </summary>
+    public static int UnitStateVolume = 6;
+    /// <summary>
+    /// 在卡池抽出特定角色时的概率
+    /// </summary>
+    public static float GetSpecialHeroInPool = 1f;
+
+    /// <summary>
+    /// 技能回能(MP)最小值
+    /// </summary>
+    public static int SkillAddMinMp = 2;
+    /// <summary>
+    /// 技能回能(TP)最小值
+    /// </summary>
+    public static int SkillAddMinTp = 3;
+
+    /// <summary>
+    /// 女神属性最大值
+    /// </summary>
+    public static int GoddessMaxAtti = 50;
+    /// <summary>
+    /// 女神属性单梯度内容
+    /// </summary>
+    public static int GoddessPerAttiVolume = 5;
+    /// <summary>
+    /// 女神属性梯度
+    /// </summary>
+    public static int GoddessAttiGradient
+    {
+        get { return GoddessMaxAtti / GoddessPerAttiVolume; }
+    }
+    /// <summary>
+    /// 女神标准充能速度
+    /// </summary>
+    public static float GoddessChargeSpeed = 0.05f;
+    /// <summary>
+    /// 女神最大装备Rune数量
+    /// </summary>
+    public static int GoddessMaxRune = 4;
+    /// <summary>
+    /// 如尼文最大等级
+    /// </summary>
+    public static int RuneMaxLevel = 5;
+    /// <summary>
+    /// 女神最大完整度
+    /// </summary>
+    public static int goddessMaxIntegrity = 5;
 
     /// <summary>
     /// 增强类建筑增强数值
@@ -264,7 +337,7 @@ public class SDConstants
              Dispatch
             ,Mission
             ,Recruit
-           
+           ,Altar
             ,UseProp
             ,Train
             ,TrainConsume
@@ -311,17 +384,17 @@ public class SDConstants
             ,
         Equip=1
             ,
-        Prop=2
+        Consumable=2
             ,
-        Material=3
+        Goddess=3
             ,
-        Goddess=4
+        Badge=4
             ,
-        Badge=5
+        Enemy=5
             ,
-        Enemy=6
+        Quest=6
             ,
-        Quest=7
+        Rune=7
             ,
         NPC=8
             ,
@@ -353,19 +426,30 @@ public class SDConstants
     #region 物品Enum列表
     public enum ArmorType
     {
-        none,
-        light,
-        middle,
-        heavy,
+        a0=0,
+        a1=1,
+        a2=2,
+        a3=3,
+        a4=4,
         end,
     }
-    public enum WeaponType
+    public enum WeaponClass
     {
-        Sharp=0
-            ,Longhandle=1
-            ,Blunt=2
-            ,assist=3
-            ,Enhance=4
+        Claymore=0//大剑
+            ,
+        Longhandle = 1//长柄武器
+            ,
+        Sharp =2//锐器，匕首，双刀
+            ,
+        Bow =3//弓
+            ,
+        Blunt=4//钝器，锤子
+            ,
+        Amulet = 5//护身符，十字架
+            ,
+        Assist=6//辅助器，魔法书
+            ,
+        Enhance=7//增强器，法杖
     }
     public enum JewelryType
     {
@@ -392,15 +476,29 @@ public class SDConstants
             ,
         equip_reap = 7
             ,
-        prop_reap=8
-            ,
         agentia
             ,
         magic
             ,
         anqi
             ,
-        all
+        goddess_exp
+            ,
+        goddess_piece
+            ,
+        key
+            ,
+        treasure
+            ,
+        raw
+            ,
+        other
+            ,
+        end
+    }
+    public enum ConsumableType
+    {
+        material,prop,all,
     }
     /// <summary>
     /// 升级用材料道具
@@ -421,6 +519,7 @@ public class SDConstants
     {
         work,detail,sell,
     }
+
     #endregion
     #region 战斗类enum
     public enum BCType { hp, mp, tp, end }
@@ -479,10 +578,6 @@ public class SDConstants
         /// </summary>
         god,
         end,
-    }
-    public enum RestrainType
-    {
-        R0,R1,R2,
     }
     #endregion
     #region 设置类常量

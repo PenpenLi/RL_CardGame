@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System;
 using DG.Tweening;
 using GameDataEditor;
+using System.Linq;
 
 public class BattleRoleData : MonoBehaviour
 {
@@ -19,13 +20,10 @@ public class BattleRoleData : MonoBehaviour
     public HeroController HeroProperty;
     [HideInInspector]
     public EnemyController EnemyProperty;
-    [HideInInspector]
-    public GoddessController GoddessProperty;
     public BasicRoleProperty ThisBasicRoleProperty()
     {
         if (_Tag == SDConstants.CharacterType.Hero) return HeroProperty;
         if (_Tag == SDConstants.CharacterType.Enemy) return EnemyProperty;
-        if (_Tag == SDConstants.CharacterType.Goddess) return GoddessProperty;
         return HeroProperty;
     }
     #endregion
@@ -102,23 +100,16 @@ public class BattleRoleData : MonoBehaviour
         if(APC) APC.transform.localScale = Vector3.one * 1.2f;
         if (GetComponent<HeroController>()) HeroProperty = GetComponent<HeroController>();
         if (GetComponent<EnemyController>()) EnemyProperty = GetComponent<EnemyController>();
-        if (GetComponent<BasicRoleProperty>()) GoddessProperty = GetComponent<GoddessController>();
     }
     private void Start()
     {
-        AllStates = new BRD_OneStateController[(int)StateTag.End];
-        for (int i = 0; i < AllStates.Length; i++)
+        //statetag 代表的状态列表
+        AllSTStates = new BRD_OneStateController[(int)StateTag.End];
+        for (int i = 0; i < AllSTStates.Length; i++)
         {
-            AllStates[i] = new BRD_OneStateController();
-            AllStates[i].stateTag = (StateTag)i;
-            AllStates[i].Clear(true);
-        }
-        AllRegends = new RegendStateController[(int)SDConstants.BCType.end];
-        for(int i = 0; i < AllRegends.Length; i++)
-        {
-            AllRegends[i] = new RegendStateController();
-            AllRegends[i].TAG = (SDConstants.BCType)i;
-            AllRegends[i].clear();
+            AllSTStates[i] = new BRD_OneStateController();
+            AllSTStates[i].stateTag = (StateTag)i;
+            AllSTStates[i].Clear(true);
         }
 
     }
@@ -205,10 +196,8 @@ public class BattleRoleData : MonoBehaviour
             //
             UnitId = SDDataManager.Instance.getHeroIdByHashcode(unitHashcode);
             HeroProperty.ID = HeroProperty._hero.ID = UnitId;
-
-            int herocareer = SDDataManager.Instance.getHeroCareerById(UnitId);
-            int herorace = SDDataManager.Instance.getHeroRaceById(UnitId);
-            ROHeroData dal = SDDataManager.Instance.getHeroDataByID(UnitId, heroData.starNumUpgradeTimes);
+            ROHeroData dal = SDDataManager.Instance
+                .getHeroDataByID(UnitId, heroData.starNumUpgradeTimes);
             SDConstants.CharacterAnimType type
                 = (SDConstants.CharacterAnimType)
                 (SDDataManager.Instance.getHeroCareerById(UnitId));
@@ -216,11 +205,12 @@ public class BattleRoleData : MonoBehaviour
             int grade = SDDataManager.Instance.getLevelByExp(heroData.exp);
             HeroProperty._hero.grade = grade;
             HeroProperty._hero.initData_Hero
-                ((Job)herocareer, (Race)herorace
-                , grade, 0, dal.starNum, dal.BasicRAL, dal.RALRate
-                , dal.CRI, dal.CRIDmg, dal.DmgReduction, dal.DmgReflection, dal.RewardRate
-                , dal.BarChartRegendPerTurn, UnitId, dal.Name, heroData.wakeNum);
-            HeroProperty._hero.gender = dal.gender;
+                (dal.Info.Career.Career, dal.Info.Race.Race
+                , grade, 0, dal.starNum
+                , dal.ExportRAL + RoleAttributeList.GDEToRAL(heroData.RoleAttritubeList)
+                , dal.CRIDmg, dal.DmgReduction, dal.DmgReflection, dal.RewardRate
+                , dal.BarChartRegendPerTurn, UnitId, dal.Info.Name, heroData.wakeNum); ;
+            HeroProperty._hero.gender = dal.Info.Sex;
             addSkillByCareerByRaceByStarnum(heroHashCode, dal.starNum);
         }
         else
@@ -242,27 +232,16 @@ public class BattleRoleData : MonoBehaviour
         {
             HeroProperty._helmet.initDataEmpty();return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("equip");
-        for(int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if(s["id"] == armor.id)
-            {
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.RALByDictionary(s);
-                basicRAL = SDDataManager.Instance.getRALByUpLv(basicRAL, upLv);
-                string name = s["name"];
-                string id = s["id"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._helmet.initData(level, basicRAL, rateRAL, 0, 0, 0, 0, 0, RoleBarChart.zero
-                    , id, name, 0);
-                HeroProperty._helmet.PassiveEffectInit(passiveEffect);
-                HeroProperty._helmet.armorType = (SDConstants.ArmorType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-            }
+            HeroProperty._helmet.initDataEmpty(); return;
         }
+        //
+        HeroProperty._helmet.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        HeroProperty._helmet.PassiveEffectInit(Item.PassiveEffect);
+        HeroProperty._helmet.armorRank = Item.ArmorRank;
         int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
         HeroProperty._helmet.initGradeShow(lv);
     }
@@ -275,27 +254,16 @@ public class BattleRoleData : MonoBehaviour
         {
             HeroProperty._breastplate.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("equip");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.RALByDictionary(s);
-                string name = s["name"];
-                string id = s["id"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._breastplate.initData(level, basicRAL, rateRAL
-                    , 0, 0, 0, 0, 0, RoleBarChart.zero
-                    , id, name, 0);
-                HeroProperty._breastplate.PassiveEffectInit(passiveEffect);
-                HeroProperty._breastplate.armorType = (SDConstants.ArmorType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-            }
+            HeroProperty._breastplate.initDataEmpty(); return;
         }
+        //
+        HeroProperty._breastplate.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        HeroProperty._breastplate.PassiveEffectInit(Item.PassiveEffect);
+        HeroProperty._breastplate.armorRank = Item.ArmorRank;
         int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
         HeroProperty._breastplate.initGradeShow(lv);
     }
@@ -308,27 +276,16 @@ public class BattleRoleData : MonoBehaviour
         {
             HeroProperty._gardebras.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("equip");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.RALByDictionary(s);
-                string name = s["name"];
-                string id = s["id"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._gardebras.initData(level, basicRAL, rateRAL
-                    , 0, 0, 0, 0, 0, RoleBarChart.zero
-                    , id, name, 0);
-                HeroProperty._gardebras.PassiveEffectInit(passiveEffect);
-                HeroProperty._gardebras.armorType = (SDConstants.ArmorType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-            }
+            HeroProperty._gardebras.initDataEmpty(); return;
         }
+        //
+        HeroProperty._gardebras.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        HeroProperty._gardebras.PassiveEffectInit(Item.PassiveEffect);
+        HeroProperty._gardebras.armorRank = Item.ArmorRank;
         int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
         HeroProperty._gardebras.initGradeShow(lv);
     }
@@ -341,27 +298,16 @@ public class BattleRoleData : MonoBehaviour
         {
             HeroProperty._legging.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("equip");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.RALByDictionary(s);
-                string name = s["name"];
-                string id = s["id"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._legging.initData(level, basicRAL, rateRAL
-                    , 0, 0, 0, 0, 0,  RoleBarChart.zero
-                    , id, name, 0);
-                HeroProperty._legging.PassiveEffectInit(passiveEffect);
-                HeroProperty._legging.armorType = (SDConstants.ArmorType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-            }
+            HeroProperty._legging.initDataEmpty(); return;
         }
+        //
+        HeroProperty._legging.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        HeroProperty._legging.PassiveEffectInit(Item.PassiveEffect);
+        HeroProperty._legging.armorRank = Item.ArmorRank;
         int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
         HeroProperty._legging.initGradeShow(lv);
     }
@@ -376,27 +322,16 @@ public class BattleRoleData : MonoBehaviour
             {
                 HeroProperty._jewelry0.initDataEmpty(); return;
             }
-            List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("jewelry");
-            for (int i = 0; i < itemDatas.Count; i++)
+            EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+            if (Item == null)
             {
-                Dictionary<string, string> s = itemDatas[i];
-                if (s["id"] == armor.id)
-                {
-                    int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                    int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                    RoleAttributeList basicRAL = SDDataManager.Instance.EquipRALByDictionary(s);
-                    string name = s["name"];
-                    string id = s["id"];
-                    string passiveEffect = s["passiveEffect"];
-                    RoleAttributeList rateRAL = new RoleAttributeList();
-                    HeroProperty._jewelry0.initData(level, basicRAL, rateRAL
-                        , 0, 0, 0, 0, 0, RoleBarChart.zero
-                        , id, name, 0);
-                    HeroProperty._jewelry0.PassiveEffectInit(passiveEffect);
-                    HeroProperty._jewelry0._jewelryType = (SDConstants.JewelryType)
-                        SDDataManager.Instance.getInteger(s["type"]);
-                }
+                HeroProperty._jewelry0.initDataEmpty(); return;
             }
+            //
+            HeroProperty._jewelry0.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+                , Item.ID, Item.NAME, 0);
+            HeroProperty._jewelry0.PassiveEffectInit(Item.PassiveEffect);
+            HeroProperty._jewelry0.armorRank = Item.ArmorRank;
             int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
             HeroProperty._jewelry0.initGradeShow(lv);
         }
@@ -407,29 +342,16 @@ public class BattleRoleData : MonoBehaviour
             {
                 HeroProperty._jewelry1.initDataEmpty(); return;
             }
-            List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("jewelry");
-            for (int i = 0; i < itemDatas.Count; i++)
+            EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+            if (Item == null)
             {
-                Dictionary<string, string> s = itemDatas[i];
-                if (s["id"] == armor.id)
-                {
-                    int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                    int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                    //主副属性类型装备读取
-                    RoleAttributeList basicRAL = SDDataManager.Instance.EquipRALByDictionary(s);
-                    //
-                    string name = s["name"];
-                    string id = s["id"];
-                    string passiveEffect = s["passiveEffect"];
-                    RoleAttributeList rateRAL = new RoleAttributeList();
-                    HeroProperty._jewelry1.initData(level, basicRAL, rateRAL
-                        , 0, 0, 0, 0, 0,  RoleBarChart.zero
-                        , id, name, 0);
-                    HeroProperty._jewelry1.PassiveEffectInit(passiveEffect);
-                    HeroProperty._jewelry1._jewelryType = (SDConstants.JewelryType)
-                        SDDataManager.Instance.getInteger(s["type"]);
-                }
+                HeroProperty._jewelry1.initDataEmpty(); return;
             }
+            //
+            HeroProperty._jewelry1.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+                , Item.ID, Item.NAME, 0);
+            HeroProperty._jewelry1.PassiveEffectInit(Item.PassiveEffect);
+            HeroProperty._jewelry1.armorRank = Item.ArmorRank;
             int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
             HeroProperty._jewelry1.initGradeShow(lv);
         }
@@ -443,44 +365,34 @@ public class BattleRoleData : MonoBehaviour
         {
             HeroProperty._weapon.initDataEmpty(); return;
         }
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("weapon");
-        for (int i = 0; i < itemDatas.Count; i++)
+        EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
+        if (Item == null)
         {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == armor.id)
-            {
-                int level = SDDataManager.Instance.getLevelByExp(armor.exp);
-                int upLv = SDDataManager.Instance.getLevelByExp(armor.exp);
-                RoleAttributeList basicRAL = SDDataManager.Instance.EquipRALByDictionary(s);
-                string name = s["name"];
-                string id = s["id"];
-                string passiveEffect = s["passiveEffect"];
-                RoleAttributeList rateRAL = new RoleAttributeList();
-                HeroProperty._weapon.initData(level, basicRAL, rateRAL
-                    , 0, 0, 0, 0, 0,  RoleBarChart.zero
-                    , id, name, 0);
-                HeroProperty._weapon.PassiveEffectInit(passiveEffect);
-                HeroProperty._weapon._weaponType = (SDConstants.WeaponType)
-                    SDDataManager.Instance.getInteger(s["type"]);
-            }
+            HeroProperty._weapon.initDataEmpty(); return;
         }
+        //
+        HeroProperty._weapon.initData(Item.LEVEL, Item.RAL, 0, 0, 0, 0, RoleBarChart.zero
+            , Item.ID, Item.NAME, 0);
+        HeroProperty._weapon.PassiveEffectInit(Item.PassiveEffect);
+        HeroProperty._weapon.armorRank = Item.ArmorRank;
         int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
         HeroProperty._weapon.initGradeShow(lv);
     }
+
     #endregion
     public void addSkillByCareerByRaceByStarnum(int heroHashcode,int quality)
     {
         _skills.Add(OneSkill.normalAttack);
         //
         GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(heroHashcode);
-        int skill0Id = hero.skill0Id;
+        string skill0Id = hero.skill0Id;
         _skills.Add(SDDataManager.Instance.getOwnedSkillById(skill0Id, heroHashcode));
         if (SDDataManager.Instance.checkHeroEnableSkill1ByHashcode(heroHashcode))
         {
-            int skill1Id = hero.skill1Id;
+            string skill1Id = hero.skill1Id;
             _skills.Add(SDDataManager.Instance.getOwnedSkillById(skill1Id, heroHashcode));
         }//稀有角色才能拥有额外技能
-        int skillOmegaId = hero.skillOmegaId;
+        string skillOmegaId = hero.skillOmegaId;
         _skills.Add(SDDataManager.Instance.getOwnedSkillById(skillOmegaId, heroHashcode));
         return;
     }
@@ -495,57 +407,43 @@ public class BattleRoleData : MonoBehaviour
         EnemyProperty.ID = UnitId;
         EnemyProperty._enemy.ID = UnitId;
         //
-        List<Dictionary<string, string>> itemDatas = SDDataManager.Instance.ReadFromCSV("enemy");
-        ROHeroData d = new ROHeroData();
-        int race = 0;
-        int gender = -1;
-        int starNum = 0;
-        int quality = 0;
-        string name = "";
-        for (int i = 0; i < itemDatas.Count; i++)
-        {
-            Dictionary<string, string> s = itemDatas[i];
-            if (s["id"] == enemyId.ToString())
-            {
-                d.BasicRAL = SDDataManager.Instance.RALByDictionary(s);
-                race = SDDataManager.Instance.getInteger(s["race"]);
-                gender = SDDataManager.Instance.getInteger(s["gender"]);
-                quality = SDDataManager.Instance.getInteger(s["quality"]);
-                name = s["name"];
-                break;
-            }
-        }
-        int career = (int)Job.End;
+        EnemyInfo enemy = SDDataManager.Instance.getEnemyInfoById(enemyId);
+        ROEnemyData d = SDDataManager.Instance.getEnemyDataById(enemyId);
+        int career = 0;
         if (rareWeight > 0) career = UnityEngine.Random.Range(0, (int)Job.End);
-        d = enemyBuild.AddCareerData(d, career, race);
-        d.gender = gender;
-        d.Name = name;
+        d = enemyBuild.AddCareerData(d, career);
         //
-        d.RALRate = new RoleAttributeList();
-        d.BasicRAL = enemyBuild.RALAddedByLevel(d.BasicRAL);
+        RoleAttributeList ral = enemyBuild.RALAddedByLevel(enemy.RAL);
         //
-        if (isLittleBoss) d = enemyBuild.LittleBossData(d, quality);
+        if (isLittleBoss) d = enemyBuild.LittleBossData(d, enemy.EnemyRank.Index);
         //
         int HS = SDDataManager.Instance.getNumFromId(UnitId);
         unit_character_model.initCharacterModel(HS, SDConstants.CharacterAnimType.Enemy, 6f);
         //
-        EnemyProperty._enemy.initData(starNum, d.BasicRAL, d.RALRate
-            , d.CRI, d.CRIDmg, d.DmgReduction
-            , d.DmgReflection, d.RewardRate, d.BarChartRegendPerTurn, d.ID, d.Name, 0);
+        ral.AffectedByRate(d.RALRate);
+        //
+        EnemyProperty._enemy.initData(enemy.EnemyRank.Index, ral
+            , d.CRIDmg, d.DmgReduction
+            , d.DmgReflection, d.dropCoins, d.BarChartRegendPerTurn
+            , enemy.ID, enemy.Name, 0);
         enemyBuild EB = FindObjectOfType<enemyBuild>();
         if (EB)
         {
-            List<OneSkill> skills = EB.WriteEnemySkills(career, race, starNum);
+            List<OneSkill> skills = EB.WriteEnemySkills(enemy);
             if(skills!=null)
             for (int i = 0; i < skills.Count; i++) _skills.Add(skills[i]);
         }
     }
     #endregion
     #region 状态类
+    [ReadOnly]
+    public int stateExtraDamage = 0;
+    public RoleBarChart AllRegend = RoleBarChart.zero;
     #region 全状态列表
     [Header("状态类内容")]
     public Text actionUnitStateText;
-    //public Transform statePanel;
+    
+    #region State In StateTag Or RegendState
     public string SpecialStateSign(StateTag tag)
     {
         switch (tag)
@@ -615,175 +513,177 @@ public class BattleRoleData : MonoBehaviour
     #endregion
     #region　撕裂状态①
     public BRD_OneStateController stateBleed
-    { get { return AllStates[(int)StateTag.Bleed]; }
-        set { AllStates[(int)StateTag.Bleed] = value; }
+    { get { return AllSTStates[(int)StateTag.Bleed]; }
+        set { AllSTStates[(int)StateTag.Bleed] = value; }
     }
     #endregion
     #region 压力状态②
     public BRD_OneStateController stateMind
     {
-        get { return AllStates[(int)StateTag.Mind]; }
-        set { AllStates[(int)StateTag.Mind] = value; }
+        get { return AllSTStates[(int)StateTag.Mind]; }
+        set { AllSTStates[(int)StateTag.Mind] = value; }
     }
     #endregion
     #region 灼烧状态③
     public BRD_OneStateController stateFire
     {
-        get { return AllStates[(int)StateTag.Fire]; }
-        set { AllStates[(int)StateTag.Fire] = value; }
+        get { return AllSTStates[(int)StateTag.Fire]; }
+        set { AllSTStates[(int)StateTag.Fire] = value; }
     }
     #endregion
     #region 霜冻状态④
     public BRD_OneStateController stateFrost
     {
-        get { return AllStates[(int)StateTag.Frost]; }
-        set { AllStates[(int)StateTag.Frost] = value; }
+        get { return AllSTStates[(int)StateTag.Frost]; }
+        set { AllSTStates[(int)StateTag.Frost] = value; }
     }
     #endregion
     #region 腐蚀状态⑤
     public BRD_OneStateController stateCorrosion
     {
-        get { return AllStates[(int)StateTag.Corrosion]; }
-        set { AllStates[(int)StateTag.Corrosion] = value; }
+        get { return AllSTStates[(int)StateTag.Corrosion]; }
+        set { AllSTStates[(int)StateTag.Corrosion] = value; }
     }
     #endregion
     #region 禁言状态⑥---无法释放技能
     public BRD_OneStateController stateHush
     {
-        get { return AllStates[(int)StateTag.Hush]; }
-        set { AllStates[(int)StateTag.Hush] = value; }
+        get { return AllSTStates[(int)StateTag.Hush]; }
+        set { AllSTStates[(int)StateTag.Hush] = value; }
     }
     #endregion
     #region 眩晕状态⑦
     public BRD_OneStateController stateDizzy
     {
-        get { return AllStates[(int)StateTag.Dizzy]; }
-        set { AllStates[(int)StateTag.Dizzy] = value; }
+        get { return AllSTStates[(int)StateTag.Dizzy]; }
+        set { AllSTStates[(int)StateTag.Dizzy] = value; }
     }
     #endregion
     #region 混乱状态⑧
     public BRD_OneStateController stateConfuse
     {
-        get { return AllStates[(int)StateTag.Confuse]; }
-        set { AllStates[(int)StateTag.Confuse] = value; }
+        get { return AllSTStates[(int)StateTag.Confuse]; }
+        set { AllSTStates[(int)StateTag.Confuse] = value; }
     }
     #endregion
 
+    /// <summary>
+    /// 按照StateTag固定存在的State
+    /// </summary>
     [HideInInspector]
-    public BRD_OneStateController[] AllStates;
+    public BRD_OneStateController[] AllSTStates;
     public BRD_OneStateController OneState(StateTag tag)
     {
-        return AllStates[(int)tag];
+        return AllSTStates[(int)tag];
     }
     #endregion
-    #region 应对单个状态脚本
-    public void show_state(StateTag tag)
+
+    #region State Can Add Or Remove
+    public List<OneStateController> CurrentStateList;
+    public bool AddStandardState(OneStateController state)
     {
-        PerStateUnit(tag)?.gameObject.SetActive(true);
-        //
-        if (!actionUnitStateText.text.Contains(SpecialStateSign(tag)))
+        if (CurrentStateList.Exists(x => x.ID == state.ID))
         {
-            actionUnitStateText.text += SpecialStateSign(tag);
+            return false;
         }
-    }
-    public void hide_state(StateTag tag)
-    {
-        PerStateUnit(tag)?.gameObject.SetActive(false);
-        //
-        if (actionUnitStateText.text.Contains(SpecialStateSign(tag)))
+        if (CurrentStateList.Count < SDConstants.UnitStateVolume)
         {
-            string s = actionUnitStateText.text;
-            s = s.Replace(SpecialStateSign(tag), "");
-            actionUnitStateText.text = s;
+            CurrentStateList.Add(state);return true;
         }
-        clear_state(tag);
-    }
-    public void clear_state(StateTag tag)
-    {
-        OneState(tag).Clear();
-    }
-    public void checkPerState(StateTag tag)
-    {
-        if (OneState(tag).LastTime > 0)
+        else
         {
-            OneState(tag).LastTime--;
-            if (OneState(tag).LastTime == 0)
+            for(int i = 0; i < CurrentStateList.Count; i++)
             {
-                hide_state(tag);
+                if (CurrentStateList[i].CanSqueeze)
+                {
+                    CurrentStateList.RemoveAt(i);
+                    CurrentStateList.Add(state);
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    public void checkAllStandardStates()
+    {
+        for(int i = 0; i < CurrentStateList.Count; i++)
+        {
+            if (CurrentStateList[i].LastTime <= 0)
+            {
+                CurrentStateList.RemoveAt(i);
+            }
+            else
+            {
+                if(CurrentStateList[i].StateEndType == StandardState.StateEndType.time)
+                {
+                    CurrentStateList[i].LastTime--;
+                }
+                //
+                ThisBasicRoleProperty()._role.AllARevision += CurrentStateList[i].RAL;
+                stateExtraDamage += CurrentStateList[i].ExtraDmg;
+                AllRegend += CurrentStateList[i].BarChart;
+                CurrentStateList[i].ExtraFunction(this);
+            }
+        }
+    }
+    /// <summary>
+    /// 使用技能后失效的状态
+    /// </summary>
+    public void CheckStatesWithTag_skill()
+    {
+        for(int i = 0; i < CurrentStateList.Count; i++)
+        {
+            if(CurrentStateList[i].StateEndType == StandardState.StateEndType.skill)
+            {
+                CurrentStateList[i].LastTime = 0;
+            }
+        }
+    }
+    /// <summary>
+    /// 被攻击后失效的状态
+    /// </summary>
+    public void CheckStatesWithTag_beAtked()
+    {
+        for (int i = 0; i < CurrentStateList.Count; i++)
+        {
+            if (CurrentStateList[i].StateEndType == StandardState.StateEndType.beAtked)
+            {
+                CurrentStateList[i].LastTime = 0;
             }
         }
     }
     #endregion
-    public void hideAllStates()
+    #endregion
+    #region 应对单个状态脚本
+    public bool checkPerState(StateTag tag)
     {
-        for (int i = 0; i < (int)StateTag.End; i++)
+        return CurrentStateList.FindAll(x => x.StateTag == tag).Count > 0;
+    }
+    public void clearPerTagStates(StateTag tag)
+    {
+        for(int i = 0; i < CurrentStateList.Count; i++)
         {
-            hide_state((StateTag)i);
+            if(CurrentStateList[i].StateTag == tag)
+            {
+                CurrentStateList.RemoveAt(i);
+            }
         }
     }
-    public void hideStatusAndShadow()
+    public void clearAllStates()
     {
-        actionUnitStateText.text = "";
-        //statePanel
+        CurrentStateList.Clear();
     }
+    #endregion
     #region 快速状态索引器
     public bool ReadThisStateEnable(StateTag tag)
     {
-        int c = OneState(tag).stateCondition;
-        return c != 0;
+        return checkPerState(tag);
     }
     public int ReadThisStateLastTime(StateTag tag)
     {
-        return OneState(tag).LastTime;
-    }
-    public int ReadThisStateDmg(StateTag tag)
-    {
-        return OneState(tag).ExtraDmg;
-    }
-    /// <summary>
-    /// 控制状态图标的显示与隐藏
-    /// </summary>
-    /// <param name="Tag">状态标签</param>
-    /// <param name="Show">状态显示true;隐藏false</param>
-    public void ControlStateVisual(StateTag Tag, bool Show, int freshtime = 0)
-    {
-        bool ChangeVisual = false;
-        if (Show && OneState(Tag).stateCondition == 0)
-        {
-            OneState(Tag).stateCondition = 1;
-            ChangeVisual = true;
-            OneState(Tag).LastTime = freshtime != 0 ? freshtime : 0;
-            show_state(Tag);
-        }
-        else if (!Show && OneState(Tag).stateCondition != 0)
-        {
-            OneState(Tag).stateCondition = 0;
-            ChangeVisual = true;
-            hide_state(Tag);
-        }
-        switch (Tag)
-        {
-            case StateTag.Bleed:
-                break;
-            case StateTag.Mind:
-                break;
-            case StateTag.Fire:
-                break;
-            case StateTag.Frost:
-                break;
-            case StateTag.Corrosion:
-                break;
-            case StateTag.Hush:
-                break;
-            case StateTag.Dizzy:
-                break;
-            case StateTag.Confuse:
-                break;
-        }
-        if (ChangeVisual)//修改状态列表图片时触发
-        {
-
-        }
+        List<OneStateController> fixes = CurrentStateList.FindAll(x => x.StateTag == tag);
+        IEnumerable<int> timeList = fixes.Select(x => x.LastTime);
+        return timeList.Max();
     }
     #region 构建额外状态
     public void initInterveneState(int changeData,int lastTime,bool isBuff = true)
@@ -795,117 +695,7 @@ public class BattleRoleData : MonoBehaviour
         RoleExtraState.initReflectState(changeData, lastTime, isBuff);
     }
     #endregion
-    #region 构建恢复类状态
-    #region 恢复HP状态⑨
-    public RegendStateController stateHpRegend
-    {
-        get { return AllRegends[(int)SDConstants.BCType.hp]; }
-        set { AllRegends[(int)SDConstants.BCType.hp] = value; }
-    }
-    #endregion
-    #region 恢复MP状态⑩
-    public RegendStateController stateMpRegend
-    {
-        get { return AllRegends[(int)SDConstants.BCType.mp]; }
-        set { AllRegends[(int)SDConstants.BCType.mp] = value; }
-    }
-    #endregion
-    #region 恢复TP状态⑪
-    public RegendStateController stateTpRegend
-    {
-        get { return AllRegends[(int)SDConstants.BCType.tp]; }
-        set { AllRegends[(int)SDConstants.BCType.tp] = value; }
-    }
-    #endregion
-    public RegendStateController[] AllRegends = new RegendStateController[3];
-    public RegendStateController OneRegend(SDConstants.BCType tag)
-    {
-        return AllRegends[(int)tag];
-    }
-    public void show_regend(SDConstants.BCType tag)
-    {
-        PerRegendUnit(tag)?.gameObject.SetActive(true);
-        if (!actionUnitStateText.text.Contains(SpecialRegendSign(tag)))
-        {
-            actionUnitStateText.text += SpecialRegendSign(tag);
-        }
-    }
-    public void hide_regend(SDConstants.BCType tag)
-    {
-        PerRegendUnit(tag)?.gameObject.SetActive(true);
-        if (actionUnitStateText.text.Contains(SpecialRegendSign(tag)))
-        {
-            string s = actionUnitStateText.text;
-            s = s.Replace(SpecialRegendSign(tag), "");
-            actionUnitStateText.text = s;
-        }
-        clear_regend(tag);
-    }
-    public void hide_all_regends()
-    {
-        for(int i = 0; i < (int)SDConstants.BCType.end; i++)
-        {
-            hide_regend((SDConstants.BCType)i);
-        }
-    }
-    public void clear_regend(SDConstants.BCType tag)
-    {
-        OneRegend(tag).clear();
-    }
-    public void checkPerRegend(SDConstants.BCType tag)
-    {
-        if (OneRegend(tag).LastTime > 0)
-        {
-            OneRegend(tag).LastTime--;
-            if (OneRegend(tag).LastTime == 0)
-            {
-                hide_regend(tag);
-            }
-        }
-    }
-    public void ControlRegendVisual(SDConstants.BCType Tag, int freshtime,int data = 0)
-    {
-        bool ChangeVisual = false;
 
-        if(AllRegends[(int)Tag].LastTime == 0)
-            AllRegends[(int)Tag].LastTime = freshtime;
-
-        AllRegends[(int)Tag].Data += data;
-        if (freshtime > 0)
-        {
-            if (AllRegends[(int)Tag].Condition == 0)
-            {
-                ChangeVisual = true;
-                show_regend(Tag);
-            }
-            if(AllRegends[(int)Tag].Data > 0)
-                AllRegends[(int)Tag].Condition = 1;
-            else AllRegends[(int)Tag].Condition = -1;
-        }
-        else
-        {
-            if (AllRegends[(int)Tag].Condition != 0)
-            {
-                ChangeVisual = true;
-                hide_regend(Tag);
-            }
-            AllRegends[(int)Tag].Condition = 0;
-        }
-        switch (Tag)
-        {
-            case SDConstants.BCType.hp:
-                break;
-            case SDConstants.BCType.mp:
-                break;
-            case SDConstants.BCType.tp:
-                break;
-        }
-        if (ChangeVisual)//修改状态列表图片时触发
-        {
-
-        }
-    }
-    #endregion
     public void getBCOA(RoleBarChart BC)
     {
         if (BC.HP > 0)
@@ -944,49 +734,34 @@ public class BattleRoleData : MonoBehaviour
     public void CheckStates()
     {
         ThisBasicRoleProperty()._role.AllARevision = RoleAttributeList.zero;
-        for(int i = 0; i < (int)StateTag.End; i++)
+        stateExtraDamage = 0;
+        AllRegend = ThisBasicRoleProperty().BarChartRegendPerTurn;
+        checkAllStandardStates();
+        for (int i = 0; i < (int)StateTag.End; i++)
         {
-            checkPerState((StateTag)i);
-            ThisBasicRoleProperty()._role.AllARevision
-                += OneState((StateTag)i).UniqueEffectInRA;
-        }
-        #region Consume or Regend
-        if (OneRegend(SDConstants.BCType.hp).LastTime > 0)
-        {
-            if (OneRegend(SDConstants.BCType.hp).Data > 0)
-                HpController.addHp(OneRegend(SDConstants.BCType.hp).Data);
-            else HpController.consumeHp(Mathf.Abs(OneRegend(SDConstants.BCType.hp).Data));
-        }
-        if (OneRegend(SDConstants.BCType.mp).LastTime > 0)
-        {
-            if (OneRegend(SDConstants.BCType.mp).Data > 0)
+            if (checkPerState((StateTag)i))
             {
-                MpController.addMp(OneRegend(SDConstants.BCType.mp).Data);
+                ThisBasicRoleProperty()._role.AllARevision
+                    += OneState((StateTag)i).UniqueEffectInRA;
+                stateExtraDamage += OneState((StateTag)i).ExtraDmg;
             }
-            else MpController.consumeMp(Mathf.Abs(OneRegend(SDConstants.BCType.mp).Data));
         }
-        if (OneRegend(SDConstants.BCType.tp).LastTime > 0)
-        {
-            if (OneRegend(SDConstants.BCType.tp).Data > 0)
-            {
-                TpController.addTp(OneRegend(SDConstants.BCType.tp).Data);
-            }
-            else TpController.consumeTp(Mathf.Abs(OneRegend(SDConstants.BCType.tp).Data));
-        }
-        #endregion
-        #region dmg
-        int dmg = checkStatesDamaging();
-        HpController.getExtraDamage(dmg);
-        #endregion
+        HpController.getExtraDamage(stateExtraDamage);
         #region otherBuff
-        if (!IsEnemy && _Tag == SDConstants.CharacterType.Hero)
+        if (_Tag == SDConstants.CharacterType.Hero)
         {
             Race _race = HeroProperty._hero._heroRace;
             RoleAttributeList basic = ThisBasicRoleProperty()._role.ThisRoleAttributes;
             ThisBasicRoleProperty()._role.AllARevision += SDDataManager.Instance.BuffFromDaynight(basic);
             ThisBasicRoleProperty()._role.AllARevision += SDDataManager.Instance.BuffFromRace(basic, _race);
         }
-
+        #endregion
+        #region GoddessState
+        if (BM.GM.haveGoddess)
+        {
+            ThisBasicRoleProperty()._role.AllARevision += BM.GM.GetRALUpByGoddess
+                (ThisBasicRoleProperty()._role.ThisRoleAttributes);
+        }
         #endregion
         #region extraState
         RoleExtraState.checkExtraStates();
@@ -1011,24 +786,13 @@ public class BattleRoleData : MonoBehaviour
                 d += (AttributeData)i + " " + l.AllAttributeData[i] + "|| ";
             }
         }
-        
-        string d1 = "";
-        for (int i = 0; i < (int)SDConstants.BCType.end; i++)
-        {
-            if(AllRegends[i].LastTime>0)
-            {
-                d1 += ((SDConstants.BCType)i).ToString() + " Regend: "
-                    + AllRegends[i].Data + "=== "; 
-            }
-        }
-        
         string d2 = "";
         int dmg = checkStatesDamaging();
         if (dmg != 0)
         {
             d2 += " 状态持续造成伤害:" + dmg;
         }
-        string all = d + d1 + d2;
+        string all = d + d2;
     }
 
 
@@ -1040,9 +804,9 @@ public class BattleRoleData : MonoBehaviour
         int d = 0;
         for (int i = 0; i < (int)StateTag.End; i++)
         {
-            if (AllStates[i].stateCondition != 0)
+            if (AllSTStates[i].stateCondition != 0)
             {
-                d += AllStates[i].ExtraDmg;
+                d += AllSTStates[i].ExtraDmg;
             }
         }
         return d;
@@ -1063,8 +827,6 @@ public class BattleRoleData : MonoBehaviour
     {
         int baseC = ThisBasicRoleProperty().ReadRA(AttributeData.Crit);
         int realC = (int)(baseC * AllRandomSetClass.SimplePercentToDecimal(_skill.CritR + 100));
-        realC = (int)(realC * AllRandomSetClass.SimplePercentToDecimal
-            (ThisBasicRoleProperty().CRI + 100));
         float Rate = AdolescentSet.CritFunction(realC);
         bool _IsCrit = UnityEngine.Random.Range(0,1f) < Rate;
         CritHappen = _IsCrit;
@@ -1082,7 +844,7 @@ public class BattleRoleData : MonoBehaviour
         else
         {
             BasicRoleProperty _target = _targetUnit.ThisBasicRoleProperty();
-            int baseA = ThisBasicRoleProperty().ReadRA((int)AttributeData.Accur);
+            int baseA = ThisBasicRoleProperty().ReadRA(AttributeData.Accur);
             int realA = (int)(baseA * AllRandomSetClass.SimplePercentToDecimal(_skill.AccuracyR + 100));
             int Evo = _target.ReadRA(AttributeData.Evo);
             float Rate = AdolescentSet.AccurFunction(realA, Evo);
@@ -1108,7 +870,7 @@ public class BattleRoleData : MonoBehaviour
     public int ExpectResult;//期望最终浮动
     public void CheckThisSkillCauseExpect(SkillFunction _skill)
     {
-        int _expect = ThisBasicRoleProperty().ReadRA((int)AttributeData.Expect);
+        int _expect = ThisBasicRoleProperty().ReadRA(AttributeData.Expect);
         int _expectR = _skill.ExpectR;
         int Ex = (int)(_expect * AllRandomSetClass.SimplePercentToDecimal(_expectR + 100));
         ExpectResult = Ex;
@@ -1219,16 +981,13 @@ public class BattleRoleData : MonoBehaviour
         if (_Tag == SDConstants.CharacterType.Hero)
         {
             BM.Remaining_SRL.Remove(this);
-            hideAllStates();
-            hide_all_regends();
+            clearAllStates();
         }
         else
         {
             BM.Remaining_ORL.Remove(this);
             gameObject.tag = "Untagged";
             showNextUnitFlag = BM.CheckBattleSuccess();
-            hideAllStates();
-            hide_all_regends();
         }
         yield return new WaitForSeconds(DAMAGE_ANIM_TIME);
         #region 消失动画
@@ -1264,7 +1023,7 @@ public class BattleRoleData : MonoBehaviour
         {
             string id = ThisBasicRoleProperty().ID;
             ROEnemyData data = SDDataManager.Instance.getEnemyDataById(id);
-            string t = "kill_" + data.Class;
+            string t = "kill_" + data.Info.EnemyRank.EnemyType.ToString();
             SDDataManager.Instance.addAchievementDataByType(t);
         }
         #endregion
@@ -1326,19 +1085,15 @@ public class BattleRoleData : MonoBehaviour
         if(_Tag == SDConstants.CharacterType.Hero)
         {
             BM.Remaining_SRL.Remove(this);
-            hideAllStates();
-            //hidestatusandshadow();
-            hide_all_regends();
-
         }
         else
         {
             BM.Remaining_ORL.Remove(this);
             gameObject.tag = "Untagged";
             showNextUnitFlag = BM.CheckBattleSuccess();
-            hideAllStates();
-            hide_all_regends();
         }
+        clearAllStates();
+
         yield return new WaitForSeconds(DAMAGE_ANIM_TIME);
         Debug.Log(transform.name + " die.");
         #region 死亡动画
@@ -1349,7 +1104,7 @@ public class BattleRoleData : MonoBehaviour
                 (unit_character_model.CurrentCharacterModel.anim_die);
 
         }
-        else
+        else if(_Tag == SDConstants.CharacterType.Enemy)
         {
             unit_character_model.CurrentCharacterModel.isEnemy = true;
             if (IsBoss)
@@ -1357,6 +1112,12 @@ public class BattleRoleData : MonoBehaviour
                 unit_character_model.CurrentCharacterModel.isBoss = true;
                 //BM.
             }
+            unit_character_model
+                .CurrentCharacterModel.ChangeModelAnim
+                (unit_character_model.CurrentCharacterModel.anim_die);
+        }
+        else
+        {
             unit_character_model
                 .CurrentCharacterModel.ChangeModelAnim
                 (unit_character_model.CurrentCharacterModel.anim_die);
@@ -1394,7 +1155,7 @@ public class BattleRoleData : MonoBehaviour
         {
             string id = ThisBasicRoleProperty().ID;
             ROEnemyData data = SDDataManager.Instance.getEnemyDataById(id);
-            string t = "kill_" + data.Class;
+            string t = "kill_" + data.Info.EnemyRank.EnemyType.ToString();
             SDDataManager.Instance.addAchievementDataByType(t);
         }
         #endregion

@@ -31,20 +31,17 @@ public class SDSkillSelect : MonoBehaviour
         skillList.Clear();
         rect.horizontalNormalizedPosition = 0;
     }
-    public void initHeroAllSkills(bool noSort = false)
+    public void initHeroAllSkills()
     {
         Job career = heroDetail._hero._heroJob;
         Race race = heroDetail._hero._heroRace;
         List<OneSkill> all = SDDataManager.Instance.getAllSkillsByHashcode(heroDetail.Hashcode);
         currentAll = all;
-        if (!noSort)
+        all.Sort(
+        (x, y) =>
         {
-            all.Sort(
-                (x, y) =>
-                {
-                    return x.isUnlocked.CompareTo(!y.isUnlocked);
-                });
-        }
+            return x.islocked.CompareTo(y.islocked);
+        });
         resetSkillList();
 
 
@@ -56,12 +53,13 @@ public class SDSkillSelect : MonoBehaviour
             s.localScale = Vector3.one;
             s.gameObject.SetActive(true);
             RTSingleSkillItem _S = s.GetComponent<RTSingleSkillItem>();
-
-            _S.initSkillItem(all[i], heroDetail.Hashcode);//构建技能基础信息
             if (SDDataManager.Instance.ifDeployThisSkill(all[i].skillId, heroDetail.Hashcode))
             {
                 _S.isDeployed = true;
             }
+            else _S.isDeployed = false;
+            _S.initSkillItem(all[i], heroDetail.Hashcode);//构建技能基础信息
+
             if(item_use_type == itemUseType.deploy)
             {
                 _S.use_type = 1;

@@ -46,8 +46,10 @@ public class ConditionalHidePropertyDrawer : PropertyDrawer
         {
             if (sourcePropertyValue.propertyType == SerializedPropertyType.Enum)
             {
-                int enumValue = (int)Mathf.Pow(2, sourcePropertyValue.enumValueIndex);
-                enabled = (enumValue & condHAtt.EnumCondition) == enumValue;
+                //int enumValue = (int)Mathf.Pow(2, sourcePropertyValue.enumValueIndex);
+                //enabled = (enumValue & condHAtt.EnumCondition) == enumValue;
+                enabled = sourcePropertyValue.enumValueIndex == condHAtt.EnumCondition;
+                enabled = condHAtt.Negate ? !enabled : enabled;
             }
             else enabled = condHAtt.Negate ? !sourcePropertyValue.boolValue : sourcePropertyValue.boolValue;
         }

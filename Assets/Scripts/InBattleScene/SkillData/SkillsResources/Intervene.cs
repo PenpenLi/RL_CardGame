@@ -20,6 +20,7 @@ public class Intervene : SkillFunction
         CalculateBeforeFunction(source, target);
 
         StartCoroutine(IEStartSkill(source, target));
+        stateWork(source, target);
     }
     public IEnumerator IEStartSkill(BattleRoleData source, BattleRoleData target)
     {

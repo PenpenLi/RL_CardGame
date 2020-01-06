@@ -43,13 +43,15 @@ public class Talker : MonoBehaviour
     public void Init()
     {
         if (!info) return;
+
+        Data = new TalkerData();
+        Data.info = Info;
         if (Info.IsQuestGiver)
         {
-            Data = new TalkerData();
-            Data.info = Info;
             Data.InitQuest(info.QuestsStored);
+            Debug.Log("任务-" + TalkerName + "---" + Data.questInstances.Count);
         }
-        Debug.Log("任务-" + TalkerName + "---" + Data.questInstances.Count);
+
     }
 
 

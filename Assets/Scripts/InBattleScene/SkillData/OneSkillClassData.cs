@@ -12,11 +12,10 @@ public enum SkillKind
     End,
 }
 public enum SkillBreed
-{
-    Absence,
+{    
     Remote,
     Close,
-    End,
+    Absence,
 }
 public enum SkillAim
 {
@@ -32,14 +31,25 @@ public enum SkillAim
 [System.Serializable]
 public class OneSkill
 {
-    public int skillId;
+    public string skillId;
     public string SkillName;
+
+    public bool UseAppointedPrefab;
+    [ConditionalHide("UseAppointedPrefab", true, true)]
     public int SkillFunctionID;
+    [ConditionalHide("UseAppointedPrefab", true, false)]
+    public Transform SkillPrefab;
+    [ConditionalHide("UseAppointedPrefab", true, false)]
+    public skillInfo.ExtraSkillDataSet DataSet;
+
     public string IconImg;
     public string BulletImg;
 
     public bool isOmegaSkill;
-    public bool isUnlocked;
+    public bool islocked
+    {
+        get { return lv < 0; }
+    }
 
     public string Desc;
     public int lv;
@@ -47,7 +57,7 @@ public class OneSkill
     public int skillAnimId;
 
     public SkillAim Aim = SkillAim.End;
-    public SkillBreed Breed = SkillBreed.End;
+    public SkillBreed Breed = SkillBreed.Absence;
     public SkillKind Kind = SkillKind.End;
     public SDConstants.AOEType SkillAoe = SDConstants.AOEType.End;
     public SDConstants.AddMpTpType MpTpAddType = SDConstants.AddMpTpType.End;
@@ -56,7 +66,7 @@ public class OneSkill
         get {
             return new OneSkill()
             {
-                skillId = 0,
+                skillId = "@SH_NOR#000",
                 SkillName = "普通攻击",
                 SkillFunctionID = 0,
                 IconImg = "NormalAttack",
@@ -71,7 +81,7 @@ public class OneSkill
         {
             return new OneSkill()
             {
-                skillId = 0,
+                skillId = string.Empty,
                 SkillName = "",
                 SkillFunctionID = -1,
                 IconImg = "",

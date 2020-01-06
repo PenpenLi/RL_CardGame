@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbf95ce61c3a03c4492e0790fb1cd787, type: 3}
+  m_Name: "1_013_\u4EDE\u80E7"
+  m_EditorClassIdentifier: 
+  _ID: H_RANGER#000013
+  _Name: "\u4EDE\u80E7"
+  _DESC: 
+  sex: 1
+  characterType: 0
+  faceIcon: {fileID: 0}
+  _LEVEL: 0
+  skeleton: 0
+  weaponRaceList:
+  - {fileID: 11400000, guid: e861875e5d429db488c11aad20ff5ed5, type: 2}
+  - {fileID: 11400000, guid: e7dc34fea4b56714aa1ad99e0d21d01b, type: 2}
+  _RAL:
+    AllAttributeData: aa00000023000000300000001e0000000d000000140000000d000000050000000300000014000000060000000600000002000000
+    AllResistData: 0f0000000f0000000f0000000f0000000f0000000f0000000f0000000f000000
+  _career: {fileID: 11400000, guid: e19143b614ea08e4eb322118e9b288d7, type: 2}
+  _race: {fileID: 11400000, guid: ce9d470ff9dd74846876b4a80f211b32, type: 2}
+  specialStr: 
+  personalSkillList:
+  - {fileID: 11400000, guid: 99bc614c4da679e47a3fa6ecd7bb3496, type: 2}
+  - {fileID: 11400000, guid: d908be6423eeffe49a2771257004ddde, type: 2}

@@ -12,6 +12,7 @@ public class FactoryWorkCard : UseTimeItem
     [Space,Header("NPC_Set")]
     public Button NPCPlace;
     public Image NPCFace;
+    public Text NPCMessage;
     #region NPC_Empty
     public Transform NPC_emptyPanel;
     private bool _NPCIsEmpty;
@@ -49,6 +50,7 @@ public class FactoryWorkCard : UseTimeItem
     {
         get { return GetComponentInParent<FactoryPanel>(); }
     }
+    public List<string> CurrentRewardList = new List<string>();
     //public 
     public override void refreshTimeCondition()
     {
@@ -69,9 +71,29 @@ public class FactoryWorkCard : UseTimeItem
         {
             if (!isEmpty)
             {
+                GDEtimeTaskData task = SDDataManager.Instance.GetTimeTaskById(taskId);
+                string itemId = task.itemId;
+                int oldD = task.oldData;
                 if (SDDataManager.Instance.FinishTimeTask(taskId))
                 {
+                    CurrentRewardList = new List<string>();
+                    CurrentRewardList.Add(itemId);
+                    for(int i = 0; i < FP.AllProducts.Count; i++)
+                    {
+                        float r = oldD * 1f / (oldD + i + 2);
+                        if (UnityEngine.Random.Range(0,1f)<r)
+                        {
+                            CurrentRewardList.Add(FP.AllProducts[i].ID);
+                            SDDataManager.Instance.addConsumable(FP.AllProducts[i].ID);
+                        }
+                    }
                     Debug.Log("成功获取工厂成果");
+                    string re = CurrentRewardList[0];
+                    for(int i = 1; i < CurrentRewardList.Count; i++)
+                    {
+                        re += " & " + CurrentRewardList[i];
+                    }
+                    PopoutController.CreatePopoutMessage("获取奖励" + re, 10);
                 }
             }
         }
@@ -85,5 +107,18 @@ public class FactoryWorkCard : UseTimeItem
     public void ChangeWorkingNPC(int newHashcode)
     {
 
+    }
+
+    public override void initTimeTask(GDEtimeTaskData task)
+    {
+        base.initTimeTask(task);
+        GDENPCData slave = SDDataManager.Instance.GetNPCOwned(task.itemHashcode);
+        if (slave != null)
+        {
+            int lv = SDDataManager.Instance.getLevelByExp(slave.exp);
+            int like = SDDataManager.Instance.getLikeByLikability
+                (slave.likability,out float rate);
+            NPCMessage.text = lv + "·" + like;
+        }
     }
 }

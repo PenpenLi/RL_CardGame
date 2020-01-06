@@ -52,10 +52,10 @@ public class SDHeroImprove : BasicImprovePage
         int exp = hero.exp;
         int lv = SDDataManager.Instance.getLevelByExp(exp);
         lvText.text = SDGameManager.T("Lv.") + lv;
-        int e0 = exp - SDDataManager.Instance.getExpByLevel(lv);
-        int e1 = (lv + 1) * SDConstants.MinExpPerLevel;
+        int e0 = exp - SDDataManager.Instance.getMinExpReachLevel(lv);
+        int e1 = SDDataManager.Instance.ExpBulkPerLevel(lv+1);
         expText.text = e0 + "/" + e1;
-        expSlider.localScale = Vector3.up + Vector3.forward + Vector3.right * (e0 * 1f / e1);
+        expSlider.localScale = Vector3.up + Vector3.forward + Vector3.right * SDDataManager.Instance.getExpRateByExp(exp);
 
         stockPage.heroImproveController = this;
 
@@ -102,7 +102,7 @@ public class SDHeroImprove : BasicImprovePage
         currentImproveKind = improveKind;
         stockPage.ResetPage();
         stockPage.maxSelectedNum = maxSelectedNum;
-        stockPage.ItemInit(MType);
+        stockPage.ItemInitForHero(MType);
         stockPage.SelectEmpty();
         RefreshImprovePanel();
         if (stockPage.items.Count == 0) emptyStockPanel.gameObject.SetActive(true);
@@ -126,12 +126,11 @@ public class SDHeroImprove : BasicImprovePage
                 if (kind == ImproveKind.exp && stock.materialType == SDConstants.MaterialType.exp)
                 {
                     int useNum = stock.UsedNum;
-                    if (SDDataManager.Instance.consumeMaterial
+                    if (SDDataManager.Instance.consumeConsumable
                         (stock.itemId, out int residue, stock.UsedNum))
                     {
                         SDDataManager.Instance.addExpToHeroByHashcode
-                            (hashcode, SDDataManager
-                            .Instance.getMaterialFigureById(stock.itemId) * useNum);
+                            (hashcode, SDDataManager.Instance.getFigureFromMaterial(stock.itemId) * useNum);
                         Debug.Log("成功消耗材料id" + list[i].itemId 
                             +" " + useNum + "个 剩余" + residue);
                     }
@@ -156,7 +155,7 @@ public class SDHeroImprove : BasicImprovePage
                 {
                     int usenum = stock.UsedNum;
                     SDDataManager.Instance.addLikabilityToHeroByHashcode
-                        (hashcode, SDDataManager.Instance.getMaterialFigureById(stock.itemId) * usenum);
+                        (hashcode, SDDataManager.Instance.getFigureFromMaterial(stock.itemId) * usenum);
                 }
             }
             else if (stock.stockType == SDConstants.StockType.hero)
@@ -286,7 +285,7 @@ public class SDHeroImprove : BasicImprovePage
     public void skillImprove_hero(GDEHeroData heroMaterial)
     {
         List<OneSkill> allSs = SDDataManager.Instance.getAllSkillsByHashcode(heroDetail.Hashcode);
-        List<int> ups = new List<int>();
+        List<string> ups = new List<string>();
         for(int i = 0; i < heroMaterial.skillsOwned.Count; i++)
         {
             bool flag = false;
@@ -342,7 +341,7 @@ public class SDHeroImprove : BasicImprovePage
             {
                 if(kind == ImproveKind.exp && stock.materialType == SDConstants.MaterialType.exp)
                 {
-                    figure += SDDataManager.Instance.getMaterialFigureById(stock.itemId) * stock.UsedNum;
+                    figure += SDDataManager.Instance.getFigureFromMaterial(stock.itemId) * stock.UsedNum;
                 }
                 else if (kind == ImproveKind.star && stock.materialType == SDConstants.MaterialType.star)
                 {
@@ -354,7 +353,7 @@ public class SDHeroImprove : BasicImprovePage
                 }
                 else if(kind == ImproveKind.likability && stock.materialType == SDConstants.MaterialType.likability)
                 {
-                    figure += SDDataManager.Instance.getMaterialFigureById(stock.itemId) * stock.UsedNum;
+                    figure += SDDataManager.Instance.getFigureFromMaterial(stock.itemId) * stock.UsedNum;
                 }
             }
             else if(stock.stockType == SDConstants.StockType.hero)
@@ -410,22 +409,24 @@ public class SDHeroImprove : BasicImprovePage
 
     public bool checkifUseThisInSkillImprove(List<RTSingleStockItem> list , RTSingleStockItem newStock)
     {
-        List<OneSkill> all = SDDataManager.Instance.getAllSkillsByHashcode(heroDetail.Hashcode);
+        ///现已解锁的所有技能
+        List<GDEASkillData> all = SDDataManager.Instance.OwnedSkillsByHero(heroDetail.Hashcode);
         int m0 = 0;
         for (int i = 0; i < list.Count; i++)
         {
             RTSingleStockItem stock = list[i];
             if(stock.materialType == SDConstants.MaterialType.skill)
             {
-                if(stock.itemId == "M_M#3010011")//m0
+                string specialStr = SDDataManager.Instance.getMaterialSpecialStr(stock.itemId);
+                if(specialStr.Contains("random1"))//m0
                 { 
                     m0 = stock.UsedNum; 
                 }
-                else if(stock.itemId == "M_M#3010012")//m1
+                else if(specialStr.Contains("all"))//m1
                 {
-                    foreach(OneSkill s in all)
+                    foreach(var s in all)
                     {
-                        s.lv += stock.UsedNum;
+                        s.Lv += stock.UsedNum;
                     }
                 }
             }
@@ -437,7 +438,7 @@ public class SDHeroImprove : BasicImprovePage
         int left = 0;
         for(int i = 0; i < all.Count; i++)
         {
-            left += SDConstants.SkillMaxGrade - all[i].lv;
+            left += SDConstants.SkillMaxGrade - all[i].Lv;
         }
 
         if(newStock.stockType == SDConstants.StockType.material)
@@ -452,10 +453,10 @@ public class SDHeroImprove : BasicImprovePage
         {
             for(int i = 0; i < SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned.Count; i++)
             {
-                int id = SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned[i].Id;
-                foreach(OneSkill s in all)
+                string id = SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned[i].Id;
+                foreach(GDEASkillData s in all)
                 {
-                    if(s.skillId == id && s.lv < SDConstants.SkillMaxGrade)
+                    if(s.Id == id && s.Lv < SDConstants.SkillMaxGrade)
                     {
                         return true;
                     }
@@ -465,17 +466,17 @@ public class SDHeroImprove : BasicImprovePage
         }
         return false;
     }
-    public List<OneSkill> listAddHeroSkill(List<OneSkill> oldAll, GDEHeroData hero)
+    public List<GDEASkillData> listAddHeroSkill(List<GDEASkillData> oldAll, GDEHeroData hero)
     {
-        List<OneSkill> all = oldAll;
+        List<GDEASkillData> all = oldAll;
         for(int i = 0; i < hero.skillsOwned.Count; i++)
         {
             GDEASkillData skill = hero.skillsOwned[i];
-            foreach(OneSkill s in all)
+            foreach(GDEASkillData s in all)
             {
-                if(s.skillId == skill.Id)
+                if(s.Id == skill.Id)
                 {
-                    s.lv++;
+                    s.Lv++;
                     break;
                 }
             }

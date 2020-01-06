@@ -14,51 +14,64 @@ public class AddBarChart : SkillFunction
         IsUsed = true;
         CalculateBeforeFunction(source, target);
 
-        List<BattleRoleData> list = DealWithAOEAction(source, target);
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
         for (int i = 0; i < list.Count; i++)
         {
-            StartCoroutine(IEStartSkill(source, list[i], valCaused(source, list[i])));
+            StartCoroutine(IEStartSkill(source, list[i], new NDBarChart(valCaused(source, list[i]))));
         }
     }
-    public void PropStartSkill(BattleRoleData source,BattleRoleData target,RoleBarChart val
-        ,SDConstants.AOEType aoeType)
+
+    public void PropStartSkill(BattleRoleData source, BattleRoleData target, NDBarChart val
+        , SDConstants.AOEType aoeType)
     {
         base.StartSkill(source, target);
         if (IsProcessing) return;
         IsProcessing = true;
         IsUsed = true;
-        if (GetComponent<HSkilInfo>())
+
+        List<BattleRoleData> list = DealWithAOEAction(source, target,aoeType);
+        for (int i = 0; i < list.Count; i++)
         {
-            GetComponent<HSkilInfo>().AOEType = aoeType;
-            List<BattleRoleData> list = DealWithAOEAction(source, target);
-            for (int i = 0; i < list.Count; i++)
-            {
-                StartCoroutine(IEStartSkill(source, list[i], val));
-            }
-        }
-        else
-        {
-            StartCoroutine(IEStartSkill(source, target, val));
+            StartCoroutine(IEStartSkill(source, list[i], val));
         }
     }
-    public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target,RoleBarChart val)
+
+    public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target,NDBarChart _val)
     {
         source.unit_character_model.CurrentCharacterModel.ChangeModelAnim
             (source.unit_character_model.CurrentCharacterModel.anim_cast, false);
         SLEffectManager.Instance.playCommonEffectCast(source.transform.position);
         yield return new WaitForSeconds(castLastTime);
-        if (val.HP != 0)
+        if (_val.HP != 0)
             SLEffectManager.Instance.playCommonEffectLocalBarChartAdd
                 (target.transform.position);
-        else if(val.MP!=0)
+        else if(_val.MP!=0)
             SLEffectManager.Instance.playCommonEffectLocalBarChartAdd
                 (target.transform.position, SDConstants.BCType.mp);
-        else if(val.TP!=0)
+        else if(_val.TP!=0)
             SLEffectManager.Instance.playCommonEffectLocalBarChartAdd
                 (target.transform.position, SDConstants.BCType.tp);
         yield return new WaitForSeconds(effectLastTime);
         source.unit_character_model.CurrentCharacterModel.ChangeModelAnim
             (source.unit_character_model.CurrentCharacterModel.anim_idle, true);
+
+        RoleBarChart val = RoleBarChart.zero;
+        if (_val.HP.dataTag == NumberData.DataType.integer) val.HP = _val.HP.DATA;
+        else if(_val.HP.dataTag == NumberData.DataType.percent)
+        {
+            val.HP = (int)(target.HpController.MaxHp * _val.HP.DECIMAL); 
+        }
+        if (_val.MP.dataTag == NumberData.DataType.integer) val.MP = _val.MP.DATA;
+        else if(_val.MP.dataTag == NumberData.DataType.percent)
+        {
+            val.MP = (int)(target.MpController.maxMp * _val.MP.DECIMAL);
+        }
+        if (_val.TP.dataTag == NumberData.DataType.integer) val.TP = _val.TP.DATA;
+        else if(_val.TP.dataTag == NumberData.DataType.percent)
+        {
+            val.TP = (int)(target.TpController.maxTp * _val.TP.DECIMAL);
+        }
+
         Debug.Log(source.name + "cause BCAdd " 
             + " hp+" + val.HP + " mp+" + val.MP + " tp+" + val.TP + "  to " + target.name);
         if (val.HP > 0) target.HpController.addHp(val.HP);
@@ -103,4 +116,6 @@ public class AddBarChart : SkillFunction
         }        
         return flag;
     }
+
 }
+

@@ -2,61 +2,86 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 using GameDataEditor;
+using System;
 
 public class SummonAltarPanel : BasicSubMenuPanel
 {
     public ScrollRect rect;
     public PageView pageView { get { return rect.GetComponent<PageView>(); } }
     public OneAltarData AltarData;
+    [Space]
+    public consumableItem Coupon_n_oneTime;
+    public consumableItem Coupon_n_tenTimes;
+    public consumableItem Coupon_r_oneTimes;
+    public enum AltarType
+    {
+        n_oneTime,n_tenTime,r_oneTime,
+    }
+    public AltarType CurrentAltarType;
+
+    [Header("抽取设置"), Space]
+    public float[] AltarPossibility = new float[4];
+    public ROHeroAltarPool CurrentPool;
+    public List<GDEHeroAltarPoolData> AllPools;
     [Header("抽卡结果页面显示")]
     public Transform ResultRewardPanel;
     public Transform RRPContent;
     public Transform roleItem;
     public List<SingleItem> resultRewards = new List<SingleItem>();
-    public List<string> rewardIds = new List<string>();
+    public List<int> RewardHCs = new List<int>();
     public Text messageText;
-    //[Header("新角色Pose")]
-    //public Transform NRSBG;
-    //public Transform NewRoleShowPanel;
-    //public Image NewRolePoseImg;
-    //public Text NewRoleNameText;
-    //public Text NewRoleDetailText;
-    //public Text NewRoleWelcomeText;
-    //private float NewRolePoseTime = 2f;
     public enum panelContent
     {
         main,rrp,pose,end
     }
     [Header("历史记录设置")]
     public panelContent currentPanelContent = panelContent.end;
-    [Header("新守护者")]
-    public Button btn_goddess_oneTime;
-    public Button btn_goddess_tenTimes;
-    public Text goddessPoolText;
-    public int currentGoddessPoolIndex;
-    public List<string> rewardGoddesses = new List<string>();
 
+    [Space(15)]
+    public DrawAnimRound DAP;
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();
         currentPanelContent = panelContent.main;
-        pageView.maxIndex = (int)Job.End;
-        rewardIds.Clear();
+        RewardHCs.Clear();
         refreshCurrentPoolIndex();
     }
 
-    public void SummonOneTime()
+    public void SummonOneTime_n()
     {
-        if(SDDataManager.Instance.consumeMaterial("M_M#3010017", out int residue))
+        CurrentAltarType = AltarType.n_oneTime;
+        if (SDDataManager.Instance.getConsumableNum(Coupon_n_oneTime.ID) > 0)
         {
-            Debug.Log("消耗道具 M_M#3010017 ,剩余" + residue);
+            InitDAP();
         }
         else
         {
-            if(SDDataManager.Instance.PlayerData.damond >= SDConstants.altarDamondCost)
+            if (SDDataManager.Instance.PlayerData.damond >= SDConstants.altarDamondCost)
             {
-                SDDataManager.Instance.ConsumeDamond(SDConstants.altarDamondCost);
+                PopoutController.CreatePopoutAlert
+                    (
+                    SDGameManager.T("提醒")
+                    ,SDGameManager.T("确认消耗") 
+                    + SDConstants.altarDamondCost 
+                    + SDGameManager.T("钻石")
+                    , 25, false,
+                    PopoutController.PopoutWIndowAlertType.ConfirmMessage
+                    ,(PopoutController pop
+                    , PopoutController.PopoutWindowAlertActionType type)
+                      =>
+                      {
+                          if(type == PopoutController.PopoutWindowAlertActionType.OnConfirm)
+                          {
+                              InitDAP();
+                          }
+                          else
+                          {
+                              pop.Dismiss();
+                          }
+                      }
+                    );
             }
             else
             {
@@ -64,100 +89,162 @@ public class SummonAltarPanel : BasicSubMenuPanel
                 return;
             }
         }
-
-        List<string> ids = ConfirmCurrentPool();
-        int result = UnityEngine.Random.Range(0, ids.Count);
-        Debug.Log("获得英雄 id: " + ids[result]);
-        rewardIds.Add(ids[result]);
-        initRRP();
-
-        refreshCurrentPoolIndex();
     }
-    public void SumonTenTimes()
+    public void SummonOneTime_r()
     {
-        if(SDDataManager.Instance.consumeMaterial("M_M#3010018", out int residue))
+        CurrentAltarType = AltarType.r_oneTime;
+        if (SDDataManager.Instance.getConsumableNum(Coupon_r_oneTimes.ID) > 0)
         {
-            Debug.Log("消耗道具 M_M#3010018 ,剩余" + residue);
+            InitDAP();
         }
         else
         {
-            if(SDDataManager.Instance.consumeMaterial("M_M#3010017", out int residue1, 10))
+            Debug.Log("无法获取：道具不足");
+            return;
+        }
+    }
+    public void SumonTenTimes_n()
+    {
+        CurrentAltarType = AltarType.n_tenTime;
+        if (SDDataManager.Instance.getConsumableNum(Coupon_n_tenTimes.ID) > 0)
+        {
+            InitDAP();
+        }
+        else
+        {
+            if (SDDataManager.Instance.getConsumableNum(Coupon_n_oneTime.ID) > 10)
             {
-                Debug.Log("消耗道具 M_M#3010017 10个 ,剩余" + residue1);
+                InitDAP();
             }
             else
             {
-                if (SDDataManager.Instance.PlayerData.damond 
+                if (SDDataManager.Instance.PlayerData.damond
                     >= SDConstants.altarDamondCost * 10)
                 {
-                    SDDataManager.Instance.ConsumeDamond
-                        (SDConstants.altarDamondCost * 10);
-                }
-                else
-                {
-                    Debug.Log("无法获取：道具或钻石不足");
-                    return;
+                    if (SDDataManager.Instance.PlayerData.damond >= SDConstants.altarDamondCost)
+                    {
+                        PopoutController.CreatePopoutAlert
+                            (
+                            SDGameManager.T("提醒")
+                            , SDGameManager.T("确认消耗")
+                            + SDConstants.altarDamondCost*10
+                            + SDGameManager.T("钻石")
+                            , 25, false,
+                            PopoutController.PopoutWIndowAlertType.ConfirmMessage
+                            , (PopoutController pop
+                             , PopoutController.PopoutWindowAlertActionType type)
+                               =>
+                            {
+                                if (type == PopoutController.PopoutWindowAlertActionType.OnConfirm)
+                                {
+                                    InitDAP();
+                                }
+                                else
+                                {
+                                    pop.Dismiss();
+                                }
+                            }
+                            );
+                    }
+                    else
+                    {
+                        Debug.Log("无法获取：道具或钻石不足");
+                        return;
+                    }
                 }
             }
         }
-
-
-        List<string> ids = ConfirmCurrentPool();
-        for(int i = 0; i < 10; i++)
+    }
+    void InitDAP()
+    {
+        UIEffectManager.Instance.showAnimFadeIn(DAP.transform);
+        if (CurrentAltarType == AltarType.n_tenTime)
         {
-            int result = UnityEngine.Random.Range(0, ids.Count);
-            Debug.Log("获得英雄 id: " + ids[result]);
-            rewardIds.Add(ids[result]);
+            DAP.useLR = true;
+        }
+        else DAP.useLR = false;
+        DAP.clearOAESE();
+        if (CurrentAltarType == AltarType.n_oneTime)
+        {
+            DAP.OnAnimEndSetEvent += confirm_altar_n_oneTime;
+        }
+        else if (CurrentAltarType == AltarType.n_tenTime)
+        {
+            DAP.OnAnimEndSetEvent += confirm_altar_n_tenTimes;
+        }
+        else if(CurrentAltarType == AltarType.r_oneTime)
+        {
+            DAP.OnAnimEndSetEvent += confirm_altar_r_oneTime;
+        }
+    }
+    public void confirm_altar_n_oneTime()
+    {
+        bool flag = false;
+        if (SDDataManager.Instance.getConsumableNum(Coupon_n_oneTime.ID) > 0)
+        {
+            SDDataManager.Instance.consumeConsumable(Coupon_n_oneTime.ID,out int left);
+            flag = true;
+        }
+        else if(SDDataManager.Instance.PlayerData.damond >= SDConstants.altarDamondCost)
+        {
+            SDDataManager.Instance.ConsumeDamond(SDConstants.altarDamondCost);
+            flag = true;
+        }
+        if (flag)
+        {
+            AltarHero(1, false);
+        }
+        UIEffectManager.Instance.hideAnimFadeOut(DAP.transform);
+    }
+    public void confirm_altar_n_tenTimes()
+    {
+        bool flag = false;
+        if (SDDataManager.Instance.getConsumableNum(Coupon_n_tenTimes.ID) > 0)
+        {
+            SDDataManager.Instance.consumeConsumable(Coupon_n_tenTimes.ID, out int left);
+            flag = true;
+        }
+        else if (SDDataManager.Instance.getConsumableNum(Coupon_n_oneTime.ID) > 10)
+        {
+            SDDataManager.Instance.consumeConsumable(Coupon_n_oneTime.ID, out int left, 10);
+            flag = true;
+        }
+        else if(SDDataManager.Instance.PlayerData.damond >= SDConstants.altarDamondCost * 10)
+        {
+            SDDataManager.Instance.ConsumeDamond(SDConstants.altarDamondCost * 10);
+            flag = true;
+        }
+        if (flag)
+        {
+            AltarHero(10, false);
+        }
+        UIEffectManager.Instance.hideAnimFadeOut(DAP.transform);
+    }
+    public void confirm_altar_r_oneTime()
+    {
+        bool flag = false;
+        if (SDDataManager.Instance.getConsumableNum(Coupon_r_oneTimes.ID) > 0)
+        {
+            SDDataManager.Instance.consumeConsumable(Coupon_r_oneTimes.ID, out int left);
+            flag = true;
+        }
+        if (flag)
+        {
+            AltarHero(1, true);
+        }
+        UIEffectManager.Instance.hideAnimFadeOut(DAP.transform);
+    }
+    public void AltarHero(int times, bool useRareCoupon)
+    {
+        RewardHCs.Clear();
+        for(int i = 0; i < times; i++)
+        {
+            HeroInfo H = SDDataManager.Instance.AltarInOnePool
+                (AltarPossibility, CurrentPool.Pool.ID,useRareCoupon);
+            int hc = SDDataManager.Instance.addHero(H.ID);
+            RewardHCs.Add(hc);
         }
         initRRP();
-
-        refreshCurrentPoolIndex();
-    }
-    public IEnumerator IEInitCallingRewards()
-    {
-        homeScene.mapBtn.gameObject.SetActive(false);
-        for(int i = 0; i < rewardIds.Count; i++)
-        {
-            bool firstGet = true;
-            string id = rewardIds[i];
-            foreach (GDEHeroData hero in SDDataManager.Instance.PlayerData.herosOwned)
-            {
-                if (hero.id == id) firstGet = false;
-            }
-            int hc = callHeroToPlayerdataExportHashcode(id);
-            resultRewards[i].initCalledHero(hc);
-            if (firstGet)
-            {
-                currentPanelContent = panelContent.pose;
-                //NRSBG.gameObject.SetActive(true);
-                resultRewards[i].upText.text = "NEW!!!";
-
-                if (!excapePose)
-                {
-                    PopoutController.CreatePopoutUnitSpeak("英雄大名"
-                        , "久仰大名", "Textures/xgb33", 10 + rewardIds.Count - i
-                        , false, PopoutController.PopoutWIndowAlertType.ConfirmMessage
-                        , (PopoutController c, PopoutController.PopoutWindowAlertActionType a)
-                         =>
-                         {
-                             if (a == PopoutController.PopoutWindowAlertActionType.OnConfirm)
-                             {
-                                 StartCoroutine(c.Dismiss());
-                             }
-                             else
-                                 StartCoroutine(c.IEWaitAndDismiss(0.3f));
-                         });
-                    yield return new WaitForSeconds(0.3f);
-                }
-            }
-            if (excapePose)
-            {
-                excapePose = false;
-            }
-        }
-        //NRSBG.gameObject.SetActive(false);
-        currentPanelContent = panelContent.rrp;
-        homeScene.mapBtn.gameObject.SetActive(true);
     }
     bool excapePose = false;
     public void BtnToExcapePose() 
@@ -167,117 +254,70 @@ public class SummonAltarPanel : BasicSubMenuPanel
             excapePose = true;
         }
     }
-    public List<string> ConfirmCurrentPool()
-    {
-        List<string> all = new List<string>();
-        int index = pageView.currentIndex;
-
-
-        //当前为测试用卡池
-
-        //职业卡池
-        if(index < (int)Job.End)
-        {
-            for (int i = 0; i < (int)Job.End; i++)
-            {
-                if (index == i)
-                {
-                    List<Dictionary<string, string>> list = SDDataManager.Instance.ReadHeroFromCSV(i);
-                    for (int j = 0; j < list.Count; j++)
-                    {
-                        all.Add(list[j]["id"]);
-                    }
-                    AltarData.PoolDesc.text = "当前卡池类型为: " + ((Job)i).ToString();
-                    break;
-                }
-            }
-        }
-        //全英雄卡池
-        else
-        {
-            for (int i = 0; i < (int)Job.End; i++)
-            {
-                List<Dictionary<string, string>> list = SDDataManager.Instance.ReadHeroFromCSV(i);
-                for (int j = 0; j < list.Count; j++)
-                {
-                    all.Add(list[j]["id"]);
-                }
-            }
-            AltarData.PoolDesc.text = "当前卡池类型为: 所有";
-        }
-        AltarData.initAltarPool();
-
-        return all;
-    }
-
-    public void refreshCurrentPoolIndex()
-    {
-        messageText.text = "水晶数：" + SDDataManager.Instance.PlayerData.damond
-            + "  ---单抽券数：" + SDDataManager.Instance.getMaterialNum("M_M#3010017")
-            + "  ---十连券数：" + SDDataManager.Instance.getMaterialNum("M_M#3010018");
-        ConfirmCurrentPool();
-    }
     public void initRRP()
     {
         UIEffectManager.Instance.showAnimFadeIn(ResultRewardPanel);
+        SDGameManager.Instance.heroSelectType = SDConstants.HeroSelectType.Altar;
         //构建角色卡牌
-        for (int i = 0; i < rewardIds.Count; i++)
+        for (int i = 0; i < RewardHCs.Count; i++)
         {
-            string id = rewardIds[i];
-
             Transform s = Instantiate(roleItem) as Transform;
             s.SetParent(RRPContent);
             s.localScale = Vector3.one;
             s.gameObject.SetActive(true);
             SingleItem _s = s.GetComponent<SingleItem>();
+            _s.initCalledHero(RewardHCs[i]);
             resultRewards.Add(_s);
         }
         //
         StartCoroutine(IEInitCallingRewards());
     }
-    public int callHeroToPlayerdataExportHashcode(string heroId)
+    public IEnumerator IEInitCallingRewards()
     {
-        SDDataManager.Instance.addHero(heroId);
-        return SDDataManager.Instance.heroNum;
-    }
-    public void initSkillListForHero(GDEHeroData hero)
-    {
-        Job j = (Job)SDDataManager.Instance.getHeroCareerById(hero.id);
-        Race r = (Race)SDDataManager.Instance.getHeroRaceById(hero.id);
-        int quality = SDDataManager.Instance.getHeroQualityById(hero.id);
-        List<OneSkill> all = SkillDetailsList.WriteOneSkillList(j,r,quality);
-
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
-            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+        homeScene.mapBtn.gameObject.SetActive(false);
+        for (int i = 0; i < RewardHCs.Count; i++)
+        {
+            bool firstGet = true;
+            GDEHeroData heroData = SDDataManager.Instance.getHeroByHashcode(RewardHCs[i]);
+            string id = heroData.id;
+            List<GDEHeroData> _List = SDDataManager.Instance.PlayerData.herosOwned.FindAll
+                (x => x.id == id);
+            if (_List.Count > 1) firstGet = false;
+            resultRewards[i].initCalledHero(RewardHCs[i]);
+            if (firstGet)
             {
-                Id = all[0].skillId
-                ,
-                Lv = 0
-            });
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
+                currentPanelContent = panelContent.pose;
+                resultRewards[i].upText.text = "NEW!!!";
 
-        List<int> otherMayGetList = RandomIntger.NumListReturn(2, all.Count - 1);
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
-            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+                if (!excapePose)
+                {
+                    PopoutController.CreatePopoutUnitSpeak("英雄大名"
+                        , "久仰大名", "Textures/xgb33", 10 + RewardHCs.Count - i
+                        , false, PopoutController.PopoutWIndowAlertType.ConfirmMessage
+                        , (PopoutController c, PopoutController.PopoutWindowAlertActionType a)
+                         =>
+                        {
+                            if (a == PopoutController.PopoutWindowAlertActionType.OnConfirm)
+                            {
+                                StartCoroutine(c.Dismiss());
+                            }
+                            else
+                                StartCoroutine(c.IEWaitAndDismiss(0.3f));
+                        });
+                    yield return new WaitForSeconds(0.3f);
+                }
+            }
+            if (excapePose)
             {
-                Id = all[otherMayGetList[0] + 1].skillId
-                ,
-                Lv = 0
-            });
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
-
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
-            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
-            {
-                Id = all[otherMayGetList[1] + 1].skillId
-                ,
-                Lv = 0
-            });
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
+                excapePose = false;
+            }
+        }
+        currentPanelContent = panelContent.rrp;
+        homeScene.mapBtn.gameObject.SetActive(true);
     }
     public void exitRRP()
     {
-        rewardIds.Clear();
+        RewardHCs.Clear();
         for(int i = 0; i < resultRewards.Count; i++)
         {
             Destroy(resultRewards[i].gameObject);
@@ -285,145 +325,9 @@ public class SummonAltarPanel : BasicSubMenuPanel
         resultRewards.Clear();
         currentPanelContent = panelContent.main;
         UIEffectManager.Instance.hideAnimFadeOut(ResultRewardPanel);
+        //
+        refreshCurrentPoolIndex();
     }
-
-    #region GoddessPool
-    public List<string> ConfirmGoddessPool()
-    {
-        List<string> all = new List<string>();
-        List<Dictionary<string, string>> list = SDDataManager.Instance.ReadFromCSV("goddess");
-        for(int i = 0; i < list.Count; i++)
-        {
-            all.Add(list[i]["id"]);
-        }
-        return all;
-    }
-    public void BtnToAltarGoddess_oneTime()
-    {
-        if(SDDataManager.Instance.consumeMaterial("M_M#3010017", out int re0))
-        {
-            Debug.Log("成功消耗3010017 剩余" + re0);
-        }
-        else
-        {
-            if (SDDataManager.Instance.PlayerData.damond >= SDConstants.altarDamondCost)
-            {
-                SDDataManager.Instance.PlayerData.damond -= SDConstants.altarDamondCost;
-            }
-            else
-            {
-                Debug.Log("无法获取：道具或钻石不足");
-                return;
-            }
-        }
-
-        List<string> ids = ConfirmGoddessPool();
-        int result = UnityEngine.Random.Range(0, ids.Count);
-        Debug.Log("获得守护者 id: " + ids[result]);
-        rewardGoddesses.Add(ids[result]);
-        initGoddess();
-
-        refreshGoddessPool();
-        AltarData.refreshThisPool();
-    }
-    public void BtnToAltarGoddess_tenTimes()
-    {
-        if (SDDataManager.Instance.consumeMaterial("M_M#3010018", out int re0))
-        {
-            Debug.Log("成功消耗3010018 剩余" + re0);
-        }
-        else
-        {
-            if (SDDataManager.Instance.consumeMaterial("M_M#3010017", out int re1, 10))
-            {
-                Debug.Log("消耗道具3010017 10个 ,剩余" + re1);
-            }
-            else
-            {
-                if (SDDataManager.Instance.PlayerData.damond
-                    >= SDConstants.altarDamondCost * 10)
-                {
-                    SDDataManager.Instance.PlayerData.damond
-                        -= SDConstants.altarDamondCost * 10;
-                }
-                else
-                {
-                    Debug.Log("无法获取：道具或钻石不足");
-                    return;
-                }
-            }
-        }
-        List<string> ids = ConfirmGoddessPool();
-        for (int i = 0; i < 10; i++)
-        {
-            int result = UnityEngine.Random.Range(0, ids.Count);
-            Debug.Log("获得英雄 id: " + ids[result]);
-            rewardGoddesses.Add(ids[result]);
-        }
-        initGoddess();
-
-        refreshGoddessPool();
-        AltarData.refreshThisPool();
-    }
-    public void initGoddess()
-    {
-        //构建守护者卡牌
-        for(int i = 0; i < rewardGoddesses.Count; i++)
-        {
-            bool flag = false;
-            foreach(GDEgoddessData g in SDDataManager.Instance.PlayerData.goddessOwned)
-            {
-                if(g.id == rewardGoddesses[i])
-                {
-                    flag = true;
-                    g.volume++;
-                    SDDataManager.Instance.PlayerData.Set_goddessOwned();
-                    break;
-                }
-            }
-            if (!flag)
-            {
-                GDEgoddessData g = new GDEgoddessData(GDEItemKeys.goddess_baseGoddess)
-                {
-                    id = rewardGoddesses[i]
-                    ,
-                    exp = 0
-                    ,
-                    star=0
-                    ,
-                    volume=0
-                    ,
-                    UseTeamId = new List<int>()
-                };
-                SDDataManager.Instance.PlayerData.goddessOwned.Add(g);
-                SDDataManager.Instance.PlayerData.Set_goddessOwned();
-            }
-        }
-        rewardGoddesses.Clear();
-    }
-
-
-    public void refreshGoddessPool()
-    {
-        int oneTimeCouponNum = SDDataManager.Instance.getMaterialNum("M_M#3010017");
-        int tenTimeCouponNum = SDDataManager.Instance.getMaterialNum("M_M#3010018");
-        int damondNum = SDDataManager.Instance.PlayerData.damond;
-        //单抽按钮是否可用
-        if (oneTimeCouponNum > 0 || damondNum >= SDConstants.altarDamondCost)
-        {
-            btn_goddess_oneTime.interactable = true;
-        }
-        else btn_goddess_oneTime.interactable = false;
-        //十连按钮是否可用
-        if (oneTimeCouponNum >= 10 || damondNum >= SDConstants.altarDamondCost * 10 
-            || tenTimeCouponNum > 0)
-        {
-            btn_goddess_tenTimes.interactable = true;
-        }
-        else btn_goddess_tenTimes.interactable = false;
-    }
-    #endregion
-
     public override void commonBackAction()
     {       
         if(currentPanelContent == panelContent.main)//
@@ -444,4 +348,39 @@ public class SummonAltarPanel : BasicSubMenuPanel
 
         }
     }
+
+
+
+    #region 构建卡池
+    public void refreshCurrentPoolIndex()
+    {
+        messageText.text = "水晶数：" + SDDataManager.Instance.PlayerData.damond
+            + "  ---单抽券数：" + SDDataManager.Instance.getConsumableNum(Coupon_n_oneTime.ID)
+            + "  ---十连券数：" + SDDataManager.Instance.getConsumableNum(Coupon_n_tenTimes.ID);
+        //
+        pageView.maxIndex = SDDataManager.Instance.PlayerData.AltarPoolList.Count;
+        AllPools = SDDataManager.Instance.PlayerData.AltarPoolList;
+        AllPools.Sort((x,y) => 
+        {
+            return x.Unable.CompareTo(!y.Unable);
+        });
+        buildCurrentPool();
+    }
+    public void buildCurrentPool()
+    {
+        int index = Mathf.Min(pageView.currentIndex,AllPools.Count-1);
+        GDEHeroAltarPoolData PoolData = AllPools[index];
+        HeroAltarPool P = SDDataManager.Instance.GetHeroAltarPoolById(PoolData.ID);
+        CurrentPool = new ROHeroAltarPool()
+        {
+            Pool = P
+            , HaveAltarTimes = PoolData.AltarTimes
+            , HaveAlartSNum = PoolData.GetSNum
+            , PoolCapacity=PoolData.PoolCapacity
+            , Unable = PoolData.Unable
+            , NotNormalPool=PoolData.NotNormalPool
+        };
+    }
+
+    #endregion
 }

@@ -13,6 +13,7 @@ public class CharacterInfo : ScriptableObject
         {
             return _ID;
         }
+        set { _ID = value; }
     }
 
     public int N_ID
@@ -28,7 +29,13 @@ public class CharacterInfo : ScriptableObject
         {
             return _Name;
         }
+        set { _Name = value; }
     }
+
+    [SerializeField, TextArea]
+    private string _DESC;
+    public string DESC 
+    { get { return _DESC; } protected set { _DESC = value; } }
 
     [SerializeField]
     [EnumMemberNames("未知", "男", "女")]
@@ -38,6 +45,10 @@ public class CharacterInfo : ScriptableObject
         get
         {
             return sex;
+        }
+        set
+        {
+            sex = value;
         }
     }
     public int Gender 
@@ -61,12 +72,23 @@ public class CharacterInfo : ScriptableObject
     public SDConstants.CharacterType CharacterType
     {
         get { return characterType; }
-        protected set { characterType = value; }
+        set { characterType = value; }
+    }
+
+    [SerializeField]
+    private Sprite faceIcon;
+    public Sprite FaceIcon 
+    { get { return faceIcon; }set { faceIcon = value; } }
+
+    public virtual void initData(string id,string name,string desc,CharacterSex sex,string faceIcon,SDConstants.CharacterType ctype)
+    {
+        ID = id;Name = name; DESC = desc; Sex = sex;
+        CharacterType = ctype;
     }
 }
 public enum CharacterSex
 {
-    Unknown,
-    Male,
-    Female,
+    Unknown=0,
+    Male=1,
+    Female=2,
 }

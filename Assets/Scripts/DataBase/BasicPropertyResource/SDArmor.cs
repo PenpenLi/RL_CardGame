@@ -6,31 +6,31 @@ public class SDArmor : BasicRoleProperty
 {
     public int RecommendedGrade;//推荐等级
     //public int Durability;//装备耐久
-    public SDConstants.ArmorType armorType = SDConstants.ArmorType.light;
+    public ArmorRank armorRank;
     public int grade;//装备当前强化等级
     private void Start()
     {
         
     }
     public void initArmor(int level,RoleAttributeList dataRA
-        ,RoleAttributeList rateRA,int cri,int criDmg,int dmgReduction,int dmgReflection
+        ,int criDmg,int dmgReduction,int dmgReflection
         ,int RewardRate, RoleBarChart bcRegendPerTurn, string id, string name
         , int wakeNum, int grade)
     {
         initData(level
-            , dataRA, rateRA, cri, criDmg, dmgReduction, dmgReflection, RewardRate
+            , dataRA, criDmg, dmgReduction, dmgReflection, RewardRate
             , bcRegendPerTurn, id, name, wakeNum);
         AddMultiplier(grade);
 
     }
     public override void initData(int level
-        , RoleAttributeList dataRA, RoleAttributeList rateRA
-        , int cri, int criDmg, int dmgReduction, int dmgReflection, int RewardRate
+        , RoleAttributeList dataRA
+        , int criDmg, int dmgReduction, int dmgReflection, int RewardRate
         , RoleBarChart bcRegendPerTurn, string id, string name
         , int wakeNum)
     {
         base.initData(level
-            , dataRA, rateRA, cri, criDmg, dmgReduction, dmgReflection, RewardRate
+            , dataRA, criDmg, dmgReduction, dmgReflection, RewardRate
             , bcRegendPerTurn, id, name, wakeNum);
     }
     public void initGradeShow(int grade)
@@ -55,24 +55,9 @@ public class Legging : SDArmor
 {
     protected EquipPosition equipPos = EquipPosition.Leg;
 }
-
-
-
-
-public class Jewelry : BasicRoleProperty
-{
-    public int RecommendedGrade;//推荐等级
+public class Jewelry : SDArmor 
+{ 
     public bool ShowState;
     protected EquipPosition equipPos = EquipPosition.Finger;
     public SDConstants.JewelryType _jewelryType;
-    public int grade;
-    private void Start()
-    {
-        
-    }
-    public void initGradeShow(int grade)
-    {
-        this.grade = grade;
-        AddMultiplier(this.grade);
-    }
 }

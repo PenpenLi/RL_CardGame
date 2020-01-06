@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97996d293ffa5f84fa9ef5c569f1997e, type: 3}
+  m_Name: "002\u82B1\u8BED"
+  m_EditorClassIdentifier: 
+  _ID: '@SH_FIGHTER#002'
+  _NAME: "\u82B1\u8BED"
+  _DESC: "\u77ED\u65F6\u95F4\u5927\u5E45\u63D0\u5347\u81EA\u8EAB\u6218\u6597\u529B"
+  isOmegaSkill: 0
+  aim: 0
+  breed: 1
+  kind: 1
+  skillAoe: 0
+  mptpAddType: 2
+  UseAppointedAtb: 0
+  Atb: 0
+  UseAppointedPrefab: 1
+  functionId: 0
+  appointedSkillClass: 2
+  extraDataSet:
+    BCPerformDataUsingRA: 0
+    PDUsingRA_PerLevel: 0
+    PDUsingRA_PerSkillGrade: 0
+    UseState: 1
+    _standardState:
+      AllChangesInRAL:
+      - Title: "\u66B4\u51FB\u63D0\u5347"
+        IsForAD: 0
+        ADTag: 11
+        STag: 0
+        ChangeData:
+          dataTag: 1
+          DATA: 100
+      - Title: "\u653B\u51FB\u63D0\u5347"
+        IsForAD: 0
+        ADTag: 3
+        STag: 0
+        ChangeData:
+          dataTag: 1
+          DATA: 50
+      ChangeInBarChart:
+        HP:
+          dataTag: 0
+          DATA: 0
+        MP:
+          dataTag: 0
+          DATA: 0
+        TP:
+          dataTag: 0
+          DATA: 0
+      UseSourceAToDmg: 0
+      ExtraDmg:
+        dataTag: 0
+        DATA: 0
+      UsePercent: 0
+      aimAtSelf: 0
+      stateAOE: 0
+      SkillGrade: 0
+      NAME: 
+      Success: 0
+      StateLastTime: 2
+      stateTag: 8
+      stateKind: 3
+      StatePossibilityBuff: 100
+  extraSkillWork:
+    m_PersistentCalls:
+      m_Calls: []
+  iconImg: 
+  bulletImg: 
+  skillAnimId: 0
+  _skillCost:
+    _COST_intger:
+      DATA: {x: 0, y: 0, z: 0}
+    _COST_pc:
+      DATA: {x: 0, y: 30, z: 15}

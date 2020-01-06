@@ -24,7 +24,7 @@ public class CharacterModelController : MonoBehaviour
     {
         string id = SDDataManager.Instance.getHeroIdByHashcode(hashcode);
         
-        int j = SDDataManager.Instance.getHeroCareerById(id);
+        int j = (int)SDDataManager.Instance.getHeroCareerById(id);
         SDConstants.CharacterAnimType CAT = (SDConstants.CharacterAnimType)j;
         initCharacterModel(hashcode, CAT, scale);
     }
@@ -75,19 +75,19 @@ public class CharacterModelController : MonoBehaviour
 
         var sa = SkeletonAnimation.NewSkeletonAnimationGameObject(ThisAsset);
         // Spawn a new SkeletonAnimation GameObject.
-        setNewModel(sa);
+        setNewModel(sa, DAIndex);
     }
-    void setNewModel(SkeletonAnimation sa)
+    void setNewModel(SkeletonAnimation sa, int daIndex)
     {
         sa.transform.SetParent(ModelParent,false);
         sa.transform.position = transform.position;
         sa.transform.localScale = Vector3.one * scaleRate;
 
-        sa.gameObject.AddComponent<Chara_mixAndMatch>();
+        //sa.gameObject.AddComponent<Chara_mixAndMatch>();
         sa.gameObject.AddComponent<Model_ColorInitialize>();
         CurrentCharacterModel = sa.gameObject.AddComponent<CharacterModel>();
         CurrentCharacterModel .CMC = this;
-        CurrentCharacterModel.initCharacterModel();
+        CurrentCharacterModel.initCharacterModel(daIndex);
     }
 
     /// <summary>

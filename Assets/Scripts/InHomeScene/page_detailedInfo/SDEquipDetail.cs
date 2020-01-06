@@ -9,7 +9,7 @@ public class SDEquipDetail : MonoBehaviour
     public string equipId;
     public int equipHashcode;
     public int equipLv;
-    public ROEquipData equipData;
+    public EquipItem equipData;
     [Header("装备信息可视化")]
     public Image equipIcon;
     public Image equipBgIcon;
@@ -33,14 +33,12 @@ public class SDEquipDetail : MonoBehaviour
 
         //
         nameText.text = equipData.name;
-        RarityText.text = SDDataManager.Instance.rarityString(equipData.rarity);
+        RarityText.text = SDDataManager.Instance.rarityString(equipData.LEVEL);
         int lv = SDDataManager.Instance.getLevelByExp(equip.exp);
         expText.text = SDGameManager.T("Lv.") + lv;
-        int e0 = equip.exp - SDDataManager.Instance.getExpByLevel(lv);
-        int e1 = (lv + 1) * SDConstants.MinExpPerLevel;
-        expSlider.localScale = new Vector3(e0 * 1f / e1, 1, 1);
+        expSlider.localScale = new Vector3(SDDataManager.Instance.getExpRateByExp(equip.exp), 1, 1);
         equipLv = lv;
-        equipPosText.text = ((EquipPosition)equipData.pos).ToString();
+        equipPosText.text = ((EquipPosition)equipData.EquipPos).ToString();
         starVision.StarNum = equip.quality;
     }
     public void initEquipDetailVision(int equip_hashcode)

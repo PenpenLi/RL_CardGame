@@ -55,7 +55,7 @@ public class SkillSlot : MonoBehaviour
         {
             lockedPanel.gameObject.SetActive(false);
             GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(HeroHashcode);
-            int skillId = 0;
+            string skillId = string.Empty;
             if (slotType == skillSlotType.skill0)
             {
                 skillId = hero.skill0Id;
@@ -69,7 +69,7 @@ public class SkillSlot : MonoBehaviour
                 skillId = hero.skillOmegaId;
             }
             OneSkill skill = SDDataManager.Instance.getOwnedSkillById(skillId, HeroHashcode);
-            initSkillSlot(skill);
+            initOneSkillSlot(skill);
         }
         else
         {
@@ -78,9 +78,10 @@ public class SkillSlot : MonoBehaviour
 
     }
 
-    public void initSkillSlot(OneSkill skill)
+    public void initOneSkillSlot(OneSkill skill)
     {
-        if(skill.skillId == 0)//normalattack
+        if(skill.skillId == "@SH_NOR#000" || skill.lv < 0 
+            || skill== null||string.IsNullOrEmpty(skill.skillId))
         {
             emptyPanel.gameObject.SetActive(true);
         }
@@ -88,8 +89,15 @@ public class SkillSlot : MonoBehaviour
         {
             emptyPanel.gameObject.SetActive(false);
             lv = skill.lv;
-            Transform skillBtn = HDP.skillDetailList.AllSkillList[skill.SkillFunctionID];
-            //skillIcon.color = 
+            Transform skillBtn;;
+            if (skill.UseAppointedPrefab)
+            {
+                skillBtn = skill.SkillPrefab;
+            }
+            else
+            {
+                skillBtn = HDP.skillDetailList.AllSkillList[skill.SkillFunctionID];
+            } 
             skillItemImg.color = skillBtn.GetComponent<Image>().color;
         }
 

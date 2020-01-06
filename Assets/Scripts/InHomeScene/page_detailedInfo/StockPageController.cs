@@ -12,7 +12,7 @@ public class StockPageController : MonoBehaviour
     public Transform SItem;
     public List<RTSingleStockItem> items = new List<RTSingleStockItem>();
     public SDConstants.StockType stockType = SDConstants.StockType.material;
-    public SDConstants.MaterialType materialType = SDConstants.MaterialType.all;
+    public SDConstants.MaterialType materialType = SDConstants.MaterialType.end;
     public int pageIndex;
     public int itemCount;
     //
@@ -88,7 +88,7 @@ public class StockPageController : MonoBehaviour
     /// </summary>
     /// <param name="SType">强化材料类型</param>
     /// <param name="MType">强化方式</param>
-    public void ItemsInit(SDConstants.StockType SType, SDConstants.MaterialType MType = SDConstants.MaterialType.all)
+    public void ItemsInit(SDConstants.StockType SType, SDConstants.MaterialType MType = SDConstants.MaterialType.end)
     {
         itemCount = 0;
         stockType = SType;
@@ -118,24 +118,37 @@ public class StockPageController : MonoBehaviour
     /// 用于英雄强化
     /// </summary>
     /// <param name="MType">强化方式</param>
-    public void ItemInit(SDConstants.MaterialType MType)
+    public void ItemInitForHero(SDConstants.MaterialType MType)
     {
         #region 英雄强化用
         List<GDEHeroData> heroes = SDDataManager.Instance.PlayerData.herosOwned;
-        List<GDEItemData> all = SDDataManager.Instance.PlayerData.materials;
+        List<GDEItemData> all = SDDataManager.Instance.getMaterialsOwned;
 
         materialType = MType;
         //对应材料构建
+        if (!SDDataManager.Instance.checkHeroCanImprove
+                        (heroImproveController.heroDetail.Hashcode, MType))
+            return;
+        ROHeroData ro = SDDataManager.Instance.getHeroOriginalDataById(heroImproveController.heroDetail.ID);
+        GDEHeroData gd = SDDataManager.Instance.GetHeroOwnedByHashcode(heroImproveController.heroDetail.Hashcode);
         for (int i = 0; i < all.Count; i++)
         {
-            if (MType != SDConstants.MaterialType.all)
+            if (MType != SDConstants.MaterialType.end)
             {
-                if (SDDataManager.Instance.getMaterialTypeById(all[i].id) == MType.ToString())
+                if (SDDataManager.Instance.getMaterialTypeById(all[i].id) == MType)
                 {
-                    if (MType == SDConstants.MaterialType.star
-                        && SDDataManager.Instance.getMaterialLevelById(all[i].id)
-                        != heroImproveController.heroDetail.StarNumVision.StarNum)
-                        continue;
+                    if(MType == SDConstants.MaterialType.skill)
+                    {
+                        string str = SDDataManager.Instance.getMaterialSpecialStr(heroImproveController.heroDetail.ID);
+                        Job career = ro.Info.Career.Career;
+                        bool flag = false;
+                        if (career == Job.Fighter && str.Contains("fighter")) flag = true;
+                        else if (career == Job.Ranger && str.Contains("ranger")) flag = true;
+                        else if (career == Job.Priest && str.Contains("priest")) flag = true;
+                        else if (career == Job.Caster && str.Contains("caster")) flag = true;
+                        else if (str.Contains("any")) flag = true;
+                        if (!flag) continue;
+                    }
 
                     Transform s = Instantiate(SItem) as Transform;
                     s.transform.SetParent(scrollRect.content);
@@ -148,10 +161,10 @@ public class StockPageController : MonoBehaviour
             }
             else
             {
-                string mt = SDDataManager.Instance.getMaterialTypeById(all[i].id);
-                if (mt == SDConstants.MaterialType.exp.ToString()
-                    || mt == SDConstants.MaterialType.skill.ToString()
-                    || mt == SDConstants.MaterialType.star.ToString())
+                SDConstants.MaterialType mt = SDDataManager.Instance.getMaterialTypeById(all[i].id);
+                if (mt == SDConstants.MaterialType.exp
+                    || mt == SDConstants.MaterialType.skill
+                    || mt == SDConstants.MaterialType.star)
                 {
                     Transform s = Instantiate(SItem) as Transform;
                     s.transform.SetParent(scrollRect.content);
@@ -221,12 +234,12 @@ public class StockPageController : MonoBehaviour
             _s.initStock(heroes[i]);
         }
     }
-    public void showMaterialsOwned(SDConstants.MaterialType mType = SDConstants.MaterialType.all)
+    public void showMaterialsOwned(SDConstants.MaterialType mType = SDConstants.MaterialType.end)
     {
         ResetPage();
-        List<GDEItemData> all = SDDataManager.Instance.PlayerData.materials;
+        List<GDEItemData> all = SDDataManager.Instance.getMaterialsOwned;
         List<GDEItemData> _materials = new List<GDEItemData>();
-        if (mType == SDConstants.MaterialType.all)
+        if (mType == SDConstants.MaterialType.end)
         {
             //int index = 0;
             itemCount = all.Count;
@@ -239,8 +252,8 @@ public class StockPageController : MonoBehaviour
         {
             for (int i = 0; i < all.Count; i++)
             {
-                string _mtype = SDDataManager.Instance.getMaterialTypeById(all[i].id);
-                if (_mtype == mType.ToString())
+                SDConstants.MaterialType _mtype = SDDataManager.Instance.getMaterialTypeById(all[i].id);
+                if (_mtype == mType)
                 {
                     _materials.Add(all[i]);
                 }
@@ -261,7 +274,7 @@ public class StockPageController : MonoBehaviour
     public void showPropsOwned()
     {
         ResetPage();
-        List<GDEItemData> props = SDDataManager.Instance.PlayerData.props;
+        List<GDEItemData> props = SDDataManager.Instance.getPropsOwned;
         itemCount = props.Count;
         for(int i = 0; i < itemCount; i++)
         {
@@ -305,7 +318,37 @@ public class StockPageController : MonoBehaviour
         {
             return equipImproveController.expectImprove_before(list, SDEquipImprove.ImproveKind.fix, newStock);
         }
+        else if(materialType == SDConstants.MaterialType.goddess_exp)
+        {
+            return goddessImproveController.expectImprove_before(list, SDGoddessImprove.ImproveKind.exp, newStock);
+        }
         return false;
+    }
+    public void showMaterialsForGoddessImprove(string goddessId)
+    {
+        ResetPage();
+        List<GDEItemData> all = SDDataManager.Instance.getMaterialsOwned;
+        List<GDEItemData> results = all.FindAll(x => 
+        {
+            consumableItem data = SDDataManager.Instance.getConsumableById(x.id);
+            if (data != null && data.MaterialType == SDConstants.MaterialType.goddess_exp)
+            {
+                return data.Data == goddessId || data.Data == "all";
+            }
+            else return false;
+        });
+        itemCount = results.Count;
+        for(int i = 0; i < results.Count; i++)
+        {
+            Transform s = Instantiate(SItem) as Transform;
+            s.transform.SetParent(scrollRect.content);
+            s.transform.localScale = Vector3.one;
+            RTSingleStockItem _s = s.GetComponent<RTSingleStockItem>();
+            _s.stockPage = this;
+            _s.initStock(results[i], SDConstants.StockType.material
+                ,SDConstants.MaterialType.goddess_exp);
+            items.Add(_s);
+        }
     }
     #endregion
 }

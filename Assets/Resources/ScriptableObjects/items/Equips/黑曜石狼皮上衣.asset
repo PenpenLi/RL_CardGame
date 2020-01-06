@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 714f0771b9f0dd344a693b9d48a344af, type: 3}
+  m_Name: "\u9ED1\u66DC\u77F3\u72FC\u76AE\u4E0A\u8863"
+  m_EditorClassIdentifier: 
+  _ID: E_A#1000020
+  _NAME: "\u9ED1\u66DC\u77F3\u72FC\u76AE\u4E0A\u8863"
+  _DESC: 
+  itemtype: 1
+  _LEVEL: 1
+  stackAble: 0
+  discardAble: 1
+  useable: 1
+  sellAble: 1
+  inexhaustible: 0
+  maxDurability: 100
+  specialStr: ad:7|md:3
+  resistStr: 
+  equipPos: 1
+  weaponRace: {fileID: 0}
+  armorRank: {fileID: 11400000, guid: e09e8b4c6e1578443ac463537005ec00, type: 2}
+  _SuitBelong: 0
+  suitId: 
+  _RAL:
+    AllAttributeData: 00000000000000000000000000000000070000000000000003000000000000000000000000000000000000000000000000000000
+    AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
+  passiveEffect: 

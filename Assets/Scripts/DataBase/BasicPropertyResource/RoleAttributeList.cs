@@ -135,17 +135,17 @@ public class RoleAttributeList
     #region 快速索引与运算
     public static RoleAttributeList operator +(RoleAttributeList a, RoleAttributeList b)
     {
-        for(int i = 0; i < (int)AttributeData.End; i++)
+        for (int i = 0; i < (int)AttributeData.End; i++)
         {
             a.AllAttributeData[i] += b.AllAttributeData[i];
         }
-        for(int i = 0; i < (int)StateTag.End; i++)
+        for (int i = 0; i < (int)StateTag.End; i++)
         {
             a.AllResistData[i] += b.AllResistData[i];
         }
         return a;
     }
-    public static RoleAttributeList operator +(RoleAttributeList a,int b)
+    public static RoleAttributeList operator +(RoleAttributeList a, int b)
     {
         for (int i = 0; i < (int)AttributeData.End; i++)
         {
@@ -157,7 +157,7 @@ public class RoleAttributeList
         }
         return a;
     }
-    public static RoleAttributeList operator -(RoleAttributeList a,RoleAttributeList b)
+    public static RoleAttributeList operator -(RoleAttributeList a, RoleAttributeList b)
     {
         for (int i = 0; i < (int)AttributeData.End; i++)
         {
@@ -186,7 +186,7 @@ public class RoleAttributeList
     {
         AllAttributeData[(int)tag] += figure;
     }
-    public void Add(int figure,StateTag tag)
+    public void Add(int figure, StateTag tag)
     {
         AllResistData[(int)tag] += figure;
     }
@@ -203,7 +203,7 @@ public class RoleAttributeList
                 AddPerc(OA.figure, OA.STType);
             }
         }
-        else if(OA.Type == OneAttritube.FigureType.natural)
+        else if (OA.Type == OneAttritube.FigureType.natural)
         {
             if (OA.isAD)
             {
@@ -229,18 +229,18 @@ public class RoleAttributeList
 
     public void AddAll(int figure)
     {
-        for(int i = 0; i < (int)AttributeData.End; i++) { Add(figure, (AttributeData)i); }
-        for(int i= 0; i < (int)StateTag.End; i++) { Add(figure, (StateTag)i); }
+        for (int i = 0; i < (int)AttributeData.End; i++) { Add(figure, (AttributeData)i); }
+        for (int i = 0; i < (int)StateTag.End; i++) { Add(figure, (StateTag)i); }
     }
     public enum AddType
     {
         common
-        ,barChart
-        ,phy
-        ,mage
-        ,allA
-        ,resist
-        ,end
+        , barChart
+        , phy
+        , mage
+        , allA
+        , resist
+        , end
     }
     public void AddAll(int figure, AddType type)
     {
@@ -267,7 +267,7 @@ public class RoleAttributeList
                 Add(figure, AttributeData.MD);
                 break;
             case AddType.allA:
-                for(int i = 0; i < (int)AttributeData.End; i++)
+                for (int i = 0; i < (int)AttributeData.End; i++)
                 {
                     Add(figure, (AttributeData)i);
                 }
@@ -285,7 +285,7 @@ public class RoleAttributeList
         AllAttributeData[(int)tag] = (int)(AllAttributeData[(int)tag]
             * AllRandomSetClass.SimplePercentToDecimal(100 + percent));
     }
-    public void AddPerc(int figure,StateTag tag)
+    public void AddPerc(int figure, StateTag tag)
     {
         AllResistData[(int)tag] = (int)(AllResistData[(int)tag]
             * AllRandomSetClass.SimplePercentToDecimal(100 + figure));
@@ -335,49 +335,42 @@ public class RoleAttributeList
     }
 
     #endregion
+    #region SET
+    public void Set(int figure, AttributeData tag)
+    {
+        AllAttributeData[(int)tag] = figure;
+    }
+    public void Set(int figure, StateTag tag)
+    {
+        AllResistData[(int)tag] = figure;
+    }
+    #endregion
     public int read(AttributeData tag, int rate = 100)
     {
-        return (int)(AllAttributeData[(int)tag]
-            * AllRandomSetClass.SimplePercentToDecimal(rate));
+        int t = (int)tag;
+        if (t < AllAttributeData.Length)
+            return (int)(AllAttributeData[(int)tag]
+                * AllRandomSetClass.SimplePercentToDecimal(rate));
+        else return 0;
     }
     public int read(StateTag tag, int rate = 100)
     {
-        return (int)(AllResistData[(int)tag]
-            * AllRandomSetClass.SimplePercentToDecimal(rate));
-    }
-    public void AddIntegerList(List<int> add,bool isResist = false)
-    {
-        if (!isResist)
-        {
-            for(int i = 0; i < (int)AttributeData.End; i++)
-            {
-                if (i < add.Count)
-                {
-                    Add(add[i], (AttributeData)i);
-                }
-            }
-        }
-        else
-        {
-            for(int i = 0; i < (int)StateTag.End; i++)
-            {
-                if (i < add.Count)
-                {
-                    Add(add[i], (StateTag)i);
-                }
-            }
-        }
+        int t = (int)tag;
+        if (t < AllResistData.Length)
+            return (int)(AllResistData[(int)tag]
+                * AllRandomSetClass.SimplePercentToDecimal(rate));
+        else return 0;
     }
     public void AddGDEData(GDERoleAttritubeData roledata)
     {
-        for(int i = 0; i < (int)AttributeData.End; i++)
+        for (int i = 0; i < (int)AttributeData.End; i++)
         {
-            if(i < roledata.AD_List.Count)
+            if (i < roledata.AD_List.Count)
             {
                 Add(roledata.AD_List[i], (AttributeData)i);
             }
         }
-        for(int i = 0;i < (int)StateTag.End; i++)
+        for (int i = 0; i < (int)StateTag.End; i++)
         {
             if (i < roledata.RD_List.Count)
             {
@@ -385,7 +378,57 @@ public class RoleAttributeList
             }
         }
     }
-    #endregion
+    public void AffectedByRate(RoleAttributeList rate)
+    {
+        for (int i = 0; i < AllAttributeData.Length; i++)
+        {
+            if (rate.AllAttributeData[i] != 0)
+            {
+                float DECIMAL = (rate.AllAttributeData[i] + 100) * 1f / 100;
+                AllAttributeData[i] = (int)(AllAttributeData[i] * DECIMAL);
+            }
+        }
+        for (int i = 0; i < AllResistData.Length; i++)
+        {
+            if (rate.AllResistData[i] != 0)
+            {
+                float DECIMAL = (rate.AllResistData[i] + 100) * 1f / 100;
+                AllResistData[i] = (int)(AllResistData[i] * DECIMAL);
+            }
+        }
+    }
+    public GDERoleAttritubeData TurnIntoGDEData
+    {
+        get
+        {
+            GDERoleAttritubeData data = new GDERoleAttritubeData(GDEItemKeys.RoleAttritube_BasicRA);
+            for (int i = 0; i < AllAttributeData.Length; i++)
+            {
+                if (i < data.AD_List.Count) { data.AD_List[i] = AllAttributeData[i]; }
+                else data.AD_List.Add(AllAttributeData[i]);
+            }
+            for (int i = 0; i < AllResistData.Length; i++)
+            {
+                if (i < data.RD_List.Count) { data.RD_List[i] = AllResistData[i]; }
+                else data.RD_List.Add(AllResistData[i]);
+            }
+            return data;
+        }
+    }
+    public static RoleAttributeList GDEToRAL(GDERoleAttritubeData data)
+    {
+        RoleAttributeList RAL = RoleAttributeList.zero;
+        for(int i = 0; i < data.AD_List.Count; i++)
+        {
+            RAL.AllAttributeData[i] = data.AD_List[i];
+        }
+        for(int i = 0; i < data.RD_List.Count; i++)
+        {
+            RAL.AllResistData[i] = data.RD_List[i];
+        }
+        return RAL;
+    }
+
     public static RoleAttributeList zero = new RoleAttributeList()
     {
         Hp = 0,
@@ -410,16 +453,96 @@ public class RoleAttributeList
         Dizzy_Def = 0,
         Confuse_Def = 0
     };
-    public bool HaveData 
+    public bool HaveData
     {
-        get 
+        get
         {
-            foreach(int d in AllAttributeData) { if (d != 0) return true; }
+            foreach (int d in AllAttributeData) { if (d != 0) return true; }
             foreach (int d in AllResistData) { if (d != 0) return true; }
             return false;
         }
     }
+    public static RoleAttributeList RandomSet(ScopeInt barchartAd,ScopeInt atkdefAd,ScopeInt extraAd,ScopeInt Rd)
+    {
+        RoleAttributeList L = RoleAttributeList.zero;
+        L.Hp = UnityEngine.Random.Range(barchartAd.Min, barchartAd.Max);
+        L.Mp = UnityEngine.Random.Range(barchartAd.Min, barchartAd.Max);
+        L.Tp = UnityEngine.Random.Range(barchartAd.Min, barchartAd.Max);
+        //
+        L.AT = UnityEngine.Random.Range(atkdefAd.Min, atkdefAd.Max);
+        L.AD = UnityEngine.Random.Range(atkdefAd.Min, atkdefAd.Max);
+        L.MT = UnityEngine.Random.Range(atkdefAd.Min, atkdefAd.Max);
+        L.MD = UnityEngine.Random.Range(atkdefAd.Min, atkdefAd.Max);
+        //
+        L.Speed = UnityEngine.Random.Range(extraAd.Min, extraAd.Max);
+        L.Taunt = UnityEngine.Random.Range(extraAd.Min, extraAd.Max);
+        L.Accur = UnityEngine.Random.Range(extraAd.Min, extraAd.Max);
+        L.Evo = UnityEngine.Random.Range(extraAd.Min, extraAd.Max);
+        L.Crit = UnityEngine.Random.Range(extraAd.Min, extraAd.Max);
+        L.Expect = UnityEngine.Random.Range(extraAd.Min, extraAd.Max);
+        //
+        for(int i = 0; i < L.AllResistData.Length; i++)
+        {
+            L.AllResistData[i] = UnityEngine.Random.Range(Rd.Min, Rd.Max);
+        }
+        return L;
+    }
+    #endregion
+    /*
+    #region 可视化设置
+    [System.Serializable]
+    public struct AD_Element
+    {
+        [ReadOnly]
+        public string NAME;
+        [ReadOnly]
+        [EnumMemberNames("耐力","法力","怒气","物攻","物防","魔攻","魔防","速度","嘲讽","精准","闪避","暴击","随机期望")]
+        public AttributeData TAG;
+        public int DATA;
+        public AD_Element(AttributeData tag,int data)
+        {
+            TAG = tag;NAME = TAG.ToString().ToUpper();
+            DATA = data;
+        }
+    }
 
+    [System.Serializable]
+    public struct ST_Element
+    {
+        [ReadOnly]
+        public string NAME;
+        [ReadOnly]
+        [EnumMemberNames("撕裂","思维","烧灼","霜冻","腐蚀","沉默","眩晕","混乱")]
+        public StateTag TAG;
+        public int DATA;
+        public ST_Element(StateTag tag, int data)
+        {
+            TAG = tag; NAME = TAG.ToString().ToUpper();
+            DATA = data;
+        }
+    }
+
+    public List<AD_Element> All_AD_Vision = new List<AD_Element>();
+    public List<ST_Element> All_ST_Vision = new List<ST_Element>();
+    public void ShowRALVision()
+    {
+        All_AD_Vision = new List<AD_Element>();
+        for (int i = 0; i < AllAttributeData.Length; i++)
+        {
+            All_AD_Vision.Add(new AD_Element((AttributeData)i, AllAttributeData[i]));
+        }
+        All_ST_Vision = new List<ST_Element>();
+        for (int i = 0; i < AllResistData.Length; i++)
+        {
+            All_ST_Vision.Add(new ST_Element((StateTag)i, AllResistData[i]));
+        }
+    }
+    public RoleAttributeList()
+    {
+        ShowRALVision();
+    }
+    #endregion
+    */
 }
 [System.Serializable]
 public class OneAttritube

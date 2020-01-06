@@ -11,10 +11,10 @@ public class AddHeal : SkillFunction
         IsUsed = true;
         CalculateBeforeFunction(source, target);
 
-        List<BattleRoleData> list = DealWithAOEAction(source, target);
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
         for (int i = 0; i < list.Count; i++)
         {
-            StartCoroutine(IEStartSkill(source, list[i], ValCaused(source, list[i]), true));
+            StartCoroutine(IEStartSkill(source, list[i], new NumberData(ValCaused(source, list[i])), true));
         }
     }
     public void PropStartSkill(BattleRoleData source, BattleRoleData target,int val
@@ -27,23 +27,46 @@ public class AddHeal : SkillFunction
         if (GetComponent<HSkilInfo>()) 
         {
             GetComponent<HSkilInfo>().AOEType = AOEType;
-            List<BattleRoleData> list = DealWithAOEAction(source, target);
+            List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
             for (int i = 0; i < list.Count; i++)
             {
-                StartCoroutine(IEStartSkill(source, list[i], val));
+                StartCoroutine(IEStartSkill(source, list[i], NumberData.Build(val)));
             }
         }
         else
         {
-            StartCoroutine(IEStartSkill(source, target, val));
+            StartCoroutine(IEStartSkill(source, target, NumberData.Build(val)));
         }
     }
-    public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target,int val,bool useSpecial=false)
+
+    public void PropStartSkill(BattleRoleData source, BattleRoleData target, NumberData val
+    , SDConstants.AOEType AOEType = SDConstants.AOEType.None)
+    {
+        base.StartSkill(source, target);
+        IsProcessing = true;
+        IsUsed = true;
+
+        this.AOEType = AOEType;
+        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
+        for (int i = 0; i < list.Count; i++)
+        {
+            StartCoroutine(IEStartSkill(source, list[i], val));
+        }
+    }
+
+    public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target,NumberData _val,bool useSpecial=false)
     {
         source.unit_character_model.CurrentCharacterModel.ChangeModelAnim
             (source.unit_character_model.CurrentCharacterModel.anim_cast, false);
         SLEffectManager.Instance.playCommonEffectCast(source.transform.position);
         yield return new WaitForSeconds(castLastTime);
+
+        int val = _val.DATA;
+        if(_val.dataTag == NumberData.DataType.percent)
+        {
+            val = (int)(target.HpController.MaxHp * _val.DECIMAL);
+        }
+
         if (useSpecial)
         {
             #region 计算技能状态

@@ -47,7 +47,7 @@ public class SingleHeroTeamItem : MonoBehaviour
 
             levelText.gameObject.SetActive(true);
             levelText.text = "Lv." + SDDataManager.Instance.getLevelByExp(hero.exp);
-            nameText.text = SDGameManager.T(dal.Name);
+            nameText.text = SDGameManager.T(dal.Info.Name);
         }
 
         

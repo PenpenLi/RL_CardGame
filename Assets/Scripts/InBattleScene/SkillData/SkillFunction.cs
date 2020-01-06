@@ -63,17 +63,30 @@ public class SkillFunction : MonoBehaviour
         ,new SkillDetailR("浮动修正ExpectR——增量")
     };
     public SkillAim ThisSkillAim;
+
+    private SDConstants.AOEType _aoetype;
     public SDConstants.AOEType AOEType
     {
         get
         {
             if (GetComponent<HSkilInfo>()) 
-            { return GetComponent<HSkilInfo>().AOEType; }
-            return SDConstants.AOEType.None;
+            { _aoetype = GetComponent<HSkilInfo>().AOEType; }
+            return _aoetype;
+        }
+        set
+        {
+            _aoetype = value;
+            if (GetComponent<HSkilInfo>())
+            { GetComponent<HSkilInfo>().AOEType = value; }
         }
     }
     public bool IsProcessing = false;
     public bool RandomTarget = false;
+    //
+    public HSExportDmgModifity HSModifity
+    {
+        get { return GetComponent<HSExportDmgModifity>(); }
+    }
     #endregion
 
     protected HeroController _heroController;
@@ -95,12 +108,22 @@ public class SkillFunction : MonoBehaviour
     public int skillIndex = 0;
     public Transform bullet;
     //
+    [ReadOnly]
     public bool IsCausedCritDmg;
+    [ReadOnly]
     public bool IsCausedMiss;
+    [ReadOnly]
     public bool IsCausedFault;
 
+    public bool IsOmega = false;
 
-    public bool IsRare = false;
+
+    [Header("ExtraStateAdd"), Space(25)]
+    public bool UseState;
+    [ConditionalHide("UseState", true)]
+    public StandardState _standardState;
+
+
     private void Start()
     {
         _btn = GetComponent<Button>();
@@ -122,7 +145,7 @@ public class SkillFunction : MonoBehaviour
     /// </summary>
     public void initIcon()
     {
-        if (IsRare)
+        if (IsOmega)
         {
             Image img = GetComponent<Image>();
             //稀有角色拥有专用技能按钮
@@ -160,7 +183,7 @@ public class SkillFunction : MonoBehaviour
         else { btnEnable = false; }
         #endregion
         #region 角色状态影响技能
-        if (Unit.stateHush.LastTime > 0)
+        if (Unit.checkPerState(StateTag.Hush))
         {
             if (gameObject.GetComponent<NormalAttack>())
             {
@@ -192,11 +215,38 @@ public class SkillFunction : MonoBehaviour
         if (BM == null) BM = FindObjectOfType<BattleManager>();
         BM.IsWaitingPlayerAction = false;//技能释放结束，继续行动条（virtual会被abm覆盖）
     }
+    /// <summary>
+    /// 技能消耗
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="target"></param>
     public virtual void CalculateBeforeFunction(BattleRoleData source,BattleRoleData target)
     {
-        source.HpController.consumeHp(BCCostPerTime.HP);
-        source.MpController.consumeMp(BCCostPerTime.MP);
-        source.TpController.consumeTp(BCCostPerTime.TP);
+        RoleBarChart BC = BCCostPerTime;
+        BC += BCCostPerLevel * source.ThisBasicRoleProperty().LEVEL;
+        BC += BCCostPerSkillGrade * skillgrade;
+        RoleBarChart BCPc = new RoleBarChart()
+        {
+            HP = (int)(source.HpController.MaxHp * AllRandomSetClass.SimplePercentToDecimal
+            (BCCostUsingPercent.HP))
+            ,
+            MP = (int)(source.MpController.maxMp * AllRandomSetClass.SimplePercentToDecimal
+            (BCCostUsingPercent.MP))
+            ,
+            TP = (int)(source.TpController.maxTp * AllRandomSetClass.SimplePercentToDecimal
+            (BCCostUsingPercent.TP))
+        };
+        BC += BCPc;
+        //
+        if (IsOmega)
+        {
+            BC = new RoleBarChart(BC.HP,source.MpController.maxMp, Mathf.Min
+                (BC.TP*2,source.TpController.maxTp));
+        }
+        //
+        source.HpController.consumeHp(BC.HP);
+        source.MpController.consumeMp(BC.MP);
+        source.TpController.consumeTp(BC.TP);
         //
         if (GetComponent<HSkilInfo>())
             UseSkillAddMpTp(source, GetComponent<HSkilInfo>().AfterwardsAddType);
@@ -260,7 +310,7 @@ public class SkillFunction : MonoBehaviour
         {
             IsActive = true;
             APC.CurrentSkill = this;
-            if(this.name.Contains("Revive"))
+            if(this is ReviveOne)
             {
                 BM.showCurrentUnitSkillTarget(true);
             }
@@ -316,11 +366,12 @@ public class SkillFunction : MonoBehaviour
         return s;
     }
 
-    public List<BattleRoleData> DealWithAOEAction(BattleRoleData source, BattleRoleData target)
+    public List<BattleRoleData> DealWithAOEAction(BattleRoleData source, BattleRoleData target
+        ,SDConstants.AOEType AOE
+        , bool isRevive = false)
     {
         if (BM == null) BM = FindObjectOfType<BattleManager>();
         List<BattleRoleData> results = new List<BattleRoleData>();
-        SDConstants.AOEType AOE = this.AOEType;
         if (AOE == SDConstants.AOEType.None)
         {
             //this.StartSkill(source, target);
@@ -348,7 +399,7 @@ public class SkillFunction : MonoBehaviour
                             BattleRoleData unit0
                         = _parent.GetChild(i).GetComponent<BattleRoleData>();
                             bool flag0 = false;
-                            if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+                            if (unit0.IsDead && isRevive) flag0 = true;
                             else if (!unit0.IsDead) flag0 = true;
                             if (flag0) results.Add(unit0);
                         }
@@ -363,7 +414,7 @@ public class SkillFunction : MonoBehaviour
                             BattleRoleData unit0
                                 = _parent.GetChild(i).GetComponent<BattleRoleData>();
                             bool flag0 = false;
-                            if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+                            if (unit0.IsDead && isRevive) flag0 = true;
                             else if (!unit0.IsDead) flag0 = true;
                             if (flag0) results.Add(unit0);
                         }
@@ -385,7 +436,7 @@ public class SkillFunction : MonoBehaviour
                     BattleRoleData unit0
                 = _parent.GetChild(i).GetComponent<BattleRoleData>();
                     bool flag0 = false;
-                    if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+                    if (unit0.IsDead && isRevive) flag0 = true;
                     else if (!unit0.IsDead) flag0 = true;
                     if (flag0) results.Add(unit0);
                 }
@@ -404,7 +455,7 @@ public class SkillFunction : MonoBehaviour
                     BattleRoleData unit0
                 = _parent.GetChild(i).GetComponent<BattleRoleData>();
                     bool flag0 = false;
-                    if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+                    if (unit0.IsDead && isRevive) flag0 = true;
                     else if (!unit0.IsDead) flag0 = true;
                     if (flag0) results.Add(unit0);
                 }
@@ -433,7 +484,7 @@ public class SkillFunction : MonoBehaviour
                             BattleRoleData unit0
                         = _parent.GetChild(i).GetComponent<BattleRoleData>();
                             bool flag0 = false;
-                            if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+                            if (unit0.IsDead && isRevive) flag0 = true;
                             else if (!unit0.IsDead) flag0 = true;
                             if (flag0) results.Add(unit0);
                         }
@@ -448,7 +499,7 @@ public class SkillFunction : MonoBehaviour
                             BattleRoleData unit0
                                 = _parent.GetChild(i).GetComponent<BattleRoleData>();
                             bool flag0 = false;
-                            if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+                            if (unit0.IsDead && isRevive) flag0 = true;
                             else if (!unit0.IsDead) flag0 = true;
                             if (flag0) results.Add(unit0);
                         }
@@ -470,7 +521,7 @@ public class SkillFunction : MonoBehaviour
                     BattleRoleData unit0
                     = _parent.GetChild(i).GetComponent<BattleRoleData>();
                     bool flag0 = false;
-                    if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+                    if (unit0.IsDead && isRevive) flag0 = true;
                     else if (!unit0.IsDead) flag0 = true;
                     if (flag0) results.Add(unit0);
                 }
@@ -488,7 +539,7 @@ public class SkillFunction : MonoBehaviour
                     BattleRoleData unit0
                         = _parent.GetChild(i).GetComponent<BattleRoleData>();
                     bool flag0 = false;
-                    if (unit0.IsDead && this.name.Contains("Revive")) flag0 = true;
+                    if (unit0.IsDead && isRevive) flag0 = true;
                     else if (!unit0.IsDead) flag0 = true;
                     if (flag0) results.Add(unit0);
                 }
@@ -504,7 +555,7 @@ public class SkillFunction : MonoBehaviour
                 for (int i = 0; i < list.Length; i++)
                 {
                     bool flag = false;
-                    if (list[i].IsDead && this.name.Contains("Revive"))
+                    if (list[i].IsDead && isRevive)
                     {
                         flag = true;
                     }
@@ -523,7 +574,7 @@ public class SkillFunction : MonoBehaviour
             {
                 for (int i = 0; i < BM.All_Array.Count; i++)
                 {
-                    if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                    if (BM.All_Array[i].IsDead && isRevive)
                     {
                         //this.StartSkill(source, BM.AllSRL_Array[i]);
                         results.Add(BM.AllSRL_Array[i]);
@@ -542,7 +593,7 @@ public class SkillFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -560,7 +611,7 @@ public class SkillFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -578,7 +629,7 @@ public class SkillFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -597,7 +648,7 @@ public class SkillFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -612,7 +663,7 @@ public class SkillFunction : MonoBehaviour
             List<int> list = new List<int>();
             for (int i = 0; i < BM.All_Array.Count; i++)
             {
-                if (BM.All_Array[i].IsDead && this.name.Contains("Revive"))
+                if (BM.All_Array[i].IsDead && isRevive)
                 {
                     list.Add(i);
                 }
@@ -633,78 +684,13 @@ public class SkillFunction : MonoBehaviour
     }
 
     #region UseSkillToAddMpTp
-    /// <summary>
-    /// 使用技能后能够获得的技力
-    /// </summary>
-    /// <param name="addType">回能比率，越高回能数量越低</param>
-    public void UseSkillToAddMp(BattleRoleData source,int addF = 15)
-    {
-        source.MpController.addMp(SDDataManager.Instance.FigureAByPc
-            (source.MpController.maxMp / addF, source.ThisBasicRoleProperty().MpAddRate));
-    }
-    /// <summary>
-    /// 使用技能增加的怒气值
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="addF">回怒比率，越高回怒数量越低</param>
-    public void UseSkillToAddTp(BattleRoleData source,int addF = 25)
-    {
-        source.TpController.addTp
-            (SDDataManager.Instance.FigureAByPc(source.TpController.maxTp / addF
-            , source.ThisBasicRoleProperty().TPAddRate));//技能增加Tp 
-    }
     public void UseSkillAddMpTp(BattleRoleData source
         ,SDConstants.AddMpTpType AddType = SDConstants.AddMpTpType.Normal)
     {
-        if (AddType == SDConstants.AddMpTpType.Normal)
-        {
-            UseSkillToAddMp(source, 15);
-            UseSkillToAddTp(source, 25);
-        }
-        else if (AddType == SDConstants.AddMpTpType.PreferMp)
-        {
-            UseSkillToAddMp(source, 10);
-            UseSkillToAddTp(source, 25);
-        }
-        else if (AddType == SDConstants.AddMpTpType.PreferTp)
-        {
-            UseSkillToAddMp(source, 15);
-            UseSkillToAddTp(source, 15);
-        }
-        else if (AddType == SDConstants.AddMpTpType.PreferBoth)
-        {
-            UseSkillToAddMp(source, 10);
-            UseSkillToAddTp(source, 15);
-        }
-        else if (AddType == SDConstants.AddMpTpType.LowMp)
-        {
-            //UseSkillToAddMp(source, 25);
-            UseSkillToAddTp(source, 25);
-        }
-        else if(AddType == SDConstants.AddMpTpType.LowTp)
-        {
-            UseSkillToAddMp(source, 15);
-            //UseSkillToAddTp(source, 25);
-        }
-        else if(AddType == SDConstants.AddMpTpType.LowBoth)
-        {
-
-        }
-        else if(AddType == SDConstants.AddMpTpType.YearnMp)
-        {
-            UseSkillToAddMp(source, 5);
-            UseSkillToAddTp(source, 25);
-        }
-        else if(AddType == SDConstants.AddMpTpType.YearnTp)
-        {
-            UseSkillToAddMp(source, 15);
-            UseSkillToAddTp(source, 10);
-        }
-        else if(AddType == SDConstants.AddMpTpType.YearnBoth)
-        {
-            UseSkillToAddMp(source, 5);
-            UseSkillToAddTp(source, 10);
-        }
+        int addMp = SkillDetailsList.AddMpAfterSkill(AddType, source);
+        source.MpController.addMp(addMp);
+        int addTp = SkillDetailsList.AddTpAfterSkill(AddType, source);
+        source.TpController.addTp(addTp);
     }
     #endregion
     public virtual bool isAddSpecialBuff(BattleRoleData source, BattleRoleData target)
@@ -716,9 +702,7 @@ public class SkillFunction : MonoBehaviour
 
 
 
-
-
-   public virtual int dmgCaused(BattleRoleData source,BattleRoleData target)
+    public virtual int dmgCaused(BattleRoleData source,BattleRoleData target)
    {
         SkillKind kind = SkillKind.Physical;
         AttributeData Atb = AttributeData.AT;
@@ -739,28 +723,72 @@ public class SkillFunction : MonoBehaviour
         }
         int atk = source.ThisBasicRoleProperty().ReadRA(Atb);
         if (atk <= 0) atk = SDConstants.MinDamageCount;
-        HSExportDmgModifity S = GetComponent<HSExportDmgModifity>();
+        HSExportDmgModifity S = HSModifity;
         if (S)
         {
 
             atk = S.AllResult(source, target, kind, SkillGrade);
         }
 
+        atk = ValChangedByCharacterType(source, target, atk);
+        
+        return atk;
+   }
+    public int ValChangedByCharacterType(BattleRoleData source,BattleRoleData target,int atk)
+    {
         //英雄对敌特性触发
-        if(source._Tag == SDConstants.CharacterType.Hero
+        if (source._Tag == SDConstants.CharacterType.Hero
             && target._Tag == SDConstants.CharacterType.Enemy)
         {
             //当技能释放者为人类目标则为野兽时触发
             if (source.HeroProperty._hero._heroRace == Race.Human
                 && target.EnemyProperty._enemy.race == 3)
             {
-                atk = (int)(atk * 1.25f);
+                return (int)(atk * 1.25f);
             }
         }
-        //
-        
         return atk;
-   }
+    }
+
+
+    bool stateCantWork;
+    public void stateWork(BattleRoleData source,BattleRoleData target)
+    {
+        if (UseState && !stateCantWork)
+        {
+            if (_standardState != null)
+            {
+                SDConstants.AOEType aoe = _standardState.StateAOE;
+
+                if (_standardState.AimAtSelf)
+                {
+                    target = source;
+                    stateCantWork = true;
+                    List<BattleRoleData> list = DealWithAOEAction(source, target
+                        , _standardState.StateAOE);
+
+                    _standardState.StartState(this, source, target);
+                }
+                else
+                {
+                    if (aoe == SDConstants.AOEType.None
+                    || aoe == SDConstants.AOEType.Continuous2
+                    || aoe == SDConstants.AOEType.Continuous3)
+                    {
+                        _standardState.StartState(this, source, target);
+                    }
+                    else
+                    {
+                        stateCantWork = true;
+                        List<BattleRoleData> list = DealWithAOEAction(source, target
+                            , _standardState.StateAOE);
+                        foreach(BattleRoleData unit in list)
+                            _standardState.StartState(this, source, unit);
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -775,3 +803,4 @@ public class SkillDetailR
         this.Data = data;
     }
 }
+

@@ -31,5 +31,8 @@ namespace GameDataEditor
         public static string Achievement = "Achievement";
         public static string Anim = "Anim";
         public static string NPC = "NPC";
+        public static string Rune = "Rune";
+        public static string goddessAtti = "goddessAtti";
+        public static string HeroAltarPool = "HeroAltarPool";
     }
 }

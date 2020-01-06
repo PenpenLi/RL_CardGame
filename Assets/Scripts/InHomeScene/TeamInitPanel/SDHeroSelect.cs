@@ -71,6 +71,10 @@ public class SDHeroSelect : MonoBehaviour
     public void heroBtnFunction(int index)
     {
         showHeroesSelectPanel(index);
+        if (heroesInTeam.Length <= index)
+        {
+            simpleHDV.EmptyVision();return;
+        }
         if (heroesInTeam[index] == 0)
         {
             //showHeroesSelectPanel(index);

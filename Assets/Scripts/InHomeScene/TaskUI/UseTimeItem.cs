@@ -78,6 +78,7 @@ public class UseTimeItem : MonoBehaviour
         {
             showEmptyPanel();return;
         }
+        taskId = task.taskId;
         string startTimeString = task.startTime;
         if (DateTime.TryParse(startTimeString, out DateTime starttime))
         {

@@ -9,7 +9,7 @@ public class FactoryPanel : BasicSubMenuPanel
     [Space(25)]
     public ScrollRect scrollrect;
     public Transform WorkingCard;
-    public List<string> AllProductIds;
+    public List<consumableItem> AllProducts;
     public List<FactoryWorkCard> ALLAssemblyLines;
     [Space]
     public Transform chooseSlavePanel;
@@ -50,9 +50,9 @@ public class FactoryPanel : BasicSubMenuPanel
     {
         //heroExp
         //List<GDEtimeTaskData> all = SDDataManager.Instance.PlayerData.TimeTaskList;
-        for(int i = 0; i < AllProductIds.Count; i++)
+        for(int i = 0; i < Level + 1; i++)
         {
-            string itemid = AllProductIds[i];
+            //string itemid = AllProducts[0].ID;
             Transform card = Instantiate(WorkingCard) as Transform;
             card.SetParent(scrollrect.content);
             card.transform.localScale = Vector3.one;
@@ -64,7 +64,7 @@ public class FactoryPanel : BasicSubMenuPanel
             if (TD == null)
             {
                 SDDataManager.Instance.AddTimeTask
-                    (SDConstants.timeTaskType.FACT, 0, AllProductIds[i],taskId);
+                    (SDConstants.timeTaskType.FACT, 0, AllProducts[0].ID,taskId);
                 SDDataManager.Instance.haveTimeTaskByTaskId(taskId, out TD);
             }
             fwc.initTimeTask(TD);

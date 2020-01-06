@@ -258,11 +258,11 @@ namespace GameDataEditor
 	        GDEDataManager.SetCustomList(_key, heroesTeamKey, heroesTeam);
 		}
 		
-        static string materialsKey = "materials";
-		public List<GDEItemData>      materials;
-		public void Set_materials()
+        static string consumablesKey = "consumables";
+		public List<GDEItemData>      consumables;
+		public void Set_consumables()
         {
-	        GDEDataManager.SetCustomList(_key, materialsKey, materials);
+	        GDEDataManager.SetCustomList(_key, consumablesKey, consumables);
 		}
 		
         static string equipsOwnedKey = "equipsOwned";
@@ -270,13 +270,6 @@ namespace GameDataEditor
 		public void Set_equipsOwned()
         {
 	        GDEDataManager.SetCustomList(_key, equipsOwnedKey, equipsOwned);
-		}
-		
-        static string propsKey = "props";
-		public List<GDEItemData>      props;
-		public void Set_props()
-        {
-	        GDEDataManager.SetCustomList(_key, propsKey, props);
 		}
 		
         static string propsTeamKey = "propsTeam";
@@ -321,6 +314,20 @@ namespace GameDataEditor
 	        GDEDataManager.SetCustomList(_key, NPCListKey, NPCList);
 		}
 		
+        static string RunesOwnedKey = "RunesOwned";
+		public List<GDERuneData>      RunesOwned;
+		public void Set_RunesOwned()
+        {
+	        GDEDataManager.SetCustomList(_key, RunesOwnedKey, RunesOwned);
+		}
+		
+        static string AltarPoolListKey = "AltarPoolList";
+		public List<GDEHeroAltarPoolData>      AltarPoolList;
+		public void Set_AltarPoolList()
+        {
+	        GDEDataManager.SetCustomList(_key, AltarPoolListKey, AltarPoolList);
+		}
+		
 
         public GDEPlayerData(string key) : base(key)
         {
@@ -354,15 +361,16 @@ namespace GameDataEditor
             dict.Merge(true, achievementData.ToGDEDict(achievementDataKey));
             dict.Merge(true, herosOwned.ToGDEDict(herosOwnedKey));
             dict.Merge(true, heroesTeam.ToGDEDict(heroesTeamKey));
-            dict.Merge(true, materials.ToGDEDict(materialsKey));
+            dict.Merge(true, consumables.ToGDEDict(consumablesKey));
             dict.Merge(true, equipsOwned.ToGDEDict(equipsOwnedKey));
-            dict.Merge(true, props.ToGDEDict(propsKey));
             dict.Merge(true, propsTeam.ToGDEDict(propsTeamKey));
             dict.Merge(true, TimeTaskList.ToGDEDict(TimeTaskListKey));
             dict.Merge(true, goddessOwned.ToGDEDict(goddessOwnedKey));
             dict.Merge(true, buildingsOwned.ToGDEDict(buildingsOwnedKey));
             dict.Merge(true, ItemsOwned.ToGDEDict(ItemsOwnedKey));
             dict.Merge(true, NPCList.ToGDEDict(NPCListKey));
+            dict.Merge(true, RunesOwned.ToGDEDict(RunesOwnedKey));
+            dict.Merge(true, AltarPoolList.ToGDEDict(AltarPoolListKey));
             return dict;
 		}
 
@@ -386,12 +394,12 @@ namespace GameDataEditor
                     heroesTeam[x].UpdateCustomItems(rebuildKeyList);
                 }
             }
-            if (materials != null)
+            if (consumables != null)
             {
-                for(int x=0;  x<materials.Count;  x++)
+                for(int x=0;  x<consumables.Count;  x++)
                 {
-                    GDEDataManager.UpdateItem(materials[x], rebuildKeyList);
-                    materials[x].UpdateCustomItems(rebuildKeyList);
+                    GDEDataManager.UpdateItem(consumables[x], rebuildKeyList);
+                    consumables[x].UpdateCustomItems(rebuildKeyList);
                 }
             }
             if (equipsOwned != null)
@@ -400,14 +408,6 @@ namespace GameDataEditor
                 {
                     GDEDataManager.UpdateItem(equipsOwned[x], rebuildKeyList);
                     equipsOwned[x].UpdateCustomItems(rebuildKeyList);
-                }
-            }
-            if (props != null)
-            {
-                for(int x=0;  x<props.Count;  x++)
-                {
-                    GDEDataManager.UpdateItem(props[x], rebuildKeyList);
-                    props[x].UpdateCustomItems(rebuildKeyList);
                 }
             }
             if (propsTeam != null)
@@ -458,6 +458,22 @@ namespace GameDataEditor
                     NPCList[x].UpdateCustomItems(rebuildKeyList);
                 }
             }
+            if (RunesOwned != null)
+            {
+                for(int x=0;  x<RunesOwned.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(RunesOwned[x], rebuildKeyList);
+                    RunesOwned[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
+            if (AltarPoolList != null)
+            {
+                for(int x=0;  x<AltarPoolList.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(AltarPoolList[x], rebuildKeyList);
+                    AltarPoolList[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
         }
 
         public override void LoadFromDict(string dataKey, Dictionary<string, object> dict)
@@ -494,15 +510,16 @@ namespace GameDataEditor
 
                 dict.TryGetCustomList(herosOwnedKey, out herosOwned);
                 dict.TryGetCustomList(heroesTeamKey, out heroesTeam);
-                dict.TryGetCustomList(materialsKey, out materials);
+                dict.TryGetCustomList(consumablesKey, out consumables);
                 dict.TryGetCustomList(equipsOwnedKey, out equipsOwned);
-                dict.TryGetCustomList(propsKey, out props);
                 dict.TryGetCustomList(propsTeamKey, out propsTeam);
                 dict.TryGetCustomList(TimeTaskListKey, out TimeTaskList);
                 dict.TryGetCustomList(goddessOwnedKey, out goddessOwned);
                 dict.TryGetCustomList(buildingsOwnedKey, out buildingsOwned);
                 dict.TryGetCustomList(ItemsOwnedKey, out ItemsOwned);
                 dict.TryGetCustomList(NPCListKey, out NPCList);
+                dict.TryGetCustomList(RunesOwnedKey, out RunesOwned);
+                dict.TryGetCustomList(AltarPoolListKey, out AltarPoolList);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -535,15 +552,16 @@ namespace GameDataEditor
 
             herosOwned = GDEDataManager.GetCustomList(_key, herosOwnedKey, herosOwned);
             heroesTeam = GDEDataManager.GetCustomList(_key, heroesTeamKey, heroesTeam);
-            materials = GDEDataManager.GetCustomList(_key, materialsKey, materials);
+            consumables = GDEDataManager.GetCustomList(_key, consumablesKey, consumables);
             equipsOwned = GDEDataManager.GetCustomList(_key, equipsOwnedKey, equipsOwned);
-            props = GDEDataManager.GetCustomList(_key, propsKey, props);
             propsTeam = GDEDataManager.GetCustomList(_key, propsTeamKey, propsTeam);
             TimeTaskList = GDEDataManager.GetCustomList(_key, TimeTaskListKey, TimeTaskList);
             goddessOwned = GDEDataManager.GetCustomList(_key, goddessOwnedKey, goddessOwned);
             buildingsOwned = GDEDataManager.GetCustomList(_key, buildingsOwnedKey, buildingsOwned);
             ItemsOwned = GDEDataManager.GetCustomList(_key, ItemsOwnedKey, ItemsOwned);
             NPCList = GDEDataManager.GetCustomList(_key, NPCListKey, NPCList);
+            RunesOwned = GDEDataManager.GetCustomList(_key, RunesOwnedKey, RunesOwned);
+            AltarPoolList = GDEDataManager.GetCustomList(_key, AltarPoolListKey, AltarPoolList);
         }
 
         public GDEPlayerData ShallowClone()
@@ -583,12 +601,10 @@ namespace GameDataEditor
 			newClone.Set_herosOwned();
             newClone.heroesTeam = new List<GDEunitTeamData>(heroesTeam);
 			newClone.Set_heroesTeam();
-            newClone.materials = new List<GDEItemData>(materials);
-			newClone.Set_materials();
+            newClone.consumables = new List<GDEItemData>(consumables);
+			newClone.Set_consumables();
             newClone.equipsOwned = new List<GDEEquipmentData>(equipsOwned);
 			newClone.Set_equipsOwned();
-            newClone.props = new List<GDEItemData>(props);
-			newClone.Set_props();
             newClone.propsTeam = new List<GDEItemData>(propsTeam);
 			newClone.Set_propsTeam();
             newClone.TimeTaskList = new List<GDEtimeTaskData>(TimeTaskList);
@@ -601,6 +617,10 @@ namespace GameDataEditor
 			newClone.Set_ItemsOwned();
             newClone.NPCList = new List<GDENPCData>(NPCList);
 			newClone.Set_NPCList();
+            newClone.RunesOwned = new List<GDERuneData>(RunesOwned);
+			newClone.Set_RunesOwned();
+            newClone.AltarPoolList = new List<GDEHeroAltarPoolData>(AltarPoolList);
+			newClone.Set_AltarPoolList();
 
             return newClone;
 		}
@@ -624,13 +644,13 @@ namespace GameDataEditor
 					newClone.heroesTeam.Add(val.DeepClone());
 			}
 			newClone.Set_heroesTeam();
-            newClone.materials = new List<GDEItemData>();
-			if (materials != null)
+            newClone.consumables = new List<GDEItemData>();
+			if (consumables != null)
 			{
-				foreach(var val in materials)
-					newClone.materials.Add(val.DeepClone());
+				foreach(var val in consumables)
+					newClone.consumables.Add(val.DeepClone());
 			}
-			newClone.Set_materials();
+			newClone.Set_consumables();
             newClone.equipsOwned = new List<GDEEquipmentData>();
 			if (equipsOwned != null)
 			{
@@ -638,13 +658,6 @@ namespace GameDataEditor
 					newClone.equipsOwned.Add(val.DeepClone());
 			}
 			newClone.Set_equipsOwned();
-            newClone.props = new List<GDEItemData>();
-			if (props != null)
-			{
-				foreach(var val in props)
-					newClone.props.Add(val.DeepClone());
-			}
-			newClone.Set_props();
             newClone.propsTeam = new List<GDEItemData>();
 			if (propsTeam != null)
 			{
@@ -687,6 +700,20 @@ namespace GameDataEditor
 					newClone.NPCList.Add(val.DeepClone());
 			}
 			newClone.Set_NPCList();
+            newClone.RunesOwned = new List<GDERuneData>();
+			if (RunesOwned != null)
+			{
+				foreach(var val in RunesOwned)
+					newClone.RunesOwned.Add(val.DeepClone());
+			}
+			newClone.Set_RunesOwned();
+            newClone.AltarPoolList = new List<GDEHeroAltarPoolData>();
+			if (AltarPoolList != null)
+			{
+				foreach(var val in AltarPoolList)
+					newClone.AltarPoolList.Add(val.DeepClone());
+			}
+			newClone.Set_AltarPoolList();
             return newClone;
 		}
 
@@ -891,17 +918,17 @@ namespace GameDataEditor
 
 			heroesTeam.ForEach(x => x.ResetAll());
 		}
-        public void Reset_materials()
+        public void Reset_consumables()
 		{
-			GDEDataManager.ResetToDefault(_key, materialsKey);
+			GDEDataManager.ResetToDefault(_key, consumablesKey);
 
 			Dictionary<string, object> dict;
 			GDEDataManager.Get(_key, out dict);
 
-			dict.TryGetCustomList(materialsKey, out materials);
-			materials = GDEDataManager.GetCustomList(_key, materialsKey, materials);
+			dict.TryGetCustomList(consumablesKey, out consumables);
+			consumables = GDEDataManager.GetCustomList(_key, consumablesKey, consumables);
 
-			materials.ForEach(x => x.ResetAll());
+			consumables.ForEach(x => x.ResetAll());
 		}
         public void Reset_equipsOwned()
 		{
@@ -914,18 +941,6 @@ namespace GameDataEditor
 			equipsOwned = GDEDataManager.GetCustomList(_key, equipsOwnedKey, equipsOwned);
 
 			equipsOwned.ForEach(x => x.ResetAll());
-		}
-        public void Reset_props()
-		{
-			GDEDataManager.ResetToDefault(_key, propsKey);
-
-			Dictionary<string, object> dict;
-			GDEDataManager.Get(_key, out dict);
-
-			dict.TryGetCustomList(propsKey, out props);
-			props = GDEDataManager.GetCustomList(_key, propsKey, props);
-
-			props.ForEach(x => x.ResetAll());
 		}
         public void Reset_propsTeam()
 		{
@@ -999,6 +1014,30 @@ namespace GameDataEditor
 
 			NPCList.ForEach(x => x.ResetAll());
 		}
+        public void Reset_RunesOwned()
+		{
+			GDEDataManager.ResetToDefault(_key, RunesOwnedKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(RunesOwnedKey, out RunesOwned);
+			RunesOwned = GDEDataManager.GetCustomList(_key, RunesOwnedKey, RunesOwned);
+
+			RunesOwned.ForEach(x => x.ResetAll());
+		}
+        public void Reset_AltarPoolList()
+		{
+			GDEDataManager.ResetToDefault(_key, AltarPoolListKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(AltarPoolListKey, out AltarPoolList);
+			AltarPoolList = GDEDataManager.GetCustomList(_key, AltarPoolListKey, AltarPoolList);
+
+			AltarPoolList.ForEach(x => x.ResetAll());
+		}
 
         public void ResetAll()
         {
@@ -1015,14 +1054,13 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, lastPassSectionKey);
             GDEDataManager.ResetToDefault(_key, maxDurgeonPassLevelKey);
             GDEDataManager.ResetToDefault(_key, herosOwnedKey);
-            GDEDataManager.ResetToDefault(_key, materialsKey);
             GDEDataManager.ResetToDefault(_key, coinKey);
             GDEDataManager.ResetToDefault(_key, addGoldPercKey);
             GDEDataManager.ResetToDefault(_key, allBufPercKey);
             GDEDataManager.ResetToDefault(_key, newBestLevelKey);
             GDEDataManager.ResetToDefault(_key, dimensionKey);
             GDEDataManager.ResetToDefault(_key, equipsOwnedKey);
-            GDEDataManager.ResetToDefault(_key, propsKey);
+            GDEDataManager.ResetToDefault(_key, consumablesKey);
             GDEDataManager.ResetToDefault(_key, propsTeamKey);
             GDEDataManager.ResetToDefault(_key, heroesTeamKey);
             GDEDataManager.ResetToDefault(_key, damondKey);
@@ -1036,19 +1074,22 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, JianCaiKey);
             GDEDataManager.ResetToDefault(_key, ItemsOwnedKey);
             GDEDataManager.ResetToDefault(_key, NPCListKey);
+            GDEDataManager.ResetToDefault(_key, RunesOwnedKey);
+            GDEDataManager.ResetToDefault(_key, AltarPoolListKey);
 
             Reset_achievementData();
             Reset_herosOwned();
             Reset_heroesTeam();
-            Reset_materials();
+            Reset_consumables();
             Reset_equipsOwned();
-            Reset_props();
             Reset_propsTeam();
             Reset_TimeTaskList();
             Reset_goddessOwned();
             Reset_buildingsOwned();
             Reset_ItemsOwned();
             Reset_NPCList();
+            Reset_RunesOwned();
+            Reset_AltarPoolList();
 
             #endif
 

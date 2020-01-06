@@ -17,7 +17,7 @@ public class SelectTeamUnitPanel : MonoBehaviour
             refreshUI();
         }
     }
-    public OneUnitTeam currentTeamData;
+    //public OneUnitTeam currentTeamData;
 
     public Image goddessImg;
     public Text teamNameText;
@@ -61,8 +61,10 @@ public class SelectTeamUnitPanel : MonoBehaviour
         goddessSelectSubPanel.gameObject.SetActive(false);
         goddess_pageController.ResetPage();
 
-        goddessImg.sprite = currentTeamData.TeamGoddess.GetComponent<Image>().sprite;
-        teamNameText.text = currentTeamData.TeamNameText.text;
+        GDEunitTeamData team = SDDataManager.Instance.getHeroTeamByTeamId(CurrentTeamId);
+
+        //goddessImg.sprite = currentTeamData.TeamGoddess.GetComponent<Image>().sprite;
+        teamNameText.text = team.teamName;
 
     }
 
@@ -108,5 +110,18 @@ public class SelectTeamUnitPanel : MonoBehaviour
                 SDHS.heroItemsInTeam[i].selectedImg.gameObject.SetActive(false);
             }
         }
+    }
+
+
+
+
+
+    public void button_to_continue()
+    {
+        BTP.ConfirmBattleTeam(CurrentTeamId);
+    }
+    public void button_to_clear()
+    {
+        Debug.Log("清空队伍");
     }
 }

@@ -19,7 +19,7 @@ public class enemyBuild : MonoBehaviour
     }
     public static int createCareerByLevel()
     {
-        int result = 0;
+        int result;
         int lvl = SDGameManager.Instance.currentLevel;
         int round0 = lvl % SDConstants.LevelNumPerSection;
         int round1 = ((lvl % SDConstants.PerBossAppearLevel) 
@@ -45,37 +45,34 @@ public class enemyBuild : MonoBehaviour
         return result;
     }
     #region career&&race _data
-    public static ROHeroData AddCareerData(ROHeroData basicData, int career, int race)
+    public static ROEnemyData AddCareerData(ROEnemyData basicData, int career)
     {
-        ROHeroData h = basicData;
-        h.Name += RaceCareerAddName(career, race);
-        if(race == 1 || race == 2 || race == 3)
+        ROEnemyData h = basicData;
+
+        if (career == 0)//fighter
         {
-            if (career == 0)//fighter
-            {
-                h.DmgReduction = 10;
-                h.BasicRAL.AT = (int)(h.BasicRAL.AT*1.15f);
-                h.BasicRAL.AD = (int)(h.BasicRAL.AD*1.25f);
-            }
-            else if (career == 1)//ranger
-            {
-                h.CRI = 50;
-                h.BasicRAL.AT = (int)(h.BasicRAL.AT * 1.25f);
-                h.BasicRAL.Evo += 10;
-            }
-            else if (career == 2)//priest
-            {
-                h.BasicRAL.Hp = (int)(h.BasicRAL.Hp * 1.5f);
-                h.BasicRAL.MT += 10;
-                h.BasicRAL.MD += 10;
-            }
-            else if(career == 3)//caster
-            {
-                h.CRI = 50;
-                h.BasicRAL.MT += 10;
-                h.BasicRAL.MD += 10;
-                h.BasicRAL.Expect += 10;
-            }
+            h.DmgReduction += 10;
+            h.RALRate.AT += 15;
+            h.RALRate.AD += 25;
+        }
+        else if (career == 1)//ranger
+        {
+            h.RALRate += 25;
+            h.RALRate.AT += 25;
+            h.RALRate.Evo += 50;
+        }
+        else if (career == 2)//priest
+        {
+            h.RALRate.Hp += 30;
+            h.RALRate.MT += 10;
+            h.RALRate.MD += 10;
+        }
+        else if (career == 3)//caster
+        {
+            h.RALRate += 25;
+            h.RALRate.MT += 25;
+            h.RALRate.MD += 15;
+            h.RALRate.Expect += 10;
         }
         return h;
     } 
@@ -183,65 +180,33 @@ public class enemyBuild : MonoBehaviour
     #endregion
     #region buildSkills
 
-    public List<OneSkill> WriteEnemySkills(int career , int race , int weight, bool isBoss = false )
+    public List<OneSkill> WriteEnemySkills(EnemyInfo info, bool isBoss = false )
     {
-        switch (race)
-        {
-            case 0:
-                return ElementalsSkillList(career, isBoss);
-            case 1:
-                return GoblinsSkillList(career, isBoss);
-            case 2:
-                return OrcsSkillList(career, isBoss);
-            case 3:
-                return BeastSkillList(career, isBoss);
-            default:
-                if (isBoss)
-                {
+        if (info == null) return null;
 
-                }
-                return null;
-        }
-    }
-    public List<OneSkill> ElementalsSkillList(int career,bool isBoss = false)
-    {
-        return null;
-    }
-    public List<OneSkill> GoblinsSkillList(int career, bool isBoss = false)
-    {
-        return null;
-    }
-    public List<OneSkill> OrcsSkillList(int career, bool isBoss = false)
-    {
-        return null;
-    }
-    public List<OneSkill> BeastSkillList(int career, bool isBoss = false)
-    {
         return null;
     }
     #endregion
 
 
     #region 生成Boss
-    public static ROHeroData LittleBossData(ROHeroData basicD, int bossQuality)
+    public static ROEnemyData LittleBossData(ROEnemyData basicD, int bossQuality)
     {
-        ROHeroData h = basicD;
-        string BaiscName = h.Name;
-        h.BasicRAL.AddPercAll(100 * bossQuality + 250, RoleAttributeList.AddType.barChart);
-        h.BasicRAL.AddPerc(100 * bossQuality + 125, AttributeData.AT);
-        h.BasicRAL.AddPerc(100 * bossQuality + 125, AttributeData.AD);
-        h.BasicRAL.AddPerc(100 * bossQuality + 125, AttributeData.MT);
-        h.BasicRAL.AddPerc(100 * bossQuality + 125, AttributeData.MD);
-        h.BasicRAL.AddPerc(50 * bossQuality + 100, AttributeData.Crit);
-        h.BasicRAL.AddPerc(25 * bossQuality + 50, AttributeData.Expect);
-        h.BasicRAL.AddPerc(25 * bossQuality + 50, AttributeData.Evo);
-        h.BasicRAL.AddPerc(25 * bossQuality + 50, AttributeData.Accur);
-        h.BasicRAL.AddPercAll(25 * bossQuality + 100, RoleAttributeList.AddType.resist);
+        ROEnemyData h = basicD;
+        h.RALRate.AddAll(75 * bossQuality + 100, RoleAttributeList.AddType.barChart);
+        h.RALRate.Add(75 * bossQuality + 75, AttributeData.AT);
+        h.RALRate.Add(75 * bossQuality + 75, AttributeData.AD);
+        h.RALRate.Add(75 * bossQuality + 75, AttributeData.MT);
+        h.RALRate.Add(75 * bossQuality + 75, AttributeData.MD);
+        h.RALRate.Add(50 * bossQuality + 50, AttributeData.Crit);
+        h.RALRate.Add(25 * bossQuality + 50, AttributeData.Expect);
+        h.RALRate.Add(25 * bossQuality + 50, AttributeData.Evo);
+        h.RALRate.Add(25 * bossQuality + 50, AttributeData.Accur);
+        h.RALRate.AddAll(50 * bossQuality + 75, RoleAttributeList.AddType.resist);
 
         h.DmgReduction = 5;
         h.DmgReflection = 5;
 
-        h.isRare = true;
         h.BarChartRegendPerTurn = RoleBarChart.zero;
         h.BarChartRegendPerTurn.MP += h.BarChartRegendPerTurn.MP / 25;
         return h;

@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cc0925d3732e594ca035628360a98e6, type: 3}
+  m_Name: "G_INFO\u661F\u795E"
+  m_EditorClassIdentifier: 
+  _ID: G_GUARD#4010003
+  _Name: "\u661F\u795E"
+  _DESC: 
+  sex: 2
+  characterType: 2
+  faceIcon: {fileID: 0}
+  goddessRace: {fileID: 11400000, guid: d14245ea2923d124491039fd7db61e1d, type: 2}
+  quality: 0
+  index: 2
+  goddessAtti:
+    agile: 8
+    stamina: 8
+    recovery: 8
+    leader: 8
+  HaveSkill: 1
+  SkillInfo:
+    SkillTag: 0
+    _DamageData:
+      dataTag: 1
+      DATA: 5
+    _HealData:
+      dataTag: 0
+      DATA: 0
+    UpBySkillGrade: 2
+    TargetIsHero: 0
+    AOE: 12
+    BREED: 2
+    KIND: 0
+    UseState: 0
+    State:
+      SkillGrade: 0
+      NAME: 
+      Success: 0
+      stateEndType: 0
+      StateLastTime: 0
+      stateTag: 0
+      stateKind: 0
+      StatePossibilityBuff: 100
+      AllChangesInRAL: []
+      ChangeInBarChart:
+        HP:
+          dataTag: 0
+          DATA: 0
+        MP:
+          dataTag: 0
+          DATA: 0
+        TP:
+          dataTag: 0
+          DATA: 0
+      aimAtSelf: 0
+      DmgData:
+        dataTag: 0
+        DATA: 0

@@ -8,7 +8,7 @@ public class SDHeroDeploySkills : MonoBehaviour
 {
     public SDHeroDetail heroDetail;
     public HeroDetailPanel HDP;
-    public int currentSkillId;
+    public string currentSkillId;
     [HideInInspector]
     public OneSkill currentSkill;
     [HideInInspector]
@@ -73,7 +73,7 @@ public class SDHeroDeploySkills : MonoBehaviour
         bool improveEnable = false;
         if (currentSkill != null)
         {
-            if (currentSkill.isUnlocked)//未解锁
+            if (!currentSkill.islocked)//已经解锁
             {
                 deployEnable = true;
             }
@@ -97,6 +97,10 @@ public class SDHeroDeploySkills : MonoBehaviour
             SkillFunction function 
                 = HDP.skillDetailList.AllSkillList[currentSkill.SkillFunctionID]
                 .GetComponent<SkillFunction>();
+            if (currentSkill.UseAppointedPrefab)
+            {
+                function = currentSkill.SkillPrefab.GetComponent<SkillFunction>();
+            }
             //
             skill_name.text = currentSkill.SkillName + "·Lv " + currentSkill.lv;
             skill_basedata.text 
@@ -150,7 +154,7 @@ public class SDHeroDeploySkills : MonoBehaviour
             {
                 if (currentSkill.isOmegaSkill)
                 {
-                    if(hero.skillOmegaId == 0)//槽位为空
+                    if(string.IsNullOrEmpty(hero.skillOmegaId))//槽位为空
                     {
                         SDDataManager.Instance.changeEquipedSkill(currentSkillId, 2, heroHC);
                         si.isDeployed = true;
@@ -165,9 +169,9 @@ public class SDHeroDeploySkills : MonoBehaviour
                 {
                     if (!SDDataManager.Instance.checkHeroEnableSkill1ById(hero.id))
                     {
-                        if (hero.skill0Id > 0)
+                        if (!string.IsNullOrEmpty(hero.skill0Id))
                         {
-                            Debug.Log("无法装备:唯一普通技能槽已被占用");
+                            Debug.Log("无法装备:唯一普通技能槽已被占用,占用者为 " + hero.skill0Id);
                         }
                         else
                         {
@@ -178,14 +182,14 @@ public class SDHeroDeploySkills : MonoBehaviour
                     }
                     else
                     {
-                        if(hero.skill0Id == 0)
+                        if(!string.IsNullOrEmpty(hero.skill0Id))
                         {
                             SDDataManager.Instance.changeEquipedSkill(currentSkillId, 0, heroHC);
                             si.isDeployed = true;
                             refreshSkillDetail();
                             return;
                         }
-                        if(hero.skill1Id == 0)
+                        if(!string.IsNullOrEmpty(hero.skill1Id))
                         {
                             SDDataManager.Instance.changeEquipedSkill(currentSkillId, 1, heroHC);
                             si.isDeployed = true;
