@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
-
+using System.Linq;
 /// <summary>
 /// 通用英雄、装备、武器选择项控制类
 /// </summary>
@@ -159,6 +159,11 @@ public class HEWPageController : MonoBehaviour
         else if(type == SDConstants.ItemType.NPC)
         {
             showNPCOwned();
+        }
+        //
+        foreach(SingleItem s in items)
+        {
+            s.type = CurrentType;
         }
     }
     public void ItemsInit(SDConstants.ItemType type,EquipPosition pos)
@@ -404,7 +409,8 @@ public class HEWPageController : MonoBehaviour
     public void showRuneOwned()
     {
         ResetPage();
-        List<GDERuneData> runes = SDDataManager.Instance.PlayerData.RunesOwned;
+        List<GDERuneData> runes = SDDataManager.Instance.getAllRunesOwned;
+
         itemCount = runes.Count;
         for(int i = 0; i < itemCount; i++)
         {

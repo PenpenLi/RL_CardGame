@@ -18,6 +18,7 @@ public class AttritubeListPanel : MonoBehaviour
     //public BattleRoleData BRD;
     //public BasicRoleProperty BRP;
     public RoleAttributeList currentBasicRAL;
+    public RoleAttributeList currentExtraRAL;
 
     public int CurrentHashCode;
     public SDConstants.CharacterType _type;
@@ -31,9 +32,11 @@ public class AttritubeListPanel : MonoBehaviour
         MoreADList.localScale = Vector3.right + Vector3.forward;
     }
     public void initRAL(RoleAttributeList _currentBasicRAL
+        , RoleAttributeList _extraRAL
         , SDConstants.CharacterType CType, int lv = 0)
     {
         currentBasicRAL = _currentBasicRAL;
+        currentExtraRAL = _extraRAL;
         _type = CType;
         currentLv = lv;
         initRAL_AD_Panel();
@@ -96,14 +99,14 @@ public class AttritubeListPanel : MonoBehaviour
     public int extraRaResult(AttributeData ADId=AttributeData.End)
     {
         if (ADId != AttributeData.End)
-            return (int)(currentBasicRAL.read(ADId)
+            return (int)(currentExtraRAL.read(ADId)
             );
         return 0;
     }
     public int extraRaResult(StateTag SRId = StateTag.End)
     {
         if (SRId != StateTag.End) 
-            return (int)(currentBasicRAL.read(SRId)
+            return (int)(currentExtraRAL.read(SRId)
             );
         return 0;
     }

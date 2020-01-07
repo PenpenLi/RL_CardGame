@@ -564,7 +564,7 @@ public class SingleItem : MonoBehaviour
     {
         RunePanel RP = GetComponentInParent<RunePanel>();
         if (RP == null) return;
-        RP.currentRuneHashcode = itemHashcode;
+        RP.ChangeCurrentRuneHashcode(itemHashcode);
         RP.refreshPage();
     }
     public void chooseEquipedRune()
@@ -583,7 +583,7 @@ public class SingleItem : MonoBehaviour
     #endregion
     public void initRuneInPage(GDERuneData E)
     {
-        if (E == null || E.hashcode <= 0)
+        if (E == null || E.Hashcode <= 0)
         {
             isEmpty = true; return;
         }
@@ -597,12 +597,13 @@ public class SingleItem : MonoBehaviour
         {
             starVision.StarNum = E.star;
         }
-        itemHashcode = E.hashcode;
+        itemHashcode = E.Hashcode;
         itemId = E.id;
-
         GoddessDetailPanel GDP = GetComponentInParent<GoddessDetailPanel>();
         if (GDP == null) return;
         string goddessId = GDP.CurrentGoddess.ID;
+
+        isSelected = false;
         if (SDDataManager.Instance.checkRuneEquippedByGoddess(itemHashcode,goddessId,out int pos))
         {
             isSelected = true;

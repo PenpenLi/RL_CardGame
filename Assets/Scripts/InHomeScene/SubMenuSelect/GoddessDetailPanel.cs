@@ -177,8 +177,8 @@ public class GoddessDetailPanel : BasicSubMenuPanel
 
     public void Btn_to_RunePanel()
     {
-        homeScene._runePanel.GetComponent<RunePanel>().currentRuneHashcode
-            = RDP.hashcode;
+        homeScene._runePanel.GetComponent<RunePanel>().ChangeCurrentRuneHashcode
+            (RDP.hashcode);
         homeScene.runeBtnTapped(true);
     }
 }

@@ -74,9 +74,14 @@ public class simpleSlotSet : MonoBehaviour
 
     public void initRune(GDERuneData rune)
     {
-        if (rune == null || rune.hashcode <= 0)
+        if (rune == null || rune.Hashcode <= 0)
         {
-            isEmpty = true; return;
+            isEmpty = true;
+            hashcode = 0;
+            id = string.Empty;
+            exp = 0;
+
+            return;
         }
         isEmpty = false;
         if (upText)
@@ -87,7 +92,7 @@ public class simpleSlotSet : MonoBehaviour
         {
             starVision.StarNum = rune.star;
         }
-        hashcode = rune.hashcode;
+        hashcode = rune.Hashcode;
         id = rune.id;
     }
 }

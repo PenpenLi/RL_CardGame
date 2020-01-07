@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 public delegate void TriggerStateListner(string name, bool value);
 public delegate void SimpleTriggerListener();

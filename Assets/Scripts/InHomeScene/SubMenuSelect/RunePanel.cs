@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using System.Linq;
 
 public class RunePanel : BasicSubMenuPanel
 {
@@ -12,17 +13,6 @@ public class RunePanel : BasicSubMenuPanel
     public int currentRuneHashcode
     {
         get { return runeDetail.hashcode; }
-        set
-        {
-            if(runeDetail.hashcode != value)
-            {
-                GDERuneData rune = SDDataManager.Instance.getRuneOwnedByHashcode(value);
-                if (rune == null) return;
-                runeDetail.initDetailPanel(rune);
-                resetLvupVision();
-                refreshComposeCondition();
-            }
-        }
     }
     [Header("升级页面设置")]
     public Text CoinCostText;
@@ -38,17 +28,16 @@ public class RunePanel : BasicSubMenuPanel
     public Button ComposeConfirmBtn;
     public Button ComposeCancelBtn;
     public bool runeCanAddToCompose;
+    //
+    public List<int> runes;
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();
-        //RefreshComposePanel();
         ResetComposePanel();
-        //refreshPage();
-        //initPage();
         resetLvupVision();
         if (currentRuneHashcode > 0) return;
-        if(Page.itemCount>0)
-            currentRuneHashcode = Page.items[0].itemHashcode;
+        if (Page.itemCount > 0)
+            Page.items[0].chooseRuneToShowDetail();
         //
         refreshPage();
     }
@@ -62,6 +51,15 @@ public class RunePanel : BasicSubMenuPanel
         }
     }
 
+    public void ChangeCurrentRuneHashcode(int hc)
+    {
+        GDERuneData rune = SDDataManager.Instance.getRuneOwnedByHashcode(hc);
+        if (rune == null) return;
+        runeDetail.initDetailPanel(rune);
+        resetLvupVision();
+        refreshComposeCondition();
+    }
+
     #region compose
     public void ResetComposePanel()
     {
@@ -72,16 +70,20 @@ public class RunePanel : BasicSubMenuPanel
             slot.OnBtnTapped += ClickSlot;
             slot.hashcode = 0;
             //
-            if(!slot.isLocked)
-                slot.isEmpty = true;
+            if(!slot.isLocked) slot.isEmpty = true;
         }
+        runeCanAddToCompose = false;
         initPage();
     }
     public void ClickSlot(int index)
     {
-        if (!runeCanAddToCompose) return;
+        //if (!runeCanAddToCompose) return;
+        runeCanAddToCompose = true;
+        
         GDERuneData rune = SDDataManager.Instance.
             getRuneOwnedByHashcode(currentRuneHashcode);
+        bool a = ComposeMaterialSlots.ToList().Exists(x => x.hashcode == currentRuneHashcode);
+        if (a) return;
 
         ComposeMaterialSlots[index].initRune(rune);
         refreshPage();
@@ -108,36 +110,20 @@ public class RunePanel : BasicSubMenuPanel
     }
     public void refreshPage()
     {
-        foreach(SingleItem s in Page.items)
+        Page.CurrentType = SDConstants.ItemType.Rune;
+        Page.Select_None();
+        List<int> hcs = ComposeMaterialSlots.Select(x => x.hashcode).ToList();
+        hcs = hcs.FindAll(x=>x>0);
+        for(int i = 0; i < Page.itemCount; i++)
         {
-            s.isSelected = false;
-        }
-        for(int i = 0; i < ComposeMaterialSlots.Length; i++)
-        {
-            simpleSlotSet slot = ComposeMaterialSlots[i];
-            if (slot.hashcode > 0)
-            {
-                foreach(SingleItem s in Page.items)
-                {
-                    if(s.itemHashcode == slot.hashcode)
-                    {
-                        s.isSelected = true;break;
-                    }
-                }
-            }
-        }
-        foreach(SingleItem s in Page.items)
-        {
-            if(s.itemHashcode == currentRuneHashcode)
+            SingleItem s = Page.items[i];
+            if (hcs.Exists(x => x == s.itemHashcode)
+                || s.itemHashcode == currentRuneHashcode)
             {
                 s.isSelected = true;
-                //s.SelectedPanel.GetComponent<Image>().color = new Color(255,225,255,0.5f);
-            }
-            else
-            {
-                //s.SelectedPanel.GetComponent<Image>
             }
         }
+
         refreshComposeCondition();
     }
 
@@ -163,15 +149,14 @@ public class RunePanel : BasicSubMenuPanel
         if (SDDataManager.Instance.CheckIfCanComposeToCreateNewRune
             (rune0,rune1,rune2,out string result))
         {
-            SDDataManager.Instance.ConsumeRune(rune0.hashcode);
-            SDDataManager.Instance.ConsumeRune(rune1.hashcode);
-            SDDataManager.Instance.ConsumeRune(rune2.hashcode);
+            SDDataManager.Instance.ConsumeRune(rune0.Hashcode);
+            SDDataManager.Instance.ConsumeRune(rune1.Hashcode);
+            SDDataManager.Instance.ConsumeRune(rune2.Hashcode);
             SDDataManager.Instance.AddRune(result);
             //
             RuneItem RI = SDDataManager.Instance.getRuneItemById(result);
             PopoutController.CreatePopoutMessage("成功呢获得 "+RI.NAME, 10);
             ResetComposePanel();
-            //refreshPage();
         }
     }
     #endregion
@@ -226,7 +211,11 @@ public class RunePanel : BasicSubMenuPanel
                 ExpectLvupNum = 0;
 
                 runeDetail.initDetailPanel(currentRuneHashcode);
+                Page.items.Find(x => x.itemHashcode == currentRuneHashcode)
+                    .initRuneInPage(SDDataManager.Instance.getRuneOwnedByHashcode
+                    (currentRuneHashcode));
             }
     }
     #endregion
+
 }

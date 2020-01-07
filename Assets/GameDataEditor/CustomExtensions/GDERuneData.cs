@@ -33,16 +33,16 @@ namespace GameDataEditor
             }
         }
 
-        static string hashcodeKey = "hashcode";
-		int _hashcode;
-        public int hashcode
+        static string HashcodeKey = "Hashcode";
+		int _Hashcode;
+        public int Hashcode
         {
-            get { return _hashcode; }
+            get { return _Hashcode; }
             set {
-                if (_hashcode != value)
+                if (_Hashcode != value)
                 {
-                    _hashcode = value;
-					GDEDataManager.SetInt(_key, hashcodeKey, _hashcode);
+                    _Hashcode = value;
+					GDEDataManager.SetInt(_key, HashcodeKey, _Hashcode);
                 }
             }
         }
@@ -169,7 +169,7 @@ namespace GameDataEditor
 			dict.Add(GDMConstants.SchemaKey, "Rune");
 			
             dict.Merge(true, locked.ToGDEDict(lockedKey));
-            dict.Merge(true, hashcode.ToGDEDict(hashcodeKey));
+            dict.Merge(true, Hashcode.ToGDEDict(HashcodeKey));
             dict.Merge(true, posInOwner.ToGDEDict(posInOwnerKey));
             dict.Merge(true, quality.ToGDEDict(qualityKey));
             dict.Merge(true, star.ToGDEDict(starKey));
@@ -197,7 +197,7 @@ namespace GameDataEditor
 			else
 			{
                 dict.TryGetBool(lockedKey, out _locked);
-                dict.TryGetInt(hashcodeKey, out _hashcode);
+                dict.TryGetInt(HashcodeKey, out _Hashcode);
                 dict.TryGetInt(posInOwnerKey, out _posInOwner);
                 dict.TryGetInt(qualityKey, out _quality);
                 dict.TryGetInt(starKey, out _star);
@@ -218,7 +218,7 @@ namespace GameDataEditor
 			_key = dataKey;
 			
             _locked = GDEDataManager.GetBool(_key, lockedKey, _locked);
-            _hashcode = GDEDataManager.GetInt(_key, hashcodeKey, _hashcode);
+            _Hashcode = GDEDataManager.GetInt(_key, HashcodeKey, _Hashcode);
             _posInOwner = GDEDataManager.GetInt(_key, posInOwnerKey, _posInOwner);
             _quality = GDEDataManager.GetInt(_key, qualityKey, _quality);
             _star = GDEDataManager.GetInt(_key, starKey, _star);
@@ -236,7 +236,7 @@ namespace GameDataEditor
 			GDERuneData newClone = new GDERuneData(newKey);
 
             newClone.locked = locked;
-            newClone.hashcode = hashcode;
+            newClone.Hashcode = Hashcode;
             newClone.posInOwner = posInOwner;
             newClone.quality = quality;
             newClone.star = star;
@@ -266,13 +266,13 @@ namespace GameDataEditor
             dict.TryGetBool(lockedKey, out _locked);
         }
 
-        public void Reset_hashcode()
+        public void Reset_Hashcode()
         {
-            GDEDataManager.ResetToDefault(_key, hashcodeKey);
+            GDEDataManager.ResetToDefault(_key, HashcodeKey);
 
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(hashcodeKey, out _hashcode);
+            dict.TryGetInt(HashcodeKey, out _Hashcode);
         }
 
         public void Reset_posInOwner()
@@ -359,7 +359,7 @@ namespace GameDataEditor
              #else
 
             GDEDataManager.ResetToDefault(_key, idKey);
-            GDEDataManager.ResetToDefault(_key, hashcodeKey);
+            GDEDataManager.ResetToDefault(_key, HashcodeKey);
             GDEDataManager.ResetToDefault(_key, ownerIdKey);
             GDEDataManager.ResetToDefault(_key, posInOwnerKey);
             GDEDataManager.ResetToDefault(_key, lockedKey);

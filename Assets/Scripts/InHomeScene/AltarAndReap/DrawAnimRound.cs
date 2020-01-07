@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class DrawAnimRound : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDragHandler
@@ -12,7 +13,7 @@ public class DrawAnimRound : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDr
     public RectTransform AnimRound;
     public bool useLR;
     public Transform lightRoundList;
-    Image[] lightRound;
+    Image[] lightRound = new Image[0];
     public Color LRColor;
     public Image middleLight;
     Color ml_baseColor;
@@ -24,6 +25,13 @@ public class DrawAnimRound : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDr
     Vector2 startDragPos;
     float BeginDragTime;
     public float DragTime;
+    public SummonAltarPanel.AltarType CurrentAltarType;
+    [SerializeField]
+    public UnityEvent OnAnimEndSetEvent = new UnityEvent();
+    public SummonAltarPanel SAP
+    {
+        get { return GetComponentInParent<SummonAltarPanel>(); }
+    }
     public void OnBeginDrag(PointerEventData data)
     {
         if (startAnim) return;
@@ -34,8 +42,7 @@ public class DrawAnimRound : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDr
     }
     public void OnDrag(PointerEventData data)
     {
-        if (startAnim) return;
-        else if (!startAnim)
+        if (!startAnim)
         {
             float _time = Time.time - BeginDragTime;
             Vector2 Pos = Camera.main.ScreenToWorldPoint(data.position);
@@ -95,6 +102,9 @@ public class DrawAnimRound : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDr
         yield return new WaitForSeconds(0.5f);
         Debug.Log("ReachTarget");
         OnAnimEndSetEvent?.Invoke();
+        //StartAltar();
+        //
+        Debug.Log("ReachTarget2");
         yield return new WaitForSeconds(0.5f);
         BackToBase();
         middleLight.DOColor(ml_baseColor, 0.5f);
@@ -103,9 +113,24 @@ public class DrawAnimRound : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDr
             c.DOColor(LRColor, 0.5f);
         }
     }
+    public void StartAltar()
+    {
+        if(CurrentAltarType == SummonAltarPanel.AltarType.n_oneTime)
+        {
+            SAP.confirm_altar_n_oneTime();
+        }
+        else if(CurrentAltarType == SummonAltarPanel.AltarType.n_tenTime)
+        {
+            SAP.confirm_altar_n_tenTimes();
+        }
+        else if(CurrentAltarType == SummonAltarPanel.AltarType.r_oneTime)
+        {
+            SAP.confirm_altar_r_oneTime();
+        }
+    }
     public void clearOAESE()
     {
-        OnAnimEndSetEvent = null;
+        OnAnimEndSetEvent = new UnityEvent();
     }
     private void FixedUpdate()
     {
@@ -113,5 +138,19 @@ public class DrawAnimRound : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDr
         AnimRound.eulerAngles = new Vector3(0, 0, RoundAngle);
     }
 
-    public event SimpleTriggerListener OnAnimEndSetEvent;
+
+
+    public void ResetSelf()
+    {
+        AnimRound.eulerAngles = Vector3.zero;
+        startAnim = false;
+        middleLight.color = ml_baseColor;
+        if (lightRound.Length > 0)
+        {
+            for(int i = 0; i < lightRound.Length; i++)
+            {
+                lightRound[i].color = LRColor;
+            }
+        }
+    }
 }

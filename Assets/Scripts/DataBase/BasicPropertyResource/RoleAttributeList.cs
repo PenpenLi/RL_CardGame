@@ -462,7 +462,8 @@ public class RoleAttributeList
             return false;
         }
     }
-    public static RoleAttributeList RandomSet(ScopeInt barchartAd,ScopeInt atkdefAd,ScopeInt extraAd,ScopeInt Rd)
+    public static RoleAttributeList RandomSet(ScopeInt barchartAd
+        ,ScopeInt atkdefAd,ScopeInt extraAd,ScopeInt Rd)
     {
         RoleAttributeList L = RoleAttributeList.zero;
         L.Hp = UnityEngine.Random.Range(barchartAd.Min, barchartAd.Max);

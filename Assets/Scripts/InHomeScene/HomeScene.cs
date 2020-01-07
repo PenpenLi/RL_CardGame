@@ -122,6 +122,8 @@ public class HomeScene : MonoBehaviour
         SubMenuClose(true);
         SDDataManager.Instance.PlayerData.JianCai += 500;
         SDDataManager.Instance.AddDamond(500);
+        SDDataManager.Instance.AddCoin(50000);
+        //
         SDDataManager.Instance.addConsumable
             (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_oneTime.ID,10);
         SDDataManager.Instance.addConsumable
@@ -138,8 +140,6 @@ public class HomeScene : MonoBehaviour
             SDDataManager.Instance.addHero(BasicHero.ID);
         }
 
-        //
-        Test_AddConsumableItems();
     }
     /*
     public IEnumerator checkMCP()
@@ -615,12 +615,4 @@ public class HomeScene : MonoBehaviour
     }
 
 
-    public void Test_AddConsumableItems()
-    {
-        List<consumableItem> all = SDDataManager.Instance.AllConsumableList;
-        foreach(consumableItem i in all)
-        {
-            SDDataManager.Instance.addConsumable(i.ID, 5);
-        }
-    }
 }

@@ -24,7 +24,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public int equipNum = 0;
     public int slaveNum = 0;
     public int runeNum = 0;
-
     public DateTime OpenTime;
     public override void Awake()
     {
@@ -281,91 +280,94 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
 ,
             exp = 0
         };
-        //ral
-        RoleAttributeList ral = RoleAttributeList.RandomSet
-            (
-            new ScopeInt(-15, 15)//三项Barchart
-            , new ScopeInt(-5, 5)//四项攻防
-            , new ScopeInt(-1, 1)//其他
-            , new ScopeInt(-10, 10)//抗性
-            );
-        hero.RoleAttritubeList = ral.TurnIntoGDEData;
-        //skill
-        List<GDEASkillData> list = SDDataManager.Instance.addStartSkillsWhenSummoning(hero.id);
-        for (int i = 0; i < list.Count; i++)
+
+//ral
+    RoleAttributeList ral = RoleAttributeList.RandomSet
+        (
+        new ScopeInt(-15, 15)//三项Barchart
+        , new ScopeInt(-5, 5)//四项攻防
+        , new ScopeInt(-1, 1)//其他
+        , new ScopeInt(-10, 10)//抗性
+        );
+    hero.RoleAttritubeList = ral.TurnIntoGDEData;
+//skill
+    List<GDEASkillData> list = addStartSkillsWhenSummoning(hero.id);
+    hero.skillsOwned = list;
+    list = list.FindAll(x => x.Lv >= 0);
+    for (int i = 0; i < list.Count; i++)
+{
+    if (SDDataManager.Instance.getSkillByHeroId(list[i].Id, hero.id).isOmegaSkill)
+    {
+        hero.skillOmegaId = list[i].Id;
+    }
+    else
+    {
+        if(!string.IsNullOrEmpty (hero.skill0Id))
         {
-            hero.skillsOwned.Add(list[i]);
-            if (SDDataManager.Instance.getSkillByHeroId(list[i].Id, hero.id).isOmegaSkill)
+            if (SDDataManager.Instance.checkHeroEnableSkill1ById(hero.id))
             {
-                hero.skillOmegaId = list[i].Id;
-            }
-            else
-            {
-                if(!string.IsNullOrEmpty (hero.skill0Id))
-                {
-                    if (SDDataManager.Instance.checkHeroEnableSkill1ById(hero.id))
-                    {
-                        hero.skill1Id = list[i].Id;
-                    }
-                }
-                else
-                {
-                    hero.skill0Id = list[i].Id;
-                }
+                hero.skill1Id = list[i].Id;
             }
         }
-
-        //animImg
-        int level = getHeroLevelById(id);
-        hero.AnimData = new GDEAnimData(GDEItemKeys.Anim_EmptyAnim)
+        else
         {
-            isRare = true,
-            body = string.Empty,
-            eyes = string.Empty,
-            faceother = string.Empty,
-            hair = string.Empty,
-            handR = string.Empty,
-            head = string.Empty,
-            hips = string.Empty,
-            L_hand_a = string.Empty,
-            L_hand_b = string.Empty,
-            L_hand_c = string.Empty,
-            L_jiao = string.Empty,
-            L_leg_a = string.Empty,
-            L_leg_b = string.Empty,
-            liuhai = string.Empty,
-            R_leg_a = string.Empty,
-            R_leg_b = string.Empty,
-        };
-        if (level < 2)
-        {
-            hero.AnimData.isRare = false;
-            int skeleton = getHeroSkeletonById(id);
-            hero.AnimData.skeletonIndex = skeleton;
-            hero.AnimData.body = getRandomImgAddressForAnim(nameof(hero.AnimData.body), skeleton);
-            hero.AnimData.eyes = getRandomImgAddressForAnim(nameof(hero.AnimData.eyes), skeleton);
-            hero.AnimData.faceother = getRandomImgAddressForAnim(nameof(hero.AnimData.faceother), skeleton);
-            hero.AnimData.hair = getRandomImgAddressForAnim(nameof(hero.AnimData.hair) + 1, skeleton);
-            hero.AnimData.handR = getRandomImgAddressForAnim(nameof(hero.AnimData.handR), skeleton);
-            hero.AnimData.head = getRandomImgAddressForAnim(nameof(hero.AnimData.head), skeleton);
-            hero.AnimData.hips = getRandomImgAddressForAnim(nameof(hero.AnimData.hips), skeleton);
-            hero.AnimData.L_hand_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_a), skeleton);
-            hero.AnimData.L_hand_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_b), skeleton);
-            hero.AnimData.L_hand_c = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_c), skeleton);
-            hero.AnimData.L_jiao = getRandomImgAddressForAnim(nameof(hero.AnimData.L_jiao), skeleton);
-            hero.AnimData.L_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_a), skeleton);
-            hero.AnimData.L_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_b), skeleton);
-            hero.AnimData.liuhai = getRandomImgAddressForAnim(nameof(hero.AnimData.liuhai), skeleton);
-            hero.AnimData.R_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_a), skeleton);
-            hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b), skeleton);
+            hero.skill0Id = list[i].Id;
         }
+    }
+}
 
+//animImg
+    int level = getHeroLevelById(id);
+
+    hero.AnimData = new GDEAnimData(GDEItemKeys.Anim_EmptyAnim)
+{
+isRare = true,
+body = string.Empty,
+eyes = string.Empty,
+faceother = string.Empty,
+hair = string.Empty,
+handR = string.Empty,
+head = string.Empty,
+hips = string.Empty,
+L_hand_a = string.Empty,
+L_hand_b = string.Empty,
+L_hand_c = string.Empty,
+L_jiao = string.Empty,
+L_leg_a = string.Empty,
+L_leg_b = string.Empty,
+liuhai = string.Empty,
+R_leg_a = string.Empty,
+R_leg_b = string.Empty,
+};
+
+    if (level < 2)
+{
+hero.AnimData.isRare = false;
+int skeleton = getHeroSkeletonById(id);
+hero.AnimData.skeletonIndex = skeleton;
+hero.AnimData.body = getRandomImgAddressForAnim(nameof(hero.AnimData.body), skeleton);
+hero.AnimData.eyes = getRandomImgAddressForAnim(nameof(hero.AnimData.eyes), skeleton);
+hero.AnimData.faceother = getRandomImgAddressForAnim(nameof(hero.AnimData.faceother), skeleton);
+hero.AnimData.hair = getRandomImgAddressForAnim(nameof(hero.AnimData.hair) + 1, skeleton);
+hero.AnimData.handR = getRandomImgAddressForAnim(nameof(hero.AnimData.handR), skeleton);
+hero.AnimData.head = getRandomImgAddressForAnim(nameof(hero.AnimData.head), skeleton);
+hero.AnimData.hips = getRandomImgAddressForAnim(nameof(hero.AnimData.hips), skeleton);
+hero.AnimData.L_hand_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_a), skeleton);
+hero.AnimData.L_hand_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_b), skeleton);
+hero.AnimData.L_hand_c = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_c), skeleton);
+hero.AnimData.L_jiao = getRandomImgAddressForAnim(nameof(hero.AnimData.L_jiao), skeleton);
+hero.AnimData.L_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_a), skeleton);
+hero.AnimData.L_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_b), skeleton);
+hero.AnimData.liuhai = getRandomImgAddressForAnim(nameof(hero.AnimData.liuhai), skeleton);
+hero.AnimData.R_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_a), skeleton);
+hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b), skeleton);
+}
 
         Instance.PlayerData.herosOwned.Add(hero);
         Instance.PlayerData.Set_herosOwned();
 
-        initSkillListForHero(hero);
-        Instance.PlayerData.Set_herosOwned();
+        //initSkillListForHero(hero);
+        //Instance.PlayerData.Set_herosOwned();
         return hero.hashCode;
     }
     public void addHeroByConsumeHero(string costId)
@@ -385,39 +387,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             (getHeroByHashcode(hc).RoleAttritubeList);
 
 
-    }
-    public void initSkillListForHero(GDEHeroData hero)
-    {
-        HeroInfo info = getHeroInfoById(hero.id);
-        List<OneSkill> all = SkillDetailsList.WriteOneSkillList(info.ID);
-
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
-            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
-            {
-                Id = all[0].skillId
-                ,
-                Lv = 0
-            });
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
-
-        List<int> otherMayGetList = RandomIntger.NumListReturn(2, all.Count - 1);
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
-            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
-            {
-                Id = all[otherMayGetList[0] + 1].skillId
-                ,
-                Lv = 0
-            });
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
-
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).skillsOwned
-            .Add(new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
-            {
-                Id = all[otherMayGetList[1] + 1].skillId
-                ,
-                Lv = 0
-            });
-        SDDataManager.Instance.getHeroByHashcode(hero.hashCode).Set_skillsOwned();
     }
     public bool checkHeroEnableSkill1ByHashcode(int hashcode)
     {
@@ -1234,12 +1203,12 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         consumableItem[] allPs = Resources.LoadAll<consumableItem>
             ("ScriptableObjects/Items/Consumables");
-        if (allPs.Select(x => x.ID == id).Count() <= 0)
+        if (allPs.Select(x => x.ID == id).ToList().Count <= 0)
         {
             Debug.Log("不存在该道具"); return 0;
         }
 
-        GDEItemData m = new GDEItemData("Material" + id);
+        GDEItemData m = new GDEItemData(GDEItemKeys.Item_MaterialEmpty);
         m.id = id;
         m.num = num;
         PlayerData.consumables.Add(m);
@@ -1356,6 +1325,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             return getConsumablesOwned.FindAll(x =>
             {
                 consumableItem item = getConsumableItemById(x.id);
+                if (item == null) return false;
                 return item.isProp;
             });
         }
@@ -1423,7 +1393,8 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             return getConsumablesOwned.FindAll(x =>
                 {
                     consumableItem item = getConsumableItemById(x.id);
-                    return item.isProp;
+                    if (item == null) return false;
+                    return !item.isProp;
                 });
         }
     }
@@ -3127,22 +3098,35 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         get
         {
-            List<RuneItem> results = new List<RuneItem>();
             RuneItem[] all = Resources.LoadAll<RuneItem>("ScriptableObjects/Items/Runes");
-            for( int i = 0; i < all.Length; i++)
-            {
-                results.Add(all[i]);
-            }
-            return results;
+            return all.ToList();
         }
     }
     public RuneItem getRuneItemById(string id)
     {
         return AllRuneList.Find(x => x.ID == id);
     }
+    public List<GDERuneData> getAllRunesOwned
+    {
+        get 
+        {
+            List<GDERuneData> list = PlayerData.RunesOwned;
+            bool flag = list.GroupBy(x => x.Hashcode).Where(x => x.Count() > 1).Count() > 0;
+            if (flag)
+            {
+                for(int i = 0; i < list.Count; i++)
+                {
+                    list[i].Hashcode = i + 1;
+                }
+                PlayerData.RunesOwned = list;
+                PlayerData.Set_RunesOwned();
+            }
+            return PlayerData.RunesOwned; 
+        }
+    }
     public GDERuneData getRuneOwnedByHashcode(int hashcode)
     {
-        return PlayerData.RunesOwned.Find(x => x.hashcode == hashcode);
+        return PlayerData.RunesOwned.Find(x => x.Hashcode == hashcode);
     }
     public bool getRuneEquippedByPosAndGoddess(int pos, string ownerId, out GDERuneData data)
     {
@@ -3221,7 +3205,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             GDERuneData _rune = new GDERuneData(GDEItemKeys.Rune_RuneEmpty)
             {
                 id = runeId,
-                hashcode = Instance.runeNum,
+                Hashcode = Instance.runeNum,
                 posInOwner = 0,
                 ownerId = string.Empty,
                 quality = item.Quality,
@@ -3241,19 +3225,12 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             PlayerData.RunesOwned.Add(_rune);
             PlayerData.Set_RunesOwned();
         }
-        GDERuneData rune = new GDERuneData(GDEItemKeys.Rune_RuneEmpty)
-        {
-            id = runeId,
-            hashcode = Instance.runeNum,
-        };
-        PlayerData.RunesOwned.Add(rune);
-        PlayerData.Set_RunesOwned();
     }
     public bool ConsumeRune(int hashcode)
     {
         foreach(GDERuneData rune in PlayerData.RunesOwned)
         {
-            if(rune.hashcode == hashcode)
+            if(rune.Hashcode == hashcode)
             {
                 PlayerData.RunesOwned.Remove(rune);
                 PlayerData.Set_RunesOwned();
@@ -3317,7 +3294,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             //修改原装备信息
             foreach(GDERuneData R in PlayerData.RunesOwned)
             {
-                if(R.hashcode == oldRune)
+                if(R.Hashcode == oldRune)
                 {
                     R.ownerId = string.Empty;
                     PlayerData.Set_RunesOwned();
@@ -3327,7 +3304,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             //修改新装备信息
             foreach (GDERuneData _r in PlayerData.RunesOwned)
             {
-                if (_r.hashcode == runeHashcode)
+                if (_r.Hashcode == runeHashcode)
                 {
                     _r.ownerId = goddessId;
                     break;
@@ -3338,7 +3315,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public bool checkRuneStatus(int hashcode)
     {
         GDERuneData rune = getRuneOwnedByHashcode(hashcode);
-        if (rune!=null)
+        if (rune!=null && !string.IsNullOrEmpty(rune.ownerId))
         {
             if(PlayerData.goddessOwned.Exists(x=>x.id == rune.ownerId))
             {
@@ -3350,15 +3327,14 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public bool lvUpRune(int hashcode, int levelUp = 1)
     {
         GDERuneData rune = getRuneOwnedByHashcode(hashcode);
-        if (rune.level + levelUp >= SDConstants.RuneMaxLevel) return false;
+        if (rune.level + levelUp > SDConstants.RuneMaxLevel) return false;
         RuneItem r = getRuneItemById(rune.id);
-        //int coinWill = getCoinWillImproveCost(rune.level,rune.quality);
         int coinWill = getCoinWillImproveCost(rune.level,rune.quality,levelUp);
         if (PlayerData.coin < coinWill) return false;
         //
         foreach(GDERuneData R in PlayerData.RunesOwned)
         {
-            if(R.hashcode == hashcode)
+            if(R.Hashcode == hashcode)
             {
                 R.level += levelUp;
                 R.attitube = chooseAttiElementToImprove(r,R, levelUp);

@@ -10,21 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbf95ce61c3a03c4492e0790fb1cd787, type: 3}
-  m_Name: 0_050_
+  m_Name: "0_050_\u5C0F\u949B\u72FC"
   m_EditorClassIdentifier: 
-  _ID: 
-  _Name: 
+  _ID: H_FIGHTER#000050
+  _Name: "\u5C0F\u949B\u72FC"
   _DESC: 
-  sex: 0
+  sex: 1
   characterType: 0
   faceIcon: {fileID: 0}
-  _LEVEL: 0
+  _LEVEL: 1
   skeleton: 0
-  weaponRaceList: []
+  weaponRaceList:
+  - {fileID: 11400000, guid: 4f19ff9be42d1a042b87bbbb5c5fbb2d, type: 2}
+  - {fileID: 11400000, guid: d88bb7b8bd14b6747bc60d768a92195a, type: 2}
   _RAL:
-    AllAttributeData: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    AllAttributeData: b9000000230000002d0000001600000019000000140000000f000000020000000f0000000a000000010000000600000002000000
     AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
-  _career: {fileID: 0}
-  _race: {fileID: 0}
+  _career: {fileID: 11400000, guid: 9e316a61e6d86e642a829727cbc40b54, type: 2}
+  _race: {fileID: 11400000, guid: ce9d470ff9dd74846876b4a80f211b32, type: 2}
   specialStr: 
   personalSkillList: []

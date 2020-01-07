@@ -248,7 +248,7 @@ public class BasicRoleProperty : MonoBehaviour
             RoleBasicRA.MD = (int)(RoleBasicRA.MD * buff);
         }
     }
-    public void initRoleClassData()
+    public virtual void initRoleClassData()
     {
         _role.ThisRoleAttributes = RoleBasicRA;
     }

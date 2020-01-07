@@ -80,8 +80,7 @@ public class SkillSlot : MonoBehaviour
 
     public void initOneSkillSlot(OneSkill skill)
     {
-        if(skill.skillId == "@SH_NOR#000" || skill.lv < 0 
-            || skill== null||string.IsNullOrEmpty(skill.skillId))
+        if(skill.lv < 0 || skill== null||string.IsNullOrEmpty(skill.skillId))
         {
             emptyPanel.gameObject.SetActive(true);
         }

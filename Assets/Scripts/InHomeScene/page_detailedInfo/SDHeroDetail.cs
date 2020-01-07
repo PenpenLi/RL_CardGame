@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using System.Linq;
 
 /// <summary>
 /// 角色详情页面
@@ -58,12 +59,6 @@ public class SDHeroDetail : BasicRoleProperty
     public Transform ModelAndEquipsPanel;
     //
     #endregion
-    #region 栏No.3
-    [Header("技能配置 栏")]
-    public List<OneSkill> EquipedSkills;
-    public List<OneSkill> OwnedSkills;
-    public List<OneSkill> AllSkills;
-    #endregion
     #region 总栏
     [Header("上级信息 栏")]
     public HeroDetailPanel HeroWholeMessage;
@@ -92,7 +87,7 @@ public class SDHeroDetail : BasicRoleProperty
             ID = SDDataManager.Instance.getHeroIdByHashcode(hashcode);
             GDEHeroData hero = SDDataManager.Instance.GetHeroOwnedByHashcode(hashcode);
             Hashcode = hashcode;
-            EquipedSkills = new List<OneSkill>();
+
             setHero(Hashcode);
             setHelmet(Hashcode);
             setBreastplate(Hashcode);
@@ -102,7 +97,9 @@ public class SDHeroDetail : BasicRoleProperty
             setJewelry(Hashcode , true);
             setWeapon(Hashcode);
             InitHeroBasicProperties();
-            RALPanel.initRAL(this.RoleBasicRA, Type
+            RALPanel.initRAL(this.RoleBasicRA
+                , _role.extraRALChangeData
+                , Type
                 , SDDataManager.Instance.getLevelByExp(hero.exp));//视觉展示属性
             setRoleBaseMessiage();
 
@@ -118,6 +115,7 @@ public class SDHeroDetail : BasicRoleProperty
             }
             showRoleModelPanel();
             //equipedSkills
+
             HeroWholeMessage.readHeroEquipedSkills(hashcode);
         }
     }
@@ -372,8 +370,15 @@ public class SDHeroDetail : BasicRoleProperty
         }
         //
 
-        //initRoleClassData();
+        initRoleClassData();
     }
+
+    public override void initRoleClassData()
+    {
+        base.initRoleClassData();
+
+    }
+
     #endregion
     public void setRoleBaseMessiage()
     {

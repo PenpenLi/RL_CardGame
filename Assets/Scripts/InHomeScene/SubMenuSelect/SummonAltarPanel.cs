@@ -47,6 +47,7 @@ public class SummonAltarPanel : BasicSubMenuPanel
         currentPanelContent = panelContent.main;
         RewardHCs.Clear();
         refreshCurrentPoolIndex();
+        DAP.AnimOn = false;
     }
 
     public void SummonOneTime_n()
@@ -74,12 +75,13 @@ public class SummonAltarPanel : BasicSubMenuPanel
                       {
                           if(type == PopoutController.PopoutWindowAlertActionType.OnConfirm)
                           {
-                              InitDAP();
+                              InitDAP(); 
                           }
                           else
                           {
-                              pop.Dismiss();
+                              
                           }
+                          StartCoroutine(pop.Dismiss());
                       }
                     );
             }
@@ -127,7 +129,7 @@ public class SummonAltarPanel : BasicSubMenuPanel
                             (
                             SDGameManager.T("提醒")
                             , SDGameManager.T("确认消耗")
-                            + SDConstants.altarDamondCost*10
+                            + SDConstants.altarDamondCost * 10
                             + SDGameManager.T("钻石")
                             , 25, false,
                             PopoutController.PopoutWIndowAlertType.ConfirmMessage
@@ -137,12 +139,13 @@ public class SummonAltarPanel : BasicSubMenuPanel
                             {
                                 if (type == PopoutController.PopoutWindowAlertActionType.OnConfirm)
                                 {
-                                    InitDAP();
+                                    InitDAP(); //pop.Dismiss();
                                 }
                                 else
                                 {
-                                    pop.Dismiss();
+                                    //pop.Dismiss();
                                 }
+                                StartCoroutine(pop.Dismiss());
                             }
                             );
                     }
@@ -157,24 +160,31 @@ public class SummonAltarPanel : BasicSubMenuPanel
     }
     void InitDAP()
     {
+        DAP.ResetSelf();
+        //
         UIEffectManager.Instance.showAnimFadeIn(DAP.transform);
+
+        DAP.AnimOn = true;
+        //
+
         if (CurrentAltarType == AltarType.n_tenTime)
         {
             DAP.useLR = true;
         }
         else DAP.useLR = false;
         DAP.clearOAESE();
+        DAP.CurrentAltarType = CurrentAltarType;
         if (CurrentAltarType == AltarType.n_oneTime)
         {
-            DAP.OnAnimEndSetEvent += confirm_altar_n_oneTime;
+            DAP.OnAnimEndSetEvent.AddListener(confirm_altar_n_oneTime);
         }
         else if (CurrentAltarType == AltarType.n_tenTime)
         {
-            DAP.OnAnimEndSetEvent += confirm_altar_n_tenTimes;
+            DAP.OnAnimEndSetEvent.AddListener(confirm_altar_n_tenTimes);
         }
         else if(CurrentAltarType == AltarType.r_oneTime)
         {
-            DAP.OnAnimEndSetEvent += confirm_altar_r_oneTime;
+            DAP.OnAnimEndSetEvent.AddListener(confirm_altar_r_oneTime);
         }
     }
     public void confirm_altar_n_oneTime()
@@ -234,6 +244,21 @@ public class SummonAltarPanel : BasicSubMenuPanel
         }
         UIEffectManager.Instance.hideAnimFadeOut(DAP.transform);
     }
+
+    bool HaveEnoughConsumable(consumableItem item,int num = 1)
+    {
+        int n = SDDataManager.Instance.getConsumableNum(Coupon_r_oneTimes.ID);
+        return n >= num;
+    }
+    bool HaveEnoughDamond(int num)
+    {
+        int n = SDDataManager.Instance.GetDamond();
+        return n >= num;
+    }
+
+
+
+
     public void AltarHero(int times, bool useRareCoupon)
     {
         RewardHCs.Clear();

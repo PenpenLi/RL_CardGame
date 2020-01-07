@@ -19,7 +19,7 @@ public class RuneDetailPanel : ItemDetailPanel
         ownerId = rune.ownerId;
         locked = rune.locked;
         id = rune.id;
-        hashcode = rune.hashcode;
+        hashcode = rune.Hashcode;
         if(itemNameText) itemNameText.text = R.NAME;
         if(itemDescText) itemDescText.text = R.DESC;
         quality = R.Quality;
@@ -28,7 +28,6 @@ public class RuneDetailPanel : ItemDetailPanel
             itemExtraText.text = SDGameManager.T("Lv.") + level + "·"
                 + SDDataManager.Instance.rarityString(quality);
         starVision.StarNum = quality;
-        //priceText.text = ""+SDDataManager.Instance.getCoinWillImproveCost(level, quality);
     }
     public void initDetailPanel(int hashcode)
     {

@@ -17,11 +17,12 @@ public class OneRoleClassData
     public RoleAttributeList baseRALChangeData;
     public RoleAttributeList extraRALChangeData 
     {
-        get { return groupStateRAL + environmentStateRAL; }
+        get { return groupStateRAL + environmentStateRAL + nameBeforeRAL + overallStateRAL; }
     }
     public RoleAttributeList groupStateRAL;
     public RoleAttributeList environmentStateRAL;
-    //public RoleAttributeList 
+    public RoleAttributeList nameBeforeRAL;
+    public RoleAttributeList overallStateRAL;
 
     #region 索引
     /// <summary>

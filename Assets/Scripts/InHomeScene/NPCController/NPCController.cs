@@ -40,7 +40,7 @@ public class NPCController : MonoBehaviour
     {
         if (talker == null) return;
         TalkerInfo info = talker.Info;
-        if (info.DefaultDialogue.Words[currentDialogueIndex].IsValid)
+        if (!info.DefaultDialogue.Words[currentDialogueIndex].IsValid)
         {
 
 

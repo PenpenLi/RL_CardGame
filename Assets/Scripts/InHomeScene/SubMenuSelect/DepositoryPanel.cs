@@ -28,6 +28,7 @@ public class DepositoryPanel : BasicSubMenuPanel
     }
 
     public SDConstants.ItemType currentItemType;
+
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();

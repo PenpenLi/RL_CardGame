@@ -26,8 +26,10 @@ public class ItemStarVision : MonoBehaviour
     public void refreshStarNum(int oldNum)
     {
         if (AllStarParent == null) AllStarParent = transform;
-        if(!isInMiddle)
+        HorizontalLayoutGroup HLG = GetComponent < HorizontalLayoutGroup > ();
+        if (!isInMiddle)
         {
+            HLG.childAlignment = TextAnchor.MiddleLeft;
             for (int i = 0; i < AllStarParent.childCount; i++)
             {
                 if (i < StarNum)
@@ -42,6 +44,7 @@ public class ItemStarVision : MonoBehaviour
         }
         else
         {
+            HLG.childAlignment = TextAnchor.MiddleCenter;
             for (int i = 0; i < AllStarParent.childCount; i++)
             {
                 if (i < StarNum)
