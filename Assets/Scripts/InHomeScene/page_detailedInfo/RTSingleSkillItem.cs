@@ -11,6 +11,7 @@ public class RTSingleSkillItem : MonoBehaviour
     public Image itemBgImg;
     public ItemStarVision starVision;
     public string ItemId;
+    public int lv;
     public Transform LockedPanel;
     public bool isLocked
     {
@@ -68,6 +69,7 @@ public class RTSingleSkillItem : MonoBehaviour
     {
         deploy = SDConstants.deployType.skill;
         ItemId = baseskilldata.skillId;
+        lv = baseskilldata.lv;
         itemNameText.text = baseskilldata.SkillName;
         isLocked = baseskilldata.islocked;
         if (!isLocked)

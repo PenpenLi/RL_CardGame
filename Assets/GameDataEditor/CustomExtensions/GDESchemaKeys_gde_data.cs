@@ -20,7 +20,6 @@ namespace GameDataEditor
         public static string Equipment = "Equipment";
         public static string Hero = "Hero";
         public static string RoleAttritube = "RoleAttritube";
-        public static string Enemy = "Enemy";
         public static string Item = "Item";
         public static string ResidentMovement = "ResidentMovement";
         public static string unitTeam = "unitTeam";

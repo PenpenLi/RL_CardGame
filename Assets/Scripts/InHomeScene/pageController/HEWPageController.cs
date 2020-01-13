@@ -17,17 +17,37 @@ public class HEWPageController : MonoBehaviour
     public SDConstants.ConsumableType ConsumableType;
     public int pageIndex;
     public int itemCount;
+    public SingleItem[] AllItemSlots;
     //
     SDEquipSelect equipSelect;
     public ScrollRect scrollRect;
     private int singleHeroHeight = 250;
     private int singleEquipHeight = 250;
+    private int PerPageMaxVolume = 48;
+    
+    [ContextMenu("INIT_ALL_ITEM_SLOTS")]
+    public void Init_AllItemSlots()
+    {
+        AllItemSlots = scrollRect.content.GetComponentsInChildren<SingleItem>();
+    }
 
     public void ResetPage()
     {
+        pageIndex = 0;
         for(int i = 0; i < items.Count; i++)
         {
             Destroy(items[i].gameObject);
+        }
+        items = new List<SingleItem>();
+        scrollRectReset();
+    }
+
+    public void ResetPageWithoutDestroy()
+    {
+        pageIndex = 0;
+        for (int i = 0; i < items.Count; i++)
+        {
+            items[i].SetSelfAsBg();
         }
         items = new List<SingleItem>();
         scrollRectReset();
@@ -53,6 +73,7 @@ public class HEWPageController : MonoBehaviour
     {
         Debug.Log("不同类型列表会进行刷新");
         itemCount = 0;
+        pageIndex = 0;
         CurrentType = type;
         if (type == SDConstants.ItemType.Hero)
         {
@@ -65,10 +86,6 @@ public class HEWPageController : MonoBehaviour
             {
                 ShowHeroesOwnedToBattle();
             }
-            else if (st == SDConstants.HeroSelectType.Dispatch)
-            {
-
-            }
             else if (st == SDConstants.HeroSelectType.Mission)
             {
 
@@ -77,35 +94,7 @@ public class HEWPageController : MonoBehaviour
             {
 
             }
-            else if (st == SDConstants.HeroSelectType.UseProp)
-            {
-
-            }
-            else if (st == SDConstants.HeroSelectType.Train)
-            {
-
-            }
-            else if (st == SDConstants.HeroSelectType.TrainConsume)
-            {
-
-            }
-            else if (st == SDConstants.HeroSelectType.Promote)
-            {
-
-            }
-            else if (st == SDConstants.HeroSelectType.PromoteConsume)
-            {
-
-            }
-            else if (st == SDConstants.HeroSelectType.StarUp)
-            {
-
-            }
             else if (st == SDConstants.HeroSelectType.Wake)
-            {
-
-            }
-            else if (st == SDConstants.HeroSelectType.Replace)
             {
 
             }
@@ -147,6 +136,10 @@ public class HEWPageController : MonoBehaviour
         else if(type == SDConstants.ItemType.Badge)
         {
 
+        }
+        else if(type == SDConstants.ItemType.Enemy)
+        {
+            showEnemyInIllustrate();
         }
         else if(type == SDConstants.ItemType.Quest)
         {
@@ -304,20 +297,46 @@ public class HEWPageController : MonoBehaviour
     }
     public void showOnePosEquipsOwned(EquipPosition pos)
     {
-        ResetPage();
-        string id = SDDataManager.Instance.getHeroIdByHashcode(currentHeroHashcode);
-        List<GDEEquipmentData> allEquips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
-            (pos, id);
-        itemCount = allEquips.Count;
-        for (int i = 0; i < itemCount; i++)
+        ResetPageWithoutDestroy();
+        //ResetPage();
+        List<GDEEquipmentData> allEquips;
+        if (currentHeroHashcode>0&& SDDataManager.Instance.getHeroIdByHashcode
+            (currentHeroHashcode) != null)
         {
-            Transform s = Instantiate(SItem) as Transform;
-            s.transform.SetParent(scrollRect.content);
-            s.transform.localScale = Vector3.one;
-            SingleItem _s = s.GetComponent<SingleItem>();
-            _s.sourceController = this;
-            _s.initEquip(allEquips[i]);
-            items.Add(_s);
+            string id = SDDataManager.Instance.getHeroIdByHashcode(currentHeroHashcode);
+            allEquips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
+                (pos, id,true);
+        }
+        else
+        {
+            allEquips = SDDataManager.Instance.getOwnedEquipsByPos(pos,true);
+        }
+
+        itemCount = allEquips.Count;
+        if (itemCount <= 0)
+        {
+            foreach (SingleItem s in AllItemSlots)
+            {
+                s.SetSelfAsBg();
+            }
+        }
+        int endNumInVolume = Mathf.Max(0, itemCount - PerPageMaxVolume * pageIndex);
+        int startIndex = PerPageMaxVolume * pageIndex;
+
+        for(int i = 0; i < PerPageMaxVolume; i++)
+        {
+            if (i >= endNumInVolume)
+            {
+                AllItemSlots[i].SetSelfAsBg();
+                continue;
+            }
+            else
+            {
+                SingleItem _s = AllItemSlots[i];
+                _s.sourceController = this;
+                _s.initEquip(allEquips[i + startIndex]);
+                items.Add(_s);
+            }
         }
     }
     #endregion
@@ -445,6 +464,36 @@ public class HEWPageController : MonoBehaviour
             _s.sourceController = this;
 
             items.Add(_s);
+        }
+    }
+    #endregion
+    #region EnemyClass
+    public void showEnemyInIllustrate()
+    {
+        ResetPageWithoutDestroy();
+        List<GDEItemData> all = SDDataManager.Instance.GetAllEnemiesPlayerSaw;
+        itemCount = all.Count;
+        if (itemCount <= 0)
+        {
+            foreach(SingleItem s in AllItemSlots) { s.SetSelfAsBg(); }
+        }
+        int endNumInVolume = Mathf.Max(0, itemCount - PerPageMaxVolume * pageIndex);
+        int startIndex = PerPageMaxVolume * pageIndex;
+
+        for (int i = 0; i < PerPageMaxVolume; i++)
+        {
+            if (i >= endNumInVolume)
+            {
+                AllItemSlots[i].SetSelfAsBg();
+                continue;
+            }
+            else
+            {
+                SingleItem _s = AllItemSlots[i];
+                _s.sourceController = this;
+                _s.initEnemy(all[i + startIndex]);
+                items.Add(_s);
+            }
         }
     }
     #endregion

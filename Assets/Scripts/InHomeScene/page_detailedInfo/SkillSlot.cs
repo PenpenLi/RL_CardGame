@@ -44,6 +44,7 @@ public class SkillSlot : MonoBehaviour
     public HeroDetailPanel HDP;
     [Space(25)]
     public int lv;
+    public string id;
     public void initSkillSlot(int HeroHashcode)
     {
         bool flag = false;
@@ -80,7 +81,12 @@ public class SkillSlot : MonoBehaviour
 
     public void initOneSkillSlot(OneSkill skill)
     {
-        if(skill.lv < 0 || skill== null||string.IsNullOrEmpty(skill.skillId))
+        if(skill == null)
+        {
+            emptyPanel.gameObject.SetActive(true);
+            return;
+        }
+        if(skill.lv < 0 ||string.IsNullOrEmpty(skill.skillId))
         {
             emptyPanel.gameObject.SetActive(true);
         }
@@ -99,6 +105,6 @@ public class SkillSlot : MonoBehaviour
             } 
             skillItemImg.color = skillBtn.GetComponent<Image>().color;
         }
-
+        id = skill.skillId;
     }
 }

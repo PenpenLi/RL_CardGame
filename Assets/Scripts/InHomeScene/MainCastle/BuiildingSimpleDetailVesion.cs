@@ -20,6 +20,10 @@ public class BuiildingSimpleDetailVesion : MonoBehaviour
         BuildingId = id;
         for(int i = 0; i < MCP.homeScene.AllSubMenus.Length; i++)
         {
+            if (MCP.homeScene.AllSubMenus[i] == null)
+            {
+                continue;
+            }
             BasicSubMenuPanel P 
                 = MCP.homeScene.AllSubMenus[i].GetComponent<BasicSubMenuPanel>();
             if(P.buildingId == BuildingId)

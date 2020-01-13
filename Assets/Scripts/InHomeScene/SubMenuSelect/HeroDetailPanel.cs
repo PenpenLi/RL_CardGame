@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using GameDataEditor;
 
 public class HeroDetailPanel : BasicSubMenuPanel
 {
@@ -65,6 +66,9 @@ public class HeroDetailPanel : BasicSubMenuPanel
         improve.transform.gameObject.SetActive(false);
 
     }
+
+
+    #region AboveMenu_LinkTo
     public void BtnToHeroDetail()
     {
         if (CurrentRDSubType != RoleDetailSubType.heroDetail)
@@ -117,7 +121,6 @@ public class HeroDetailPanel : BasicSubMenuPanel
     {
         if (CurrentRDSubType != RoleDetailSubType.heroEquip)
         {
-            //resetAllRDSubPanel();
             if (CurrentRDSubType != RoleDetailSubType.end
                 && CurrentRDSubType != RoleDetailSubType.heroDetail)
             {
@@ -129,7 +132,7 @@ public class HeroDetailPanel : BasicSubMenuPanel
             historyAdd(CurrentRDSubType);
 
             //
-
+            equip.initPosEquipSelectPanel(equip.equipPos, equip.isSecondJewelryPos);
         }
     }
     public void BtnToHeroSkill()
@@ -151,9 +154,11 @@ public class HeroDetailPanel : BasicSubMenuPanel
             skill.initHeroSkillListPanel();
         }
     }
+    #endregion
+
+
     public void resetAllRDSubPanel()
     {
-
         improve.CloseThisPanel();
         //heroDetail.ModelAndEquipsPanel.gameObject.SetActive(false);
     }
@@ -163,6 +168,10 @@ public class HeroDetailPanel : BasicSubMenuPanel
         {
             skillSlots[i].initSkillSlot(heroHashcode);
         }
+        GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(heroHashcode);
+        detail.skillid0 =hero.skill0Id;
+        detail.skillid1 = hero.skill1Id;
+        detail.skillidOmega = hero.skillOmegaId;
 
     }
     #endregion

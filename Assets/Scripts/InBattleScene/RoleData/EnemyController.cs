@@ -85,7 +85,7 @@ public class EnemyController : BasicRoleProperty
     {
         if (_enemy)
         {
-            this.RoleBasicRA = _enemy.RoleBasicRA;
+            this.RoleBasicRA = _enemy.RoleBasicRA.Clone;
             this.CRIDmg = _enemy.CRIDmg;
             this.DmgReduction = _enemy.DmgReduction;
             this.DmgReflection = _enemy.DmgReflection;

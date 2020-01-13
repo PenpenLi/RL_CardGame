@@ -28,6 +28,8 @@ public class SingleItem : MonoBehaviour
     public int itemLevel;
     public int itemUpLv;
     public int hireBtnIndex;
+    [HideInInspector]
+    public EquipPosition equipPos;
     public ItemStarVision starVision;
     public Transform slider;
     public int index;
@@ -67,10 +69,10 @@ public class SingleItem : MonoBehaviour
         }
     }
     [Space(25)]
-    //public Transform HeroPanel;
     public Transform EmptyPanel;
     public Transform SelectedPanel;
     public Transform UnablePanel;
+    public CanvasGroup canvasGroup;
     [Space(15)]
     public HEWPageController sourceController;
     [Space(15)]
@@ -91,57 +93,31 @@ public class SingleItem : MonoBehaviour
         {
             if (type == SDConstants.ItemType.Hero)
             {
-                if (SDGameManager.Instance.isSelectHero)
+                Debug.Log("当前类别" + SDGameManager.Instance.heroSelectType);
+                if (SDGameManager.Instance.heroSelectType
+                    == SDConstants.HeroSelectType.Battle)
                 {
-                    Debug.Log("当前类别" + SDGameManager.Instance.heroSelectType);
-                    if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Battle)
-                    {
-                        chooseHeroToBattle();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Dispatch)
-                    {
-                        chooseHeroToDispatch();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.TrainConsume)
-                    {
-                        chooseHeroToTrainConsume();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.PromoteConsume)
-                    {
-                        chooseHeroToPromoteConsume();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Train)
-                    {
-                        chooseHeroToTrain();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.StarUp)
-                    {
-                        chooseHeroToStarUp();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Wake)
-                    {
-                        chooseHeroToWake();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Replace)
-                    {
-                        chooseHeroToReplace();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Promote)
-                    {
-                        chooseHeroToPromote();
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Hospital)
-                    {
-                        chooseHeroToTreat();
-                    }
-                    else if(SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.Altar)
-                    {
+                    chooseHeroToBattle();
+                }
+                else if (SDGameManager.Instance.heroSelectType
+                    == SDConstants.HeroSelectType.Wake)
+                {
+                    chooseHeroToWake();
+                }
+                else if (SDGameManager.Instance.heroSelectType
+                    == SDConstants.HeroSelectType.Hospital)
+                {
+                    chooseHeroToTreat();
+                }
+                else if (SDGameManager.Instance.heroSelectType
+                    == SDConstants.HeroSelectType.Altar)
+                {
 
-                    }
-                    else if (SDGameManager.Instance.heroSelectType == SDConstants.HeroSelectType.All)
-                    {
-                        chooseHeroToDetail();
-                    }
+                }
+                else if (SDGameManager.Instance.heroSelectType
+                    == SDConstants.HeroSelectType.All)
+                {
+                    chooseHeroToDetail();
                 }
             }
             else if (type == SDConstants.ItemType.Equip)
@@ -230,12 +206,6 @@ public class SingleItem : MonoBehaviour
             }
 
             List<GDEHeroData> all = SDDataManager.Instance.getHerosFromTeam(STUP.CurrentTeamId);
-            //
-            bool flag = false;
-            if (isSelected && all.Exists(x=>x.TeamOrder == STUP.currentHeroIndexInTeam))
-            {
-                flag = true;
-            }
 
             //
             SDDataManager.Instance.setHeroTeam(STUP.CurrentTeamId
@@ -248,35 +218,7 @@ public class SingleItem : MonoBehaviour
             //BHS.closeBtnTapped();
         }
     }
-    public void chooseHeroToDispatch()
-    {
-
-    }
-    public void chooseHeroToTrainConsume()
-    {
-
-    }
-    public void chooseHeroToPromoteConsume()
-    {
-
-    }
-    public void chooseHeroToTrain()
-    {
-
-    }
-    public void chooseHeroToStarUp()
-    {
-
-    }
     public void chooseHeroToWake()
-    {
-
-    }
-    public void chooseHeroToReplace()
-    {
-
-    }
-    public void chooseHeroToPromote()
     {
 
     }
@@ -415,7 +357,6 @@ public class SingleItem : MonoBehaviour
         if (characterModel != null)
         {
             characterModel.initCharacterModel(itemHashcode, animType, SDConstants.HERO_MODEL_BIG_RATIO);
-            //ReadAnimImgList.initCharaModelByGDE(characterModel.CurrentCharacterModel);
         }
         itemLevel = SDDataManager.Instance.getLevelByExp(hero.exp);
         if (upText)
@@ -471,8 +412,7 @@ public class SingleItem : MonoBehaviour
         EquipmentPanel EP = GetComponentInParent<EquipmentPanel>();
         if (EP)
         {
-            EP.homeScene.equipDetailBtnTapped();
-            EP.homeScene._equipDetailPanel
+            EP.EDP
                 .GetComponentInChildren<SDEquipDetail>()
                 .initEquipDetailVision
                 (SDDataManager.Instance.getEquipmentByHashcode(itemHashcode));
@@ -492,23 +432,19 @@ public class SingleItem : MonoBehaviour
     #endregion
     public void initEquip(GDEEquipmentData equip)
     {
-        int equipPos = SDDataManager.Instance.getEquipPosById(equip.id);
-        //type = SDConstants.ItemType.Equip;
+        SetSelfAsBg(false);
+        EquipItem item = SDDataManager.Instance.GetEquipItemById(equip.id);
+        equipPos = (EquipPosition)SDDataManager.Instance.getEquipPosById(equip.id);
         itemId = equip.id;
         itemHashcode = equip.hashcode;
-        if (fightForceText) fightForceText.text
-                = "" + (SDDataManager.Instance.getEquipBattleForceByHashCode(itemHashcode));//读取装备战斗力
         itemUpLv = SDDataManager.Instance.getLevelByExp(equip.exp);
-        if (downText) downText.text = SDDataManager.Instance.getEquipNameByHashcode(itemHashcode);
+        starVision.gameObject.SetActive(false);
+        if (downText) downText.text = SDGameManager.T(item.NAME);
         if (upText)
         {
             upText.gameObject.SetActive(true);
-            upText.text = SDGameManager.T("Lv.")
-                + SDDataManager.Instance.getLevelByExp(equip.exp);
+            upText.text = SDDataManager.Instance.rarityString(item.LEVEL);
         }
-
-        //int rarity = SDDataManager.Instance.getEquipRarityById(itemId);
-        //frameImg;
     }
     #endregion
     #region 目标为Consumable
@@ -733,7 +669,33 @@ public class SingleItem : MonoBehaviour
         
     }
     #endregion
-
+    #region 目标为Enemy
+    #region Enemy效果
+    public void chooseEnemyToShowDetail()
+    {
+        IllustratePanel IP = GetComponentInParent<IllustratePanel>();
+        if (IP)
+        {
+            IP.initCurrentEnemyIllustarte(itemId);
+            sourceController.Select_None();
+            isSelected = true;
+        }
+    }
+    #endregion
+    public void initEnemy(GDEItemData item)
+    {
+        itemId = item.id;
+        itemNum = item.num;
+        EnemyInfo E = SDDataManager.Instance.getEnemyInfoById(itemId);
+        itemLevel = E.EnemyRank.Index;
+        if (upText)
+        {
+            upText.gameObject.SetActive(true);
+            upText.text = SDGameManager.T(E.Name);
+        }
+        starVision.StarNum = itemLevel;
+    }
+    #endregion
     public void PurchaseBtnTapped()
     {
         choosePurchaseToDetail();
@@ -796,4 +758,18 @@ public class SingleItem : MonoBehaviour
         }
     }
     #endregion
+
+
+
+
+
+
+
+
+    public void SetSelfAsBg(bool flag = true)
+    {
+        gameObject.SetActive(!flag);
+        //canvasGroup.alpha = flag ? 0 : 1;
+        //transform.localScale = flag ? Vector3.zero : Vector3.one;
+    }
 }

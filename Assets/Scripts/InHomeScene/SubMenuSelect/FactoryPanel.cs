@@ -21,6 +21,7 @@ public class FactoryPanel : BasicSubMenuPanel
     {
         base.whenOpenThisPanel();
         initAllAssemblyLines();
+        chooseSlavePanel.gameObject.SetActive(false);
     }
     public override void commonBackAction()
     {
@@ -48,11 +49,9 @@ public class FactoryPanel : BasicSubMenuPanel
 
     public void initAllAssemblyLines()
     {
-        //heroExp
-        //List<GDEtimeTaskData> all = SDDataManager.Instance.PlayerData.TimeTaskList;
-        for(int i = 0; i < Level + 1; i++)
+        ResetAllLines();
+        for(int i = 0; i < Level + 2; i++)
         {
-            //string itemid = AllProducts[0].ID;
             Transform card = Instantiate(WorkingCard) as Transform;
             card.SetParent(scrollrect.content);
             card.transform.localScale = Vector3.one;
@@ -71,6 +70,31 @@ public class FactoryPanel : BasicSubMenuPanel
             ALLAssemblyLines.Add(fwc);
         }
     }
+    public void InitThisFactoryTasks()
+    {
+        for(int i = 0; i < Level + 2; i++)
+        {
+            string taskId = string.Format("TT_FACT#{0:D2}", i);
+            GDEtimeTaskData TD;
+            SDDataManager.Instance.haveTimeTaskByTaskId(taskId, out TD);
+            if (TD == null)
+            {
+                SDDataManager.Instance.AddTimeTask
+                    (SDConstants.timeTaskType.FACT, 0, AllProducts[0].ID, taskId);
+                SDDataManager.Instance.haveTimeTaskByTaskId(taskId, out TD);
+            }
+        }
+    }
+
+    public void ResetAllLines()
+    {
+        foreach(FactoryWorkCard fwc in ALLAssemblyLines)
+        {
+            Destroy(fwc.gameObject);
+        }
+        ALLAssemblyLines.Clear();
+    }
+
     public void chooseOneAssemblyLine(FactoryWorkCard card)
     {
         if(SDDataManager.Instance.haveTimeTaskByTaskId(card.taskId, out GDEtimeTaskData task))
@@ -79,6 +103,7 @@ public class FactoryPanel : BasicSubMenuPanel
             UIEffectManager.Instance.showAnimFadeIn(chooseSlavePanel);
 
             refreshThisAssemblyLine(task);
+
         }
     }
     public void refreshThisAssemblyLine(GDEtimeTaskData task)

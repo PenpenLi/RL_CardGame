@@ -24,7 +24,7 @@ public class AllOwnedHeroesPanel : BasicSubMenuPanel
     public void ShowAllOwnedHeroes()
     {
         currentPanelContent = panelContent.main;
-        SDGameManager.Instance.isSelectHero = true;
+        //SDGameManager.Instance.isSelectHero = true;
         SDGameManager.Instance.heroSelectType = SDConstants.HeroSelectType.All;
         UIEffectManager.Instance.showAnimFadeIn(RoleStagePanel);
         BHS.gameObject.SetActive(true);

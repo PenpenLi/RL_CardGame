@@ -35,7 +35,7 @@ public class BasicRoleProperty : MonoBehaviour
         ,RoleBarChart bcRegendPerTurn,string id,string name, int wakeNum)
     {
         LEVEL = level;
-        RoleBasicRA = dataRA;
+        RoleBasicRA = dataRA.Clone;
         CRIDmg = criDmg;
         DmgReduction = dmgReduction;
         DmgReflection = dmgReflection;
@@ -75,7 +75,7 @@ public class BasicRoleProperty : MonoBehaviour
     {
         LEVEL = Level;
         Quality = quality;
-        RoleBasicRA = ra;
+        RoleBasicRA = ra.Clone;
         CRIDmg = criDmg;
         DmgReduction = dmgReduction; DmgReflection = dmgReflection;
         this.RewardRate = RewardRate;
@@ -125,7 +125,7 @@ public class BasicRoleProperty : MonoBehaviour
             , 0.2f, 1f//物攻防
             , 0.1f, 0.1f//法攻防
             );
-        RoleBasicRA = ra + gradeEffect;//等级加成
+        RoleBasicRA = ra.Clone + gradeEffect;//等级加成
         AddTempleMultiplier(Job.Fighter);
         //额外效果
         DmgReduction += 10;
@@ -139,7 +139,7 @@ public class BasicRoleProperty : MonoBehaviour
             , 1.2f, 0.3f//物攻防
             , 0.8f, 0.3f//法攻防
             );
-        RoleBasicRA = ra + gradeEffect;//等级加成
+        RoleBasicRA = ra.Clone + gradeEffect;//等级加成
         AddTempleMultiplier(Job.Ranger);
         //额外效果
         CRIDmg += 25;
@@ -153,7 +153,7 @@ public class BasicRoleProperty : MonoBehaviour
             , 0.2f, 0.75f//物攻防
             , 0.2f, 0.75f//法攻防
             );
-        RoleBasicRA = ra + gradeEffect;//等级加成
+        RoleBasicRA = ra.Clone + gradeEffect;//等级加成
         AddTempleMultiplier(Job.Priest);
         //额外效果
         DmgReflection += 5;
@@ -167,7 +167,7 @@ public class BasicRoleProperty : MonoBehaviour
             , 0.2f, 0.2f//物攻防
             , 1.1f, 0.6f//法攻防
             );
-        RoleBasicRA = ra + gradeEffect;//等级加成
+        RoleBasicRA = ra.Clone + gradeEffect;//等级加成
         AddTempleMultiplier(Job.Priest);
         //额外效果
         CRIDmg += 25;
@@ -250,7 +250,7 @@ public class BasicRoleProperty : MonoBehaviour
     }
     public virtual void initRoleClassData()
     {
-        _role.ThisRoleAttributes = RoleBasicRA;
+        _role.ThisRoleAttributes = RoleBasicRA.Clone;
     }
 
 

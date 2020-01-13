@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using GameDataEditor;
 using System;
@@ -101,7 +103,7 @@ public class FactoryWorkCard : UseTimeItem
     public void BtnToOpenSlavePanel()
     {
         if (!FP) return;
-
+        FP.chooseOneAssemblyLine(this);
     }
 
     public void ChangeWorkingNPC(int newHashcode)

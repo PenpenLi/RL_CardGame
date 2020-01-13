@@ -30,6 +30,7 @@ public class MainCastlePanel : BasicSubMenuPanel
         AllBuildings.Clear();
         for (int i = 0; i < homeScene.AllSubMenus.Length; i++)
         {
+            if (homeScene.AllSubMenus[i] == null) continue;
             if (homeScene.AllSubMenus[i].GetComponent<BasicSubMenuPanel>()
                 && homeScene.AllSubMenus[i].GetComponent<BasicSubMenuPanel>().LvUpEnable)
             {

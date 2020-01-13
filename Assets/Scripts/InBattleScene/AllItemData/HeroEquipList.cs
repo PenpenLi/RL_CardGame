@@ -28,7 +28,7 @@ public class HeroEquipList : MonoBehaviour
     public const string addImagePath = "Sprites/add";
     public SDHeroDetail HD;
     public SDEquipSelect ES;
-
+    public HeroDetailPanel HDP;
     //
     public EquipPosition CurrentSearchingPos = EquipPosition.End;
     public bool isSecondPos;
@@ -101,6 +101,11 @@ public class HeroEquipList : MonoBehaviour
         {
             CurrentSearchingPos = pos;
             isSecondPos = isSecondJewelry;
+            if(HDP.CurrentRDSubType != HeroDetailPanel.RoleDetailSubType.heroEquip)
+            {
+                HDP.CurrentRDSubType = HeroDetailPanel.RoleDetailSubType.heroEquip;
+                HDP.historyAdd(HDP.CurrentRDSubType);
+            }
             ES.initPosEquipSelectPanel(pos, isSecondPos);
             UIEffectManager.Instance.showAnimFadeIn(ES.transform);
         }
@@ -108,6 +113,7 @@ public class HeroEquipList : MonoBehaviour
         {
             UIEffectManager.Instance.hideAnimFadeOut(ES.transform);
             CurrentSearchingPos = EquipPosition.End;
+            HDP.commonBackAction();
         }
 
     }

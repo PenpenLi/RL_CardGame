@@ -413,7 +413,7 @@ public class BattleRoleData : MonoBehaviour
         if (rareWeight > 0) career = UnityEngine.Random.Range(0, (int)Job.End);
         d = enemyBuild.AddCareerData(d, career);
         //
-        RoleAttributeList ral = enemyBuild.RALAddedByLevel(enemy.RAL);
+        RoleAttributeList ral = enemyBuild.RALAddedByLevel(enemy.RAL).Clone;
         //
         if (isLittleBoss) d = enemyBuild.LittleBossData(d, enemy.EnemyRank.Index);
         //
@@ -471,18 +471,18 @@ public class BattleRoleData : MonoBehaviour
     }
     #region 状态可视化内容
     [Header("状态显示设置")]
-    public Transform Unit_Bleed;
-    public Transform Unit_Mind;
-    public Transform Unit_Fire;
-    public Transform Unit_Frost;
-    public Transform Unit_Corrosion;
-    public Transform Unit_Hush;
-    public Transform Unit_Dizzy;
-    public Transform Unit_Confuse;
+    public BattleStateVisionController BSVC;
+    public Transform Unit_Bleed { get { return BSVC.Unit_ST_State_List[(int)StateTag.Bleed]; } }
+    public Transform Unit_Mind { get { return BSVC.Unit_ST_State_List[(int)StateTag.Mind]; } }
+    public Transform Unit_Fire { get { return BSVC.Unit_ST_State_List[(int)StateTag.Fire]; } }
+    public Transform Unit_Frost { get { return BSVC.Unit_ST_State_List[(int)StateTag.Frost]; } }
+    public Transform Unit_Corrosion { get { return BSVC.Unit_ST_State_List[(int)StateTag.Confuse]; } }
+    public Transform Unit_Hush { get { return BSVC.Unit_ST_State_List[(int)StateTag.Hush]; } }
+    public Transform Unit_Dizzy { get { return BSVC.Unit_ST_State_List[(int)StateTag.Dizzy]; } }
+    public Transform Unit_Confuse { get { return BSVC.Unit_ST_State_List[(int)StateTag.Confuse]; } }
 
-    public Transform Unit_HpRegend;
-    public Transform Unit_MpRegend;
-    public Transform Unit_TpRegend;
+    public Transform Unit_Buff { get { return BSVC.Unit_Standard_State_List[0]; } }
+    public Transform Unit_Debuff { get { return BSVC.Unit_Standard_State_List[1]; } }
     public Transform PerStateUnit(StateTag tag)
     {
         switch (tag)
@@ -498,18 +498,8 @@ public class BattleRoleData : MonoBehaviour
             default: return null;
         }
     }
-    public Transform PerRegendUnit(SDConstants.BCType tag)
-    {
-        switch (tag)
-        {
-            case SDConstants.BCType.hp:return Unit_HpRegend;
-            case SDConstants.BCType.mp:return Unit_MpRegend;
-            case SDConstants.BCType.tp:return Unit_TpRegend;
-            default:return null;
-        }
-    }
     //
-    public Transform Unit_Die;
+    public Transform Unit_Die { get { return BSVC.Unit_Die_State; } }
     #endregion
     #region　撕裂状态①
     public BRD_OneStateController stateBleed
@@ -751,7 +741,7 @@ public class BattleRoleData : MonoBehaviour
         if (_Tag == SDConstants.CharacterType.Hero)
         {
             Race _race = HeroProperty._hero._heroRace;
-            RoleAttributeList basic = ThisBasicRoleProperty()._role.ThisRoleAttributes;
+            RoleAttributeList basic = ThisBasicRoleProperty()._role.ThisRoleAttributes.Clone;
             ThisBasicRoleProperty()._role.AllARevision += SDDataManager.Instance.BuffFromDaynight(basic);
             ThisBasicRoleProperty()._role.AllARevision += SDDataManager.Instance.BuffFromRace(basic, _race);
         }
@@ -1024,6 +1014,7 @@ public class BattleRoleData : MonoBehaviour
             string id = ThisBasicRoleProperty().ID;
             ROEnemyData data = SDDataManager.Instance.getEnemyDataById(id);
             string t = "kill_" + data.Info.EnemyRank.EnemyType.ToString();
+            SDDataManager.Instance.AddKillingDataToAchievement(id);
             SDDataManager.Instance.addAchievementDataByType(t);
         }
         #endregion

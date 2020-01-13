@@ -33,7 +33,6 @@ public class HeroInfo : CharacterInfo
     public RoleAttributeList RAL
     {
         get { return _RAL; }
-        set { _RAL = value; }
     }
 
     [SerializeField]
@@ -78,5 +77,9 @@ public class HeroInfo : CharacterInfo
         , SDConstants.CharacterType ctype = SDConstants.CharacterType.Hero)
     {
         base.initData(id, name, desc, sex, faceIcon, ctype);
+    }
+    public void InitRAL(RoleAttributeList ral)
+    {
+        _RAL = ral;
     }
 }

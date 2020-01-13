@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GameDataEditor;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class SDEquipImprove : BasicImprovePage
 {
@@ -36,22 +37,7 @@ public class SDEquipImprove : BasicImprovePage
     public override void InitImprovePanel()
     {
         base.InitImprovePanel();
-
-        int hashcode = equipDetail.equipHashcode;
-        GDEEquipmentData equip = SDDataManager.Instance.getEquipmentByHashcode(hashcode);
-        if(lvText && expText && expSlider && expSlider_listorder)
-        {
-            int exp = equip.exp;
-            int lv = SDDataManager.Instance.getLevelByExp(exp);
-            lvText.text = SDGameManager.T("Lv.") + lv;
-            int e0 = exp - SDDataManager.Instance.getMinExpReachLevel(lv);
-            int e1 = SDDataManager.Instance.ExpBulkPerLevel(lv+1);
-            expText.text = e0 + "/" + e1;
-            expSlider.localScale = Vector3.up + Vector3.forward + Vector3.right * SDDataManager.Instance.getExpRateByExp(exp);
-
-        }
         stockPage.equipImproveController = this;
-
         stockInit(currentImproveKind);
     }
     public void stockInit(ImproveKind improveKind)
@@ -75,6 +61,24 @@ public class SDEquipImprove : BasicImprovePage
         stockPage.ItemsInit(SDConstants.StockType.material ,MType);
         stockPage.SelectEmpty();
         RefreshImprovePanel();
+    }
+    public override void RefreshImprovePanel()
+    {
+        base.RefreshImprovePanel();
+
+        int hashcode = equipDetail.equipHashcode;
+        GDEEquipmentData equip = SDDataManager.Instance.getEquipmentByHashcode(hashcode);
+        if (lvText && expText && expSlider && expSlider_listorder)
+        {
+            int exp = equip.exp;
+            int lv = SDDataManager.Instance.getLevelByExp(exp);
+            lvText.text = SDGameManager.T("Lv.") + lv;
+            int e0 = exp - SDDataManager.Instance.getMinExpReachLevel(lv);
+            int e1 = SDDataManager.Instance.ExpBulkPerLevel(lv + 1);
+            expText.text = e0 + "/" + e1;
+            expSlider.localScale = Vector3.up + Vector3.forward 
+                + Vector3.right * SDDataManager.Instance.getExpRateByExp(exp);
+        }
     }
     public override void ConsumeToImprove(List<RTSingleStockItem> list)
     {

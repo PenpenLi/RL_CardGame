@@ -214,6 +214,10 @@ public class RunePanel : BasicSubMenuPanel
                 Page.items.Find(x => x.itemHashcode == currentRuneHashcode)
                     .initRuneInPage(SDDataManager.Instance.getRuneOwnedByHashcode
                     (currentRuneHashcode));
+                refreshLvupVision();
+                //
+                GDERuneData data = SDDataManager.Instance.getRuneOwnedByHashcode(currentRuneHashcode);
+                runeDetail.initDetailPanel(data);
             }
     }
     #endregion

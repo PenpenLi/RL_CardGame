@@ -22,7 +22,7 @@ public class HeroController : BasicRoleProperty
     {
         if (_hero)
         {
-            this.RoleBasicRA = _hero.RoleBasicRA;
+            this.RoleBasicRA = _hero.RoleBasicRA.Clone;
             this.CRIDmg = _hero.CRIDmg;
             this.DmgReduction = _hero.DmgReduction;
             this.DmgReflection = _hero.DmgReflection;
@@ -35,7 +35,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_helmet)
         {
-            this.RoleBasicRA += _helmet.RoleBasicRA;
+            this.RoleBasicRA += _helmet.RoleBasicRA.Clone;
             this.CRIDmg += _helmet.CRIDmg;
             this.DmgReduction += _helmet.DmgReduction;
             this.DmgReflection += _helmet.DmgReflection;
@@ -44,7 +44,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_breastplate)
         {
-            this.RoleBasicRA += _breastplate.RoleBasicRA;
+            this.RoleBasicRA += _breastplate.RoleBasicRA.Clone;
             this.CRIDmg += _breastplate.CRIDmg;
             this.DmgReduction += _breastplate.DmgReduction;
             this.DmgReflection += _breastplate.DmgReflection;
@@ -53,7 +53,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_gardebras)
         {
-            this.RoleBasicRA += _gardebras.RoleBasicRA;
+            this.RoleBasicRA += _gardebras.RoleBasicRA.Clone;
             this.CRIDmg += _gardebras.CRIDmg;
             this.DmgReduction += _gardebras.DmgReduction;
             this.DmgReflection += _gardebras.DmgReflection;
@@ -62,7 +62,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_legging)
         {
-            this.RoleBasicRA += _legging.RoleBasicRA;
+            this.RoleBasicRA += _legging.RoleBasicRA.Clone;
             this.CRIDmg += _legging.CRIDmg;
             this.DmgReduction += _legging.DmgReduction;
             this.DmgReflection += _legging.DmgReflection;
@@ -71,7 +71,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_jewelry0)
         {
-            this.RoleBasicRA += _jewelry0.RoleBasicRA;
+            this.RoleBasicRA += _jewelry0.RoleBasicRA.Clone;
             this.CRIDmg += _jewelry0.CRIDmg;
             this.DmgReduction += _jewelry0.DmgReduction;
             this.DmgReflection += _jewelry0.DmgReflection;
@@ -80,7 +80,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_jewelry1)
         {
-            this.RoleBasicRA += _jewelry1.RoleBasicRA;
+            this.RoleBasicRA += _jewelry1.RoleBasicRA.Clone;
             this.CRIDmg += _jewelry1.CRIDmg;
             this.DmgReduction += _jewelry1.DmgReduction;
             this.DmgReflection += _jewelry1.DmgReflection;
@@ -89,7 +89,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_weapon)
         {
-            this.RoleBasicRA += _weapon.RoleBasicRA;
+            this.RoleBasicRA += _weapon.RoleBasicRA.Clone;
             this.CRIDmg += _weapon.CRIDmg;
             this.DmgReduction += _weapon.DmgReduction;
             this.DmgReflection += _weapon.DmgReflection;

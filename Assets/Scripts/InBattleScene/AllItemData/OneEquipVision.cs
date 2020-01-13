@@ -31,7 +31,6 @@ public class OneEquipVision : MonoBehaviour
 
     public void equipBtnTapped()
     {
-        SDGameManager.Instance.isSelectHero = false;
         HeroEquipList HEL = GetComponentInParent<HeroEquipList>();
         if (HEL) HEL.equipBtnTapped(Pos, isSecondJewelryPos);
     }

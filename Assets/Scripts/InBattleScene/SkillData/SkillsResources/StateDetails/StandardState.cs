@@ -181,15 +181,15 @@ public class StandardState:BasicState
             SDA = target.HeroProperty._weapon;
         }
         if (SDA != null)
-            _ral = SDA.RoleBasicRA;
+            _ral = SDA.RoleBasicRA.Clone;
         if (UsePos == EquipPosition.Finger)
         {
             RoleAttributeList r0 = RoleAttributeList.zero;
             if (target.HeroProperty._jewelry0 != null)
-                r0 = target.HeroProperty._jewelry0.RoleBasicRA;
+                r0 = target.HeroProperty._jewelry0.RoleBasicRA.Clone;
             RoleAttributeList r1 = RoleAttributeList.zero;
             if (target.HeroProperty._jewelry1 != null)
-                r1 = target.HeroProperty._jewelry1.RoleBasicRA;
+                r1 = target.HeroProperty._jewelry1.RoleBasicRA.Clone;
             _ral = r0 + r1;
         }
         return _ral;

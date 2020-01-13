@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1720997546003689039}
   - component: {fileID: 4532070328760106662}
   - component: {fileID: 95405393758179875}
+  - component: {fileID: 3889069639018485402}
   m_Layer: 5
   m_Name: ProductItem
   m_TagString: Untagged
@@ -168,6 +169,7 @@ MonoBehaviour:
   itemLevel: 0
   itemUpLv: 0
   hireBtnIndex: 0
+  equipPos: 0
   starVision: {fileID: 2887681318925992126}
   slider: {fileID: 8186730410007805020}
   index: 0
@@ -175,10 +177,23 @@ MonoBehaviour:
   EmptyPanel: {fileID: 1621963099944295488}
   SelectedPanel: {fileID: 4793109936337617960}
   UnablePanel: {fileID: 4747610546609226105}
+  canvasGroup: {fileID: 3889069639018485402}
   sourceController: {fileID: 0}
   bagItemDetail: {fileID: 0}
   bagController: {fileID: 0}
   isUsedAsDropItem: 0
+--- !u!225 &3889069639018485402
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 188593632741657088}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &333548502713213394
 GameObject:
   m_ObjectHideFlags: 0
@@ -884,7 +899,7 @@ PrefabInstance:
     - target: {fileID: 145221843110746791, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1249683291969616962, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
@@ -914,7 +929,7 @@ PrefabInstance:
     - target: {fileID: 1249683291969616962, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3791010231228920165, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
@@ -984,7 +999,7 @@ PrefabInstance:
     - target: {fileID: 3791010231228920165, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3791010231228920165, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
@@ -1064,7 +1079,7 @@ PrefabInstance:
     - target: {fileID: 4534844375424490025, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6119024708793331364, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
@@ -1094,7 +1109,7 @@ PrefabInstance:
     - target: {fileID: 6119024708793331364, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6156037263979373629, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
@@ -1134,7 +1149,7 @@ PrefabInstance:
     - target: {fileID: 8629016409015625268, guid: 678a4d083ffa8254199c7b270c0c1ccc,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 678a4d083ffa8254199c7b270c0c1ccc, type: 3}

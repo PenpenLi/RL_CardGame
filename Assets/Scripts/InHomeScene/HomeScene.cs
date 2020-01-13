@@ -51,6 +51,8 @@ public class HomeScene : MonoBehaviour
             ,
         Rune=19
             ,
+        Illustrate=20
+            ,
         End
     }
     private HomeSceneSubMenu _csm = HomeSceneSubMenu.End;
@@ -79,7 +81,7 @@ public class HomeScene : MonoBehaviour
     public Transform _GoddessPanel;
     public Transform _goddessDetailPanel;
     public Transform _equipmentPanel;
-    public Transform _equipDetailPanel;
+    //public Transform _equipDetailPanel;
     public Transform _missionPanel;
     public Transform _achievementPanel;
     public Transform _physicalBuffPanel;
@@ -87,13 +89,11 @@ public class HomeScene : MonoBehaviour
     public Transform _factoryPanel0;
     public Transform _factoryPanel1;
     public Transform _runePanel;
+    public Transform _illustratePanel;
     [Header("菜单快速索引")]
     public Transform[] AllSubMenus;
     [Space(25)]
     public Transform OuterMenuPanel;
-    //[Header("场景配置")]
-    //public Transform leftArrow;
-    //public Transform rightArrow;
     [HideInInspector]
     public List<int> menuEnterHistory;
     [Header("OuterMenu")]
@@ -111,8 +111,9 @@ public class HomeScene : MonoBehaviour
         //建筑Id设置
         for(int i = 0; i < AllSubMenus.Length; i++)
         {
+            if (AllSubMenus[i] == null) continue;
             BasicSubMenuPanel panel = AllSubMenus[i].GetComponent<BasicSubMenuPanel>();
-            panel.buildingId = "BUILD#"+(i + 1);
+            if(panel) panel.buildingId = "BUILD#"+(i + 1);
         }
     }
     // Start is called before the first frame update
@@ -120,47 +121,40 @@ public class HomeScene : MonoBehaviour
     {
         SDGameManager.Instance.INIT();
         SubMenuClose(true);
-        SDDataManager.Instance.PlayerData.JianCai += 500;
-        SDDataManager.Instance.AddDamond(500);
-        SDDataManager.Instance.AddCoin(50000);
-        //
-        SDDataManager.Instance.addConsumable
-            (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_oneTime.ID,10);
-        SDDataManager.Instance.addConsumable
-            (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_tenTimes.ID, 10);
-        //
-        AddHeroPools();
+        foreach(FactoryPanel p in FindObjectsOfType<FactoryPanel>())
+        {
+            p.InitThisFactoryTasks();
+        }
         //
         changeToHomeScene();
         refreshAllBuildingCondition();
         refreshAllGoddessesCondition();
 
+        StartCoroutine(IEBuildFirstly());
+    }
+    IEnumerator IEBuildFirstly()
+    {
+        yield return new WaitForSeconds(0.15f);
+        SDDataManager.Instance.PlayerData.JianCai += 500;
+        SDDataManager.Instance.AddDamond(500);
+        SDDataManager.Instance.AddCoin(50000);
+        //
+        SDDataManager.Instance.addConsumable
+            (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_oneTime.ID, 10);
+        SDDataManager.Instance.addConsumable
+            (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_tenTimes.ID, 10);
+        //
+        AddHeroPools(); 
+        yield return new WaitForSeconds(0.15f);
+        BuildFirstEnterGameData();
+    }
+    void BuildFirstEnterGameData()
+    {
         if (!SDDataManager.Instance.CheckHaveHeroById(BasicHero.ID))
         {
-            SDDataManager.Instance.addHero(BasicHero.ID);
-        }
-
-    }
-    /*
-    public IEnumerator checkMCP()
-    {
-        while (true)
-        {
-            Debug.Log("running");
-            if (_MainCastlePanel.GetComponent<BasicSubMenuPanel>().thisMenuOpened)
-            {
-                Debug.Log("finished");
-                break;
-            }
-            if (_SummonAltarPanel.GetComponent<BasicSubMenuPanel>().thisMenuOpened)
-            {
-                Debug.Log("stopped");
-                SDTaskManager.Instance.getTaskByName("MainCastleOpen")?.stop();
-            }
-            yield return new WaitForSeconds(0.05f);
+            int a = SDDataManager.Instance.addHero(BasicHero.ID);
         }
     }
-    */
 
     public void refreshAllBuildingCondition()
     {
@@ -283,20 +277,11 @@ public class HomeScene : MonoBehaviour
     public void equipmentBtnTapped(bool fromSubMenu = false)
     {
         if (!fromSubMenu) SubMenuClose(true);
-        _equipDetailPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
+        _equipmentPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
         CurrentSubMenuType = HomeSceneSubMenu.Equipment;
         UIEffectManager.Instance.showAnimFadeIn(_equipmentPanel);
 
         _equipmentPanel.GetComponent<EquipmentPanel>().whenOpenThisPanel();
-    }
-    public void equipDetailBtnTapped(bool fromSubMenu = false)
-    {
-        if (!fromSubMenu) SubMenuClose(true);
-        _equipDetailPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
-        CurrentSubMenuType = HomeSceneSubMenu.EquipDetail;
-        UIEffectManager.Instance.showAnimFadeIn(_equipDetailPanel);
-
-        _equipDetailPanel.GetComponent<EquipDetailPanel>().whenOpenThisPanel();
     }
     public void missionBtnTapped(bool fromSubMenu = false)
     {
@@ -360,6 +345,14 @@ public class HomeScene : MonoBehaviour
         UIEffectManager.Instance.showAnimFadeIn(_runePanel);
         _runePanel.GetComponent<RunePanel>().whenOpenThisPanel();
     }
+    public void illustrateBtnTapped(bool fromSubMenu = false)
+    {
+        if (!fromSubMenu) SubMenuClose(true);
+        _illustratePanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
+        CurrentSubMenuType = HomeSceneSubMenu.Illustrate;
+        UIEffectManager.Instance.showAnimFadeIn(_illustratePanel);
+        _illustratePanel.GetComponent<IllustratePanel>().whenOpenThisPanel();
+    }
     /// <summary>
     /// 快速进入对应子菜单
     /// </summary>
@@ -413,7 +406,7 @@ public class HomeScene : MonoBehaviour
         }
         else if(SMT == HomeSceneSubMenu.EquipDetail)
         {
-            equipDetailBtnTapped(fromSubMenu);
+            //equipDetailBtnTapped(fromSubMenu);
         }
         else if(SMT == HomeSceneSubMenu.Mission)
         {
@@ -442,6 +435,10 @@ public class HomeScene : MonoBehaviour
         else if(SMT == HomeSceneSubMenu.Rune)
         {
             runeBtnTapped(fromSubMenu);
+        }
+        else if(SMT == HomeSceneSubMenu.Illustrate)
+        {
+            illustrateBtnTapped(fromSubMenu);
         }
     }
     #endregion

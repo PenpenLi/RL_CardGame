@@ -24,7 +24,57 @@ public class CreateConfig : MonoBehaviour
     {
         List<Dictionary<string, string>> xxListResult;
 
-        //return;
+
+
+
+        #region Equip
+        xxListResult = CreateConfig.ReadVSC("equip");
+        ArmorRank[] armor_ranks = Resources.LoadAll<ArmorRank>("");
+        WeaponRace[] waepon_races = Resources.LoadAll<WeaponRace>("");
+        for (int i = 0; i < xxListResult.Count; i++)
+        {
+            Dictionary<string, string> Dic = xxListResult[i];
+            EquipItem ei = ScriptableObject.CreateInstance<EquipItem>();
+            ei.initData(Dic["id"], Dic["name"], Dic["desc"], CreateConfig.StringToInteger(Dic["level"])
+                , false, true, true, true, false, Dic["specialStr"]);
+            ei.ResistStr = Dic["resistStr"];
+            //
+            int rankType = CreateConfig.StringToInteger(Dic["type"]);
+            foreach (ArmorRank rank in armor_ranks)
+            {
+                if (rank.Index == rankType)
+                {
+                    ei.ArmorRank = rank; break;
+                }
+            }
+            if (!string.IsNullOrEmpty(Dic["suit"]))
+            {
+                ei.SuitBelong = true; ei.SuitId = Dic["suit"];
+            }
+            //
+            ei.RAL = RALBySpecialStr(RoleAttributeList.zero, Dic["specialStr"]);
+            ei.RAL = RALByResistStr(ei.RAL, Dic["resistStr"]);
+            ei.PassiveEffect = Dic["passiveEffect"];
+            //
+            string _class = Dic["class"];
+            EquipPosition pos = ROHelp.EQUIP_POS(_class);
+            ei.EquipPos = pos;
+            if (pos == EquipPosition.Hand)
+            {
+                string weaponClass = Dic["weaponClass"].ToLower();
+                foreach (WeaponRace r in waepon_races)
+                {
+                    if (weaponClass == r.NAME.ToLower())
+                    {
+                        ei.WeaponRace = r; break;
+                    }
+                }
+            }
+            //
+            AssetDatabase.CreateAsset(ei, "Assets/Resources/ScriptableObjects/items/Equips/" + ei.NAME + ".asset");
+        }
+        #endregion
+        return;
         xxListResult = ReadVSC("hero");
         HeroRace[] heroRaces = Resources.LoadAll<HeroRace>("");
         RoleCareer[] careers = Resources.LoadAll<RoleCareer>("");
@@ -44,7 +94,7 @@ public class CreateConfig : MonoBehaviour
             {
                 if (c.Index == career) { mi.Career = c; break; }
             }
-            mi.RAL = RALByDictionary(Dic);
+            mi.InitRAL(RALByDictionary(Dic));
             mi.WeaponRaceList = GetWeaponTypeList(Dic["weaponClass"]);
             mi.SpecialStr = Dic["specialStr"];
             mi.PersonalSkillList = getSkillsByString(Dic["skill"]);
@@ -83,53 +133,6 @@ public class CreateConfig : MonoBehaviour
 
         return;
 
-        #region Equip
-        xxListResult = CreateConfig.ReadVSC("equip");
-        ArmorRank[] armor_ranks = Resources.LoadAll<ArmorRank>("");
-        WeaponRace[] waepon_races = Resources.LoadAll<WeaponRace>("");
-        for(int i = 0; i < xxListResult.Count; i++)
-        {
-            Dictionary<string, string> Dic = xxListResult[i];
-            EquipItem ei = ScriptableObject.CreateInstance<EquipItem>();
-            ei.initData(Dic["id"], Dic["name"], Dic["desc"], CreateConfig.StringToInteger(Dic["level"])
-                , false, true, true, true, false, Dic["specialStr"]);
-            ei.ResistStr = Dic["resistStr"];
-            //
-            int rankType = CreateConfig.StringToInteger(Dic["type"]);
-            foreach(ArmorRank rank in armor_ranks)
-            {
-                if(rank.Index == rankType)
-                {
-                    ei.ArmorRank = rank;break;
-                }
-            }
-            if (!string.IsNullOrEmpty(Dic["suit"]))
-            {
-                ei.SuitBelong = true;ei.SuitId = Dic["suit"];
-            }
-            //
-            ei.RAL = RALBySpecialStr(RoleAttributeList.zero, Dic["specialStr"]);
-            ei.RAL = RALByResistStr(ei.RAL, Dic["resistStr"]);
-            ei.PassiveEffect = Dic["passiveEffect"];
-            //
-            string _class = Dic["class"];
-            EquipPosition pos = ROHelp.EQUIP_POS(_class);
-            ei.EquipPos = pos;
-            if(pos == EquipPosition.Hand)
-            {
-                string weaponClass = Dic["weaponClass"].ToLower();
-                foreach(WeaponRace r in waepon_races)
-                {
-                    if(weaponClass == r.NAME.ToLower())
-                    {
-                        ei.WeaponRace = r;break;
-                    }
-                }
-            }
-            //
-            AssetDatabase.CreateAsset(ei, "Assets/Resources/ScriptableObjects/items/Equips/" + ei.NAME + ".asset");
-        }
-        #endregion
         return;
         #region Consumable 
         xxListResult = CreateConfig.ReadVSC("material");

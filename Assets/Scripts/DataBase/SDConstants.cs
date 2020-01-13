@@ -331,23 +331,19 @@ public class SDConstants
     /// </summary>
     public enum HeroSelectType
     {
-        All=0,
-        Battle,
-        Hospital,
-             Dispatch
-            ,Mission
-            ,Recruit
-           ,Altar
-            ,UseProp
-            ,Train
-            ,TrainConsume
-            , Promote
-            , PromoteConsume
-            ,StarUp
-            ,Wake
-            ,Replace
-            
-            
+        All=0
+            ,
+        Battle
+            ,
+        Hospital
+            ,
+        Mission
+            ,
+        Recruit
+           ,
+        Altar
+            ,
+        Wake   
     }
     /// <summary>
     /// 角色状态类型

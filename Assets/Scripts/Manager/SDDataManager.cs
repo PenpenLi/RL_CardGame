@@ -24,6 +24,9 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public int equipNum = 0;
     public int slaveNum = 0;
     public int runeNum = 0;
+    public List<string> AllStrs;
+    public List<string> AllStrs2;
+
     public DateTime OpenTime;
     public override void Awake()
     {
@@ -53,6 +56,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         PlayerData = new GDEPlayerData(GDEItemKeys.Player_CurrentPlayer);
         SettingData = new GDESettingData(GDEItemKeys.Setting_Setting);
+        PlayerData.achievementData = new GDEAchievementData(GDEItemKeys.Achievement_newAchievement);
         ResidentMovementData
             = new GDEResidentMovementData(GDEItemKeys.ResidentMovement_EmptyResidentMovement);
 
@@ -291,30 +295,41 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         );
     hero.RoleAttritubeList = ral.TurnIntoGDEData;
 //skill
-    List<GDEASkillData> list = addStartSkillsWhenSummoning(hero.id);
-    hero.skillsOwned = list;
-    list = list.FindAll(x => x.Lv >= 0);
-    for (int i = 0; i < list.Count; i++)
-{
-    if (SDDataManager.Instance.getSkillByHeroId(list[i].Id, hero.id).isOmegaSkill)
-    {
-        hero.skillOmegaId = list[i].Id;
-    }
-    else
-    {
-        if(!string.IsNullOrEmpty (hero.skill0Id))
+        List<GDEASkillData> list = addStartSkillsWhenSummoning(hero.id);
+        for(int i = 0; i < list.Count; i++)
         {
-            if (SDDataManager.Instance.checkHeroEnableSkill1ById(hero.id))
-            {
-                hero.skill1Id = list[i].Id;
-            }
+            hero.skillsOwned.Add(list[i]);
+            hero.Set_skillsOwned();
+        }
+
+        AllStrs = hero.skillsOwned.Select(x =>
+        {
+            return x.Id + "___" + x.Lv;
+        }).ToList();
+
+        //直接将已解锁技能装配上
+        List<string> enables = list.FindAll(x => x.Lv >= 0).Select(x => x.Id).ToList();
+    for (int i = 0; i < enables.Count; i++)
+    {
+        if (getSkillByHeroId(enables[i], hero.id).isOmegaSkill)
+        {
+            hero.skillOmegaId = enables[i];
         }
         else
         {
-            hero.skill0Id = list[i].Id;
+            if(!string.IsNullOrEmpty (hero.skill0Id))
+            {
+                if (checkHeroEnableSkill1ById(hero.id))
+                {
+                    hero.skill1Id = enables[i];
+                }
+            }
+            else
+            {
+                hero.skill0Id = enables[i];
+            }
         }
     }
-}
 
 //animImg
     int level = getHeroLevelById(id);
@@ -366,8 +381,8 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         Instance.PlayerData.herosOwned.Add(hero);
         Instance.PlayerData.Set_herosOwned();
 
-        //initSkillListForHero(hero);
-        //Instance.PlayerData.Set_herosOwned();
+
+
         return hero.hashCode;
     }
     public void addHeroByConsumeHero(string costId)
@@ -1737,14 +1752,6 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
 
         return SDConstants.ItemType.End;
     }
-    public string rarityString(int quality)
-    {
-        string n = SDGameManager.T("N");
-        if (quality == 1) { n = SDGameManager.T("R"); }
-        else if (quality == 2) { n = SDGameManager.T("SR"); }
-        else if (quality == 3) { n = SDGameManager.T("SSR"); }
-        return n;
-    }
     #endregion
     #region HeroAlarPoolInfor
     public List<HeroAltarPool> GetAllHeroAltarPoolList
@@ -2010,7 +2017,6 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                 int lv = getLevelByExp(slave.exp);
                 int like = getLikeByLikability(slave.likability,out float rate);
                 mainTimeType = Mathf.Max(2, mainTimeType - lv);
-                //taskData.oldData = like;
                 if (mt == SDConstants.MaterialType.exp)
                 {
                     taskData.oldData = slave.workPower0;
@@ -2027,8 +2033,8 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             else
             {
                 taskData.oldData = 0;
-                //taskData.newData = 0;
             }
+            taskData.timeType = mainTimeType;
             PlayerData.TimeTaskList.Add(taskData);
             PlayerData.Set_TimeTaskList();
         }
@@ -2227,28 +2233,37 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             data.heroDie += num;
         }
     }
-    //public 
-    #endregion
-    #region Equipments_Infor
-    public EquipPosition getPosByString(string s)
+    public List<GDEItemData> GetAllEnemiesPlayerSaw
     {
-        for(int i = 0; i < (int)EquipPosition.End; i++)
+        get { return PlayerData.achievementData.EnemiesGet; }
+    }
+    public void AddKillingDataToAchievement(string enemyId)
+    {
+        List<GDEItemData> All = GetAllEnemiesPlayerSaw;
+        if(All.Exists(x=>x.id == enemyId))
         {
-            if(s.ToLower() == ((EquipPosition)i).ToString().ToLower())
+            foreach(GDEItemData d in PlayerData.achievementData.EnemiesGet)
             {
-                return (EquipPosition)i;
+                if(d.id == enemyId) 
+                {
+                    d.num++;
+                    PlayerData.achievementData.Set_EnemiesGet();
+                    break; 
+                }
             }
         }
-        return EquipPosition.End;
-    }
-    public Job getJobByString(string s)
-    {
-        for(int i = 0; i < (int)Job.End; i++)
+        else
         {
-            if (s.ToLower() == ((Job)i).ToString().ToLower()) return (Job)i;
+            GDEItemData newE = new GDEItemData(GDEItemKeys.Item_MaterialEmpty)
+            {
+                id = enemyId,num=1,index = 0,
+            };
+            PlayerData.achievementData.EnemiesGet.Add(newE);
+            PlayerData.achievementData.Set_EnemiesGet();
         }
-        return Job.End;
     }
+    #endregion
+    #region Equipments_Infor
     public GDEEquipmentData getHeroEquipHelmet(int heroHashcode)
     {
         foreach (GDEHeroData hero in PlayerData.herosOwned)
@@ -2553,46 +2568,13 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         }
         if (listOrder)
         {
-            List<GDEEquipmentData> equipsListOrder = new List<GDEEquipmentData>();
-            int[] arrProperties = new int[equips.Count];
-            int[] arrIndex = new int[equips.Count];
-            for (int i = 0; i < arrIndex.Length; i++) { arrIndex[i] = i; }
-            List<EquipItem> itemsData;
-            List<EquipItem> all = AllEquipList;
-            itemsData = all.FindAll(x => x.EquipPos == Pos);
-
-            for (int i = 0; i < equips.Count; i++)
+            List<GDEEquipmentData> equipsListOrder = outData;
+            equipsListOrder.Sort((x,y)=> 
             {
-                GDEEquipmentData e = equips[i];
-                for (int j = 0; j < itemsData.Count; j++)
-                {
-                    EquipItem s = itemsData[i];
-                    if (s.ID == e.id)
-                    {
-                        arrProperties[i] = Instance.getEquipBattleForceByHashCode(e.hashcode);
-                        break;
-                    }
-                }
-            }
-            for (int i = 0; i < equips.Count; i++)
-            {
-                for (int j = i + 1; j < equips.Count; j++)
-                {
-                    if (arrProperties[i] < arrProperties[j])
-                    {
-                        int tmp = arrProperties[i];
-                        arrProperties[i] = arrProperties[j];
-                        arrProperties[j] = tmp;
-                        int tmpIndex = arrIndex[i];
-                        arrIndex[i] = arrIndex[j];
-                        arrIndex[j] = tmpIndex;
-                    }
-                }
-            }
-            for (int i = 0; i < equips.Count; i++)
-            {
-                equipsListOrder.Add(equips[arrIndex[i]]);
-            }
+                int l_x = getEquipRarityById(x.id);
+                int l_y = getEquipRarityById(y.id);
+                return -l_x.CompareTo(l_y);
+            });
             return equipsListOrder;
         }
         return outData;
@@ -2721,8 +2703,6 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         }
         return 0;
     }
-
-
     public float getPossibleLvupByTargetLevel(int targetLevel,out int visualRate)
     {
         float m = 1 - targetLevel * targetLevel * 0.01f;
@@ -2794,19 +2774,6 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         Debug.Log("对象(装备#" + hashcode + ")不存在或已被锁定");
         return false;
     }
-
-    public EquipItem getEquipDataById(string id)
-    {
-        EquipItem[] allequips = Resources.LoadAll<EquipItem>("ScriptableObjects/Items/Equips");
-        foreach(EquipItem item in allequips)
-        {
-            if(item.ID == id)
-            {
-                return item;
-            }
-        }
-        return null;
-    }
     public IEnumerable<GDEEquipmentData> FindAllArmorsById(string id, bool onlyUnlocked = true)
     {
         return PlayerData.equipsOwned.FindAll(x => x.id == id
@@ -2874,26 +2841,48 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         List<OneSkill> all
             = SkillDetailsList.WriteOneSkillList(heroId);
 
-        int skillNum = UnityEngine.Random.Range(2, 4);
-        skillNum = Mathf.Min(skillNum, all.Count-1);
+        int skillNum = UnityEngine.Random.Range(2, 3);
+        skillNum = Mathf.Min(skillNum, all.Count);
 
-        List<int> finalList = RandomIntger.NumListReturn(skillNum, all.Count);
+        all = ROHelp.RandomList(all);
         List<GDEASkillData> list = new List<GDEASkillData>();
+
         for (int i = 0; i < all.Count; i++)
         {
-            bool flag = finalList.Contains(i);
+            bool flag = i < skillNum;
+            all[i].lv = flag ? 0 : -1;
+        }
+
+        List<OneSkill> _all = all.FindAll(x => !x.islocked);
+        Debug.Log("EXIT_OMEGASKILL: " + all.Exists(x => x.isOmegaSkill));
+        if (!_all.Exists(x => x.isOmegaSkill))
+        {
+            List<OneSkill> fa = all.FindAll(x => x.isOmegaSkill);
+            List<string> l =fa.Select(x => x.skillId).ToList();
+            string l0 = l[UnityEngine.Random.Range(0, l.Count)];
+            all.Find(x => x.skillId == l0).lv = 0;
+        }
+        if (!_all.Exists(x => !x.isOmegaSkill))
+        {
+            List<OneSkill> fa = all.FindAll(x => !x.isOmegaSkill);
+            List<string> l =fa.Select(x => x.skillId).ToList();
+            string l0 = l[UnityEngine.Random.Range(0, l.Count)];
+            all.Find(x => x.skillId == l0).lv = 0;
+        }
+
+        all.Sort((x, y) => x.index.CompareTo(y.index));
+        all.Sort((x, y) => x.isOmegaSkill.CompareTo(y.isOmegaSkill));
+        all.Sort((x, y) => x.lv.CompareTo(y.lv));
+        for(int i = 0; i < all.Count; i++)
+        {
             GDEASkillData s = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
             {
                 Id = all[i].skillId
-                ,
-                Lv = flag?0:-1,                
+    ,
+                Lv = all[i].lv,
             };
             list.Add(s);
         }
-        list.Sort((x, y) =>
-        {
-            return (-x.Lv).CompareTo(-y.Lv);
-        });
         return list;
     }
     /// <summary>
@@ -2910,38 +2899,38 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     public List<OneSkill> getAllSkillsByHashcode(int heroHashcode)
     {
         GDEHeroData hero = getHeroByHashcode(heroHashcode);
-        List<OneSkill> all = SkillDetailsList.WriteOneSkillList(hero.id);
+        List<OneSkill> all = SkillDetailsList.WriteOneSkillList
+            (hero.id);
         List<GDEASkillData> ownedSkills = hero.skillsOwned;
-        List<OneSkill> _all = all;
-        //
-        for(int i = 0; i < _all.Count; i++)
+
+        AllStrs2 = ownedSkills.Select(x =>
         {
-            GDEASkillData s = ownedSkills.Find(x => x.Id == _all[i].skillId);
-            if (s != null) _all[i].lv = s.Lv;
-            else _all[i].lv = -1;
+            return x.Id + "___" + x.Lv;
+        }).ToList();
+
+        foreach(OneSkill s in all) { s.lv = -1; }
+        for(int i = 0; i < ownedSkills.Count; i++)
+        {
+            string id = ownedSkills[i].Id;
+            if(all.Exists(x=>x.skillId == id))
+            {
+                all.Find(x => x.skillId == id).lv = ownedSkills[i].Lv;
+            }
         }
-        return _all;
+
+
+        return all;
     }
     public OneSkill getOwnedSkillById(string skillId, int heroHashcode)
     {
-        if (string.IsNullOrEmpty(skillId)) return OneSkill.empty;
+        if (string.IsNullOrEmpty(skillId)) return null;
         GDEHeroData hero = getHeroByHashcode(heroHashcode);
         List<OneSkill> all
             = SkillDetailsList.WriteOneSkillList(hero.id);
         OneSkill s = OneSkill.normalAttack;
-        foreach (OneSkill Skill in all)
-        {
-            if (Skill.skillId == skillId) { s = Skill;s.lv = -1 ; break; }
-        }
+        s = all.Find(x => x.skillId == skillId);
         List<GDEASkillData> owns = hero.skillsOwned;
-        foreach (GDEASkillData _skill in owns)
-        {
-            if (_skill.Id == skillId)
-            {
-                s.lv = _skill.Lv;
-                return s;
-            }
-        }
+        s.lv = owns.Find(x => x.Id == skillId).Lv;
         return s;
     }
     public OneSkill getSkillByHeroId(string skillId, string heroId)
@@ -3627,21 +3616,19 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     }
     #endregion
 
-    /// <summary>
-    /// 生成受百分比函数影响的数据
-    /// </summary>
-    /// <param name="basicData">源数据</param>
-    /// <param name="pc">百分比函数(+-()%)</param>
-    /// <returns></returns>
-    public int FigureAByPc(int basicData, int pc)
-    {
-        return (int)(basicData * AllRandomSetClass.SimplePercentToDecimal(100 + pc));
-    }
 
     public int getNumFromId(string id)
     {
         if (id.Contains("#")) return getInteger(id.Split('#')[1]);
         else return getInteger(id);
+    }
+    public string rarityString(int quality)
+    {
+        string n = SDGameManager.T("N");
+        if (quality == 1) { n = SDGameManager.T("R"); }
+        else if (quality == 2) { n = SDGameManager.T("SR"); }
+        else if (quality == 3) { n = SDGameManager.T("SSR"); }
+        return n;
     }
     #endregion
 }
@@ -3736,14 +3723,23 @@ public class ROHelp
         }
         return EquipPosition.End;
     }
+    public static Job getJobByString(string s)
+    {
+        for (int i = 0; i < (int)Job.End; i++)
+        {
+            if (s.ToLower() == ((Job)i).ToString().ToLower()) return (Job)i;
+        }
+        return Job.End;
+    }
 
     public static List<T> RandomList<T>(List<T> originalList)
     {
+        int length = originalList.Count;
         List<T> oldList = originalList;
         List<T> list = new List<T>();
-        while (list.Count < oldList.Count)
+        while (list.Count < length)
         {
-            int a = UnityEngine.Random.Range(0, oldList.Count - 1);
+            int a = UnityEngine.Random.Range(0, oldList.Count);
             if (!list.Contains(oldList[a]))
             {
                 list.Add(oldList[a]);

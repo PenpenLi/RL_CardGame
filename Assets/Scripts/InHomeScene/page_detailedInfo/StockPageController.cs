@@ -140,13 +140,11 @@ public class StockPageController : MonoBehaviour
                     if(MType == SDConstants.MaterialType.skill)
                     {
                         string str = SDDataManager.Instance.getMaterialSpecialStr(heroImproveController.heroDetail.ID);
+                        str = str.Split('_')[0];
+                        Job str_career = ROHelp.getJobByString(str);
                         Job career = ro.Info.Career.Career;
-                        bool flag = false;
-                        if (career == Job.Fighter && str.Contains("fighter")) flag = true;
-                        else if (career == Job.Ranger && str.Contains("ranger")) flag = true;
-                        else if (career == Job.Priest && str.Contains("priest")) flag = true;
-                        else if (career == Job.Caster && str.Contains("caster")) flag = true;
-                        else if (str.Contains("any")) flag = true;
+                        bool flag = str_career == career;
+                        if (str.Contains("any")) flag = true;
                         if (!flag) continue;
                     }
 

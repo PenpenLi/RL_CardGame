@@ -21,6 +21,7 @@ public class ItemStarVision : MonoBehaviour
     private void Start()
     {
         AllStarParent = transform;
+        DebugSelf();
         refreshStarNum(0);
     }
     public void refreshStarNum(int oldNum)
@@ -61,5 +62,27 @@ public class ItemStarVision : MonoBehaviour
         }
 
         
+    }
+
+    void DebugSelf()
+    {
+        ContentSizeFitter CSF = GetComponent<ContentSizeFitter>();
+        if (CSF)
+        {
+            CSF.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+        }
+        float d = 0;
+        for(int i = 0; i < transform.childCount; i++)
+        {
+            RectTransform rt = transform.GetChild(i).GetComponent<RectTransform>();
+            if (rt.sizeDelta.x <= 1) rt.sizeDelta = new Vector2(20, rt.sizeDelta.y);
+            d += rt.sizeDelta.x;
+        }
+        RectTransform RT = GetComponent<RectTransform>();
+        RT.sizeDelta = new Vector2(d, RT.sizeDelta.y);
+        if (CSF)
+        {
+            CSF.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
     }
 }

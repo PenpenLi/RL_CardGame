@@ -60,7 +60,7 @@ public class SDHeroSelect : MonoBehaviour
 
     public void heroBtnTapped(int index)
     {
-        SDGameManager.Instance.isSelectHero = true;
+        //SDGameManager.Instance.isSelectHero = true;
         SDGameManager.Instance.heroSelectType = SDConstants.HeroSelectType.Battle;
         MainPanel.currentHeroIndexInTeam = index;
         heroBtnFunction(index);

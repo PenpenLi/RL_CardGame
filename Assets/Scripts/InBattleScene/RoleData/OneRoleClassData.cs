@@ -257,7 +257,7 @@ public class ROHeroData:ROUnitData
         {
             if (Info)
             {
-                RoleAttributeList L = Info.RAL;
+                RoleAttributeList L = Info.RAL.Clone;
                 L.AffectedByRate(RALRate);
                 return L;
             }

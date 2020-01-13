@@ -309,6 +309,7 @@ GameObject:
   - component: {fileID: 4503029018060528234}
   - component: {fileID: 1691922846228220547}
   - component: {fileID: 2940073879659652614}
+  - component: {fileID: 6711220628752698223}
   m_Layer: 5
   m_Name: depositoryItem
   m_TagString: Untagged
@@ -464,6 +465,7 @@ MonoBehaviour:
   itemLevel: 0
   itemUpLv: 0
   hireBtnIndex: 0
+  equipPos: 0
   starVision: {fileID: 111699329643050139}
   slider: {fileID: 6341865147438418041}
   index: 0
@@ -471,10 +473,23 @@ MonoBehaviour:
   EmptyPanel: {fileID: 4547951686557165669}
   SelectedPanel: {fileID: 7717836300179795981}
   UnablePanel: {fileID: 7529219840093123932}
+  canvasGroup: {fileID: 6711220628752698223}
   sourceController: {fileID: 0}
   bagItemDetail: {fileID: 0}
   bagController: {fileID: 0}
   isUsedAsDropItem: 0
+--- !u!225 &6711220628752698223
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3098982070147350053}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3260271562557609463
 GameObject:
   m_ObjectHideFlags: 0

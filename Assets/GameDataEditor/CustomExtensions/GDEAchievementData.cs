@@ -271,6 +271,14 @@ namespace GameDataEditor
             }
         }
 
+        static string EnemiesGetKey = "EnemiesGet";
+		public List<GDEItemData>      EnemiesGet;
+		public void Set_EnemiesGet()
+        {
+	        GDEDataManager.SetCustomList(_key, EnemiesGetKey, EnemiesGet);
+		}
+		
+
         public GDEAchievementData(string key) : base(key)
         {
             GDEDataManager.RegisterItem(this.SchemaName(), key);
@@ -298,11 +306,21 @@ namespace GameDataEditor
             dict.Merge(true, killGod.ToGDEDict(killGodKey));
             dict.Merge(true, passedNum_level.ToGDEDict(passedNum_levelKey));
             dict.Merge(true, heroDie.ToGDEDict(heroDieKey));
+
+            dict.Merge(true, EnemiesGet.ToGDEDict(EnemiesGetKey));
             return dict;
 		}
 
         public override void UpdateCustomItems(bool rebuildKeyList)
         {
+            if (EnemiesGet != null)
+            {
+                for(int x=0;  x<EnemiesGet.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(EnemiesGet[x], rebuildKeyList);
+                    EnemiesGet[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
         }
 
         public override void LoadFromDict(string dataKey, Dictionary<string, object> dict)
@@ -331,6 +349,8 @@ namespace GameDataEditor
                 dict.TryGetInt(killGodKey, out _killGod);
                 dict.TryGetInt(passedNum_levelKey, out _passedNum_level);
                 dict.TryGetInt(heroDieKey, out _heroDie);
+
+                dict.TryGetCustomList(EnemiesGetKey, out EnemiesGet);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -357,6 +377,8 @@ namespace GameDataEditor
             _killGod = GDEDataManager.GetInt(_key, killGodKey, _killGod);
             _passedNum_level = GDEDataManager.GetInt(_key, passedNum_levelKey, _passedNum_level);
             _heroDie = GDEDataManager.GetInt(_key, heroDieKey, _heroDie);
+
+            EnemiesGet = GDEDataManager.GetCustomList(_key, EnemiesGetKey, EnemiesGet);
         }
 
         public GDEAchievementData ShallowClone()
@@ -383,12 +405,22 @@ namespace GameDataEditor
             newClone.passedNum_level = passedNum_level;
             newClone.heroDie = heroDie;
 
+            newClone.EnemiesGet = new List<GDEItemData>(EnemiesGet);
+			newClone.Set_EnemiesGet();
+
             return newClone;
 		}
 
         public GDEAchievementData DeepClone()
 		{
 			GDEAchievementData newClone = ShallowClone();
+            newClone.EnemiesGet = new List<GDEItemData>();
+			if (EnemiesGet != null)
+			{
+				foreach(var val in EnemiesGet)
+					newClone.EnemiesGet.Add(val.DeepClone());
+			}
+			newClone.Set_EnemiesGet();
             return newClone;
 		}
 
@@ -554,6 +586,19 @@ namespace GameDataEditor
             dict.TryGetInt(heroDieKey, out _heroDie);
         }
 
+        public void Reset_EnemiesGet()
+		{
+			GDEDataManager.ResetToDefault(_key, EnemiesGetKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(EnemiesGetKey, out EnemiesGet);
+			EnemiesGet = GDEDataManager.GetCustomList(_key, EnemiesGetKey, EnemiesGet);
+
+			EnemiesGet.ForEach(x => x.ResetAll());
+		}
+
         public void ResetAll()
         {
              #if !UNITY_WEBPLAYER
@@ -578,7 +623,9 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, killNormalEnemyKey);
             GDEDataManager.ResetToDefault(_key, killFodderKey);
             GDEDataManager.ResetToDefault(_key, heroDieKey);
+            GDEDataManager.ResetToDefault(_key, EnemiesGetKey);
 
+            Reset_EnemiesGet();
 
             #endif
 

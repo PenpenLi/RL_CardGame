@@ -13,7 +13,10 @@ public class GameController : MonoBehaviour
 {
     public static GameController Instantce;
     public BattleManager BM;
-    public GoddessManager GM;
+    public GoddessManager GM
+    {
+        get { return GetComponentInChildren<GoddessManager>(); }
+    }
     public Transform[] HeroPos;
     public Transform[] HeroEmptyEffect;
     public Transform[] EnemyPos;

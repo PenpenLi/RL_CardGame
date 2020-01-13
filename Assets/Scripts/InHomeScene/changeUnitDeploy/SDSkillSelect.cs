@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using System.Linq;
 
 public class SDSkillSelect : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class SDSkillSelect : MonoBehaviour
         get { return GetComponent<SkillDetailsList>(); }
     }
     public Transform skillItem;
-    [HideInInspector]
+    //[HideInInspector]
     public List<OneSkill> currentAll;
     public List<RTSingleSkillItem> skillList;
     public ScrollRect rect;
@@ -33,11 +34,10 @@ public class SDSkillSelect : MonoBehaviour
     }
     public void initHeroAllSkills()
     {
-        Job career = heroDetail._hero._heroJob;
-        Race race = heroDetail._hero._heroRace;
-        List<OneSkill> all = SDDataManager.Instance.getAllSkillsByHashcode(heroDetail.Hashcode);
-        currentAll = all;
-        all.Sort(
+        int hashcode = heroDetail.Hashcode;
+
+        currentAll = SDDataManager.Instance.getAllSkillsByHashcode(hashcode);
+        currentAll.Sort(
         (x, y) =>
         {
             return x.islocked.CompareTo(y.islocked);
@@ -46,19 +46,20 @@ public class SDSkillSelect : MonoBehaviour
 
 
 
-        for (int i = 0; i < all.Count; i++)
+        for (int i = 0; i < currentAll.Count; i++)
         {
             Transform s = Instantiate(skillItem) as Transform;
             s.SetParent(rect.content);
             s.localScale = Vector3.one;
             s.gameObject.SetActive(true);
             RTSingleSkillItem _S = s.GetComponent<RTSingleSkillItem>();
-            if (SDDataManager.Instance.ifDeployThisSkill(all[i].skillId, heroDetail.Hashcode))
+            if (SDDataManager.Instance.ifDeployThisSkill
+                (currentAll[i].skillId, heroDetail.Hashcode))
             {
                 _S.isDeployed = true;
             }
             else _S.isDeployed = false;
-            _S.initSkillItem(all[i], heroDetail.Hashcode);//构建技能基础信息
+            _S.initSkillItem(currentAll[i], heroDetail.Hashcode);//构建技能基础信息
 
             if(item_use_type == itemUseType.deploy)
             {

@@ -40,6 +40,7 @@ public class SkillDetailsList : MonoBehaviour
         for(int i = 0; i < hero.PersonalSkillList.Count; i++)
         {
             all.Add(InitBySkillInfo(hero.PersonalSkillList[i]));
+            all[i].index = i;
         }
         //
         return all;
@@ -415,11 +416,10 @@ public class SkillDetailsList : MonoBehaviour
     #endregion
 
 
-
-
     public static int AddMpAfterSkill(SDConstants.AddMpTpType addType
         ,BattleRoleData source)
     {
+        if (source._Tag != SDConstants.CharacterType.Hero) return 0;
         GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(source.unitHashcode);
         HeroInfo info = SDDataManager.Instance.getHeroInfoById(source.UnitId);
         int baseMp = info.RAL.Mp + hero.RoleAttritubeList.AD_List[(int)AttributeData.Mp];
@@ -447,6 +447,7 @@ public class SkillDetailsList : MonoBehaviour
     public static int AddTpAfterSkill(SDConstants.AddMpTpType addType
         ,BattleRoleData source)
     {
+        if (source._Tag != SDConstants.CharacterType.Hero) return 0;
         GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(source.unitHashcode);
         HeroInfo info = SDDataManager.Instance.getHeroInfoById(source.UnitId);
         int baseTp = info.RAL.Tp + hero.RoleAttritubeList.AD_List[(int)AttributeData.Tp];

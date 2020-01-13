@@ -41,6 +41,9 @@ public class SummonAltarPanel : BasicSubMenuPanel
 
     [Space(15)]
     public DrawAnimRound DAP;
+    //
+    private float newHeroPoseDismissDelay = 0.3f;
+
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();
@@ -245,19 +248,6 @@ public class SummonAltarPanel : BasicSubMenuPanel
         UIEffectManager.Instance.hideAnimFadeOut(DAP.transform);
     }
 
-    bool HaveEnoughConsumable(consumableItem item,int num = 1)
-    {
-        int n = SDDataManager.Instance.getConsumableNum(Coupon_r_oneTimes.ID);
-        return n >= num;
-    }
-    bool HaveEnoughDamond(int num)
-    {
-        int n = SDDataManager.Instance.GetDamond();
-        return n >= num;
-    }
-
-
-
 
     public void AltarHero(int times, bool useRareCoupon)
     {
@@ -281,14 +271,24 @@ public class SummonAltarPanel : BasicSubMenuPanel
     }
     public void initRRP()
     {
-        UIEffectManager.Instance.showAnimFadeIn(ResultRewardPanel);
+        ResultRewardPanel.localScale = Vector3.one;
+        ResultRewardPanel.gameObject.SetActive(true);
+        ResultRewardPanel.GetComponent<CanvasGroup>().alpha = 1;
         SDGameManager.Instance.heroSelectType = SDConstants.HeroSelectType.Altar;
         //构建角色卡牌
-        for (int i = 0; i < RewardHCs.Count; i++)
+        List<Transform> AllTrans = RRPContent.GetComponentsInChildren<Transform>()
+            .ToList().FindAll(x=>x != RRPContent);
+        for(int i = 0; i < AllTrans.Count; i++)
         {
-            Transform s = Instantiate(roleItem) as Transform;
-            s.SetParent(RRPContent);
+            if (i >= RewardHCs.Count)
+            {
+                AllTrans[i].localScale = Vector3.zero;
+                continue;
+            }
+            AllTrans[i].localScale = Vector3.one;
+            Transform s = Instantiate(roleItem , AllTrans[i]) as Transform;
             s.localScale = Vector3.one;
+            s.position = AllTrans[i].position;
             s.gameObject.SetActive(true);
             SingleItem _s = s.GetComponent<SingleItem>();
             _s.initCalledHero(RewardHCs[i]);
@@ -299,6 +299,7 @@ public class SummonAltarPanel : BasicSubMenuPanel
     }
     public IEnumerator IEInitCallingRewards()
     {
+        yield return new WaitForSeconds(newHeroPoseDismissDelay * 4);
         homeScene.mapBtn.gameObject.SetActive(false);
         for (int i = 0; i < RewardHCs.Count; i++)
         {
@@ -327,9 +328,9 @@ public class SummonAltarPanel : BasicSubMenuPanel
                                 StartCoroutine(c.Dismiss());
                             }
                             else
-                                StartCoroutine(c.IEWaitAndDismiss(0.3f));
+                                StartCoroutine(c.IEWaitAndDismiss(newHeroPoseDismissDelay));
                         });
-                    yield return new WaitForSeconds(0.3f);
+                    yield return new WaitForSeconds(newHeroPoseDismissDelay);
                 }
             }
             if (excapePose)

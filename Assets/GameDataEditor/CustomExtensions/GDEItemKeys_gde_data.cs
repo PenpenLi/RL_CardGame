@@ -21,7 +21,6 @@ namespace GameDataEditor
         public static string Hero_BasicHero = "BasicHero";
         public static string RoleAttritube_BasicRA = "BasicRA";
         public static string RoleAttritube_BasicEnemyRA = "BasicEnemyRA";
-        public static string Enemy_BasicEnemy = "BasicEnemy";
         public static string Item_MaterialEmpty = "MaterialEmpty";
         public static string ResidentMovement_EmptyResidentMovement = "EmptyResidentMovement";
         public static string unitTeam_emptyHeroTeam = "emptyHeroTeam";

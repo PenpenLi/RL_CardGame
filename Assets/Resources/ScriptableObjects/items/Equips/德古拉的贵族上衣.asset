@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714f0771b9f0dd344a693b9d48a344af, type: 3}
   m_Name: "\u5FB7\u53E4\u62C9\u7684\u8D35\u65CF\u4E0A\u8863"
   m_EditorClassIdentifier: 
-  _ID: E_A#1000044
+  _ID: E_A#1000122
   _NAME: "\u5FB7\u53E4\u62C9\u7684\u8D35\u65CF\u4E0A\u8863"
   _DESC: 
   itemtype: 1
@@ -23,7 +23,7 @@ MonoBehaviour:
   sellAble: 1
   inexhaustible: 0
   maxDurability: 100
-  specialStr: ad:15|md:25
+  specialStr: ad:15|md:28
   resistStr: 
   equipPos: 1
   weaponRace: {fileID: 0}
@@ -31,6 +31,6 @@ MonoBehaviour:
   _SuitBelong: 1
   suitId: E_G#005
   _RAL:
-    AllAttributeData: 000000000000000000000000000000000f0000000000000019000000000000000000000000000000000000000000000000000000
+    AllAttributeData: 230000000000000000000000000000000f000000000000001c000000000000000000000000000000000000000000000000000000
     AllResistData: 0000000000000000000000000000000000000000000000000000000000000000
   passiveEffect: 

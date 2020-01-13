@@ -10,8 +10,9 @@ public class DepositoryPanel : BasicSubMenuPanel
     public HEWPageController page;
     public enum aboveBtnKind
     {
-        material,prop,all
+        material, prop, all
     }
+    public Button[] aboveBtns = new Button[(int)aboveBtnKind.all];
     public aboveBtnKind currentBtnKind = aboveBtnKind.material;
     public SDConstants.StockUseType currentStockUseType = SDConstants.StockUseType.detail;
     public BagController BAG;
@@ -47,9 +48,14 @@ public class DepositoryPanel : BasicSubMenuPanel
     #region AbovePanelFunction
     public void btnToMaterial()
     {
-        if(currentBtnKind!= aboveBtnKind.material)
+        if (currentBtnKind != aboveBtnKind.material)
         {
             currentBtnKind = aboveBtnKind.material;
+            foreach(Button b in aboveBtns)
+            {
+                b.interactable = true;
+            }
+            aboveBtns[(int)currentBtnKind].interactable = false;
             BAG.gameObject.SetActive(false);
             resetThisPanel();
             page.ItemsInit(SDConstants.ItemType.Consumable, SDConstants.ConsumableType.material);
@@ -57,9 +63,14 @@ public class DepositoryPanel : BasicSubMenuPanel
     }
     public void btnToProp()
     {
-        if(currentBtnKind != aboveBtnKind.prop)
+        if (currentBtnKind != aboveBtnKind.prop)
         {
             currentBtnKind = aboveBtnKind.prop;
+            foreach (Button b in aboveBtns)
+            {
+                b.interactable = true;
+            }
+            aboveBtns[(int)currentBtnKind].interactable = false;
             BAG.gameObject.SetActive(true);
             BAG.InitBag(BagController.useType.change);
             resetThisPanel();
@@ -88,11 +99,11 @@ public class DepositoryPanel : BasicSubMenuPanel
         }
         else if (currentBtnKind == aboveBtnKind.prop)
         {
-            page.ItemsInit(SDConstants.ItemType.Consumable,SDConstants.ConsumableType.prop);
+            page.ItemsInit(SDConstants.ItemType.Consumable, SDConstants.ConsumableType.prop);
         }
         for (int i = 0; i < page.itemCount; i++)
         {
-            if(page.items[i].itemId == CDP.id)
+            if (page.items[i].itemId == CDP.id)
             {
                 page.items[i].isSelected = true;
             }
@@ -113,5 +124,31 @@ public class DepositoryPanel : BasicSubMenuPanel
             ResolveBtn.gameObject.SetActive(!item.isProp);
         }
         CDP.initDetailPanel(id);
+
+        //
+        if (item.MaterialType == SDConstants.MaterialType.equip_reap)
+        {
+            CDP.SelectedNumSlider.gameObject.SetActive(true);
+            ResolveBtn.gameObject.SetActive(true);
+            //
+            ResolveBtn.GetComponentInChildren<Text>().text
+                = SDGameManager.T("解锁");
+        }
+        else if (item.MaterialType == SDConstants.MaterialType.treasure
+            || item.MaterialType == SDConstants.MaterialType.key
+            || item.MaterialType == SDConstants.MaterialType.goddess_piece
+            || item.MaterialType == SDConstants.MaterialType.end)
+        {
+            CDP.SelectedNumSlider.gameObject.SetActive(false);
+            ResolveBtn.gameObject.SetActive(false);
+        }
+        else
+        {
+            CDP.SelectedNumSlider.gameObject.SetActive(true);
+            ResolveBtn.gameObject.SetActive(true);
+            //
+            ResolveBtn.GetComponentInChildren<Text>().text
+                = SDGameManager.T("出售");
+        }
     }
 }

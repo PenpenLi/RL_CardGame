@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EquipDetailPanel : BasicSubMenuPanel
+public class EquipDetailPanel : MonoBehaviour
 {
     public enum subPanel
     {
-        infor,lvUp,fix,
+        infor,lvUp,fix,end
     }
-    subPanel _csp = subPanel.infor;
+    subPanel _csp = subPanel.end;
     public subPanel currentSubPanel
     {
         get { return _csp; }
@@ -16,26 +16,23 @@ public class EquipDetailPanel : BasicSubMenuPanel
         {
             if (_csp != value)
             {
+                UIEffectManager.Instance.showAnimFadeIn(equipImprove.transform);
+
                 refreshPanel(_csp, value);
                 _csp = value;
+            }
+            else
+            {
+                UIEffectManager.Instance.hideAnimFadeOut(equipImprove.transform);
             }
         }
     }
     public SDEquipDetail equipDetail;
     public Transform inforPanel;
     public SDEquipImprove equipImprove;
+    [Space]
+    public Transform EmptyPanel;
 
-    public override void whenOpenThisPanel()
-    {
-        base.whenOpenThisPanel();
-
-    }
-
-    public override void commonBackAction()
-    {
-        base.commonBackAction();
-        homeScene.SubMenuClose();
-    }
     public void btnToInfor()
     {
         currentSubPanel = subPanel.infor;
@@ -67,4 +64,13 @@ public class EquipDetailPanel : BasicSubMenuPanel
     }
 
 
+    public void whenOpenThisPanel()
+    {
+        equipImprove.transform.localScale = Vector3.zero;
+        EmptyPanel.gameObject.SetActive(true);
+    }
+    public void whenCloseThisPanel()
+    {
+        equipImprove.CloseThisPanel();
+    }
 }

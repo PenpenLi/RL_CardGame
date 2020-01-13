@@ -33,7 +33,7 @@ public class BasicHeroSelect : MonoBehaviour
     }
     public void closeBtnTapped()
     {
-        SDGameManager.Instance.isSelectHero = false;
+        //SDGameManager.Instance.isSelectHero = false;
 
     }
     public void showEmptyHeroDetail()

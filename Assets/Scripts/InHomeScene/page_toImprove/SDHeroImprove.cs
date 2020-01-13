@@ -30,7 +30,6 @@ public class SDHeroImprove : BasicImprovePage
     [Space(50)]
     public SDHeroDetail heroDetail;
     public Transform emptyStockPanel;
-    //public ScrollRect rect;
     [Header("exp_part")]
     public Text lvText;
     public Text expText;
@@ -46,16 +45,6 @@ public class SDHeroImprove : BasicImprovePage
     public override void InitImprovePanel()
     {
         base.InitImprovePanel();
-
-        int hashcode = heroDetail.Hashcode;
-        GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(hashcode);
-        int exp = hero.exp;
-        int lv = SDDataManager.Instance.getLevelByExp(exp);
-        lvText.text = SDGameManager.T("Lv.") + lv;
-        int e0 = exp - SDDataManager.Instance.getMinExpReachLevel(lv);
-        int e1 = SDDataManager.Instance.ExpBulkPerLevel(lv+1);
-        expText.text = e0 + "/" + e1;
-        expSlider.localScale = Vector3.up + Vector3.forward + Vector3.right * SDDataManager.Instance.getExpRateByExp(exp);
 
         stockPage.heroImproveController = this;
 
@@ -73,6 +62,19 @@ public class SDHeroImprove : BasicImprovePage
         {
             skillSelect.resetSkillList();
         }
+        //
+        starVision.StarNum = heroDetail.LEVEL;
+
+        //
+        int hashcode = heroDetail.Hashcode;
+        GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(hashcode);
+        int exp = hero.exp;
+        int lv = SDDataManager.Instance.getLevelByExp(exp);
+        lvText.text = SDGameManager.T("Lv.") + lv;
+        int e0 = exp - SDDataManager.Instance.getMinExpReachLevel(lv);
+        int e1 = SDDataManager.Instance.ExpBulkPerLevel(lv + 1);
+        expText.text = e0 + "/" + e1;
+        expSlider.localScale = Vector3.up + Vector3.forward + Vector3.right * SDDataManager.Instance.getExpRateByExp(exp);
     }
 
     public void stocksInit(ImproveKind improveKind)
@@ -213,30 +215,16 @@ public class SDHeroImprove : BasicImprovePage
             }
             int aim = UnityEngine.Random.Range(0, all.Count);
             OneSkill targetSkill = all[aim];
-            bool useInOwnedSkill = false;
             foreach (GDEASkillData skill in SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned)
             {
                 if (skill.Id == targetSkill.skillId)
                 {
                     //选择该技能+1
-                    useInOwnedSkill = true;
                     skill.Lv++;
                     if (skill.Lv > SDConstants.SkillMaxGrade) skill.Lv = SDConstants.SkillMaxGrade;
                     SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).Set_skillsOwned();
                     break;
                 }
-            }
-            if (!useInOwnedSkill)
-            {
-                //选择该技能加入角色技能列表
-                GDEASkillData skill = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
-                {
-                    Id = targetSkill.skillId
-                    ,
-                    Lv = 0
-                };
-                SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned.Add(skill);
-                SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).Set_skillsOwned();
             }
         }
 
@@ -256,28 +244,15 @@ public class SDHeroImprove : BasicImprovePage
         {
             for (int i = 0; i < all.Count; i++)
             {
-                bool useInOwnedSkill = false;
                 foreach (GDEASkillData skill in SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned)
                 {
                     if (skill.Id == all[i].skillId)
                     {
-                        useInOwnedSkill = true;
                         skill.Lv++;
                         if (skill.Lv > SDConstants.SkillMaxGrade) skill.Lv = SDConstants.SkillMaxGrade;
                         SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).Set_skillsOwned();
                         break;
                     }
-                }
-                if (!useInOwnedSkill)
-                {
-                    GDEASkillData skill = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
-                    {
-                        Id = all[i].skillId
-                        ,
-                        Lv = 0
-                    };
-                    SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned.Add(skill);
-                    SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).Set_skillsOwned();
                 }
             }
         }
@@ -301,30 +276,16 @@ public class SDHeroImprove : BasicImprovePage
 
         for(int i = 0; i < ups.Count; i++)
         {
-            bool useInOwnedSkill = false;
             foreach(GDEASkillData skill in SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned)
             {
                 if(skill.Id == ups[i])
                 {
-                    useInOwnedSkill = true;
                     skill.Lv++;
                     if (skill.Lv > SDConstants.SkillMaxGrade) skill.Lv = SDConstants.SkillMaxGrade;
                     SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).Set_skillsOwned();
                     Debug.Log("UPSKILL: " + skill.Id + "---" + skill.Lv);
                     break;
                 }
-            }
-            if (!useInOwnedSkill)
-            {
-                GDEASkillData skill = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
-                {
-                    Id = ups[i]
-                    ,
-                    Lv = 0
-                };
-                SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).skillsOwned.Add(skill);
-                SDDataManager.Instance.getHeroByHashcode(heroDetail.Hashcode).Set_skillsOwned();
-                Debug.Log("ADDSKILL: " + skill.Id + "---" + skill.Lv);
             }
             SDDataManager.Instance.PlayerData.Set_herosOwned();
         }

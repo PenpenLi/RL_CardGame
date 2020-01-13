@@ -24,12 +24,16 @@ public class SDEquipDetail : MonoBehaviour
     public Image equipMoldImg;
     public Text equipMoldText;
     public ItemStarVision starVision;
-
+    //
+    EquipDetailPanel EDP
+    {
+        get { return GetComponentInParent<EquipDetailPanel>(); }
+    }
     public void initEquipDetailVision(GDEEquipmentData equip)
     {
         equipId = equip.id;
         equipHashcode = equip.hashcode;
-        equipData = SDDataManager.Instance.getEquipDataById(equipId);
+        equipData = SDDataManager.Instance.GetEquipItemById(equipId);
 
         //
         nameText.text = equipData.name;
@@ -40,6 +44,9 @@ public class SDEquipDetail : MonoBehaviour
         equipLv = lv;
         equipPosText.text = ((EquipPosition)equipData.EquipPos).ToString();
         starVision.StarNum = equip.quality;
+
+        //
+        EDP.EmptyPanel.gameObject.SetActive(false);
     }
     public void initEquipDetailVision(int equip_hashcode)
     {

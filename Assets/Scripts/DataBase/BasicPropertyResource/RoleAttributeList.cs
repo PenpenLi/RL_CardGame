@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using GameDataEditor;
 
 /// <summary>
@@ -181,6 +182,7 @@ public class RoleAttributeList
         }
         return a;
     }
+
     #region ADD
     public void Add(int figure, AttributeData tag)
     {
@@ -226,7 +228,6 @@ public class RoleAttributeList
             }
         }
     }
-
     public void AddAll(int figure)
     {
         for (int i = 0; i < (int)AttributeData.End; i++) { Add(figure, (AttributeData)i); }
@@ -338,10 +339,12 @@ public class RoleAttributeList
     #region SET
     public void Set(int figure, AttributeData tag)
     {
+        if ((int)tag >= AllAttributeData.Length) return;
         AllAttributeData[(int)tag] = figure;
     }
     public void Set(int figure, StateTag tag)
     {
+        if ((int)tag >= AllResistData.Length) return;
         AllResistData[(int)tag] = figure;
     }
     #endregion
@@ -488,62 +491,23 @@ public class RoleAttributeList
         }
         return L;
     }
-    #endregion
-    /*
-    #region 可视化设置
-    [System.Serializable]
-    public struct AD_Element
+    public RoleAttributeList Clone
     {
-        [ReadOnly]
-        public string NAME;
-        [ReadOnly]
-        [EnumMemberNames("耐力","法力","怒气","物攻","物防","魔攻","魔防","速度","嘲讽","精准","闪避","暴击","随机期望")]
-        public AttributeData TAG;
-        public int DATA;
-        public AD_Element(AttributeData tag,int data)
+        get
         {
-            TAG = tag;NAME = TAG.ToString().ToUpper();
-            DATA = data;
+            RoleAttributeList ral = new RoleAttributeList();
+            for (int i = 0; i < ral.AllAttributeData.Length; i++)
+            {
+                ral.AllAttributeData[i] = this.AllAttributeData[i];
+            }
+            for (int i = 0; i < ral.AllResistData.Length; i++)
+            {
+                ral.AllResistData[i] = this.AllResistData[i];
+            }
+            return ral;
         }
-    }
-
-    [System.Serializable]
-    public struct ST_Element
-    {
-        [ReadOnly]
-        public string NAME;
-        [ReadOnly]
-        [EnumMemberNames("撕裂","思维","烧灼","霜冻","腐蚀","沉默","眩晕","混乱")]
-        public StateTag TAG;
-        public int DATA;
-        public ST_Element(StateTag tag, int data)
-        {
-            TAG = tag; NAME = TAG.ToString().ToUpper();
-            DATA = data;
-        }
-    }
-
-    public List<AD_Element> All_AD_Vision = new List<AD_Element>();
-    public List<ST_Element> All_ST_Vision = new List<ST_Element>();
-    public void ShowRALVision()
-    {
-        All_AD_Vision = new List<AD_Element>();
-        for (int i = 0; i < AllAttributeData.Length; i++)
-        {
-            All_AD_Vision.Add(new AD_Element((AttributeData)i, AllAttributeData[i]));
-        }
-        All_ST_Vision = new List<ST_Element>();
-        for (int i = 0; i < AllResistData.Length; i++)
-        {
-            All_ST_Vision.Add(new ST_Element((StateTag)i, AllResistData[i]));
-        }
-    }
-    public RoleAttributeList()
-    {
-        ShowRALVision();
     }
     #endregion
-    */
 }
 [System.Serializable]
 public class OneAttritube

@@ -124,7 +124,7 @@ public class SDGameManager : PersistentSingleton<SDGameManager>
     public bool isBuyItemFromStore = false;
     public bool isSellItemFromStore = false;
     public bool isHireHero = false;
-    public bool isSelectHero = false;
+    //public bool isSelectHero = false;
     public SDConstants.HeroSelectType heroSelectType;
     public SDConstants.StockUseType stockUseType;
     //public SDConstants.ItemType ItemSetType;
@@ -169,14 +169,9 @@ public class SDGameManager : PersistentSingleton<SDGameManager>
         return r;
     }
 
-
-    private void Start()
-    {
-        INIT();
-    }
-
     public void INIT()
     {
+        Debug.Log("INIT");
         foreach(var talker in FindObjectsOfType<Talker>())
         {
             talker.Init();

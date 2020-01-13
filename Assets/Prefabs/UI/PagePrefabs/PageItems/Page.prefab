@@ -214,11 +214,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SItem: {fileID: 1685362028157395980, guid: 1f9cbf424b5c27b47858e68e7a6ce7c3, type: 3}
   items: []
-  jobType: 0
   CurrentType: 0
+  currentHeroHashcode: 0
+  EquipPos: 6
+  ConsumableType: 0
   pageIndex: 0
   itemCount: 0
-  equipSelect: {fileID: 0}
   scrollRect: {fileID: 2026892664188461202}
 --- !u!1 &8359210207765267991
 GameObject:

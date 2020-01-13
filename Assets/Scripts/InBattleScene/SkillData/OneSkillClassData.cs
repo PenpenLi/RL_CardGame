@@ -33,6 +33,8 @@ public class OneSkill
 {
     public string skillId;
     public string SkillName;
+    [HideInInspector]
+    public int index;
 
     public bool UseAppointedPrefab;
     [ConditionalHide("UseAppointedPrefab", true, true)]

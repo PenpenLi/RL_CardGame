@@ -19,6 +19,9 @@ public class HomeSceneBgView : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             showEndVisual(currentIndex);
         }
     }
+    [ReadOnly]
+    public float floatData;
+    //
     public int minIndex;
     public int maxIndex;
     public float minMoveHorizontal;
@@ -66,15 +69,17 @@ public class HomeSceneBgView : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     void showEndVisual(int index)
     {
         int main = maxIndex - minIndex + 1;
-        float per = 1f / main;
+        float per = 1f / (main-1);
         int current = index - minIndex;
         if (rect == null) rect = GetComponent<ScrollRect>();
-        rect.horizontalNormalizedPosition = per * current + per * 0.5f;
+        rect.horizontalNormalizedPosition = per * current;
         //
         if (index > minIndex) { leftSign.gameObject.SetActive(true); }
         else leftSign.gameObject.SetActive(false);
         //
         if (index < maxIndex) { rightSign.gameObject.SetActive(true); }
         else rightSign.gameObject.SetActive(false);
+        //
+        floatData = rect.horizontalNormalizedPosition;
     }
 }
