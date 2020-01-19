@@ -1151,6 +1151,10 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     #endregion
     #region ConsumableInfor
+    public Sprite ConsumableIcon(string id)
+    {
+        return atlas_consumable.GetSprite(id);
+    }
     public int addConsumable(string id, int num = 1)
     {
         add_Item(id, num);
@@ -1552,6 +1556,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public SpriteAtlas[] atlas_equip_list = new SpriteAtlas[(int)EquipPosition.End];
     public SpriteAtlas atlas_battleBg;
     public SpriteAtlas atlas_rarity;
+    public SpriteAtlas atlas_consumable;
     #endregion
     public void ReadAtlas()
     {
@@ -1566,6 +1571,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         //atlas-battleBg
         atlas_battleBg = AllAtlas.Find(x => x.name.Contains("battleBg"));
         atlas_rarity = AllAtlas.Find(x => x.name.Contains("rarity"));
+        atlas_consumable = AllAtlas.Find(x => x.name == "atlas_consumable");
     }
     public void ResetDatas()
     {
@@ -1659,6 +1665,13 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     #endregion
     #region Goddess_Infor
+    public List<GoddessInfo> AllGoddessList
+    {
+        get
+        {
+            return Resources.LoadAll<GoddessInfo>("ScriptableObjects/goddess").ToList();
+        }
+    }
     public GDEgoddessData getGDEGoddessDataById(string goddessId)
     {
         foreach (GDEgoddessData g in PlayerData.goddessOwned)
@@ -1672,8 +1685,8 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     public GoddessInfo getGoddessInfoById(string id)
     {
-        GoddessInfo[] All = Resources.LoadAll<GoddessInfo>("ScriptableObjects/生物列表");
-        for(int i = 0; i < All.Length; i++)
+        List<GoddessInfo> All = AllGoddessList;
+        for(int i = 0; i < All.Count; i++)
         {
             if (All[i].ID == id) return All[i];
         }
@@ -1730,6 +1743,19 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
 
     #region Integrity-&&-Volume-=>-Caculate
+    public bool IncreaseGoddessVolume(string id,int vol = 1)
+    {
+        foreach(GDEgoddessData g in PlayerData.goddessOwned)
+        {
+            if(g.id == id)
+            {
+                g.volume += vol;
+                PlayerData.Set_goddessOwned();
+                return true;
+            }
+        }
+        return false;
+    }
     public int getIntegrityByVolume(int volume, int quality)
     {
         int integrity = 0;

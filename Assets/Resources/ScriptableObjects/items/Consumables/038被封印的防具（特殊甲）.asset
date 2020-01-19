@@ -15,6 +15,8 @@ MonoBehaviour:
   _ID: M_M#3010038
   _NAME: "\u88AB\u5C01\u5370\u7684\u9632\u5177\uFF08\u7279\u6B8A\u7532\uFF09"
   _DESC: 
+  _atlasFrom: {fileID: 4343727234628468602, guid: 3354f88a9a24b3d44af3c206b456f61b,
+    type: 2}
   itemtype: 2
   _LEVEL: 1
   stackAble: 0
@@ -24,7 +26,7 @@ MonoBehaviour:
   inexhaustible: 0
   maxDurability: 100
   specialStr: armor_4
-  materialType: 7
+  materialType: 17
   consumableType: 0
   data: 
   AOE: 0

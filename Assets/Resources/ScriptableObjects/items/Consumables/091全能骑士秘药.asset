@@ -15,6 +15,8 @@ MonoBehaviour:
   _ID: M_M#3010091
   _NAME: "\u5168\u80FD\u9A91\u58EB\u79D8\u836F"
   _DESC: 
+  _atlasFrom: {fileID: 4343727234628468602, guid: 3354f88a9a24b3d44af3c206b456f61b,
+    type: 2}
   itemtype: 2
   _LEVEL: 2
   stackAble: 0
@@ -24,7 +26,7 @@ MonoBehaviour:
   inexhaustible: 0
   maxDurability: 100
   specialStr: addHP_pc:50|addMP_pc:50|up_AT_pc:15,3|up_MT_pc:15,3
-  materialType: 8
+  materialType: 17
   consumableType: 1
   data: 
   AOE: 0

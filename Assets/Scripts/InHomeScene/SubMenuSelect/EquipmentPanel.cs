@@ -51,6 +51,10 @@ public class EquipmentPanel : BasicSubMenuPanel
             EquipPosition pos = list[i];
             AllPosBtns[i].GetComponentInChildren<Text>().text
                 = pos.ToString().ToUpper();
+            Image img = AllPosBtns[i].transform.GetChild(0).GetComponent<Image>();
+            img.sprite
+                = SDDataManager.Instance.equipPosIcon(pos);
+            img.SetNativeSize();
             AllPosBtns[i].onClick.AddListener(delegate ()
             {
                 this.BtnToChangePos(pos);

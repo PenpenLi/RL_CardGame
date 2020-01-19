@@ -29,8 +29,13 @@ public class BasicSubMenuPanel : MonoBehaviour
     /// <summary>
     /// 建筑经验
     /// </summary>
-    //public int exp;
     public int Level;
+    /// <summary>
+    /// 上方玩家实时信息是否显示
+    /// </summary>
+    public bool AboveOuterMenuIsShowing = false;
+    [DisplayName("快速索引用ICON")]
+    public Sprite OwnSprite;
     [Space, Header("建筑内NPC设置")]
     [SerializeField]
     private bool showNPC;

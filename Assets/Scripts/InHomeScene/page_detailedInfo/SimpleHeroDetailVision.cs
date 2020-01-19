@@ -54,7 +54,7 @@ public class SimpleHeroDetailVision : MonoBehaviour
         NameText.text = SDGD.nameText.text;
         RarityIconImg.gameObject.SetActive(false);
 
-        LvText.text = SDGD.lvText.text;       
+        LvText.text = SDGameManager.T("Lv.") + SDGD.lv;       
     }
 
     public void EmptyVision()

@@ -61,7 +61,6 @@ public class simpleSlotSet : MonoBehaviour
     public Text upText;
     public Text downText;
     public SDConstants.ItemType type;
-    public ItemStarVision starVision;
 
     public delegate void ClickListener(int index);
     public event ClickListener OnBtnTapped;
@@ -90,11 +89,6 @@ public class simpleSlotSet : MonoBehaviour
         if (upText)
         {
             upText.text = SDGameManager.T("Lv.") + rune.level;
-        }
-        if (starVision)
-        {
-            starVision.gameObject.SetActive(false);
-            //starVision.StarNum = rune.star;
         }
         hashcode = rune.Hashcode;
         id = rune.id;

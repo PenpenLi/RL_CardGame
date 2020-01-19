@@ -474,9 +474,9 @@ public class SingleItem : MonoBehaviour
         itemId = equip.id;
         //
         itemImg.sprite = SDDataManager.Instance.GetEquipIconById(itemId);
-        int quality = item.LEVEL;
-        frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(quality);
-        itemBgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(quality);
+        int rarity = item.LEVEL;
+        frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(rarity);
+        itemBgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(rarity);
         //
         itemHashcode = equip.hashcode;
         itemUpLv = equip.lv;

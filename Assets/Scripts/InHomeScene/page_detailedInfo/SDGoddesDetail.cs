@@ -14,13 +14,13 @@ public class SDGoddesDetail : MonoBehaviour
     public Image raceImg;
     public Text raceText;
     public Text nameText;
-    public Text rarityText;
+    //public Text rarityText;
+    public int lv;
     public int quality;
     public ItemStarVision starNumVision;
-    public Text lvText;
     public Transform expSlider;
     public Transform volumeSlider;
-    public Text volumeText;
+    //public Text volumeText;
     public simpleSlotSet[] RuneEquipList = new simpleSlotSet[4];
     [Space]
     public Transform lockedPanel;
@@ -67,18 +67,16 @@ public class SDGoddesDetail : MonoBehaviour
             return;
         }
         isLocked = false;
-        nameText.text = info.name;
-        int lv = SDDataManager.Instance.getLevelByExp(goddess.exp);
-        lvText.text = SDGameManager.T("Lv.") + lv;
+        lv = SDDataManager.Instance.getLevelByExp(goddess.exp);
+        nameText.text = SDGameManager.T("Lv.") + lv+"·"+info.name;
         quality = info.Quality;
-        rarityText.text = SDDataManager.Instance.rarityString(quality);
+        //rarityText.text = SDDataManager.Instance.rarityString(quality);
         //
         expSlider.localScale = new Vector3
             (SDDataManager.Instance.getExpRateByExp(goddess.exp), 1, 1);
         volumeSlider.localScale = new Vector3
             (SDDataManager.Instance.getRateAppraochIntegrity(goddess.volume, info.Quality), 1, 1);
-        volumeText.text = (goddess.volume - SDDataManager.Instance.getMinVolumeReachIntegrity(integrity, info.Quality))
-            + "/" + SDDataManager.Instance.VolumeBulkPerIntegrity(integrity, info.Quality);
+
         //
         if(SDDataManager.Instance.getRuneEquippedByPosAndGoddess
             (0,goddess.id,out GDERuneData data0))

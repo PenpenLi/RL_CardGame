@@ -13,16 +13,12 @@ public class SDEquipDetail : MonoBehaviour
     [Header("装备信息可视化")]
     public Image equipIcon;
     public Image equipBgIcon;
+    public Image equipFrameIcon;
+    [Space]
     public Text nameText;
     public Text nameBeforeText;
-    public Text RarityText;
     [Space(10)]
-    public Text expText;
-    //public Transform expSlider;
     public Image equipPosImg;
-    public Text equipPosText;
-    public Image equipMoldImg;
-    public Text equipMoldText;
     public ItemStarVision starVision;
     //
     EquipDetailPanel EDP
@@ -36,14 +32,18 @@ public class SDEquipDetail : MonoBehaviour
         equipData = SDDataManager.Instance.GetEquipItemById(equipId);
 
         //
-        nameText.text = equipData.name;
-        RarityText.text = SDDataManager.Instance.rarityString(equipData.LEVEL);
-        int lv = equip.lv ;
-        expText.text = SDGameManager.T("Lv.") + lv;
-        equipLv = lv;
-        equipPosText.text = ((EquipPosition)equipData.EquipPos).ToString();
-        starVision.StarNum = equip.quality;
+        int lv = equip.lv;
+        nameText.text = (lv>0?SDGameManager.T("Lv.")+lv+"·":"")+equipData.NAME;
 
+
+        equipLv = lv;
+        equipPosImg.sprite = SDDataManager.Instance.equipPosIcon(equipData.EquipPos);
+        equipPosImg.SetNativeSize();
+        starVision.StarNum = equip.quality;
+        //
+        equipIcon.sprite = equipData.IconFromAtlas;
+        equipBgIcon.sprite = SDDataManager.Instance.baseBgSpriteByRarity(equipData.LEVEL);
+        equipFrameIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(equipData.LEVEL);
         //
         EDP.EmptyPanel.gameObject.SetActive(false);
     }

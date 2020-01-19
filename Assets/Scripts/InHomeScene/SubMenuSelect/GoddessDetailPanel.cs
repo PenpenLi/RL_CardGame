@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
 using DG.Tweening;
+using System.Linq;
 public class GoddessDetailPanel : BasicSubMenuPanel
 {
     [Space(50)]
@@ -22,11 +23,14 @@ public class GoddessDetailPanel : BasicSubMenuPanel
     public Transform GD_rune_place;
     public float GD_animTime;
     [Space]
-    public SDGoddessImprove SDGI;
+    //public SDGoddessImprove SDGI;
     public RuneDetailPanel RDP;
     public enum subPanelType
     {
-        none,rune,improve,detail
+        none,
+        rune,
+        //improve,
+        detail
     }
     //[Space]
     [HideInInspector]
@@ -48,7 +52,8 @@ public class GoddessDetailPanel : BasicSubMenuPanel
         refreshGoddessList();
         currentSubPanelType = subPanelType.none;
         runePanel.gameObject.SetActive(false);
-        SDGI.gameObject.SetActive(false);
+        //SDGI.gameObject.SetActive(false);
+        SDGD.transform.position = GD_normal_place.position;
     }
     public override void commonBackAction()
     {
@@ -65,10 +70,6 @@ public class GoddessDetailPanel : BasicSubMenuPanel
         else if(currentSubPanelType == subPanelType.rune)
         {
             closeRuneSetPanel();
-        }
-        else if(currentSubPanelType == subPanelType.improve)
-        {
-            closeImprovePanel();
         }
     }
 
@@ -142,35 +143,16 @@ public class GoddessDetailPanel : BasicSubMenuPanel
         //
         SDGD.transform.DOMove(GD_normal_place.position, GD_animTime);
     }
-
-    public void ShowImprovePanel()
-    {
-        if (currentSubPanelType == subPanelType.improve) return;
-        currentSubPanelType = subPanelType.improve;
-        //
-        UIEffectManager.Instance.showAnimFadeIn(SDGI.transform);
-        SDGI.InitImprovePanel();
-        //
-        SDGD.transform.DOMove(GD_improve_place.position, GD_animTime);
-    }
-    public void closeImprovePanel()
-    {
-        currentSubPanelType = subPanelType.none;
-        //
-        UIEffectManager.Instance.hideAnimFadeOut(SDGI.transform);
-        SDGI.stockPage.ResetPage();
-        //
-        SDGD.transform.DOMove(GD_normal_place.position, GD_animTime);
-    }
-
-
     public void refreshAllGoddessesCondition()
     {
-        GoddessInfo[] All = Resources.LoadAll<GoddessInfo>("ScriptableObjects/生物列表");
+        GoddessInfo[] All = Resources.LoadAll<GoddessInfo>("ScriptableObjects/goddess");
         for(int i = 0; i < All.Length; i++)
         {
             SDDataManager.Instance.addGoddess(All[i]);
         }
+
+        GoddessInfo info = All.ToList().Find(x => x.Name.Contains("莱希亚"));
+        SDDataManager.Instance.IncreaseGoddessVolume(info.ID, 50);
     }
 
 

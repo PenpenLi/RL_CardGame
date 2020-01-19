@@ -79,6 +79,7 @@ public class EquipDetailPanel : MonoBehaviour
     void refreshPanel_infor()
     {
         EquipItem item = SDDataManager.Instance.GetEquipItemById(equipDetail.equipId);
+        if (item == null) return;
         equipDiscText.text = item.DESC;
     }
     #endregion

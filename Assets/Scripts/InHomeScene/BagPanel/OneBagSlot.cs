@@ -99,11 +99,12 @@ public class OneBagSlot : MonoBehaviour
             {
                 IsEmpty = false;
                 propId = prop.id;
+                int limit = SDDataManager.Instance.propTakenVolume(propId);
                 num = prop.num;
 
                 consumableItem D = SDDataManager.Instance.getConsumableById(propId);
                 nameText.text = D.NAME;
-                numText.text = "" + num;
+                numText.text = "" + num + (num>=limit?"(上限)":"");
             }
         }
     }

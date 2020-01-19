@@ -15,6 +15,8 @@ MonoBehaviour:
   _ID: M_M#3010086
   _NAME: "\u6655\u7729\u89E3\u9664\u79D8\u836F"
   _DESC: 
+  _atlasFrom: {fileID: 4343727234628468602, guid: 3354f88a9a24b3d44af3c206b456f61b,
+    type: 2}
   itemtype: 2
   _LEVEL: 1
   stackAble: 0
@@ -24,7 +26,7 @@ MonoBehaviour:
   inexhaustible: 0
   maxDurability: 100
   specialStr: remove_Confuse
-  materialType: 8
+  materialType: 17
   consumableType: 1
   data: 
   AOE: 0

@@ -73,9 +73,10 @@ public class ActionPanelController : MonoBehaviour
         this.transform.localScale = Vector3.one;
         this.GetComponent<RectTransform>().offsetMin = Vector2.zero;
         float dis = -BM.ActionPanelPos.GetComponent<RectTransform>().sizeDelta.y/2;
-        this.GetComponent<RectTransform>().offsetMax = Vector2.up * dis;
+        this.GetComponent<RectTransform>().offsetMax = Vector2.zero;
         //
-        ActionPanel.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        RectTransform rectT = ActionPanel.GetComponent<RectTransform>();
+        rectT.anchoredPosition = Vector2.zero;
         ActionPanel.GetComponent<CanvasGroup>().alpha = 0;
         ActionPanel.GetComponent<CanvasGroup>().interactable = false;
         refreshSkillsStatus();

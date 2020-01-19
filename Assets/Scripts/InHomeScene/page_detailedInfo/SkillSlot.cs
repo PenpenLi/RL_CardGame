@@ -89,10 +89,6 @@ public class SkillSlot : MonoBehaviour
             }
             else
             {
-                if (HDP == null)
-                {
-                    HDP = GetComponentInParent<HeroDetailPanel>();
-                }
                 skillBtn = HDP.skillDetailList.AllSkillList[skill.SkillFunctionID];
             } 
             skillItemImg.color = skillBtn.GetComponent<Image>().color;

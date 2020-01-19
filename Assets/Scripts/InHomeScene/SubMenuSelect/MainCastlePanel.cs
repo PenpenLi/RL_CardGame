@@ -106,6 +106,7 @@ public class MainCastlePanel : BasicSubMenuPanel
         for (int i = 0; i < AllBuildings.Count; i++)
         {
             if (AllBuildings[i].buildingId == buildingId) continue;
+            if (AllBuildings[i].OwnSprite == null) continue;
 
             Transform card = Instantiate(BuildingLinkCard) as Transform;
             card.SetParent(CardScrollrect.content);
@@ -113,6 +114,8 @@ public class MainCastlePanel : BasicSubMenuPanel
             card.gameObject.SetActive(true);
             BuiildingSimpleDetailVesion C 
                 = card.GetComponent<BuiildingSimpleDetailVesion>();
+            C.BuildingImg.sprite = AllBuildings[i].OwnSprite;
+            C.BuildingImg.SetNativeSize();
             C.MCP = this;
             C.initBuildingLinkCard(AllBuildings[i].buildingId);
             AllCards.Add(C);

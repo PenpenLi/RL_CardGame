@@ -99,6 +99,8 @@ public class HomeScene : MonoBehaviour
     [Header("OuterMenu")]
     public Transform InSubMenuPanel;
     public Transform InHomeScenePanel;
+    public Transform AbovePlayerMessagePanel;
+    public Transform ExtraBtnList;
     public Button backBtn;
     public Button mapBtn;
     public Button packBtn;
@@ -502,8 +504,9 @@ public class HomeScene : MonoBehaviour
         }
         else if(oldOne == HomeSceneSubMenu.End && newOne != HomeSceneSubMenu.End)
         {
-            //从城镇大厅进入功能建筑页面         
-            changeToSubMenuScene();
+            //从城镇大厅进入功能建筑页面       
+            BasicSubMenuPanel P = AllSubMenus[(int)newOne].GetComponent<BasicSubMenuPanel>();
+            changeToSubMenuScene(P.AboveOuterMenuIsShowing);
         }
 
         if(oldOne != HomeSceneSubMenu.End)
@@ -536,11 +539,15 @@ public class HomeScene : MonoBehaviour
     {
         InSubMenuPanel.gameObject.SetActive(false);
         InHomeScenePanel.gameObject.SetActive(true);
+        AbovePlayerMessagePanel.gameObject.SetActive(true);
+        ExtraBtnList.gameObject.SetActive(true);
     }
-    public void changeToSubMenuScene()
+    public void changeToSubMenuScene(bool showAbove = false)
     {
         InSubMenuPanel.gameObject.SetActive(true);
         InHomeScenePanel.gameObject.SetActive(false);
+        AbovePlayerMessagePanel.gameObject.SetActive(showAbove);
+        ExtraBtnList.gameObject.SetActive(false);
     }
     public void BtnForBack()
     {
