@@ -74,7 +74,7 @@ public class SkillDetailsList : MonoBehaviour
 ,
             Desc = "挥动武器释放剑气攻击前排敌人"
 ,
-            SkillAoe = SDConstants.AOEType.Vertical1
+            SkillAoe = SDConstants.AOEType.Vertical
             ,
             isOmegaSkill=true,
         });

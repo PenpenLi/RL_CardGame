@@ -55,6 +55,7 @@ public class OneBagSlot : MonoBehaviour
     }
     #endregion
     #region useType
+    [SerializeField,ReadOnly]
     BagController.useType _cut = BagController.useType.change;
     public BagController.useType currentUseType
     {

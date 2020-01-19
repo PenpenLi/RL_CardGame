@@ -30,8 +30,6 @@ public class SelectTeamUnitPanel : MonoBehaviour
     public SimpleHeroDetailVision currentGoddessSimpleDetail;
     public HEWPageController goddess_pageController;
     public SDGoddesDetail SDGD;
-    [Space(15)]
-    public Transform badgeSelectSubPanel;
     public RolePosControllerInTeam RPC { get { return GetComponentInChildren<RolePosControllerInTeam>(); } }
     public SDHeroSelect SDHS { get { return GetComponentInChildren<SDHeroSelect>(); } }
     public BattleTeamPanel BTP { get { return GetComponentInParent<BattleTeamPanel>(); } }

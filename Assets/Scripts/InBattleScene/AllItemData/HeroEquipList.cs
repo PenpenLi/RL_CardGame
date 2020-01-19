@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class HeroEquipList : MonoBehaviour
 {
+    public bool isClicking;
     public OneEquipVision helmetD;
     public Helmet _helmet;
     //
@@ -25,7 +26,8 @@ public class HeroEquipList : MonoBehaviour
     //
     public OneEquipVision weaponD;
     public SDWeapon _weapon;
-    public const string addImagePath = "Sprites/add";
+
+    //
     public SDHeroDetail HD;
     public SDEquipSelect ES;
     public HeroDetailPanel HDP;
@@ -74,13 +76,13 @@ public class HeroEquipList : MonoBehaviour
         if (_weapon == null && weaponD != null)
             _weapon = weaponD.gameObject.AddComponent<SDWeapon>();
     }
-    public void initPosEquipVisionEmpty(EquipPosition pos, bool isSecondJewelry = false)
-    {
-        EquipVision(pos, isSecondJewelry).initEquipVision(addImagePath, 0);
-    }
-
     public void equipBtnTapped(EquipPosition pos,bool isSecondJewelry = false)
     {
+        if (isClicking) return;
+        else
+        {
+            isClicking = true;
+        }
         bool flag = false;
         if (CurrentSearchingPos != pos)
         {
@@ -113,8 +115,18 @@ public class HeroEquipList : MonoBehaviour
         {
             UIEffectManager.Instance.hideAnimFadeOut(ES.transform);
             CurrentSearchingPos = EquipPosition.End;
-            HDP.commonBackAction();
+            //
+            if(HDP.CurrentRDSubType == HeroDetailPanel.RoleDetailSubType.heroEquip)
+                HDP.commonBackAction();
         }
+        Invoke("BtnTappedEnd", 0.25f);
+    }
+    void BtnTappedEnd()
+    {
+        isClicking = false;
+    }
+    void refreshAllEquipVisions()
+    {
 
     }
 }

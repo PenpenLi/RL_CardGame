@@ -36,10 +36,6 @@ public class EquipItem : ItemBase, ItemBase.IUsable
         get { return weaponRace; }
         set { weaponRace = value; }
     }
-
-    //[SerializeField]
-    //private 
-
     public string ArmorRankId
     {
         get
@@ -66,7 +62,6 @@ public class EquipItem : ItemBase, ItemBase.IUsable
         get { return suitId; }
         set { suitId = value; }
     }
-
     [Space]
     [SerializeField]
     private RoleAttributeList _RAL;

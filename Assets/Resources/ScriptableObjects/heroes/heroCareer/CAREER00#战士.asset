@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: afc2b8a31c06f0f4f8be24e47dbe7347, type: 3}
-  m_Name: '@UH_CAREER#00'
+  m_Name: "CAREER00#\u6218\u58EB"
   m_EditorClassIdentifier: 
   _ID: '@UH_CAREER#00'
   _name: "\u6218\u58EB"
   _index: 0
   _Desc: 
+  _Icon: {fileID: 21300000, guid: 40a356f67777f3e49b1290d74e1dca7a, type: 3}
   career: 0

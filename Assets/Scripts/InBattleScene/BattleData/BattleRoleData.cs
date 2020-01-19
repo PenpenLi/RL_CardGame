@@ -74,7 +74,7 @@ public class BattleRoleData : MonoBehaviour
     #region 动画设置
     //[Header("动画设置")]
     private float moveDistance = 0.5f;
-    private float moveTime = 0.2f;
+    private float moveTime = 0.15f;
     private float DAMAGE_ANIM_TIME = 0.7f;
     private float REWARD_ANIM_TIME = 1f;
     private Vector2 bulletStartPosOffset = new Vector2(0.2f, 0.3f);
@@ -198,27 +198,22 @@ public class BattleRoleData : MonoBehaviour
             HeroProperty.ID = HeroProperty._hero.ID = UnitId;
             ROHeroData dal = SDDataManager.Instance
                 .getHeroDataByID(UnitId, heroData.starNumUpgradeTimes);
-            SDConstants.CharacterAnimType type
-                = (SDConstants.CharacterAnimType)
-                (SDDataManager.Instance.getHeroCareerById(UnitId));
-            unit_character_model.initCharacterModel(heroHashCode, type, 6f);
+            //
+            unit_character_model.initHeroCharacterModel(heroHashCode, SDConstants.HERO_MODEL_RATIO);
+            //
             int grade = SDDataManager.Instance.getLevelByExp(heroData.exp);
             HeroProperty._hero.grade = grade;
+
+            RoleAttributeList _ral = dal.ExportRAL;
+            _ral.Add(RoleAttributeList.GDEToRAL(heroData.RoleAttritubeList));
             HeroProperty._hero.initData_Hero
                 (dal.Info.Career.Career, dal.Info.Race.Race
                 , grade, 0, dal.starNum
-                , dal.ExportRAL + RoleAttributeList.GDEToRAL(heroData.RoleAttritubeList)
+                , _ral
                 , dal.CRIDmg, dal.DmgReduction, dal.DmgReflection, dal.RewardRate
                 , dal.BarChartRegendPerTurn, UnitId, dal.Info.Name, heroData.wakeNum); ;
             HeroProperty._hero.gender = dal.Info.Sex;
             addSkillByCareerByRaceByStarnum(heroHashCode, dal.starNum);
-        }
-        else
-        {
-            SDConstants.CharacterAnimType type
-                = (SDConstants.CharacterAnimType)
-                (SDDataManager.Instance.getHeroCareerById(UnitId));
-            unit_character_model.initCharacterModel(heroHashCode, type, 6f);
         }
     }
 
@@ -242,7 +237,7 @@ public class BattleRoleData : MonoBehaviour
             , Item.ID, Item.NAME, 0);
         HeroProperty._helmet.PassiveEffectInit(Item.PassiveEffect);
         HeroProperty._helmet.armorRank = Item.ArmorRank;
-        int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
+        int lv = armor.lv;
         HeroProperty._helmet.initGradeShow(lv);
     }
     public void initBreastplate(int heroHashCode)
@@ -264,7 +259,7 @@ public class BattleRoleData : MonoBehaviour
             , Item.ID, Item.NAME, 0);
         HeroProperty._breastplate.PassiveEffectInit(Item.PassiveEffect);
         HeroProperty._breastplate.armorRank = Item.ArmorRank;
-        int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
+        int lv = armor.lv;
         HeroProperty._breastplate.initGradeShow(lv);
     }
     public void initGardebras(int heroHashCode)
@@ -286,7 +281,7 @@ public class BattleRoleData : MonoBehaviour
             , Item.ID, Item.NAME, 0);
         HeroProperty._gardebras.PassiveEffectInit(Item.PassiveEffect);
         HeroProperty._gardebras.armorRank = Item.ArmorRank;
-        int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
+        int lv = armor.lv;
         HeroProperty._gardebras.initGradeShow(lv);
     }
     public void initLegging(int heroHashCode)
@@ -308,7 +303,7 @@ public class BattleRoleData : MonoBehaviour
             , Item.ID, Item.NAME, 0);
         HeroProperty._legging.PassiveEffectInit(Item.PassiveEffect);
         HeroProperty._legging.armorRank = Item.ArmorRank;
-        int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
+        int lv = armor.lv;
         HeroProperty._legging.initGradeShow(lv);
     }
     public void initJewelry(int heroHashCode,bool isSecondPos = false)
@@ -332,7 +327,7 @@ public class BattleRoleData : MonoBehaviour
                 , Item.ID, Item.NAME, 0);
             HeroProperty._jewelry0.PassiveEffectInit(Item.PassiveEffect);
             HeroProperty._jewelry0.armorRank = Item.ArmorRank;
-            int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
+            int lv = armor.lv;
             HeroProperty._jewelry0.initGradeShow(lv);
         }
         else
@@ -352,7 +347,7 @@ public class BattleRoleData : MonoBehaviour
                 , Item.ID, Item.NAME, 0);
             HeroProperty._jewelry1.PassiveEffectInit(Item.PassiveEffect);
             HeroProperty._jewelry1.armorRank = Item.ArmorRank;
-            int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
+            int lv = armor.lv;
             HeroProperty._jewelry1.initGradeShow(lv);
         }
     }
@@ -375,7 +370,7 @@ public class BattleRoleData : MonoBehaviour
             , Item.ID, Item.NAME, 0);
         HeroProperty._weapon.PassiveEffectInit(Item.PassiveEffect);
         HeroProperty._weapon.armorRank = Item.ArmorRank;
-        int lv = SDDataManager.Instance.getLevelByExp(armor.exp);
+        int lv = armor.lv;
         HeroProperty._weapon.initGradeShow(lv);
     }
 
@@ -415,10 +410,14 @@ public class BattleRoleData : MonoBehaviour
         //
         RoleAttributeList ral = enemyBuild.RALAddedByLevel(enemy.RAL).Clone;
         //
-        if (isLittleBoss) d = enemyBuild.LittleBossData(d, enemy.EnemyRank.Index);
+        float scale = SDConstants.HERO_MODEL_RATIO;
+        if (isLittleBoss)
+        {
+            scale = SDConstants.HERO_MODEL_BIG_RATIO;
+            d = enemyBuild.LittleBossData(d, enemy.EnemyRank.Index);
+        }
         //
-        int HS = SDDataManager.Instance.getNumFromId(UnitId);
-        unit_character_model.initCharacterModel(HS, SDConstants.CharacterAnimType.Enemy, 6f);
+        unit_character_model.initEnemyCharacterModel(UnitId, scale);
         //
         ral.AffectedByRate(d.RALRate);
         //
@@ -476,7 +475,7 @@ public class BattleRoleData : MonoBehaviour
     public Transform Unit_Mind { get { return BSVC.Unit_ST_State_List[(int)StateTag.Mind]; } }
     public Transform Unit_Fire { get { return BSVC.Unit_ST_State_List[(int)StateTag.Fire]; } }
     public Transform Unit_Frost { get { return BSVC.Unit_ST_State_List[(int)StateTag.Frost]; } }
-    public Transform Unit_Corrosion { get { return BSVC.Unit_ST_State_List[(int)StateTag.Confuse]; } }
+    public Transform Unit_Corrosion { get { return BSVC.Unit_ST_State_List[(int)StateTag.Corrosion]; } }
     public Transform Unit_Hush { get { return BSVC.Unit_ST_State_List[(int)StateTag.Hush]; } }
     public Transform Unit_Dizzy { get { return BSVC.Unit_ST_State_List[(int)StateTag.Dizzy]; } }
     public Transform Unit_Confuse { get { return BSVC.Unit_ST_State_List[(int)StateTag.Confuse]; } }
@@ -596,7 +595,8 @@ public class BattleRoleData : MonoBehaviour
     }
     public void checkAllStandardStates()
     {
-        for(int i = 0; i < CurrentStateList.Count; i++)
+        RoleAttributeList RAL = new RoleAttributeList();
+        for (int i = 0; i < CurrentStateList.Count; i++)
         {
             if (CurrentStateList[i].LastTime <= 0)
             {
@@ -609,11 +609,34 @@ public class BattleRoleData : MonoBehaviour
                     CurrentStateList[i].LastTime--;
                 }
                 //
-                ThisBasicRoleProperty()._role.AllARevision += CurrentStateList[i].RAL;
+                RAL.Add(CurrentStateList[i].RAL);
                 stateExtraDamage += CurrentStateList[i].ExtraDmg;
                 AllRegend += CurrentStateList[i].BarChart;
                 CurrentStateList[i].ExtraFunction(this);
             }
+        }
+        Debug.Log("StandardState_IfHaveData: " + RAL.HaveData);
+        ThisBasicRoleProperty()._role.AllARevision.Add(RAL);
+        Debug.Log("AllARevision_IfHaveData: " 
+            + ThisBasicRoleProperty()._role.AllARevision.HaveData);
+        //
+        if (RAL.AllAttributeData.ToList().Exists(x=>x>0)
+            || RAL.AllResistData.ToList().Exists(x => x > 0))
+        {
+            Unit_Buff.gameObject.SetActive(true);
+        }
+        else
+        {
+            Unit_Buff.gameObject.SetActive(false);
+        }
+        if (RAL.AllAttributeData.ToList().Exists(x => x < 0)
+    || RAL.AllResistData.ToList().Exists(x => x < 0))
+        {
+            Unit_Debuff.gameObject.SetActive(true);
+        }
+        else
+        {
+            Unit_Debuff.gameObject.SetActive(false);
         }
     }
     /// <summary>
@@ -723,10 +746,12 @@ public class BattleRoleData : MonoBehaviour
     }
     public void CheckStates()
     {
-        ThisBasicRoleProperty()._role.AllARevision = RoleAttributeList.zero;
+        ThisBasicRoleProperty()._role.AllARevision.Clear();
+
         stateExtraDamage = 0;
         AllRegend = ThisBasicRoleProperty().BarChartRegendPerTurn;
         checkAllStandardStates();
+        //八大直接显示类状态
         for (int i = 0; i < (int)StateTag.End; i++)
         {
             if (checkPerState((StateTag)i))
@@ -734,23 +759,32 @@ public class BattleRoleData : MonoBehaviour
                 ThisBasicRoleProperty()._role.AllARevision
                     += OneState((StateTag)i).UniqueEffectInRA;
                 stateExtraDamage += OneState((StateTag)i).ExtraDmg;
+                PerStateUnit((StateTag)i).gameObject.SetActive(true);
+            }
+            else
+            {
+                PerStateUnit((StateTag)i).gameObject.SetActive(false);
             }
         }
         HpController.getExtraDamage(stateExtraDamage);
+
         #region otherBuff
         if (_Tag == SDConstants.CharacterType.Hero)
-        {
-            Race _race = HeroProperty._hero._heroRace;
+        {   
+            Race _race = HeroProperty._hero._heroRace;  
             RoleAttributeList basic = ThisBasicRoleProperty()._role.ThisRoleAttributes.Clone;
-            ThisBasicRoleProperty()._role.AllARevision += SDDataManager.Instance.BuffFromDaynight(basic);
-            ThisBasicRoleProperty()._role.AllARevision += SDDataManager.Instance.BuffFromRace(basic, _race);
+            ThisBasicRoleProperty()._role.AllARevision
+                .Add( SDDataManager.Instance.BuffFromDaynight(basic));
+            ThisBasicRoleProperty()._role.AllARevision
+                .Add( SDDataManager.Instance.BuffFromRace(basic, _race));
         }
         #endregion
+
         #region GoddessState
         if (BM.GM.haveGoddess)
         {
-            ThisBasicRoleProperty()._role.AllARevision += BM.GM.GetRALUpByGoddess
-                (ThisBasicRoleProperty()._role.ThisRoleAttributes);
+            ThisBasicRoleProperty()._role.AllARevision.Add(BM.GM.GetRALUpByGoddess
+                (ThisBasicRoleProperty()._role.ThisRoleAttributes.Clone));
         }
         #endregion
         #region extraState
@@ -759,16 +793,17 @@ public class BattleRoleData : MonoBehaviour
         #region fatigueStateCheck
         if (SDDataManager.Instance.checkHeroFatigueTooHigh(unitHashcode))
         {
-            Debug.Log("英雄 " + name + " 过度劳累，倒下了");
+            Debug.Log("英雄 " + name + " 过度劳累");
             HpController.getExtraDamage(HpController.CurrentHp);
         }
         #endregion
+        
         writeData();
     }
     public void writeData()
     {
         string d = "";
-        RoleAttributeList l = ThisBasicRoleProperty()._role.AllARevision;
+        RoleAttributeList l = ThisBasicRoleProperty()._role.AllARevision.Clone;
         for (int i = 0; i < l.AllAttributeData.Length; i++)
         {
             if (l.AllAttributeData[i] != 0)
@@ -783,6 +818,9 @@ public class BattleRoleData : MonoBehaviour
             d2 += " 状态持续造成伤害:" + dmg;
         }
         string all = d + d2;
+        Debug.Log(all);
+        //
+        ThisBasicRoleProperty()._role.RefreshCERAL();
     }
 
 
@@ -805,8 +843,6 @@ public class BattleRoleData : MonoBehaviour
 
     #endregion
     #endregion
-
-
     #region 技能类
     public List<OneSkill> _skills;
     #region 完整技能检测机制
@@ -842,7 +878,8 @@ public class BattleRoleData : MonoBehaviour
             bool _IsAccur = t < Rate;
             AccurHappen = _IsAccur;
             Debug.Log("精准度计算：" + _IsAccur + " || " + t + " " + Rate
-                + "--evo:" + Evo + "--accur:" + realA) ;
+                + "--evo:" + Evo + "--accur:" + realA + "--baseAccur:"+ baseA
+                + "--skillAccuracyR:" + _skill.AccuracyR) ;
         }
     }
     #endregion
@@ -876,7 +913,6 @@ public class BattleRoleData : MonoBehaviour
     #endregion
     #endregion
 
-
     #region 判断是否可成为当前技能目标:影响显示动画
     public void SetOptionSignState()
     {
@@ -891,18 +927,20 @@ public class BattleRoleData : MonoBehaviour
     }
     public IEnumerator IEPlayMoveTowardAnimation(Vector2 targetPos)
     {
-        unit_model.GetComponent<CanvasGroup>().DOFade(0, moveTime * 0.5f);
-        yield return new WaitForSeconds(moveTime * 0.5f);
+        //unit_model.GetComponent<CanvasGroup>().DOFade(0, moveTime * 0.5f);
+        //yield return new WaitForSeconds(moveTime * 0.5f);
+        Vector2 pos;
         if (IsFacingRight)
         {
-            unit_model.position = targetPos - new Vector2(moveDistance, 0);
+            pos = targetPos - new Vector2(moveDistance, 0);
         }
         else
         {
-            unit_model.position = targetPos + new Vector2(moveDistance, 0);
+            pos = targetPos + new Vector2(moveDistance, 0);
         }
-        unit_model.GetComponent<CanvasGroup>().DOFade(1, moveTime * 0.5f);
-        yield return new WaitForSeconds(moveTime * 0.5f);
+        unit_model.DOMove(pos, moveTime);
+        //unit_model.GetComponent<CanvasGroup>().DOFade(1, moveTime * 0.5f);
+        yield return new WaitForSeconds(moveTime);
     }
     public void playMoveBackAnimation()
     {
@@ -910,11 +948,12 @@ public class BattleRoleData : MonoBehaviour
     }
     public IEnumerator IEPlayMoveBackAnimation()
     {
-        unit_model.GetComponent<CanvasGroup>().DOFade(0, moveTime * 0.5f);
-        yield return new WaitForSeconds(moveTime * 0.5f);
-        unit_model.localPosition = modelOriginLocalPos;
-        unit_model.GetComponent<CanvasGroup>().DOFade(1, moveTime * 0.5f);
-        yield return new WaitForSeconds(moveTime * 0.5f);
+        //unit_model.GetComponent<CanvasGroup>().DOFade(0, moveTime * 0.5f);
+        //yield return new WaitForSeconds(moveTime * 0.5f);
+        //unit_model.localPosition = modelOriginLocalPos;
+        unit_model.DOLocalMove(modelOriginLocalPos, moveTime);
+        //unit_model.GetComponent<CanvasGroup>().DOFade(1, moveTime * 0.5f);
+        yield return new WaitForSeconds(moveTime);
     }
 
     public void playBulletCastAnimation(Transform bullet,Vector2 startPos,Vector2 targetPos)
@@ -962,6 +1001,7 @@ public class BattleRoleData : MonoBehaviour
     public void playDieAnimation()
     {
         Debug.Log(this.name + "死亡");
+        Unit_Die.gameObject.SetActive(true);
         StartCoroutine(IEDie());
     }
     //单位消失逻辑处理
@@ -1088,37 +1128,44 @@ public class BattleRoleData : MonoBehaviour
         yield return new WaitForSeconds(DAMAGE_ANIM_TIME);
         Debug.Log(transform.name + " die.");
         #region 死亡动画
-        if (_Tag == SDConstants.CharacterType.Hero)
+        if (unit_character_model && unit_character_model.CurrentCharacterModel)
         {
-            unit_character_model
-                .CurrentCharacterModel.ChangeModelAnim
-                (unit_character_model.CurrentCharacterModel.anim_die);
-
-        }
-        else if(_Tag == SDConstants.CharacterType.Enemy)
-        {
-            unit_character_model.CurrentCharacterModel.isEnemy = true;
-            if (IsBoss)
+            if (_Tag == SDConstants.CharacterType.Hero)
             {
-                unit_character_model.CurrentCharacterModel.isBoss = true;
-                //BM.
+                unit_character_model
+                    .CurrentCharacterModel.ChangeModelAnim
+                    (unit_character_model.CurrentCharacterModel.anim_die);
+
             }
-            unit_character_model
-                .CurrentCharacterModel.ChangeModelAnim
-                (unit_character_model.CurrentCharacterModel.anim_die);
-        }
-        else
-        {
-            unit_character_model
-                .CurrentCharacterModel.ChangeModelAnim
-                (unit_character_model.CurrentCharacterModel.anim_die);
+            else if (_Tag == SDConstants.CharacterType.Enemy)
+            {
+                unit_character_model.CurrentCharacterModel.isEnemy = true;
+                if (IsBoss)
+                {
+                    unit_character_model.CurrentCharacterModel.isBoss = true;
+                    //BM.
+                }
+                unit_character_model
+                    .CurrentCharacterModel.ChangeModelAnim
+                    (unit_character_model.CurrentCharacterModel.anim_die);
+                //
+                unit_character_model.CurrentCharacterModel.transform
+                    .DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack);
+            }
+            else
+            {
+                unit_character_model
+                    .CurrentCharacterModel.ChangeModelAnim
+                    (unit_character_model.CurrentCharacterModel.anim_die);
+            }
         }
         #endregion
         #region 死亡掉落与结算
         TriggerManager.Instance.WhenUnitDie(this);
         if (_Tag == SDConstants.CharacterType.Hero)
         {
-            SDDataManager.Instance.setHeroStatus(unitHashcode, 2);//修改状态为濒死
+            SDDataManager.Instance.setHeroStatus(unitHashcode
+                ,(int)SDConstants.HeroSelectType.Dying);//修改状态为濒死
         }
         else
         {

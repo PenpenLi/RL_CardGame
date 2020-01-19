@@ -191,6 +191,8 @@ public class PropFunction : MonoBehaviour
         {
             addState(currentActionUnit, propTargetUnit, _state, AOE);
         }
+        //
+        
     }
 
     #region AllFunctions

@@ -22,6 +22,7 @@ public class Shoot : SkillFunction
         CalculateBeforeFunction(source, target);
 
         List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
+        Debug.Log("LIST_COUNT: " + list.Count);
         for(int i = 0; i < list.Count; i++)
         {
             StartCoroutine(IEStartSkill(source, list[i], dmgCaused(source, list[i])));
@@ -36,9 +37,9 @@ public class Shoot : SkillFunction
         SLEffectManager.Instance.playCommonEffectCast(source.transform.position);
         yield return new WaitForSeconds(castLastTime);
 
-        source.playBulletCastAnimation(bullet, source.transform.position, target.transform.position);
+        source.playBulletCastAnimation(bullet, source.unit_model.position, target.unit_model.position);
         yield return new WaitForSeconds(bulletLastTime);
-        
+
         #region 计算技能状态
         source.SkillCheck(this, target);
         IsCausedCritDmg = source.CritHappen;

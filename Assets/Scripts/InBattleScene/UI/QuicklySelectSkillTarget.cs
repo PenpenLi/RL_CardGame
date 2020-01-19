@@ -46,8 +46,8 @@ public class QuicklySelectSkillTarget : MonoBehaviour
 
         for (int i = 0; i < BM.All_Array.Count; i++)
         {
-            BM.All_Array[i].unit_character_model
-                .GetComponentInChildren<SpriteRenderer>().color = Color.white;
+            //BM.All_Array[i].unit_character_model
+                //.GetComponentInChildren<SpriteRenderer>().color = Color.white;
         }
     }
 

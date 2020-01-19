@@ -438,23 +438,35 @@ MonoBehaviour:
   IsCausedCritDmg: 0
   IsCausedMiss: 0
   IsCausedFault: 0
-  IsRare: 0
+  IsOmega: 0
   UseState: 1
   _standardState:
+    SkillGrade: 0
+    NAME: STANDARDSTATE
+    Success: 0
+    stateEndType: 0
+    StateLastTime: 2
+    stateTag: 1
+    stateKind: 0
+    StatePossibilityBuff: 30
     AllChangesInRAL: []
     ChangeInBarChart:
-      Datas: []
+      HP:
+        dataTag: 0
+        DATA: 0
+      MP:
+        dataTag: 0
+        DATA: 0
+      TP:
+        dataTag: 0
+        DATA: 0
+    aimAtSelf: 0
     UseSourceAToDmg: 0
     ExtraDmg:
       dataTag: 0
       DATA: 0
     UsePercent: 25
-    SkillGrade: 0
-    NAME: STANDARDSTATE
-    StateLastTime: 2
-    stateTag: 1
-    stateKind: 0
-    StatePossibilityBuff: 30
+    stateAOE: 0
 --- !u!114 &3175910650301812180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,12 +479,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aefd96eae55d6eb419c28e0cf282695a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BCPerformDataUsingRA: 205
+  BCPerformDataUsingRA: 135
   PDUsingRA_PerLevel: 25
   PDUsingRA_PerSkillGrade: 25
-  BCTargetDataUsingPercent: 0
-  TDUsingBC_PerLevel: 0
-  TDUsingBC_PerSkillGrade: 0
 --- !u!114 &6413559436511153961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,9 +495,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HSDetail:
-    skillId: 0
+    skillId: 
     SkillName: 
+    index: 0
+    UseAppointedPrefab: 0
     SkillFunctionID: 0
+    SkillPrefab: {fileID: 0}
+    DataSet:
+      BCPerformDataUsingRA: 0
+      PDUsingRA_PerLevel: 0
+      PDUsingRA_PerSkillGrade: 0
+      UseState: 0
+      _standardState:
+        SkillGrade: 0
+        NAME: 
+        Success: 0
+        stateEndType: 0
+        StateLastTime: 0
+        stateTag: 0
+        stateKind: 0
+        StatePossibilityBuff: 0
+        AllChangesInRAL: []
+        ChangeInBarChart:
+          HP:
+            dataTag: 0
+            DATA: 0
+          MP:
+            dataTag: 0
+            DATA: 0
+          TP:
+            dataTag: 0
+            DATA: 0
+        aimAtSelf: 0
+        UseSourceAToDmg: 0
+        ExtraDmg:
+          dataTag: 0
+          DATA: 0
+        UsePercent: 0
+        stateAOE: 0
     IconImg: 
     BulletImg: 
     isOmegaSkill: 0
@@ -506,6 +550,7 @@ MonoBehaviour:
   Atb: 0
   AOEType: 12
   AfterwardsAddType: 3
+  ID: 
 --- !u!1 &7840334322634232121
 GameObject:
   m_ObjectHideFlags: 0

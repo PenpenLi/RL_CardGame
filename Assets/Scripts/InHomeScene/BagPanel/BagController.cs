@@ -9,6 +9,7 @@ public class BagController : MonoBehaviour
 {
     //public Transform BagSlot;
     public ScrollRect scrollRect;
+    public Transform SCSizePlace;
     public List<OneBagSlot> allSlots;
     public HEWPageController page;
     public enum useType
@@ -45,11 +46,11 @@ public class BagController : MonoBehaviour
             _ismini = value;
             if (_ismini)
             {
-                scrollRect.transform.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InBack);
+                SCSizePlace.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InBack);
             }
             else
             {
-                scrollRect.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
+                SCSizePlace.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
             }
         }
     }
@@ -173,7 +174,7 @@ public class BagController : MonoBehaviour
     {
         currentSlotIndex = slot.index;
         GDEItemData P = SDDataManager.Instance.PlayerData.propsTeam[currentSlotIndex];
-        if (P!=null && string.IsNullOrEmpty(P.id))
+        if (P!=null && !string.IsNullOrEmpty(P.id))
         {
             consumableItem item = SDDataManager.Instance.getConsumableById(P.id);
             if (!item.isProp) return;

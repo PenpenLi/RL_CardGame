@@ -19,6 +19,7 @@ MonoBehaviour:
   characterType: 0
   faceIcon: {fileID: 0}
   _LEVEL: 0
+  _rarity: 2
   skeleton: 0
   weaponRaceList:
   - {fileID: 11400000, guid: 4f19ff9be42d1a042b87bbbb5c5fbb2d, type: 2}
@@ -33,3 +34,9 @@ MonoBehaviour:
   personalSkillList:
   - {fileID: 11400000, guid: f9edee87409c60941821fa20af1834b4, type: 2}
   - {fileID: 11400000, guid: d9a40c68556f4bb4dac23d32e170dcd4, type: 2}
+  PersonalDrawImg: {fileID: 0}
+  _useSpineData: 1
+  _SpineData:
+    _SkeletonData: {fileID: 11400000, guid: b8d2b5f3b7fe4934abf1d1100e85d3eb, type: 2}
+    skin: sibalu_1
+    allEnableList: []

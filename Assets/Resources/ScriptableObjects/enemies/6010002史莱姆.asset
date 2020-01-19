@@ -20,11 +20,16 @@ MonoBehaviour:
   faceIcon: {fileID: 0}
   race:
   - {fileID: 11400000, guid: 9692f5801ac39804d9abe432eb20a4ea, type: 2}
-  enemyRank: {fileID: 11400000, guid: 1ec16465822143c49b932bcbedad3967, type: 2}
+  enemyRank: {fileID: 11400000, guid: 0811830d331f1de42be3bcab55ef4409, type: 2}
   _RAL:
-    AllAttributeData: 4b00000032000000320000000f000000190000000f0000000500000004000000010000000f000000020000001400000005000000
+    AllAttributeData: 4b0000003200000032000000190000000a000000190000000f00000004000000010000000f000000020000001400000005000000
     AllResistData: 3200000001000000320000000100000019000000010000000100000001000000
   specialStr: 
   weight: 0
   dropPercent: 50
   dropItems: []
+  _useSpineData: 1
+  _SpineData:
+    _SkeletonData: {fileID: 11400000, guid: 1aba71535f878f04ea0e263419e02dc2, type: 2}
+    skin: default
+    allEnableList: []

@@ -53,8 +53,11 @@ public class simpleSlotSet : MonoBehaviour
         }
     }
     #endregion
+    [Space]
     public Image itemImg;
     public Image frameImg;
+    public Image bgImg;
+    [Space]
     public Text upText;
     public Text downText;
     public SDConstants.ItemType type;
@@ -90,9 +93,24 @@ public class simpleSlotSet : MonoBehaviour
         }
         if (starVision)
         {
-            starVision.StarNum = rune.star;
+            starVision.gameObject.SetActive(false);
+            //starVision.StarNum = rune.star;
         }
         hashcode = rune.Hashcode;
         id = rune.id;
+        //
+        RuneItem item = SDDataManager.Instance.getRuneItemById(id);
+        if (frameImg)
+        {
+            frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(item.Quality);
+        }
+        if (bgImg)
+        {
+            bgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(item.Quality);
+        }
+        if (itemImg)
+        {
+            //itemImg.sprite
+        }
     }
 }

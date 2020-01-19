@@ -636,7 +636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aefd96eae55d6eb419c28e0cf282695a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BCPerformDataUsingRA: 375
+  BCPerformDataUsingRA: 215
   PDUsingRA_PerLevel: 10
   PDUsingRA_PerSkillGrade: 10
 --- !u!114 &5993444202789664242
@@ -654,6 +654,7 @@ MonoBehaviour:
   HSDetail:
     skillId: 
     SkillName: 
+    index: 0
     UseAppointedPrefab: 0
     SkillFunctionID: 0
     SkillPrefab: {fileID: 0}

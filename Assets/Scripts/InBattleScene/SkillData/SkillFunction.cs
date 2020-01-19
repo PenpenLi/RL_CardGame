@@ -13,7 +13,8 @@ public class SkillFunction : MonoBehaviour
     public int SkillFiniteTimes = 0;//次数限制型技能设置
     [HideInInspector]
     public int SFT_CurrentTimes;//不断增长，当>=时触发
-
+    [ReadOnly]
+    public bool SkillDisable;
     protected Button _btn;
     #region 消耗设置(全部列出)
     [Header("消耗量数据")]
@@ -93,14 +94,14 @@ public class SkillFunction : MonoBehaviour
     protected BattleManager BM;
     protected ActionPanelController APC;
     #region 动画设置
-    protected float moveTowardAndBackTime = 0.3f;
+    protected float moveTowardAndBackTime = 0.1f;
     protected float castLastTime = 0.5f;
     protected float effectLastTime = 1f;
     protected float skillLastTime = 0.8f;
     protected float bulletLastTime = 0.4f;
     protected float endWaitTime = 0.5f;
     protected float shortEndWaitTime = 0.25f;
-    protected float hitTime = 0.4f;
+    protected float hitTime = 0.2f;
     #endregion
     [Space(25)]
     public int currentActionLevel;
@@ -159,6 +160,7 @@ public class SkillFunction : MonoBehaviour
     }
     public void refreshBtnState()
     {
+        Debug.Log("Refresh This SKill:" + this.name + " State");
         bool btnEnable = true;
         #region 该技能存在使用次数限制
         if (SkillFiniteTimes > 0)
@@ -174,18 +176,13 @@ public class SkillFunction : MonoBehaviour
         OneRoleClassData R = Unit.ThisBasicRoleProperty()._role;
         RoleBarChart CurrentBC = R.ReadAllMaxSSD;
         #region 该技能消耗超过角色现有量
-        if (BCCostPerTime.HP
-            < CurrentBC.HP
-            && BCCostPerTime.MP
-            <= CurrentBC.MP
-            && BCCostPerTime.TP
-            <= CurrentBC.TP) { btnEnable = true; }
-        else { btnEnable = false; }
+        bool flag = CheckIfCanConsume(Unit);
+        if (!flag) btnEnable = false;
         #endregion
         #region 角色状态影响技能
         if (Unit.checkPerState(StateTag.Hush))
         {
-            if (gameObject.GetComponent<NormalAttack>())
+            if (this is NormalAttack)
             {
                 btnEnable = true;
             }
@@ -195,6 +192,7 @@ public class SkillFunction : MonoBehaviour
             }
         }
         #endregion
+        SkillDisable = !btnEnable;
         if (!btnEnable)//显示技能是否可以继续使用
         {
             _btn.interactable = false;
@@ -207,8 +205,6 @@ public class SkillFunction : MonoBehaviour
     public virtual void StartSkill(BattleRoleData source,BattleRoleData target)
     {
         if (IsProcessing) return;
-        if (!CheckIfCanConsume(source)) return;
-
         currentActionLevel = SDGameManager.Instance.currentLevel;
         //BM.BtnToCloseSDP();
         source.APC.hideActionPanel();
@@ -259,14 +255,31 @@ public class SkillFunction : MonoBehaviour
         {
             Debug.Log("无法消耗足量生命");return false;
         }
-        if(source.MpController.currentMp < BCCostPerTime.MP && BCCostPerTime.MP>0)
+
+        if (IsOmega)
         {
-            Debug.Log("无法消耗足量法力");return false;
+            if (source.MpController.currentMp < source.MpController.maxMp)
+            {
+                Debug.Log("无法消耗足量法力"); return false;
+            }
+            if (source.TpController.currentTp < BCCostPerTime.TP*2 && BCCostPerTime.TP > 0)
+            {
+                Debug.Log("无法消耗足量怒气"); return false;
+            }
         }
-        if(source.TpController.currentTp < BCCostPerTime.TP && BCCostPerTime.TP>0)
+        else
         {
-            Debug.Log("无法消耗足量怒气");return false;
+            if (source.MpController.currentMp < BCCostPerTime.MP && BCCostPerTime.MP > 0)
+            {
+                Debug.Log("无法消耗足量法力"); return false;
+            }
+            if (source.TpController.currentTp < BCCostPerTime.TP && BCCostPerTime.TP > 0)
+            {
+                Debug.Log("无法消耗足量怒气"); return false;
+            }
         }
+
+        Debug.Log("技能消耗符合条件");
         return true;
     }
     public virtual void EndSkill()
@@ -305,6 +318,7 @@ public class SkillFunction : MonoBehaviour
     {
         if (SDGameManager.Instance.isUsingProp) return;
         Debug.Log(name + "Being Tapped");
+
         APC.DeactiveAllBtns();
         if (!IsActive)
         {
@@ -335,17 +349,10 @@ public class SkillFunction : MonoBehaviour
         }
         else if(SkillFiniteTimes<=0)
         {
-            OneRoleClassData R = BM._currentBattleUnit.ThisBasicRoleProperty()._role;
-            RoleBarChart CurrentBC = R.ReadAllMaxSSD;
-            if(BCCostPerTime.HP
-                < CurrentBC.HP 
-                && BCCostPerTime.MP
-                <= CurrentBC.MP
-                && BCCostPerTime.TP
-                <= CurrentBC.TP)
-            {
-                s = true;
-            }
+            BattleRoleData R = BM._currentBattleUnit;
+
+            bool flag = CheckIfCanConsume(R);
+            s = flag;
         }
         return s;
         
@@ -691,6 +698,7 @@ public class SkillFunction : MonoBehaviour
         source.MpController.addMp(addMp);
         int addTp = SkillDetailsList.AddTpAfterSkill(AddType, source);
         source.TpController.addTp(addTp);
+        Debug.Log("AfterSkill AddMp:" + addMp + "||AddTp:" + addTp);
     }
     #endregion
     public virtual bool isAddSpecialBuff(BattleRoleData source, BattleRoleData target)

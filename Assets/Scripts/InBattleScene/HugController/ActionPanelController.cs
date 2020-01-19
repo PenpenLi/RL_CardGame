@@ -82,9 +82,7 @@ public class ActionPanelController : MonoBehaviour
         if(BM._currentBUType == SDConstants.CharacterType.Hero)
         {
             GetComponent<CanvasGroup>().alpha = 1;
-            //ActionPanel.localScale = Vector3.zero;
             ActionPanel.GetComponent<CanvasGroup>().DOFade(1, showAndHideTime);
-            //ActionPanel.DOScale(Vector3.one, showAndHideTime);
             ActionPanel.GetComponent<CanvasGroup>().interactable = true;
 
             if(!DefaultSkill.GetComponent<NormalAttack>())
@@ -95,21 +93,17 @@ public class ActionPanelController : MonoBehaviour
     public void hideActionPanel()
     {
         if (ActionPanel == null) return;
-        //bm.hideskilldetails
-        //Debug.Log("收起技能栏:" + GetComponentInParent<BattleRoleData>().name);
         if (SDDataManager.Instance.SettingData.isAutoBattle)
         {
             ActionPanel.GetComponent<CanvasGroup>().interactable = false;
             ActionPanel.GetComponent<CanvasGroup>().DOFade(0, showAndHideTime);
-            //ActionPanel.DOScale(Vector3.zero, showAndHideTime);
             StartCoroutine(IEHideActionPanel());
         }
         else
         {
             ActionPanel.GetComponent<CanvasGroup>().alpha = 1;
-            ActionPanel.GetComponent<CanvasGroup>().interactable = false;
+            ActionPanel.GetComponent<CanvasGroup>().interactable = true;
             ActionPanel.GetComponent<CanvasGroup>().DOFade(0, showAndHideTime);
-            //ActionPanel.DOScale(Vector3.zero, showAndHideTime);
             StartCoroutine(IEHideActionPanel());
         }
     }
@@ -249,6 +243,7 @@ public class ActionPanelController : MonoBehaviour
         else
         {
             s = Instantiate(skill.SkillPrefab) as Transform;
+            s.GetComponent<Button>().interactable = true;
             HSExportDmgModifity HSE = s.GetComponent<HSExportDmgModifity>();
             if (HSE)
             {

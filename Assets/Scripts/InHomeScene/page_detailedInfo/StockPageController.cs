@@ -308,14 +308,6 @@ public class StockPageController : MonoBehaviour
         {
             return heroImproveController.expectImprove_before(list, SDHeroImprove.ImproveKind.likability, newStock);
         }
-        else if(materialType == SDConstants.MaterialType.equip_exp)
-        {
-            return equipImproveController.expectImprove_before(list, SDEquipImprove.ImproveKind.exp, newStock);
-        }
-        else if(materialType == SDConstants.MaterialType.equip_fix)
-        {
-            return equipImproveController.expectImprove_before(list, SDEquipImprove.ImproveKind.fix, newStock);
-        }
         else if(materialType == SDConstants.MaterialType.goddess_exp)
         {
             return goddessImproveController.expectImprove_before(list, SDGoddessImprove.ImproveKind.exp, newStock);

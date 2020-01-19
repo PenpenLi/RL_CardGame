@@ -1,0 +1,55 @@
+
+shenyuanjukou.png
+size: 610,610
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 2, 181
+  size: 387, 427
+  orig: 387, 427
+  offset: 0, 0
+  index: -1
+hand
+  rotate: true
+  xy: 2, 18
+  size: 161, 234
+  orig: 161, 293
+  offset: 0, 50
+  index: -1
+handr
+  rotate: true
+  xy: 238, 31
+  size: 148, 220
+  orig: 162, 234
+  offset: 14, 0
+  index: -1
+head
+  rotate: false
+  xy: 391, 464
+  size: 217, 144
+  orig: 217, 144
+  offset: 0, 0
+  index: -1
+jiao
+  rotate: true
+  xy: 391, 320
+  size: 142, 170
+  orig: 159, 170
+  offset: 0, 0
+  index: -1
+jiaor
+  rotate: false
+  xy: 460, 16
+  size: 129, 166
+  orig: 133, 174
+  offset: 0, 8
+  index: -1
+xiaba
+  rotate: false
+  xy: 391, 184
+  size: 155, 134
+  orig: 155, 134
+  offset: 0, 0
+  index: -1

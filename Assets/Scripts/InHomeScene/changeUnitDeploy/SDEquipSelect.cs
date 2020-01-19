@@ -13,10 +13,14 @@ public class SDEquipSelect : MonoBehaviour
     public EquipPosition equipPos;
     public bool isSecondJewelryPos = false;
 
-    public Text titleText;
+    public Image TitleIcon;
 
     public Transform emptyEquipPanel;
-
+    [Space]
+    public Image equipIcon;
+    public Image equipBgIcon;
+    public Image equipFrameIcon;
+    [Space]
     public Text equipedItemName;
     public Text equipedItemLevel;
     public Text equipedItemBattleForce;
@@ -31,7 +35,11 @@ public class SDEquipSelect : MonoBehaviour
     public SDHeroDetail heroDetail;
     public Job careerType;
 
-
+    void refreshEquipIcon()
+    {
+        TitleIcon.sprite = SDDataManager.Instance.equipPosIcon(equipPos);
+        TitleIcon.SetNativeSize();
+    }
     public void initPosEquipSelectPanel(EquipPosition Pos, bool isSecondJPos=false)
     {
         careerType = heroDetail.careerIndex;
@@ -67,7 +75,8 @@ public class SDEquipSelect : MonoBehaviour
     }
     public void initHelmetSelectPanel()
     {
-        titleText.text = "Helmet";
+        refreshEquipIcon();
+        //titleText.text = "Helmet";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
             (EquipPosition.Head, heroDetail.ID);
         GDEEquipmentData helmet = SDDataManager.Instance.getHeroEquipHelmet(heroDetail.Hashcode);
@@ -87,7 +96,8 @@ public class SDEquipSelect : MonoBehaviour
     }
     public void initBreastplateSelectPanel()
     {
-        titleText.text = "Breastplate";
+        refreshEquipIcon();
+        //titleText.text = "Breastplate";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
             (EquipPosition.Breast,heroDetail.ID);
         GDEEquipmentData breastplate = SDDataManager.Instance.getHeroEquipBreastplate(heroDetail.Hashcode);
@@ -107,7 +117,8 @@ public class SDEquipSelect : MonoBehaviour
     }
     public void initGardebrasSelectPanel()
     {
-        titleText.text = "Gardebras";
+        refreshEquipIcon();
+        //titleText.text = "Gardebras";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
             (EquipPosition.Arm, heroDetail.ID);
         GDEEquipmentData gardebras = SDDataManager.Instance.getHeroEquipGardebras(heroDetail.Hashcode);
@@ -127,7 +138,8 @@ public class SDEquipSelect : MonoBehaviour
     }
     public void initLeggingSelectPanel()
     {
-        titleText.text = "Legging";
+        refreshEquipIcon();
+        //titleText.text = "Legging";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
             (EquipPosition.Leg, heroDetail.ID);
         GDEEquipmentData legging = SDDataManager.Instance.getHeroEquipLegging(heroDetail.Hashcode);
@@ -147,7 +159,8 @@ public class SDEquipSelect : MonoBehaviour
     }
     public void initJewelrySelectPanel()
     {
-        titleText.text = "Jewelry";
+        refreshEquipIcon();
+        //titleText.text = "Jewelry";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
             (EquipPosition.Finger, heroDetail.ID);
         GDEEquipmentData jewelry = SDDataManager.Instance.getHeroEquipJewelry(heroDetail.Hashcode);
@@ -167,7 +180,8 @@ public class SDEquipSelect : MonoBehaviour
     }
     public void initWeaponSelectPanel()
     {
-        titleText.text = "Weapon";
+        refreshEquipIcon();
+        //titleText.text = "Weapon";
         List<GDEEquipmentData> equips = SDDataManager.Instance.GetPosOwnedEquipsByCareer
             (EquipPosition.Hand, heroDetail.ID);
         GDEEquipmentData weapon = SDDataManager.Instance.getHeroWeapon(heroDetail.Hashcode);
@@ -197,9 +211,15 @@ public class SDEquipSelect : MonoBehaviour
                 equipedItemName.text 
                     = SDDataManager.Instance.getEquipNameByHashcode(currentEquipHashcode);
                 equipedItemLevel.text = SDGameManager.T("Lv.")
-                    + SDDataManager.Instance.getLevelByExp(equip.exp);           
+                    + equip.lv;           
                 equipedItemBattleForce.text
                     = "" + SDDataManager.Instance.getEquipBattleForceByHashCode(equip.hashcode);
+                //
+                equipIcon.sprite = SDDataManager.Instance.GetEquipIconById(equip.id);
+                EquipItem item = SDDataManager.Instance.GetEquipItemById(equip.id);
+                equipFrameIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(item.LEVEL);
+                equipBgIcon.sprite = SDDataManager.Instance.baseBgSpriteByRarity(item.LEVEL);
+                //
                 equipedItemBtn.gameObject.SetActive(true);
                 if (equip.OwnerHashcode > 0)//判断是否已被装备
                 {
@@ -244,12 +264,13 @@ public class SDEquipSelect : MonoBehaviour
 
 
                 }                
-            }         
+            }
         }
     }
     public void setEquipDetailPanelEmpty()
     {
-
+        equipIcon.sprite = null;
+        equipBgIcon.sprite = null;
     }
     public void refreshEmptyEquipPanel(bool state)
     {

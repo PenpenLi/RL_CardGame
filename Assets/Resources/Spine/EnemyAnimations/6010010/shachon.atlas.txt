@@ -1,0 +1,55 @@
+
+shachon.png
+size: 571,571
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: true
+  xy: 2, 194
+  size: 169, 285
+  orig: 169, 285
+  offset: 0, 0
+  index: -1
+chibang
+  rotate: false
+  xy: 289, 271
+  size: 167, 92
+  orig: 167, 92
+  offset: 0, 0
+  index: -1
+chibang1
+  rotate: false
+  xy: 2, 57
+  size: 205, 135
+  orig: 205, 135
+  offset: 0, 0
+  index: -1
+hand
+  rotate: true
+  xy: 468, 421
+  size: 148, 101
+  orig: 148, 142
+  offset: 0, 0
+  index: -1
+handr
+  rotate: true
+  xy: 468, 261
+  size: 158, 93
+  orig: 158, 93
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 289, 67
+  size: 200, 192
+  orig: 200, 248
+  offset: 0, 56
+  index: -1
+shazi
+  rotate: false
+  xy: 2, 365
+  size: 464, 204
+  orig: 464, 204
+  offset: 0, 0
+  index: -1

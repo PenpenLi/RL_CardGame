@@ -13,55 +13,72 @@ public class ItemStarVision : MonoBehaviour
         {
             int s = _starNum;
             _starNum = value;
-            refreshStarNum(s);
+            refreshStarNum(s,_starNum);
         }
     }
     public Transform AllStarParent;
     public bool isInMiddle;
+    public bool ShowEmptySlot;
     private void Start()
     {
         AllStarParent = transform;
-        DebugSelf();
-        refreshStarNum(0);
+        if(!ShowEmptySlot) DebugSelf();
+        refreshStarNum(0,_starNum);
     }
-    public void refreshStarNum(int oldNum)
+    public void refreshStarNum(int oldNum, int newNum)
     {
         if (AllStarParent == null) AllStarParent = transform;
         HorizontalLayoutGroup HLG = GetComponent < HorizontalLayoutGroup > ();
-        if (!isInMiddle)
+        if (!ShowEmptySlot)
         {
-            HLG.childAlignment = TextAnchor.MiddleLeft;
-            for (int i = 0; i < AllStarParent.childCount; i++)
+            if (!isInMiddle)
             {
-                if (i < StarNum)
+                HLG.childAlignment = TextAnchor.MiddleLeft;
+                for (int i = 0; i < AllStarParent.childCount; i++)
                 {
-                    AllStarParent.GetChild(i).GetComponent<CanvasGroup>().alpha = 1;
+                    if (i < newNum)
+                    {
+                        AllStarParent.GetChild(i).GetComponent<CanvasGroup>().alpha = 1;
+                    }
+                    else
+                    {
+                        AllStarParent.GetChild(i).GetComponent<CanvasGroup>().alpha = 0;
+                    }
                 }
-                else
+            }
+            else
+            {
+                HLG.childAlignment = TextAnchor.MiddleCenter;
+                for (int i = 0; i < AllStarParent.childCount; i++)
                 {
-                    AllStarParent.GetChild(i).GetComponent<CanvasGroup>().alpha = 0;
+                    if (i < newNum)
+                    {
+                        //AllStarParent.GetChild(i).GetComponent<CanvasGroup>().alpha = 1;
+                        AllStarParent.GetChild(i).gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        //AllStarParent.GetChild(i).GetComponent<CanvasGroup>().alpha = 0;
+                        AllStarParent.GetChild(i).gameObject.SetActive(false);
+                    }
                 }
             }
         }
         else
         {
-            HLG.childAlignment = TextAnchor.MiddleCenter;
-            for (int i = 0; i < AllStarParent.childCount; i++)
+            for(int i = 0; i < AllStarParent.childCount; i++)
             {
-                if (i < StarNum)
+                if (i < newNum)
                 {
-                    //AllStarParent.GetChild(i).GetComponent<CanvasGroup>().alpha = 1;
-                    AllStarParent.GetChild(i).gameObject.SetActive(true);
+                    AllStarParent.GetChild(i).GetChild(0).gameObject.SetActive(true);
                 }
                 else
                 {
-                    //AllStarParent.GetChild(i).GetComponent<CanvasGroup>().alpha = 0;
-                    AllStarParent.GetChild(i).gameObject.SetActive(false);
+                    AllStarParent.GetChild(i).GetChild(0).gameObject.SetActive(false);
                 }
             }
         }
 
-        
     }
 
     void DebugSelf()

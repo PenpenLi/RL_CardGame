@@ -13,21 +13,8 @@ public class UseTimeItem : MonoBehaviour
     public Text belowText;
     public Transform timeSlider;
     int wholeLastTime;
-    //[Header("TimeTaskDetail")]
-    //public string startTimeString;
-    //public DateTime startTimeDatetime;
-    //public int taskType;
-    //public int timeType;
-    //[HideInInspector]
-    //[DisplayName("该任务内角色 Hashcode")]
-    //public int itemHashcode;
-    //[DisplayName("该任务内角色或完成后奖励 Id")]
-    //public string itemId;
     [DisplayName("该任务Id")]
     public string taskId;
-
-    //public int oldData;
-    //public int newData;
     #region isEmpty
     bool _isempty;
     public bool isEmpty
@@ -74,9 +61,14 @@ public class UseTimeItem : MonoBehaviour
 
     public virtual void initTimeTask(GDEtimeTaskData task)
     {
+        Debug.Log("Start_Init_Time_Task");
         if(task == null)
         {
             showEmptyPanel();return;
+        }
+        else
+        {
+            isEmpty = false;
         }
         taskId = task.taskId;
         string startTimeString = task.startTime;
@@ -111,6 +103,8 @@ public class UseTimeItem : MonoBehaviour
             {
                 timeSlider.localScale = Vector3.one;
             }
+            
+
         }
     }
 
@@ -125,12 +119,14 @@ public class UseTimeItem : MonoBehaviour
                 if (SDDataManager.Instance.AbandonTimeTask(taskId))
                 {
                     showEmptyPanel();
+                    HP.initHospital();
                 }
                 else
                 {
                     if (SDDataManager.Instance.FinishTimeTask(taskId))
                     {
                         showEmptyPanel();
+                        HP.initHospital();
                     }
                 }
             }
@@ -145,5 +141,6 @@ public class UseTimeItem : MonoBehaviour
             //槽位未解锁
 
         }
+        HP.currentSelectedBedIndex = this.transform.GetSiblingIndex();
     }
 }

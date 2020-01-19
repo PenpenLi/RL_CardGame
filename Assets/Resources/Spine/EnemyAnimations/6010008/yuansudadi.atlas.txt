@@ -1,0 +1,55 @@
+
+yuansudadi.png
+size: 503,503
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 2, 99
+  size: 147, 402
+  orig: 148, 431
+  offset: 0, 0
+  index: -1
+daimao
+  rotate: true
+  xy: 438, 397
+  size: 104, 52
+  orig: 104, 52
+  offset: 0, 0
+  index: -1
+hand
+  rotate: true
+  xy: 151, 142
+  size: 106, 195
+  orig: 107, 195
+  offset: 1, 0
+  index: -1
+handr
+  rotate: false
+  xy: 348, 83
+  size: 109, 165
+  orig: 109, 194
+  offset: 0, 0
+  index: -1
+head
+  rotate: true
+  xy: 178, 13
+  size: 127, 156
+  orig: 127, 157
+  offset: 0, 1
+  index: -1
+kuijia
+  rotate: false
+  xy: 2, 2
+  size: 174, 95
+  orig: 174, 100
+  offset: 0, 5
+  index: -1
+shitou
+  rotate: false
+  xy: 151, 250
+  size: 285, 251
+  orig: 285, 251
+  offset: 0, 0
+  index: -1

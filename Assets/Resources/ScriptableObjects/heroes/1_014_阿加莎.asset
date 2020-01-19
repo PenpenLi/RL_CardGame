@@ -15,10 +15,11 @@ MonoBehaviour:
   _ID: H_RANGER#000014
   _Name: "\u963F\u52A0\u838E"
   _DESC: 
-  sex: 2
+  sex: 1
   characterType: 0
   faceIcon: {fileID: 0}
   _LEVEL: 0
+  _rarity: 2
   skeleton: 0
   weaponRaceList:
   - {fileID: 11400000, guid: e861875e5d429db488c11aad20ff5ed5, type: 2}
@@ -32,3 +33,9 @@ MonoBehaviour:
   personalSkillList:
   - {fileID: 11400000, guid: f57e054b7b109c346ae0bf52f8f0ca5e, type: 2}
   - {fileID: 11400000, guid: ae2f1d25dee02db46a71b2ecf16c37f3, type: 2}
+  PersonalDrawImg: {fileID: 0}
+  _useSpineData: 1
+  _SpineData:
+    _SkeletonData: {fileID: 11400000, guid: b8d2b5f3b7fe4934abf1d1100e85d3eb, type: 2}
+    skin: alisha_2
+    allEnableList: []

@@ -98,7 +98,7 @@ public class HEWPageController : MonoBehaviour
             {
 
             }
-            else if(st == SDConstants.HeroSelectType.Hospital)
+            else if(st == SDConstants.HeroSelectType.Dying)
             {
                 ShowHeroesownedNeedHospital();
             }

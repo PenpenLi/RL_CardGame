@@ -9,9 +9,9 @@ public class RTSingleSkillItem : MonoBehaviour
     public Image itemImg;
     public Text itemNameText;
     public Image itemBgImg;
-    public ItemStarVision starVision;
     public string ItemId;
     public int lv;
+    public bool isOmega;
     public Transform LockedPanel;
     public bool isLocked
     {
@@ -74,8 +74,6 @@ public class RTSingleSkillItem : MonoBehaviour
         isLocked = baseskilldata.islocked;
         if (!isLocked)
         {
-            starVision.StarNum = baseskilldata.lv;
-            //
             if (heroHashcode > 0)
             {
                 if (SDDataManager.Instance.ifDeployThisSkill
@@ -83,11 +81,20 @@ public class RTSingleSkillItem : MonoBehaviour
                 {
                     isDeployed = true;
                 }
+                OneSkill S = SDDataManager.Instance.getOwnedSkillById
+                    (ItemId, heroHashcode);
+                isOmega = S.isOmegaSkill;
+                if (isOmega)
+                {
+                    itemBgImg.sprite = SDDataManager.Instance
+                        .baseFrameSpriteByRarity(3); 
+                }
+                else
+                {
+                    itemBgImg.sprite = SDDataManager.Instance
+                        .baseFrameSpriteByRarity(1);
+                }
             }
-        }
-        else
-        {
-            starVision.StarNum = -1;
         }
     }
 }

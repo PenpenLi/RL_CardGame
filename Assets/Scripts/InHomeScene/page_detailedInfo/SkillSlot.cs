@@ -9,12 +9,6 @@ public class SkillSlot : MonoBehaviour
     {
         skill0,skill1,omegaSkill,
     }
-    public Image data0Icon;
-    public Text data0;
-    public Image data1Icon;
-    public Text data1;
-    public Image data2Icon;
-    public Text data2;
     //
     [Space(10)]
     public Transform emptyPanel;
@@ -26,25 +20,18 @@ public class SkillSlot : MonoBehaviour
             return false;
         }
     }
-    public Transform lockedPanel;
-    public bool isLocked
-    {
-        get 
-        { 
-            if (lockedPanel && lockedPanel.gameObject.activeSelf) return true;
-            return false;
-        }
-    }
     [Space(10)]
     public Image skillIcon;
     public Image skillBgIcon;
     public Image skillItemImg;
+    public Text slotAboveText;
     [Space(10)]
     public skillSlotType slotType;
     public HeroDetailPanel HDP;
     [Space(25)]
     public int lv;
     public string id;
+    public bool isOmega;
     public void initSkillSlot(int HeroHashcode)
     {
         bool flag = false;
@@ -54,7 +41,7 @@ public class SkillSlot : MonoBehaviour
         }
         if (!flag)
         {
-            lockedPanel.gameObject.SetActive(false);
+            gameObject.SetActive(true);
             GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(HeroHashcode);
             string skillId = string.Empty;
             if (slotType == skillSlotType.skill0)
@@ -74,7 +61,7 @@ public class SkillSlot : MonoBehaviour
         }
         else
         {
-            lockedPanel.gameObject.SetActive(true);
+            gameObject.SetActive(false);
         }
 
     }
@@ -94,6 +81,7 @@ public class SkillSlot : MonoBehaviour
         {
             emptyPanel.gameObject.SetActive(false);
             lv = skill.lv;
+            slotAboveText.text = SDGameManager.T("Lv.") + lv;
             Transform skillBtn;;
             if (skill.UseAppointedPrefab)
             {
@@ -101,10 +89,23 @@ public class SkillSlot : MonoBehaviour
             }
             else
             {
+                if (HDP == null)
+                {
+                    HDP = GetComponentInParent<HeroDetailPanel>();
+                }
                 skillBtn = HDP.skillDetailList.AllSkillList[skill.SkillFunctionID];
             } 
             skillItemImg.color = skillBtn.GetComponent<Image>().color;
         }
         id = skill.skillId;
+        isOmega = skill.isOmegaSkill;
+        if (isOmega)
+        {
+            skillBgIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(2);
+        }
+        else
+        {
+            skillBgIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(1);
+        }
     }
 }

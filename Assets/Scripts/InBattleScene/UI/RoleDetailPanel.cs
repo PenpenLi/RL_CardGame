@@ -95,14 +95,8 @@ public class RoleDetailPanel : MonoBehaviour
     #region nameBefore
     public string nameBeforeReturn(int id,bool isEnemy = false)
     {
-        List<Dictionary<string, string>> list = SDDataManager.Instance.ReadFromCSV("nameBefore");
-        foreach(Dictionary<string,string> s in list)
-        {
-            if(s["id"] == id.ToString())
-            {
-                return s["name"];
-            }
-        }
+        //List<Dictionary<string, string>> list = SDDataManager.Instance.ReadFromCSV("nameBefore");
+
         return null;
     }
     #endregion

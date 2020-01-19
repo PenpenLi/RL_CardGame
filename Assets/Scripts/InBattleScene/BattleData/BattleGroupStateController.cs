@@ -39,11 +39,8 @@ public class BattleGroupStateController : MonoBehaviour
             BM.Remaining_SRL[i].getBCOA(selfBarChartEffect);
             if (selfRALChange.HaveData)
             {
-                BM.Remaining_SRL[i].ThisBasicRoleProperty()._role.groupStateRAL = selfRALChange;
-            }
-            else
-            {
-                BM.Remaining_SRL[i].ThisBasicRoleProperty()._role.groupStateRAL = RoleAttributeList.zero;
+                BM.Remaining_SRL[i].ThisBasicRoleProperty()
+                    ._role.extraRALChangeData.Add(selfRALChange);
             }
         }
 
@@ -53,11 +50,8 @@ public class BattleGroupStateController : MonoBehaviour
             BM.Remaining_ORL[i].getBCOA(otherBarChartEffect);
             if (otherRALChange.HaveData)
             {
-                BM.Remaining_ORL[i].ThisBasicRoleProperty()._role.groupStateRAL = otherRALChange;
-            }
-            else
-            {
-                BM.Remaining_ORL[i].ThisBasicRoleProperty()._role.groupStateRAL = RoleAttributeList.zero;
+                BM.Remaining_ORL[i].ThisBasicRoleProperty()
+                    ._role.extraRALChangeData.Add(otherRALChange);
             }
         }
     } 

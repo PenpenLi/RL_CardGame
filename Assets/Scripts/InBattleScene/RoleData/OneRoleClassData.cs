@@ -9,22 +9,20 @@ public class OneRoleClassData
     /// <summary>
     /// 开始时属性
     /// </summary>
-    public RoleAttributeList ThisRoleAttributes 
+    public RoleAttributeList ThisRoleAttributes
     {
-        get { return baseRALChangeData + extraRALChangeData; }
-        set { baseRALChangeData = value; }
+        get { return _thisRoleAttritube; }
     }
-    public RoleAttributeList baseRALChangeData;
-    public RoleAttributeList extraRALChangeData 
+    [SerializeField,ReadOnly]
+    private RoleAttributeList _thisRoleAttritube = RoleAttributeList.zero;
+    public void InitThisRoleAttritube(RoleAttributeList ral)
     {
-        get { return groupStateRAL + environmentStateRAL + nameBeforeRAL + overallStateRAL; }
+        Debug.Log("1-Init_Role_Hp:" + ral.Hp);
+        _thisRoleAttritube = ral.Clone;
+        Debug.Log("2-Init_Role_Hp:" + _thisRoleAttritube.Hp);
     }
-    public RoleAttributeList groupStateRAL;
-    public RoleAttributeList environmentStateRAL;
-    public RoleAttributeList nameBeforeRAL;
-    public RoleAttributeList overallStateRAL;
 
-    #region 索引
+    public RoleAttributeList extraRALChangeData;
     /// <summary>
     /// BarChart最大值读取
     /// </summary>
@@ -41,26 +39,39 @@ public class OneRoleClassData
     }
     //加减int值，用于显示实时属性增减
     public RoleAttributeList AllARevision;
+
+    [Header("当前输出总属性显示"), ReadOnly]
+    public RoleAttributeList CurrentExportRAL = new RoleAttributeList();
+    public void RefreshCERAL()
+    {
+        RoleAttributeList ral = ThisRoleAttributes.Clone;
+        ral.Add(AllARevision);
+        ral.Add(extraRALChangeData);
+        CurrentExportRAL = ral.Clone;
+    }
+
+
+    #region 索引
     public int ReadCurrentRoleRA(int Tag, bool IsAttributeData = true)
     {
         if (IsAttributeData)
         {
             AttributeData t = (AttributeData)Mathf.Clamp(Tag, 0, (int)AttributeData.End);
-            return ThisRoleAttributes.read(t) + AllARevision.read(t);
+            return ThisRoleAttributes.read(t) + AllARevision.read(t) + extraRALChangeData.read(t);
         }
         else
         {
             StateTag t = (StateTag)Mathf.Clamp(Tag, 0, (int)StateTag.End);
-            return ThisRoleAttributes.read(t) + AllARevision.read(t);
+            return ThisRoleAttributes.read(t) + AllARevision.read(t) + extraRALChangeData.read(t);
         }
     }
     public int ReadCurrentRoleRA(AttributeData Tag)
     {
-        return ThisRoleAttributes.read(Tag) + AllARevision.read(Tag);
+        return ThisRoleAttributes.read(Tag) + AllARevision.read(Tag) + extraRALChangeData.read(Tag);
     }
     public int ReadCurrentRoleRA(StateTag Tag)
     {
-        return ThisRoleAttributes.read(Tag) + AllARevision.read(Tag);
+        return ThisRoleAttributes.read(Tag) + AllARevision.read(Tag) + extraRALChangeData.read(Tag);
     }
     #endregion
     #region 战斗属性快速索引
@@ -111,12 +122,12 @@ public class RoleBarChart
     #region 角色三项可视化数据
     public int HP
     {
-        get { return ThisArray(0); }
+        get { return (int)DATA.x; }
         set { DATA.x = value; }
     }
     public int MP
     {
-        get { return ThisArray(1); }
+        get { return (int)DATA.y; }
         set
         {
             DATA.y = value;
@@ -126,22 +137,11 @@ public class RoleBarChart
     {
         get
         {
-            return ThisArray(2);
+            return (int)DATA.z;
         }
         set
         {
             DATA.z = value;
-        }
-    }
-    [HideInInspector]
-    public int ThisArray(int index)
-    {
-        switch (index)
-        {
-            case 0:return (int)DATA.x;
-            case 1:return (int)DATA.y;
-            case 2:return (int)DATA.z;
-            default:return (int)DATA.x;
         }
     }
     public Vector3 DATA;
@@ -150,6 +150,8 @@ public class RoleBarChart
     public static RoleBarChart operator +(RoleBarChart a
         , RoleBarChart b)
     {
+        if (a == null) a = zero;
+        if (b == null) b = zero;
         a.HP += b.HP;
         a.MP += b.MP;
         a.TP += b.TP;
@@ -159,6 +161,16 @@ public class RoleBarChart
     , int b)
     {
         a.HP += b; a.MP += b; a.MP += b; return a;
+    }
+    public static RoleBarChart operator -(RoleBarChart a
+        , RoleBarChart b)
+    {
+        if (a == null) a = zero;
+        if (b == null) b = zero;
+        a.HP -= b.HP;
+        a.MP -= b.MP;
+        a.TP -= b.TP;
+        return a;
     }
     public static RoleBarChart operator *(RoleBarChart a
         , int b)
@@ -193,14 +205,11 @@ public class RoleBarChart
     }
     public static RoleBarChart zero = new RoleBarChart()
     {
-        HP = 0,
-        MP = 0,
-        TP = 0,
         DATA = Vector3.zero
     };
     public RoleBarChart()
     {
-        ResetSelf();
+        DATA = Vector3.zero;
     }
     public RoleBarChart(int hp,int mp,int tp)
     {
@@ -268,7 +277,7 @@ public class ROHeroData:ROUnitData
     {
         get 
         {
-            if (Info) return Info.LEVEL;
+            if (Info) return Info.Rarity;
             else return 0;
         }
     }
@@ -276,7 +285,7 @@ public class ROHeroData:ROUnitData
     {
         get
         {
-            if (Info) return Info.LEVEL >= 2;
+            if (Info) return Info.Rarity >= 2;
             else return false;
         }
     }

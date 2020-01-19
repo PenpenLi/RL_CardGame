@@ -8,24 +8,49 @@ using GameDataEditor;
 public class OneEquipVision : MonoBehaviour
 {
     public Image IconImg;
+    public Image IconFrameImg;
     public Image BgIconImg;
     public Text ItemNameText;
     public ItemStarVision starVision;
     public EquipPosition Pos;
     public bool isSecondJewelryPos;
-    public void initEquipVision(string iconImgPath,string bgIconImgPath,string name = ""
-        ,int starnum = 0)
+    public Sprite emptyBgSprite;
+    public Sprite emptyFrameSprite;
+    public SDHeroDetail DETAIL
     {
-        IconImg.sprite = Resources.Load<Sprite>(iconImgPath);
-        BgIconImg.sprite = Resources.Load<Sprite>(bgIconImgPath);
-        if (ItemNameText) ItemNameText.text = name;
-        if (starVision) starVision.StarNum = starnum;
+        get { return GetComponentInParent<SDHeroDetail>(); }
     }
-    public void initEquipVision(string iconImgPath, int rarity, string name = ""
-        , int starnum = 0)
+
+    public void initEquipVision(GDEEquipmentData data)
     {
-        string rarityPath = "Sprites/EquipBgIcon" + rarity;
-        initEquipVision(iconImgPath, rarityPath, name, starnum);
+        if(data == null || string.IsNullOrEmpty(data.id))
+        {
+            initAsEmpty();
+        }
+        else
+        {
+            EquipItem item = SDDataManager.Instance.GetEquipItemById(data.id);
+            if (item)
+            {
+                IconImg.gameObject.SetActive(true);
+                IconImg.sprite = SDDataManager.Instance.GetEquipIconById(data.id);
+                BgIconImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(item.LEVEL);
+                IconFrameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(item.LEVEL);
+            }
+            else
+            {
+                initAsEmpty();
+            }
+        }
+        if (ItemNameText) ItemNameText.gameObject.SetActive(false);
+        if (starVision) starVision.gameObject.SetActive(false);
+    }
+    void initAsEmpty()
+    {
+        //IconImg.sprite = null;
+        IconImg.gameObject.SetActive(false);
+        IconFrameImg.sprite = emptyFrameSprite;
+        BgIconImg.sprite = emptyBgSprite;
     }
 
 

@@ -19,7 +19,10 @@ public class SingleHeroTeamItem : MonoBehaviour
 
     public Text levelText;
     public Text nameText;
-
+    [Space]
+    public Image icon;
+    public Image bgIcon;
+    public Image frameIcon;
 
     //public Transform unlockBtn;
     public bool isSeatUnlocked = true;
@@ -47,7 +50,12 @@ public class SingleHeroTeamItem : MonoBehaviour
 
             levelText.gameObject.SetActive(true);
             levelText.text = "Lv." + SDDataManager.Instance.getLevelByExp(hero.exp);
-            nameText.text = SDGameManager.T(dal.Info.Name);
+            //nameText.text = SDGameManager.T(dal.Info.Name);
+            icon.sprite = dal.Info.FaceIcon;
+            bgIcon.sprite = SDDataManager.Instance.baseBgSpriteByRarity
+                (dal.Info.Rarity);
+            frameIcon.sprite = SDDataManager.Instance.heroBoxFrameByRarity
+                (dal.Info.Rarity);
         }
 
         
@@ -69,9 +77,6 @@ public class SingleHeroTeamItem : MonoBehaviour
     {
         nameText.text = "";
         levelText.gameObject.SetActive(false);
-        //frameImg.sprite = rarityFrameSps[0];
-        //careerImg = 
-        //raceImg = 
         addImg.gameObject.SetActive(isSeatUnlocked);
     }
 

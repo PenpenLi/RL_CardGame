@@ -31,7 +31,7 @@ public class NormalAttack : SkillFunction
 
     public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target,NumberData val,bool AsSkill = true)
     {
-        source.playMoveTowardAnimation(target.transform.position);
+        source.playMoveTowardAnimation(target.unit_model.position);
         yield return new WaitForSeconds(moveTowardAndBackTime);
 
         if(source.unit_character_model.CurrentCharacterModel!=null)
@@ -78,7 +78,7 @@ public class NormalAttack : SkillFunction
         }
 
         yield return new WaitForSeconds(hitTime);
-        yield return new WaitForSeconds(skillLastTime);
+        //yield return new WaitForSeconds(skillLastTime);
 
         if (source.unit_character_model.CurrentCharacterModel != null)
             source.unit_character_model.CurrentCharacterModel.ChangeModelAnim

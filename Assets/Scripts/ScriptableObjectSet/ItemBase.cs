@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.U2D;
 
 public class ItemBase : ScriptableObject
 {
@@ -17,6 +18,22 @@ public class ItemBase : ScriptableObject
     [SerializeField, TextArea]
     private string _DESC;
     public string DESC { get { return _DESC; } protected set { _DESC = value; } }
+
+    [SerializeField]
+    private SpriteAtlas _atlasFrom;
+    public SpriteAtlas AtlasFrom
+    {
+        get { return _atlasFrom; }
+        set { _atlasFrom = value; }
+    }
+    public Sprite IconFromAtlas
+    {
+        get
+        {
+            if (AtlasFrom == null) return null;
+            else return AtlasFrom.GetSprite(ID);
+        }
+    }
 
     [SerializeField, ReadOnly]
     private SDConstants.ItemType itemtype;

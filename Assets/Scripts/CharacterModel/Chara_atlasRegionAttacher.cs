@@ -67,14 +67,15 @@ public class Chara_atlasRegionAttacher
                 if (ra == null) return;
                 ra = (RegionAttachment)ra.Copy();
 
-                HeroAnimImgList.SlotRegionPair PAIR = SDDataManager.Instance.GetPairBySlotAndRegion(CM.SkeletonIndex, entry.slot, entry.region);
-                Vector2 _pos = PAIR.PositionOffset;
-                Vector2 _scale = PAIR.Scale;
+                //HeroAnimImgList.SlotRegionPair PAIR = SDDataManager.Instance
+                   // .GetPairBySlotAndRegion(CM.SkeletonIndex, entry.slot, entry.region);
+                //Vector2 _pos = PAIR.PositionOffset;
+                //Vector2 _scale = PAIR.Scale;
 
-                ra.Width = ra.RegionWidth * scale * _scale.x;
-                ra.Height = ra.RegionHeight * scale * _scale.y;
+                //ra.Width = ra.RegionWidth * scale * _scale.x;
+                //ra.Height = ra.RegionHeight * scale * _scale.y;
 
-                ra.SetPositionOffset( _pos * scale * _scale );
+                //ra.SetPositionOffset( _pos * scale * _scale );
                 ra.UpdateOffset();
                 slot.Attachment = ra;
             }
@@ -93,6 +94,7 @@ public class ReadAnimImgList : MonoBehaviour
     {
         CharacterModel CM;
         GDEHeroData HD;
+        /*
         HeroAnimImgList hail;
         CM = _CM;
         int hashcode = CM.hashcode;
@@ -101,7 +103,6 @@ public class ReadAnimImgList : MonoBehaviour
         if (AD.isRare) return;
         //
         hail = null;
-        HeroAnimImgList[] allHAIL = Resources.LoadAll<HeroAnimImgList>("ScriptableObjects");
         for (int i = 0; i < allHAIL.Length; i++)
         {
             if (allHAIL[i].Skeleton == AD.skeletonIndex)
@@ -115,36 +116,25 @@ public class ReadAnimImgList : MonoBehaviour
         replaceSlotImg(AD.hair, "hair1",CM,HD,hail);
         //body
         replaceSlotImg(AD.body, "body",CM,HD,hail);
-
+        */
 
 
     }
-    public static void replaceSlotImg(string _region, string _slot,CharacterModel CM, GDEHeroData HD, HeroAnimImgList hail)
+    public static void replaceSlotImg(string _region, string _slot
+        ,CharacterModel CM, GDEHeroData HD, RoleSkeletonData hail)
     {
         GDEAnimData AD = HD.AnimData;
         if (AD.isRare) return;
         Chara_atlasRegionAttacher ara;
         if (!string.IsNullOrEmpty(_region))
         {
-            HeroAnimImgList.SlotRegionPairList list = hail.AllEnableList.Find(x => x.slot == _slot);
-            HeroAnimImgList.SlotRegionPair pair = list.AllRegionList.Find(x => x.Region == _region);
+            RoleSkeletonData.SlotRegionPairList list 
+                = hail.AllEnableList.Find(x => x.slot == _slot);
+            RoleSkeletonData.SlotRegionPair pair = list.AllRegionList
+                .Find(x => x.Region == _region);
             if (list != null && list.AtlasAsset != null)
             {
-                if (!CM.ARAList.Exists(x => x.atlasAsset == list.AtlasAsset))
-                {
-                    CM.ARAList.Add(new Chara_atlasRegionAttacher(list.AtlasAsset));
-                }
-                ara = CM.ARAList.Find(x => x.atlasAsset == list.AtlasAsset);
 
-                ara.Attachments.Add
-                    (
-                    new Chara_atlasRegionAttacher.SlotRegionPair()
-                    {
-                        slot = list.slot,
-                        region = _region,
-                        UseOriginalData = !pair.UseExtraData
-                    }
-                    );
             }
         }
     }

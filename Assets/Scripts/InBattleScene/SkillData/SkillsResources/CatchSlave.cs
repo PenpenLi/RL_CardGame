@@ -33,7 +33,7 @@ public class CatchSlave : SkillFunction
     }
     public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target,NumberData _val)
     {
-        source.playMoveTowardAnimation(target.transform.position);
+        source.playMoveTowardAnimation(target.unit_model.position);
         yield return new WaitForSeconds(moveTowardAndBackTime);
         //
         source.unit_character_model.CurrentCharacterModel.ChangeModelAnim

@@ -39,4 +39,12 @@ public class BaseRank : ScriptableObject
     {
         get { return _Desc; }
     }
+
+    [SerializeField]
+    private Sprite _Icon;
+    public Sprite Icon
+    {
+        get { return _Icon; }
+        private set { _Icon = value; }
+    }
 }

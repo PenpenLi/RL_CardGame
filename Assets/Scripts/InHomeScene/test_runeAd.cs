@@ -82,4 +82,16 @@ public class test_runeAd : MonoBehaviour
         }
         Debug.Log(S);
     }
+
+
+    [ContextMenu("Add_All_Heros_Fatigue")]
+    public void AddAllHerosFatigue()
+    {
+        List<int> AllHcs = SDDataManager.Instance.PlayerData.herosOwned
+            .Select(x => x.hashCode).ToList();
+        foreach(int hc in AllHcs)
+        {
+            SDDataManager.Instance.addHeroFatigue(50, hc);
+        }
+    }
 }

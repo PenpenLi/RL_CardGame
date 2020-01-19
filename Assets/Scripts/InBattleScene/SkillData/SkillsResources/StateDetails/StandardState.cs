@@ -32,11 +32,11 @@ public class StandardState:BasicState
         {
             if (HS.ThisSkillAim == SkillAim.Self)
             {
-                Success = false; return Success;
+                Success = true; return Success;
             }
             if (HS.ThisSkillAim == SkillAim.Friend)
             {
-                Success = false; return Success; 
+                Success = true; return Success; 
             }
         }
         float rate = AllRandomSetClass.SimplePercentToDecimal
@@ -102,29 +102,31 @@ public class StandardState:BasicState
     /// <returns></returns>
     public override RoleAttributeList ralCaused(BattleRoleData source,BattleRoleData target)
     {
-        RoleAttributeList ral = RoleAttributeList.zero;
+        RoleAttributeList ral = new RoleAttributeList();
+        //RoleAttributeList sourceRal = source.ThisBasicRoleProperty()._role.ThisRoleAttributes.Clone;
+        RoleAttributeList targetRal = source.ThisBasicRoleProperty()._role.ThisRoleAttributes.Clone;
         for(int i = 0; i < AllChangesInRAL.Count; i++)
         {
             ChangeInRAL c = AllChangesInRAL[i];
             int d = c.ChangeData.DATA;
-            if (c.IsForAD)
+            if (!c.IsForRD)
             {
                 if (c.UseDataType == ChangeInRAL.DataOrigin.normal)
                 {
                     if (c.ChangeData.dataTag == NumberData.DataType.percent)
                     {
-                        d = (int)(target.ThisBasicRoleProperty().ReadRA(c.ADTag)
+                        d = (int)(targetRal.read(c.ADTag)
                             * c.ChangeData.DECIMAL);
                     }
                 }
                 else if (c.UseDataType == ChangeInRAL.DataOrigin.otherAtb)
                 {
-                    int ori = target.ThisBasicRoleProperty().ReadRA(c.OtherAtb);
+                    int ori = targetRal.read(c.OtherAtb);
                     d = (int)(ori * AllRandomSetClass.SimplePercentToDecimal(c.UsePercent));
                 }
                 else if (c.UseDataType == ChangeInRAL.DataOrigin.armor)
                 {
-                    RoleAttributeList _ral = getRALFromEquip(c.UsePos, source, target);
+                    RoleAttributeList _ral = getRALFromEquip(c.UsePos, source, target).Clone;
                     d = _ral.read(c.ADTag);
                 }
 
@@ -136,18 +138,18 @@ public class StandardState:BasicState
                 {
                     if (c.ChangeData.dataTag == NumberData.DataType.percent)
                     {
-                        d = (int)(target.ThisBasicRoleProperty().ReadRA(c.STag)
+                        d = (int)(targetRal.read(c.STag)
                             * c.ChangeData.DECIMAL);
                     }
                 }
                 else if (c.UseDataType == ChangeInRAL.DataOrigin.otherAtb)
                 {
-                    int ori = target.ThisBasicRoleProperty().ReadRA(c.OtherAtb);
+                    int ori = targetRal.read(c.OtherAtb);
                     d = (int)(ori * AllRandomSetClass.SimplePercentToDecimal(c.UsePercent));
                 }
                 else if (c.UseDataType == ChangeInRAL.DataOrigin.armor)
                 {
-                    RoleAttributeList _ral = getRALFromEquip(c.UsePos, source, target);
+                    RoleAttributeList _ral = getRALFromEquip(c.UsePos, source, target).Clone;
                     d = _ral.read(c.STag);
                 }
 

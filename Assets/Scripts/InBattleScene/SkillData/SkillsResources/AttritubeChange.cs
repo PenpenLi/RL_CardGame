@@ -15,9 +15,7 @@ public class AttritubeChange : SkillFunction
         IsProcessing = true;
         IsUsed = true;
         CalculateBeforeFunction(source, target);
-
-        List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
-
+        //List<BattleRoleData> list = DealWithAOEAction(source, target,AOEType);
         StartCoroutine(IEStartSkill(source, target));
     }
     public IEnumerator IEStartSkill(BattleRoleData source,BattleRoleData target)

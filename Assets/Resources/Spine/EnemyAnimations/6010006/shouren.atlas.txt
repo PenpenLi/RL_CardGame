@@ -1,0 +1,48 @@
+
+shouren.png
+size: 584,584
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 279, 353
+  size: 250, 229
+  orig: 250, 365
+  offset: 0, 136
+  index: -1
+hand
+  rotate: true
+  xy: 2, 10
+  size: 143, 327
+  orig: 143, 328
+  offset: 0, 1
+  index: -1
+handr
+  rotate: true
+  xy: 331, 35
+  size: 118, 251
+  orig: 118, 251
+  offset: 0, 0
+  index: -1
+head
+  rotate: true
+  xy: 279, 155
+  size: 196, 260
+  orig: 216, 260
+  offset: 0, 0
+  index: -1
+wuqi
+  rotate: false
+  xy: 2, 350
+  size: 275, 232
+  orig: 275, 232
+  offset: 0, 0
+  index: -1
+xiati
+  rotate: false
+  xy: 2, 165
+  size: 230, 183
+  orig: 230, 195
+  offset: 0, 0
+  index: -1

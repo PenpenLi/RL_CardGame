@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: atlas_battleBg
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 1
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: b90e78ebf08a01f47b5a8c52f065983e, type: 3}
+    totalSpriteSurfaceArea: 22929408
+    bindAsDefault: 1
+    storedHash:
+      serializedVersion: 2
+      Hash: ae88c8d25c6de8d79181a135f2c35a0d
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 0ddb96b156671c841bfbfc571ed9653e, type: 3}
+  - {fileID: 21300000, guid: d64ff67203b7e1f4d97a3582a9f1675b, type: 3}
+  - {fileID: 21300000, guid: 1b525582e26fbea41959b8ff8760d468, type: 3}
+  - {fileID: 21300000, guid: d67bcdd38d377e04b958422866826584, type: 3}
+  - {fileID: 21300000, guid: f7b6c6a88bd309049b60538cab32f699, type: 3}
+  - {fileID: 21300000, guid: 1e8102a9cb7df8749836a82934ddc861, type: 3}
+  - {fileID: 21300000, guid: 17aa31c901c178e48a4fd99117468de1, type: 3}
+  - {fileID: 21300000, guid: c212228aeceb14f488052b5e70ce64d2, type: 3}
+  - {fileID: 21300000, guid: 465e5bca14f235a458774b55e24d25d8, type: 3}
+  - {fileID: 21300000, guid: 64e27c0cce540bf43a65da115660ee04, type: 3}
+  - {fileID: 21300000, guid: 98718e5c50146ab47aafa8af85c1add6, type: 3}
+  - {fileID: 21300000, guid: 6981eb3e171c37b49995f5765f6d07e2, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - "\u6C99\u6F20\u5927\u5730"
+  - "\u8840\u8165\u6DF1\u6E0A"
+  - "\u6F29\u6DA1\u4E4B\u5730"
+  - "\u6CBC\u6CFD\u4E4B\u5730"
+  - "\u6D77\u738B\u5BAB\u6BBF2"
+  - "\u9886\u4E3B\u5927\u5730"
+  - "\u51B0\u51BB\u6D77\u57DF-\u6062\u590D\u7684"
+  - "\u5927\u5730"
+  - "\u8840\u8165\u6DF1\u6E0A2"
+  - land_01
+  - "\u6D77\u5E95\u96A7\u9053"
+  - "\u5CA9\u77F3\u5927\u5730"
+  m_Tag: atlas_battleBg
+  m_IsVariant: 0

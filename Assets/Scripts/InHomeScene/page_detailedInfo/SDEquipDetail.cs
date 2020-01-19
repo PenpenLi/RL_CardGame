@@ -18,7 +18,7 @@ public class SDEquipDetail : MonoBehaviour
     public Text RarityText;
     [Space(10)]
     public Text expText;
-    public Transform expSlider;
+    //public Transform expSlider;
     public Image equipPosImg;
     public Text equipPosText;
     public Image equipMoldImg;
@@ -27,7 +27,7 @@ public class SDEquipDetail : MonoBehaviour
     //
     EquipDetailPanel EDP
     {
-        get { return GetComponentInParent<EquipDetailPanel>(); }
+        get { return GetComponentInParent<EquipmentPanel>().EDP; }
     }
     public void initEquipDetailVision(GDEEquipmentData equip)
     {
@@ -38,9 +38,8 @@ public class SDEquipDetail : MonoBehaviour
         //
         nameText.text = equipData.name;
         RarityText.text = SDDataManager.Instance.rarityString(equipData.LEVEL);
-        int lv = SDDataManager.Instance.getLevelByExp(equip.exp);
+        int lv = equip.lv ;
         expText.text = SDGameManager.T("Lv.") + lv;
-        expSlider.localScale = new Vector3(SDDataManager.Instance.getExpRateByExp(equip.exp), 1, 1);
         equipLv = lv;
         equipPosText.text = ((EquipPosition)equipData.EquipPos).ToString();
         starVision.StarNum = equip.quality;

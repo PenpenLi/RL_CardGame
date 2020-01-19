@@ -5,7 +5,7 @@ using UnityEngine;
 public class BasicRoleProperty : MonoBehaviour
 {
     public int LEVEL = 0;//品阶(注意 是星级不是等级)
-    public int Quality = 0;
+    public int Quality = 0;//稀有度（n，r，sr，ssr）
     //
     public RoleAttributeList RoleBasicRA;//角色数据
     public int CRIDmg = 0;//暴击伤害()%
@@ -25,6 +25,7 @@ public class BasicRoleProperty : MonoBehaviour
     [HideInInspector]
     public int UpGradeGap = 3;//大幅提升的等级差
 
+    [HideInInspector]
     /// <summary>
     /// 生成用于战斗的角色信息
     /// </summary>
@@ -125,7 +126,8 @@ public class BasicRoleProperty : MonoBehaviour
             , 0.2f, 1f//物攻防
             , 0.1f, 0.1f//法攻防
             );
-        RoleBasicRA = ra.Clone + gradeEffect;//等级加成
+        RoleBasicRA = ra.Clone;
+        RoleBasicRA.Add(gradeEffect);//等级加成
         AddTempleMultiplier(Job.Fighter);
         //额外效果
         DmgReduction += 10;
@@ -139,7 +141,8 @@ public class BasicRoleProperty : MonoBehaviour
             , 1.2f, 0.3f//物攻防
             , 0.8f, 0.3f//法攻防
             );
-        RoleBasicRA = ra.Clone + gradeEffect;//等级加成
+        RoleBasicRA = ra.Clone;
+        RoleBasicRA.Add(gradeEffect);//等级加成
         AddTempleMultiplier(Job.Ranger);
         //额外效果
         CRIDmg += 25;
@@ -153,7 +156,8 @@ public class BasicRoleProperty : MonoBehaviour
             , 0.2f, 0.75f//物攻防
             , 0.2f, 0.75f//法攻防
             );
-        RoleBasicRA = ra.Clone + gradeEffect;//等级加成
+        RoleBasicRA = ra.Clone;
+        RoleBasicRA.Add(gradeEffect);//等级加成
         AddTempleMultiplier(Job.Priest);
         //额外效果
         DmgReflection += 5;
@@ -167,7 +171,8 @@ public class BasicRoleProperty : MonoBehaviour
             , 0.2f, 0.2f//物攻防
             , 1.1f, 0.6f//法攻防
             );
-        RoleBasicRA = ra.Clone + gradeEffect;//等级加成
+        RoleBasicRA = ra.Clone;
+        RoleBasicRA.Add(gradeEffect);//等级加成
         AddTempleMultiplier(Job.Priest);
         //额外效果
         CRIDmg += 25;
@@ -250,31 +255,19 @@ public class BasicRoleProperty : MonoBehaviour
     }
     public virtual void initRoleClassData()
     {
-        _role.ThisRoleAttributes = RoleBasicRA.Clone;
+        Debug.Log("Init_Role:" + name + "--Hp:" + RoleBasicRA.Clone.Hp);
+        _role.InitThisRoleAttritube(RoleBasicRA.Clone);
     }
 
 
     #region 属性引用
-    public int ReadRA(int index,bool notRisist = true)
-    {
-        if (notRisist)
-        {
-            int s = _role.ReadCurrentRoleRA((AttributeData)index);
-            return s;
-        }
-        else
-        {
-            int s = _role.ReadCurrentRoleRA((StateTag)index);
-            return s;
-        }
-    }
     public int ReadRA(AttributeData tag)
     {
-        return ReadRA((int)tag);
+        return _role.ReadCurrentRoleRA(tag);
     }
     public int ReadRA(StateTag tag)
     {
-        return ReadRA((int)tag, false);
+        return _role.ReadCurrentRoleRA(tag);
     }
     #endregion
     public void PassiveEffectInit(string effect)

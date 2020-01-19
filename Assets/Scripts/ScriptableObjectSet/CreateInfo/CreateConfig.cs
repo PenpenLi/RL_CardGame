@@ -31,6 +31,7 @@ public class CreateConfig : MonoBehaviour
         xxListResult = CreateConfig.ReadVSC("equip");
         ArmorRank[] armor_ranks = Resources.LoadAll<ArmorRank>("");
         WeaponRace[] waepon_races = Resources.LoadAll<WeaponRace>("");
+        List<SpriteAtlas> allAtlas = Resources.LoadAll<SpriteAtlas>("Sprites/atlas").ToList();
         for (int i = 0; i < xxListResult.Count; i++)
         {
             Dictionary<string, string> Dic = xxListResult[i];
@@ -70,8 +71,12 @@ public class CreateConfig : MonoBehaviour
                     }
                 }
             }
+
+
             //
-            AssetDatabase.CreateAsset(ei, "Assets/Resources/ScriptableObjects/items/Equips/" + ei.NAME + ".asset");
+            AssetDatabase.CreateAsset(ei, "Assets/Resources/ScriptableObjects/items/Equips/" 
+                + (int)ei.EquipPos+"_"
+                +ei.LEVEL + "_" + ei.NAME + ".asset");
         }
         #endregion
         return;
@@ -322,9 +327,41 @@ public class CreateConfig : MonoBehaviour
         List<HeroInfo> list = all.ToList();
         P.ID = "POOL_H#004";
         P.Name = "全英雄卡池";
-        P.HeroList = list;
+        P.HeroList = list.FindAll(x=> 
+        {
+            if (x.Name.Contains("无名") && !x.Name.Contains("("))
+            {
+                return false;
+            }
+            else
+            {
+                if (x.ID == "H_FIGHTER#000050") return false;
+                else return true;
+            }
+        });
 
         AssetDatabase.CreateAsset(P, "Assets/Resources/ScriptableObjects/pools/"
                 + "AllHeroPool" + ".asset");
+    }
+
+    public static int SS_index;
+    [MenuItem("Tools/CaptureScreenShot")]
+    public static void CaptureScreenShot()
+    {
+        UnityEngine.ScreenCapture.CaptureScreenshot("ScreenShot"+SS_index+".png", 0);
+        SS_index++;
+    }
+
+    [MenuItem("Tools/BuildHeroSkeletons")]
+    public static void BuildHeroSpines()
+    {
+        SkeletonDataAsset SDA = Resources.Load<SkeletonDataAsset>("Spine/role01");
+        List<HeroInfo> all = Resources.LoadAll<HeroInfo>("ScriptableObjects/heroes").ToList()
+            .FindAll(x=>x.Name.Contains("无名"));
+        foreach(HeroInfo h in all)
+        {
+            h.UseSpineData = true;
+            h.SpineData.SkeletonData = SDA;
+        }
     }
 }

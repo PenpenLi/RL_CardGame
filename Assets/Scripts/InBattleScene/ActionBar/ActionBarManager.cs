@@ -91,7 +91,7 @@ public class ActionBarManager : MonoBehaviour
                 SDConstants.CharacterAnimType type
                     = (SDConstants.CharacterAnimType)
                     (SDDataManager.Instance.getHeroCareerById(heroId));
-                unit.headImage.initCharacterModel(hashcode, type, 3f);
+                //unit.headImage.initCharacterModel(hashcode, type, 3f);
             }
             actionUnit.localScale = Vector3.one;
             if(BUnit.ReadThisStateEnable(StateTag.Dizzy))

@@ -14,18 +14,19 @@ public class BuiildingSimpleDetailVesion : MonoBehaviour
     public int IndexInHS;
     public HomeScene.HomeSceneSubMenu thisTag;
     public MainCastlePanel MCP;
+    public Button lvUpBtn;
 
     public void initBuildingLinkCard(string id)
     {
         BuildingId = id;
-        for(int i = 0; i < MCP.homeScene.AllSubMenus.Length; i++)
+        BasicSubMenuPanel P = null;
+        for (int i = 0; i < MCP.homeScene.AllSubMenus.Length; i++)
         {
             if (MCP.homeScene.AllSubMenus[i] == null)
             {
                 continue;
             }
-            BasicSubMenuPanel P 
-                = MCP.homeScene.AllSubMenus[i].GetComponent<BasicSubMenuPanel>();
+            P = MCP.homeScene.AllSubMenus[i].GetComponent<BasicSubMenuPanel>();
             if(P.buildingId == BuildingId)
             {
                 IndexInHS = i;
@@ -37,12 +38,25 @@ public class BuiildingSimpleDetailVesion : MonoBehaviour
                 break;
             }
         }
-
+        if (P == null) return;
+        bool flag = P.CheckIfCanLvUp();
+        lvUpBtn.interactable = flag;
     }
 
     public void BtnTapped()
     {
         MCP.commonBackAction();
         MCP.homeScene.UseSMTToSubMenu(thisTag);
+    }
+
+    public void ExtraBtnTapped()
+    {
+        BasicSubMenuPanel P = MCP.homeScene.AllSubMenus[(int)thisTag]
+            .GetComponent<BasicSubMenuPanel>();
+        bool flag = P.CheckIfCanLvUp();
+        if (flag)
+        {
+            P.BtnToLvUp();
+        }
     }
 }

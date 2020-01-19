@@ -70,14 +70,8 @@ public class SDEquipImprove : BasicImprovePage
         GDEEquipmentData equip = SDDataManager.Instance.getEquipmentByHashcode(hashcode);
         if (lvText && expText && expSlider && expSlider_listorder)
         {
-            int exp = equip.exp;
-            int lv = SDDataManager.Instance.getLevelByExp(exp);
+            int lv = equip.lv;
             lvText.text = SDGameManager.T("Lv.") + lv;
-            int e0 = exp - SDDataManager.Instance.getMinExpReachLevel(lv);
-            int e1 = SDDataManager.Instance.ExpBulkPerLevel(lv + 1);
-            expText.text = e0 + "/" + e1;
-            expSlider.localScale = Vector3.up + Vector3.forward 
-                + Vector3.right * SDDataManager.Instance.getExpRateByExp(exp);
         }
     }
     public override void ConsumeToImprove(List<RTSingleStockItem> list)
@@ -89,98 +83,9 @@ public class SDEquipImprove : BasicImprovePage
         for(int i = 0; i < list.Count; i++)
         {
             RTSingleStockItem stock = list[i];
-            if (stock.stockType == SDConstants.StockType.material)
-            {
-                if(kind == ImproveKind.exp 
-                    && stock.materialType == SDConstants.MaterialType.equip_exp)
-                {
-                    int useNum = stock.UsedNum;
-                    int figure = SDDataManager.Instance.getFigureFromMaterial(stock.itemId) * useNum;
-                    int exp = SDDataManager.Instance.getEquipmentByHashcode(equipDetail.equipHashcode).exp;
-                    int level = SDDataManager.Instance.getLevelByExp(exp + figure);
-                    //
-                    float rate = SDDataManager.Instance.getPossibleLvupByTargetLevel(level, out int visualRate);
-                    if (UnityEngine.Random.Range(0, 1) < rate)
-                    {
-                        SDDataManager.Instance.addExpToEquipByHashcode(hashcode, figure);
-                    }
-                }
-                else if(kind == ImproveKind.fix
-                    && stock.materialType == SDConstants.MaterialType.equip_fix)
-                {
-                    int useNum = stock.UsedNum;
-                    if (SDDataManager.Instance.checkEquipFixIfSuccess(hashcode))
-                    {
-                        foreach (GDEEquipmentData e in SDDataManager.Instance.PlayerData.equipsOwned)
-                        {
-                            if(e.hashcode == hashcode)
-                            {
-                                e.quality ++;
-                                if (e.quality > SDConstants.equipMaxQuality)
-                                {
-                                    e.quality = SDConstants.equipMaxQuality;
-                                }
-                                SDDataManager.Instance.PlayerData.Set_equipsOwned();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+
         }
 
         equipDetail.initEquipDetailVision(hashcode);
     }
-    public bool expectImprove_before(List<RTSingleStockItem> list
-        , ImproveKind kind, RTSingleStockItem newStock)
-    {
-        bool flag = false;
-        int figure = 0;
-        for(int i = 0; i < list.Count; i++)
-        {
-            RTSingleStockItem stock = list[i];
-            if(kind == ImproveKind.exp)
-            {
-                figure += SDDataManager.Instance.getFigureFromMaterial(stock.itemId) * stock.UsedNum;
-            }
-            else if(kind == ImproveKind.fix)
-            {
-                figure += SDDataManager.Instance.getFigureFromMaterial(stock.itemId) * stock.UsedNum;
-            }
-        }
-        if(kind == ImproveKind.exp)
-        {
-            int exp = SDDataManager.Instance.getEquipmentByHashcode(equipDetail.equipHashcode).exp;
-            int level = SDDataManager.Instance.getLevelByExp(exp + figure);
-            //
-            float rate = SDDataManager.Instance.getPossibleLvupByTargetLevel(level, out int visualRate);
-            lvUpSuccessPossibleText.text = SDGameManager.T("成功率") + ": " + visualRate + "%";
-            if (rate < 0.5f)
-            {
-                lvUpSuccessPossibleText.color = Color.red;
-            }
-            else
-            {
-                lvUpSuccessPossibleText.color = Color.white;
-            }
-            if(rate>0.1f)
-            {
-                flag = true;
-            }
-        }
-        else if(kind == ImproveKind.fix)
-        {
-            lvUpSuccessPossibleText.text = string.Empty;
-            int quality = SDDataManager.Instance.getEquipQualityByHashcode(equipDetail.equipHashcode);
-            if (quality < SDConstants.equipMaxQuality)
-            {
-                flag = true;
-            }
-        }
-
-
-
-        return flag;
-    }
-
 }

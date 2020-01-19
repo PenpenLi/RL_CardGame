@@ -1,0 +1,13 @@
+
+SHILAIMU.png
+size: 500,500
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 2, 33
+  size: 241, 210
+  orig: 242, 210
+  offset: 1, 0
+  index: -1

@@ -15,10 +15,11 @@ MonoBehaviour:
   _ID: H_FIGHTER#000014
   _Name: "\u9EDB\u7C73\u83B1\u4E9A"
   _DESC: 
-  sex: 2
+  sex: 1
   characterType: 0
   faceIcon: {fileID: 0}
   _LEVEL: 0
+  _rarity: 2
   skeleton: 0
   weaponRaceList:
   - {fileID: 11400000, guid: 4f19ff9be42d1a042b87bbbb5c5fbb2d, type: 2}
@@ -33,3 +34,9 @@ MonoBehaviour:
   personalSkillList:
   - {fileID: 11400000, guid: ca5ed3db263382c42a439c4456a1160a, type: 2}
   - {fileID: 11400000, guid: f8d7bb9abed97da4e95e1e2c3db82535, type: 2}
+  PersonalDrawImg: {fileID: 0}
+  _useSpineData: 1
+  _SpineData:
+    _SkeletonData: {fileID: 11400000, guid: b8d2b5f3b7fe4934abf1d1100e85d3eb, type: 2}
+    skin: daimileiya_2
+    allEnableList: []

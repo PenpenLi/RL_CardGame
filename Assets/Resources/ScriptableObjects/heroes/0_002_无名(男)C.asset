@@ -30,3 +30,8 @@ MonoBehaviour:
   _race: {fileID: 11400000, guid: ebc3206fa017ce94a8b3c5926c479d25, type: 2}
   specialStr: 
   personalSkillList: []
+  _useSpineData: 1
+  _SpineData:
+    _SkeletonData: {fileID: 11400000, guid: b8d2b5f3b7fe4934abf1d1100e85d3eb, type: 2}
+    skin: normal_01_0
+    allEnableList: []

@@ -6,6 +6,8 @@ using GameDataEditor;
 
 public class HeroDetailPanel : BasicSubMenuPanel
 {
+    [HideInInspector]
+    public int currentHeroHashcode;
     public SDHeroDetail detail;
     public SDEquipSelect equip;
     public SDHeroDeploySkills skill;
@@ -32,7 +34,10 @@ public class HeroDetailPanel : BasicSubMenuPanel
         if(transform.localScale==Vector3.zero|| !gameObject.activeSelf)
             UIEffectManager.Instance.showAnimFadeIn(transform);
         homeScene.CurrentSubMenuType = HomeScene.HomeSceneSubMenu.HeroDetails;
+        //
         detail.gameObject.SetActive(true);
+        detail.initHeroDetailPanel(currentHeroHashcode);
+        //
         CurrentRDSubType = RoleDetailSubType.end;
         history.Clear();
         closeAllSubPanelTrans();
@@ -102,12 +107,22 @@ public class HeroDetailPanel : BasicSubMenuPanel
 
             if (CurrentRDSubType != RoleDetailSubType.end)
             {
-                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-                if(CurrentRDSubType == RoleDetailSubType.heroSkill 
+                if (CurrentRDSubType == RoleDetailSubType.heroDetail)
+                {
+                    RDSubPanel(RoleDetailSubType.heroDetail).gameObject.SetActive(false);
+                }
+                else
+                {
+                    UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
+                }
+                if (CurrentRDSubType == RoleDetailSubType.heroSkill 
                     || CurrentRDSubType == RoleDetailSubType.heroEquip)
                 {
-                    UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(RoleDetailSubType.heroDetail));
+                    //UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(RoleDetailSubType.heroDetail));
+                    RDSubPanel(RoleDetailSubType.heroDetail).gameObject.SetActive(false);
                 }
+
+
             }
             CurrentRDSubType = RoleDetailSubType.heroImprove;
             UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));

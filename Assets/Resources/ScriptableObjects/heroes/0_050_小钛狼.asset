@@ -19,6 +19,7 @@ MonoBehaviour:
   characterType: 0
   faceIcon: {fileID: 0}
   _LEVEL: 1
+  _rarity: 2
   skeleton: 0
   weaponRaceList:
   - {fileID: 11400000, guid: 4f19ff9be42d1a042b87bbbb5c5fbb2d, type: 2}
@@ -30,3 +31,9 @@ MonoBehaviour:
   _race: {fileID: 11400000, guid: ce9d470ff9dd74846876b4a80f211b32, type: 2}
   specialStr: 
   personalSkillList: []
+  PersonalDrawImg: {fileID: 0}
+  _useSpineData: 1
+  _SpineData:
+    _SkeletonData: {fileID: 11400000, guid: b8d2b5f3b7fe4934abf1d1100e85d3eb, type: 2}
+    skin: zhujue_0
+    allEnableList: []

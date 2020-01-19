@@ -19,6 +19,7 @@ MonoBehaviour:
   characterType: 0
   faceIcon: {fileID: 0}
   _LEVEL: 0
+  _rarity: 2
   skeleton: 0
   weaponRaceList:
   - {fileID: 11400000, guid: 4bdc534047031624bb74bf5b036a3fd3, type: 2}
@@ -32,3 +33,9 @@ MonoBehaviour:
   personalSkillList:
   - {fileID: 11400000, guid: 827fe7ed9587de64fbc8c6653931f389, type: 2}
   - {fileID: 11400000, guid: e4abcd76230114b4398b1560a8e85a11, type: 2}
+  PersonalDrawImg: {fileID: 0}
+  _useSpineData: 1
+  _SpineData:
+    _SkeletonData: {fileID: 11400000, guid: b8d2b5f3b7fe4934abf1d1100e85d3eb, type: 2}
+    skin: aide_1
+    allEnableList: []

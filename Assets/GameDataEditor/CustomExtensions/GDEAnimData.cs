@@ -271,6 +271,20 @@ namespace GameDataEditor
             }
         }
 
+        static string skinNameKey = "skinName";
+		string _skinName;
+        public string skinName
+        {
+            get { return _skinName; }
+            set {
+                if (_skinName != value)
+                {
+                    _skinName = value;
+					GDEDataManager.SetString(_key, skinNameKey, _skinName);
+                }
+            }
+        }
+
         public GDEAnimData(string key) : base(key)
         {
             GDEDataManager.RegisterItem(this.SchemaName(), key);
@@ -298,6 +312,7 @@ namespace GameDataEditor
             dict.Merge(true, liuhai.ToGDEDict(liuhaiKey));
             dict.Merge(true, R_leg_a.ToGDEDict(R_leg_aKey));
             dict.Merge(true, R_leg_b.ToGDEDict(R_leg_bKey));
+            dict.Merge(true, skinName.ToGDEDict(skinNameKey));
             return dict;
 		}
 
@@ -331,6 +346,7 @@ namespace GameDataEditor
                 dict.TryGetString(liuhaiKey, out _liuhai);
                 dict.TryGetString(R_leg_aKey, out _R_leg_a);
                 dict.TryGetString(R_leg_bKey, out _R_leg_b);
+                dict.TryGetString(skinNameKey, out _skinName);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -357,6 +373,7 @@ namespace GameDataEditor
             _liuhai = GDEDataManager.GetString(_key, liuhaiKey, _liuhai);
             _R_leg_a = GDEDataManager.GetString(_key, R_leg_aKey, _R_leg_a);
             _R_leg_b = GDEDataManager.GetString(_key, R_leg_bKey, _R_leg_b);
+            _skinName = GDEDataManager.GetString(_key, skinNameKey, _skinName);
         }
 
         public GDEAnimData ShallowClone()
@@ -382,6 +399,7 @@ namespace GameDataEditor
             newClone.liuhai = liuhai;
             newClone.R_leg_a = R_leg_a;
             newClone.R_leg_b = R_leg_b;
+            newClone.skinName = skinName;
 
             return newClone;
 		}
@@ -554,6 +572,15 @@ namespace GameDataEditor
             dict.TryGetString(R_leg_bKey, out _R_leg_b);
         }
 
+        public void Reset_skinName()
+        {
+            GDEDataManager.ResetToDefault(_key, skinNameKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetString(skinNameKey, out _skinName);
+        }
+
         public void ResetAll()
         {
              #if !UNITY_WEBPLAYER
@@ -578,6 +605,7 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, R_leg_aKey);
             GDEDataManager.ResetToDefault(_key, R_leg_bKey);
             GDEDataManager.ResetToDefault(_key, skeletonIndexKey);
+            GDEDataManager.ResetToDefault(_key, skinNameKey);
 
 
             #endif

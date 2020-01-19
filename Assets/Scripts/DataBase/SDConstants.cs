@@ -9,6 +9,7 @@ using UnityEngine;
 /// </summary>
 public class SDConstants 
 {
+    #region 值类
     /// <summary>
     /// 我方最大出战角色数
     /// </summary>
@@ -119,7 +120,10 @@ public class SDConstants
     /// 装备最大品阶
     /// </summary>
     public static int equipMaxQuality = 5;
-
+    /// <summary>
+    /// 装备一般最大等级
+    /// </summary>
+    public static int equipMaxPreferLv = 10;
 
     /// <summary>
     /// 玩家存档内容读取间隔
@@ -213,6 +217,8 @@ public class SDConstants
     /// </summary>
     public static int JianCaiConsumeWithGetOneExp = 1;
 
+    #endregion
+
     public static string HERO_TAG = "HERO";
     public static string ENEMY_TAG = "ENEMY";
     public static string AUTO_TARGET_TAG = "NONE";//无目标或自动技能标签
@@ -234,16 +240,18 @@ public class SDConstants
     static public string AnimName_HURT = "hurt";//0.25f
     static public string AnimName_WALK = "walk";
     static public string AnimName_JUMP = "jump";
-    static public string AnimName_ATTACK = "attack01";//0.25 0.33f
-    static public string AnimName_ATTACK_ENEMY = "attack";//0.38f
+    static public string AnimName_ATTACK1= "attack-01";//0.25 0.33f
+    static public string AnimName_ATTACK = "attack";//0.38f
     static public string AnimName_CAST = "cast";//0.5f
+    static public string AnimName_CAST1 = "cast-01";//0.5f
+    static public string AnimName_CAST2 = "cast-02";//0.5f
 
     static public float AnimTime_ATTACK = 0.6f;
     static public float AnimTime_CAST = 0.8f;
     #endregion
 
-    public static float HERO_MODEL_RATIO = 0.5f;
-    public static float HERO_MODEL_BIG_RATIO = 2.5f;
+    public static float HERO_MODEL_RATIO = 60f;
+    public static float HERO_MODEL_BIG_RATIO = 75f;
 
     /// <summary>
     /// 奖金掉落基础值
@@ -335,7 +343,7 @@ public class SDConstants
             ,
         Battle
             ,
-        Hospital
+        Dying
             ,
         Mission
             ,

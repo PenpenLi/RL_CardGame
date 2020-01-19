@@ -1,0 +1,69 @@
+
+xiyiren.png
+size: 528,528
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 2, 46
+  size: 136, 267
+  orig: 136, 267
+  offset: 0, 0
+  index: -1
+hand
+  rotate: false
+  xy: 140, 98
+  size: 110, 215
+  orig: 110, 215
+  offset: 0, 0
+  index: -1
+handr
+  rotate: true
+  xy: 252, 56
+  size: 85, 150
+  orig: 85, 150
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 2, 315
+  size: 222, 211
+  orig: 222, 211
+  offset: 0, 0
+  index: -1
+leg
+  rotate: false
+  xy: 443, 345
+  size: 83, 181
+  orig: 83, 181
+  offset: 0, 0
+  index: -1
+legr
+  rotate: true
+  xy: 252, 143
+  size: 87, 169
+  orig: 87, 169
+  offset: 0, 0
+  index: -1
+weiba
+  rotate: true
+  xy: 424, 214
+  size: 129, 95
+  orig: 129, 95
+  offset: 0, 0
+  index: -1
+wuqi
+  rotate: false
+  xy: 226, 363
+  size: 215, 163
+  orig: 215, 163
+  offset: 0, 0
+  index: -1
+wuqi2
+  rotate: false
+  xy: 252, 232
+  size: 170, 129
+  orig: 170, 129
+  offset: 0, 0
+  index: -1

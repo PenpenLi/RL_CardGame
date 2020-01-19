@@ -118,8 +118,8 @@ public class HP_Controller : MonoBehaviour
         //角色当前状态详情可视化
         if (!_unit.IsEnemy && ShowHpStatus)
         {
-            BarChartStatus.SetParent(_unit.BM.HeroStatusGroup[_unit.posIndex]);
-            BarChartStatus.position = _unit.BM.HeroStatusGroup[_unit.posIndex].position;
+            //BarChartStatus.SetParent(_unit.BM.HeroStatusGroup[_unit.posIndex]);
+            //BarChartStatus.position = _unit.BM.HeroStatusGroup[_unit.posIndex].position;
             BarChartStatus.localScale = Vector3.one * 0.8f;
             BarChartStatus.GetComponentInChildren<SDHeroBattleStatus>().BuildThisStatusVision
                 (_unit, this);

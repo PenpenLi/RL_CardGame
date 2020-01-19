@@ -13,7 +13,7 @@ public class SimpleHeroDetailVision : MonoBehaviour
     public Text RaceText;
     public Text NameText;
     public Text NameBeforeText;
-    public Text RarityText;
+    public Image RarityIconImg;
     public ItemStarVision StarNumVision;
     public Text LvText;
     public Transform ExpSlider;
@@ -37,7 +37,8 @@ public class SimpleHeroDetailVision : MonoBehaviour
         RaceText.text = SDHD.RaceText.text;
         NameText.text = SDHD.NameText.text;
         NameBeforeText.text = SDHD.NameBeforeText.text;
-        RarityText.text = SDHD.RarityText.text;
+        RarityIconImg.sprite = SDHD.RarityImg.sprite;
+        RarityIconImg.gameObject.SetActive(true);
         StarNumVision.StarNum = SDHD.StarNumVision.StarNum;
         LvText.text = SDHD.LvText.text;
         ExpSlider.localScale = SDHD.ExpSlider.localScale;
@@ -51,7 +52,8 @@ public class SimpleHeroDetailVision : MonoBehaviour
     {
         heroCharacterDrawingImg.sprite = SDGD.goddessCharacterDrawingImg.sprite;
         NameText.text = SDGD.nameText.text;
-        RarityText.text = SDGD.rarityText.text;
+        RarityIconImg.gameObject.SetActive(false);
+
         LvText.text = SDGD.lvText.text;       
     }
 
@@ -64,7 +66,8 @@ public class SimpleHeroDetailVision : MonoBehaviour
         RaceText.text = "--";
         NameText.text = "";
         NameBeforeText.text = "";
-        RarityText.text = "";
+        RarityIconImg.sprite = null;
+        RarityIconImg.gameObject.SetActive(false);
         StarNumVision.StarNum = 0;
         LvText.text = "";
         ExpSlider.localScale = Vector3.up;

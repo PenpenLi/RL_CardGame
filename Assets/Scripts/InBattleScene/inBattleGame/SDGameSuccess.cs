@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class SDGameSuccess : MonoBehaviour
 {
@@ -97,8 +98,9 @@ public class SDGameSuccess : MonoBehaviour
     public void Btn_back()
     {
         UIEffectManager.Instance.hideAnimFadeOut(this.transform);
-        SLLoadingSceneController.loadingScenePreAnimationName = "black";
-        SLLoadingSceneController.LoadScene("MenuScene");
+        //SLLoadingSceneController.LoadScene("MenuScene");
+        //SLLoadingSceneController.loadingScenePreAnimationName = "";
+        SceneManager.LoadSceneAsync("MenuScene");
     }
     public void Btn_retry()
     {

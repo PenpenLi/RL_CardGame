@@ -136,51 +136,55 @@ public class RoleAttributeList
     #region 快速索引与运算
     public static RoleAttributeList operator +(RoleAttributeList a, RoleAttributeList b)
     {
+        RoleAttributeList _a = a.Clone;
         for (int i = 0; i < (int)AttributeData.End; i++)
         {
-            a.AllAttributeData[i] += b.AllAttributeData[i];
+            _a.AllAttributeData[i] += b.AllAttributeData[i];
         }
         for (int i = 0; i < (int)StateTag.End; i++)
         {
-            a.AllResistData[i] += b.AllResistData[i];
+            _a.AllResistData[i] += b.AllResistData[i];
         }
-        return a;
+        return _a;
     }
     public static RoleAttributeList operator +(RoleAttributeList a, int b)
     {
+        RoleAttributeList _a = a.Clone;
         for (int i = 0; i < (int)AttributeData.End; i++)
         {
-            a.AllAttributeData[i] += b;
+            _a.AllAttributeData[i] += b;
         }
         for (int i = 0; i < (int)StateTag.End; i++)
         {
-            a.AllResistData[i] += b;
+            _a.AllResistData[i] += b;
         }
-        return a;
+        return _a;
     }
     public static RoleAttributeList operator -(RoleAttributeList a, RoleAttributeList b)
     {
+        RoleAttributeList _a = a.Clone;
         for (int i = 0; i < (int)AttributeData.End; i++)
         {
-            a.AllAttributeData[i] -= b.AllAttributeData[i];
+            _a.AllAttributeData[i] -= b.AllAttributeData[i];
         }
         for (int i = 0; i < (int)StateTag.End; i++)
         {
-            a.AllResistData[i] -= b.AllResistData[i];
+            _a.AllResistData[i] -= b.AllResistData[i];
         }
-        return a;
+        return _a;
     }
     public static RoleAttributeList operator -(RoleAttributeList a, int b)
     {
+        RoleAttributeList _a = a.Clone;
         for (int i = 0; i < (int)AttributeData.End; i++)
         {
-            a.AllAttributeData[i] -= b;
+            _a.AllAttributeData[i] -= b;
         }
         for (int i = 0; i < (int)StateTag.End; i++)
         {
-            a.AllResistData[i] -= b;
+            _a.AllResistData[i] -= b;
         }
-        return a;
+        return _a;
     }
 
     #region ADD
@@ -226,6 +230,17 @@ public class RoleAttributeList
             {
                 Add(OA.figure, OA.STType);
             }
+        }
+    }
+    public void Add(RoleAttributeList RAL)
+    {
+        for(int i = 0; i < AllAttributeData.Length; i++)
+        {
+            AllAttributeData[i] += RAL.AllAttributeData[i];
+        }
+        for(int i = 0; i < AllResistData.Length; i++)
+        {
+            AllResistData[i] += RAL.AllResistData[i];
         }
     }
     public void AddAll(int figure)
@@ -348,21 +363,26 @@ public class RoleAttributeList
         AllResistData[(int)tag] = figure;
     }
     #endregion
-    public int read(AttributeData tag, int rate = 100)
+    public void Clear()
     {
-        int t = (int)tag;
-        if (t < AllAttributeData.Length)
-            return (int)(AllAttributeData[(int)tag]
-                * AllRandomSetClass.SimplePercentToDecimal(rate));
-        else return 0;
+        for(int i = 0; i < AllAttributeData.Length; i++) { AllAttributeData[i] = 0; }
+        for(int i = 0; i < AllResistData.Length; i++) { AllResistData[i] = 0; }
     }
-    public int read(StateTag tag, int rate = 100)
+    public int read(AttributeData tag)
     {
         int t = (int)tag;
+        int result = 0;
+        if (t < AllAttributeData.Length)
+            result = AllAttributeData[(int)tag];
+        return result;
+    }
+    public int read(StateTag tag)
+    {
+        int t = (int)tag;
+        int result = 0;
         if (t < AllResistData.Length)
-            return (int)(AllResistData[(int)tag]
-                * AllRandomSetClass.SimplePercentToDecimal(rate));
-        else return 0;
+            result = AllResistData[(int)tag];
+        return result;
     }
     public void AddGDEData(GDERoleAttritubeData roledata)
     {
@@ -432,30 +452,16 @@ public class RoleAttributeList
         return RAL;
     }
 
-    public static RoleAttributeList zero = new RoleAttributeList()
+    public static RoleAttributeList zero
     {
-        Hp = 0,
-        Mp = 0,
-        Tp = 0,
-        AT = 0,
-        AD = 0,
-        MT = 0,
-        MD = 0,
-        Speed = 0,
-        Taunt = 0,
-        Accur = 0,
-        Evo = 0,
-        Crit = 0,
-        Expect = 0,
-        Bleed_Def = 0,
-        Mind_Def = 0,
-        Fire_Def = 0,
-        Frost_Def = 0,
-        Corrosion_Def = 0,
-        Hush_Def = 0,
-        Dizzy_Def = 0,
-        Confuse_Def = 0
-    };
+        get
+        {
+            RoleAttributeList ral = new RoleAttributeList();
+            ral.AllAttributeData = new int[(int)AttributeData.End];
+            ral.AllResistData = new int[(int)StateTag.End];
+            return ral;
+        }
+    }
     public bool HaveData
     {
         get
@@ -495,7 +501,7 @@ public class RoleAttributeList
     {
         get
         {
-            RoleAttributeList ral = new RoleAttributeList();
+            RoleAttributeList ral = RoleAttributeList.zero;
             for (int i = 0; i < ral.AllAttributeData.Length; i++)
             {
                 ral.AllAttributeData[i] = this.AllAttributeData[i];
@@ -509,6 +515,9 @@ public class RoleAttributeList
     }
     #endregion
 }
+
+
+
 [System.Serializable]
 public class OneAttritube
 {
@@ -517,6 +526,7 @@ public class OneAttritube
     /// true:AttritubeData;false:ResistData
     /// </summary>
     public bool isAD;
+    //[ConditionalHide("isAD",true,false)]
     public AttributeData ADType
     {
         get
@@ -525,6 +535,7 @@ public class OneAttritube
             else return AttributeData.End;
         }
     }
+    //[ConditionalHide("isAD",true,true)]
     public StateTag STType
     {
         get
@@ -594,7 +605,7 @@ public class OneAttritube
         if (list.Length > 1)
         {
             string name = list[0];
-            if (name == "" || name == null) name = "hp";
+            if (name == "" || name == null) return null;
 
             int f = 0;
             FigureType _type = FigureType.basic;

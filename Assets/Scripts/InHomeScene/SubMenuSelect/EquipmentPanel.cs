@@ -56,6 +56,7 @@ public class EquipmentPanel : BasicSubMenuPanel
                 this.BtnToChangePos(pos);
             });
         }
+        EDP.gameObject.SetActive(false);
     }
     public override void commonBackAction()
     {

@@ -15,7 +15,7 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
     public int currentMGIndex;
     [Space(25)]
     public Transform RoleModel;
-    //public List<Transform> ModelGroup;
+    //public float NewModelScale = 2.5f;
     public Transform RoleGroup;
     public SelectTeamUnitPanel STUP { get { return GetComponentInParent<SelectTeamUnitPanel>(); } }
     private float initDelay = 0.05f;
@@ -86,7 +86,8 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
 
         //改写当前角色槽位
         RoleGroup.GetChild(currentMGIndex).position = AllEnablePosPlace[aimPosIndex].position;
-        SDDataManager.Instance.GetHeroOwnedByHashcode(heroHC).teamPos = aimPosIndex;
+        GDEHeroData hero = SDDataManager.Instance.GetHeroOwnedByHashcode(heroHC);
+        hero.teamPos = aimPosIndex;
     }
 
 
@@ -96,16 +97,18 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
     {
         ResetThisPanel();
         teamNumbers = SDDataManager.Instance.getHerosFromTeam(STUP.CurrentTeamId);
+        Debug.Log("TeamNumbersNum: " + teamNumbers.Count);
         for (int i = 0; i < teamNumbers.Count; i++)
         {
             if (teamNumbers[i] != null)
             {
-                Debug.Log("载入模型对应hashcode：" + teamNumbers[i].hashCode + "_" + i);
+                //如果位置已被占用则选择后一位
                 int pos = teamNumbers[i].teamPos;
-                if (checkBenefitPos(pos) >= 0)
+                int _pos = checkBenefitPos(pos);
+                if (_pos >= 0)
                 {
                     teamNumbers[i].teamPos
-                        = checkBenefitPos(pos);
+                        = _pos;
                     SDDataManager.Instance.setHeroTeamPos
                         (teamNumbers[i].hashCode, teamNumbers[i].teamPos);
                 }
@@ -115,6 +118,7 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
     }
     public IEnumerator IEInitRoleModelToRolePosPlace()
     {
+        yield return new WaitForSeconds(0.05f);
         for (int i = 0; i < teamNumbers.Count; i++)
         {
             Debug.Log("载入模型对应hashcode：" + teamNumbers[i].hashCode + "_" + i);
@@ -122,9 +126,8 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
             Transform s = Instantiate(RoleModel) as Transform;
             CharacterModelController CMC
                 = s.GetComponentInChildren<CharacterModelController>();
-            //CMC.heroHashcode = teamNumbers[i].hashCode;
-            //CMC.initCharacterModel(teamNumbers[i].hashCode,SDConstants.CharacterAnimType.)
-            CMC.initHeroCharacterModel(teamNumbers[i].hashCode);
+
+            CMC.initHeroCharacterModel(teamNumbers[i].hashCode, SDConstants.HERO_MODEL_RATIO);
             Vector2 aim = AllEnablePosPlace[pos].position;
             s.position = aim;
             s.SetParent(RoleGroup);
@@ -144,6 +147,7 @@ public class RolePosControllerInTeam : MonoBehaviour, IBeginDragHandler, IEndDra
             int newPos = (oldPos + i) % SDConstants.MaxSelfNum;
             if (!AllPosStatus[newPos])
             {
+                Debug.Log("Select_Pos_Status --" + newPos);
                 AllPosStatus[newPos] = true;
                 return newPos;
             }

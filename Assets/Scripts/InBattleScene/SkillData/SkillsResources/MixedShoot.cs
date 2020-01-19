@@ -39,7 +39,7 @@ public class MixedShoot : SkillFunction
         SLEffectManager.Instance.playCommonEffectCast(source.transform.position);
         yield return new WaitForSeconds(castLastTime);
 
-        source.playBulletCastAnimation(bullet, source.transform.position, target.transform.position);
+        source.playBulletCastAnimation(bullet, source.unit_model.position, target.unit_model.position);
         yield return new WaitForSeconds(bulletLastTime);
         int d0 = physicalVal;
         int d1 = elementalVal;

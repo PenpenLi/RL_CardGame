@@ -9,6 +9,7 @@ public class ItemDetailPanel : MonoBehaviour
     public int hashcode;
     //
     public Image itemImg;
+    public Image bgImg;
     public Image frameImg;
     [ReadOnly]
     public SDConstants.ItemType itemType;

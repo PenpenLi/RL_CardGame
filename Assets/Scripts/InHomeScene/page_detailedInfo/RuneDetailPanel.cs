@@ -6,7 +6,7 @@ using GameDataEditor;
 public class RuneDetailPanel : ItemDetailPanel
 {
     [Space(25)]
-    public ItemStarVision starVision;
+    //public ItemStarVision starVision;
     public string ownerId;
     public int quality;
     public int level;
@@ -25,9 +25,11 @@ public class RuneDetailPanel : ItemDetailPanel
         quality = R.Quality;
         level = rune.level;
         if(itemExtraText)
-            itemExtraText.text = SDGameManager.T("Lv.") + level + "·"
-                + SDDataManager.Instance.rarityString(quality);
-        starVision.StarNum = quality;
+            itemExtraText.text = SDGameManager.T("Lv.") + level;
+        //starVision.StarNum = quality;
+        //itemImg = 
+        frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(quality);
+        bgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(quality);
     }
     public void initDetailPanel(int hashcode)
     {

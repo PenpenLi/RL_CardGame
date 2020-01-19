@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using GameDataEditor;
+using UnityEngine.U2D;
+using System.Linq;
 //using Colorful;
 
-    /// <summary>
-    /// 游戏控制类
-    /// </summary>
+/// <summary>
+/// 游戏控制类
+/// </summary>
 public class GameController : MonoBehaviour
 {
     public static GameController Instantce;
@@ -33,7 +35,9 @@ public class GameController : MonoBehaviour
     public Text levelStartText;
     #endregion
     public Image backgroundImg;
-    public Sprite[] backgroundSps;
+    public List<Sprite> backgroundSps = new List<Sprite>();
+    public string currentLevelTheme;
+    //
     public Transform nextLevelLayer;
     public Image imgBlack;
     [HideInInspector]
@@ -45,10 +49,7 @@ public class GameController : MonoBehaviour
     #region 结算页面
     [Header("结算UI")]
     public Transform introPanel;
-    //public Transform gameSuccessLayer;
     public Transform gameEndLayer;
-    //public Transform gameFailLayer;
-    //public Transform gameReviveLayer;
     public Transform gameBonusLayer;
     public Transform gameEventLayer;
     [Space(15)]
@@ -157,8 +158,27 @@ public class GameController : MonoBehaviour
     public void setupBackgroundImg()
     {
         int level = SDGameManager.Instance.currentLevel;
-        int index = level% SDConstants.LevelNumPerSection;
-        backgroundImg.sprite = backgroundSps[index];
+        //
+        int s = level / SDConstants.LevelNumPerSection;
+        string nb;
+        if (s == 0) nb = "land";
+        else if (s == 1) nb = "sea";
+        else nb = "land";
+        if (currentLevelTheme != nb)
+        {
+            currentLevelTheme = nb;
+            //
+            SpriteAtlas atlas = SDDataManager.Instance.atlas_battleBg;
+            Sprite[] all = new Sprite[0];
+            atlas.GetSprites(all);
+            List<Sprite> matchs = all.ToList().FindAll(x => x.name.Contains(currentLevelTheme));
+            backgroundSps = matchs;
+        }
+        if (backgroundSps.Count > 0)
+        {
+            backgroundImg.sprite = backgroundSps[UnityEngine.Random
+                .Range(0, backgroundSps.Count)];
+        }
     }
     public void checkHeroesStatus()
     {
@@ -326,7 +346,6 @@ public class GameController : MonoBehaviour
         if (isBoss) s = Instantiate(bossPrefab) as Transform;
         else s = Instantiate(enemyPrefab) as Transform;
         s.localScale = Vector3.zero;
-        s.gameObject.SetActive(false);
         s.SetParent(enemyParent);
         s.position = getPosByIndex(index,true);
         s.name = SDConstants.ENEMY_TAG + enemyId + "POS" + index;
@@ -340,8 +359,7 @@ public class GameController : MonoBehaviour
     public IEnumerator IEShowEnemyBornAnim(Transform s)
     {
         yield return new WaitForSeconds(0.2f);
-        s.localScale = Vector3.one;
-        s.gameObject.SetActive(true);
+        s.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
     }
 
     public void addLittleBoss(string enemyId,int index, int rareWeight)

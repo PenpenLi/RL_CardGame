@@ -23,13 +23,14 @@ public class SDHeroDetail : BasicRoleProperty
     #region 栏No.1
     [Header("立绘和角色详细信息 栏")]
     public Image heroCharacterDrawingImg;
+    public Image HCdI_Bg;
     public Image CareerIconImg;
     public Text CareerText;
     public Image RaceIconImg;
     public Text RaceText;
     public Text NameText;
     public Text NameBeforeText;
-    public Text RarityText;
+    public Image RarityImg;
     public ItemStarVision StarNumVision;
     public Text LvText;
     public Transform ExpSlider;
@@ -103,7 +104,6 @@ public class SDHeroDetail : BasicRoleProperty
                 , Type
                 , SDDataManager.Instance.getLevelByExp(hero.exp));//视觉展示属性
             setRoleBaseMessiage();
-
             if (LvText)
             {
                 int exp = hero.exp;
@@ -111,13 +111,16 @@ public class SDHeroDetail : BasicRoleProperty
                 LvText.text = SDGameManager.T("Lv.") + lv;
                 if(ExpSlider)
                 ExpSlider.localScale 
-                        = Vector3.up + Vector3.forward + Vector3.right * (SDDataManager.Instance.getExpRateByExp(exp));
-
+                        = Vector3.up + Vector3.forward 
+                        + Vector3.right * (SDDataManager.Instance.getExpRateByExp(exp));
             }
             showRoleModelPanel();
-            //equipedSkills
+
+
 
             HeroWholeMessage.readHeroEquipedSkills(hashcode);
+            //
+            heroHeadImg.initHeroCharacterModel(Hashcode, SDConstants.HERO_MODEL_BIG_RATIO);
         }
     }
 
@@ -142,10 +145,42 @@ public class SDHeroDetail : BasicRoleProperty
         raceIndex = SDDataManager.Instance.getHeroRaceById(id);
 
         ROHeroData dal = SDDataManager.Instance.getHeroDataByID(id, heroData.starNumUpgradeTimes);
-        CareerText.text = "" + SDDataManager.Instance.getCareerStr(careerIndex, (int)raceIndex, Type);
-        //CareerIconImg.sprite = 
-        RaceText.text = "" + SDDataManager.Instance.getRaceStr((int)raceIndex, Type);
-        RarityText.text = SDDataManager.Instance.rarityString(dal.quality);
+
+
+        //career
+        RoleCareer c = dal.Info.Career;
+        CareerIconImg.sprite = c.Icon;
+        CareerIconImg.SetNativeSize();
+        CareerText.text = SDGameManager.T(c.NAME);
+        //race
+        HeroRace r = dal.Info.Race;
+        RaceIconImg.sprite = r.Icon;
+        RaceIconImg.SetNativeSize();
+        RaceText.text = SDGameManager.T(r.NAME);
+        //rarity
+        RarityImg.sprite = SDDataManager.Instance.raritySprite(dal.quality);
+        RarityImg.SetNativeSize();
+        //personalDrawImg
+        if (dal.Info.PersonalDrawImg == null)
+        {
+            HCdI_Bg.gameObject.SetActive(false);
+            heroCharacterDrawingImg.sprite = RaceIconImg.sprite;
+            heroCharacterDrawingImg.SetNativeSize();
+            heroCharacterDrawingImg.color = Color.grey;
+        }
+        else
+        {
+            HCdI_Bg.gameObject.SetActive(true);
+            heroCharacterDrawingImg.sprite = dal.Info.PersonalDrawImg;
+            heroCharacterDrawingImg.SetNativeSize();
+            heroCharacterDrawingImg.color = Color.white;
+            HCdI_Bg.sprite = RaceIconImg.sprite;
+            HCdI_Bg.SetNativeSize();
+            HCdI_Bg.color = Color.white;
+        }
+
+
+
         //RaceIconImg.sprite =
         int grade = SDDataManager.Instance.getLevelByExp(heroData.exp);
         _hero.gender = dal.Info.Sex;
@@ -159,12 +194,13 @@ public class SDHeroDetail : BasicRoleProperty
         GDEEquipmentData armor = SDDataManager.Instance.getHeroEquipHelmet(hashcode);
         if (armor == null || string.IsNullOrEmpty(armor.id))
         {
-            equipList.initPosEquipVisionEmpty(EquipPosition.Head);
+            equipList.EquipVision(EquipPosition.Head).initEquipVision(armor);
             _helmet.initDataEmpty(); return;
         }
         EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
         if (Item == null)
         {
+            equipList.EquipVision(EquipPosition.Head).initEquipVision(armor);
             _helmet.initDataEmpty(); return;
         }
         //
@@ -172,18 +208,21 @@ public class SDHeroDetail : BasicRoleProperty
             , Item.ID, Item.NAME, 0);
         _helmet.PassiveEffectInit(Item.PassiveEffect);
         _helmet.armorRank = Item.ArmorRank;
+        //
+        equipList.EquipVision(EquipPosition.Head).initEquipVision(armor);
     }
     public void setBreastplate(int hashcode)
     {
         GDEEquipmentData armor = SDDataManager.Instance.getHeroEquipBreastplate(hashcode);
         if (armor == null || string.IsNullOrEmpty(armor.id))
         {
-            equipList.initPosEquipVisionEmpty(EquipPosition.Breast);
+            equipList.EquipVision(EquipPosition.Breast).initEquipVision(armor);
             _breastplate.initDataEmpty(); return;
         }
         EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
         if (Item == null)
         {
+            equipList.EquipVision(EquipPosition.Breast).initEquipVision(armor);
             _breastplate.initDataEmpty(); return;
         }
         //
@@ -191,18 +230,21 @@ public class SDHeroDetail : BasicRoleProperty
             , Item.ID, Item.NAME, 0);
         _breastplate.PassiveEffectInit(Item.PassiveEffect);
         _breastplate.armorRank = Item.ArmorRank;
+        //
+        equipList.EquipVision(EquipPosition.Breast).initEquipVision(armor);
     }
     public void setGardebras(int hashcode)
     {
         GDEEquipmentData armor = SDDataManager.Instance.getHeroEquipGardebras(hashcode);
         if (armor == null || string.IsNullOrEmpty(armor.id))
         {
-            equipList.initPosEquipVisionEmpty(EquipPosition.Arm);
+            equipList.EquipVision(EquipPosition.Arm).initEquipVision(armor);
             _gardebras.initDataEmpty(); return;
         }
         EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
         if (Item == null)
         {
+            equipList.EquipVision(EquipPosition.Arm).initEquipVision(armor);
             _gardebras.initDataEmpty(); return;
         }
         //
@@ -210,18 +252,21 @@ public class SDHeroDetail : BasicRoleProperty
             , Item.ID, Item.NAME, 0);
         _gardebras.PassiveEffectInit(Item.PassiveEffect);
         _gardebras.armorRank = Item.ArmorRank;
+        //
+        equipList.EquipVision(EquipPosition.Arm).initEquipVision(armor);
     }
     public void setLegging(int hashcode)
     {
         GDEEquipmentData armor = SDDataManager.Instance.getHeroEquipLegging(hashcode);
         if (armor == null || string.IsNullOrEmpty(armor.id))
         {
-            equipList.initPosEquipVisionEmpty(EquipPosition.Leg);
+            equipList.EquipVision(EquipPosition.Leg).initEquipVision(armor);
             _legging.initDataEmpty(); return;
         }
         EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
         if (Item == null)
         {
+            equipList.EquipVision(EquipPosition.Leg).initEquipVision(armor);
             _legging.initDataEmpty(); return;
         }
         //
@@ -229,6 +274,8 @@ public class SDHeroDetail : BasicRoleProperty
             , Item.ID, Item.NAME, 0);
         _legging.PassiveEffectInit(Item.PassiveEffect);
         _legging.armorRank = Item.ArmorRank;
+        //
+        equipList.EquipVision(EquipPosition.Leg).initEquipVision(armor);
     }
     public void setJewelry(int hashcode, bool isSecondPos = false)
     {
@@ -237,12 +284,13 @@ public class SDHeroDetail : BasicRoleProperty
         {
             if (armor == null || string.IsNullOrEmpty(armor.id))
             {
-                equipList.initPosEquipVisionEmpty(EquipPosition.Finger, false);
+                equipList.EquipVision(EquipPosition.Finger,isSecondPos).initEquipVision(armor);
                 _jewelry0.initDataEmpty(); return;
             }
             EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
             if (Item == null)
             {
+                equipList.EquipVision(EquipPosition.Finger,isSecondPos).initEquipVision(armor);
                 _jewelry0.initDataEmpty(); return;
             }
             //
@@ -250,17 +298,20 @@ public class SDHeroDetail : BasicRoleProperty
                 , Item.ID, Item.NAME, 0);
             _jewelry0.PassiveEffectInit(Item.PassiveEffect);
             _jewelry0.armorRank = Item.ArmorRank;
+            //
+            equipList.EquipVision(EquipPosition.Finger, isSecondPos).initEquipVision(armor);
         }
         else
         {
             if (armor == null ||string.IsNullOrEmpty(armor.id))
             {
-                equipList.initPosEquipVisionEmpty(EquipPosition.Finger, true);
+                equipList.EquipVision(EquipPosition.Finger, isSecondPos).initEquipVision(armor);
                 _jewelry1.initDataEmpty(); return;
             }
             EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
             if (Item == null)
             {
+                equipList.EquipVision(EquipPosition.Finger,isSecondPos).initEquipVision(armor);
                 _jewelry1.initDataEmpty(); return;
             }
             //
@@ -268,6 +319,8 @@ public class SDHeroDetail : BasicRoleProperty
                 , Item.ID, Item.NAME, 0);
             _jewelry1.PassiveEffectInit(Item.PassiveEffect);
             _jewelry1.armorRank = Item.ArmorRank;
+            //
+            equipList.EquipVision(EquipPosition.Finger, isSecondPos).initEquipVision(armor);
         }
     }
     public void setWeapon(int hashcode)
@@ -275,12 +328,13 @@ public class SDHeroDetail : BasicRoleProperty
         GDEEquipmentData armor = SDDataManager.Instance.getHeroWeapon(hashcode);
         if (armor == null || string.IsNullOrEmpty(armor.id) || armor.hashcode == 0)
         {
-            equipList.initPosEquipVisionEmpty(EquipPosition.Hand);
+            equipList.EquipVision(EquipPosition.Hand).initEquipVision(armor);
             _weapon.initDataEmpty(); return;
         }
         EquipItem Item = SDDataManager.Instance.GetEquipItemById(armor.id);
         if (Item == null)
         {
+            equipList.EquipVision(EquipPosition.Hand).initEquipVision(armor);
             _weapon.initDataEmpty(); return;
         }
         //
@@ -288,6 +342,8 @@ public class SDHeroDetail : BasicRoleProperty
             , Item.ID, Item.NAME, 0);
         _weapon.PassiveEffectInit(Item.PassiveEffect);
         _weapon.armorRank = Item.ArmorRank;
+        //
+        equipList.EquipVision(EquipPosition.Hand).initEquipVision(armor);
     }
 
     public void InitHeroBasicProperties()

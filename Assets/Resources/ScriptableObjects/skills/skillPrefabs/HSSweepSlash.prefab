@@ -666,6 +666,7 @@ MonoBehaviour:
   IsUsed: 0
   SkillFiniteTimes: 0
   SFT_CurrentTimes: 0
+  SkillDisable: 0
   BCCostPerTime:
     DATA: {x: 0, y: 0, z: 0}
   BCCostPerLevel:
@@ -698,23 +699,35 @@ MonoBehaviour:
   IsCausedCritDmg: 0
   IsCausedMiss: 0
   IsCausedFault: 0
-  IsRare: 0
+  IsOmega: 0
   UseState: 1
   _standardState:
+    SkillGrade: 0
+    NAME: STANDARDSTATE
+    Success: 0
+    stateEndType: 0
+    StateLastTime: 3
+    stateTag: 0
+    stateKind: 1
+    StatePossibilityBuff: 60
     AllChangesInRAL: []
     ChangeInBarChart:
-      Datas: []
+      HP:
+        dataTag: 0
+        DATA: 0
+      MP:
+        dataTag: 0
+        DATA: 0
+      TP:
+        dataTag: 0
+        DATA: 0
+    aimAtSelf: 0
     UseSourceAToDmg: 0
     ExtraDmg:
       dataTag: 0
       DATA: 0
     UsePercent: 15
-    SkillGrade: 0
-    NAME: STANDARDSTATE
-    StateLastTime: 3
-    stateTag: 0
-    stateKind: 1
-    StatePossibilityBuff: 30
+    stateAOE: 0
 --- !u!114 &8592547313396701081
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -727,12 +740,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aefd96eae55d6eb419c28e0cf282695a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BCPerformDataUsingRA: 200
+  BCPerformDataUsingRA: 150
   PDUsingRA_PerLevel: 25
   PDUsingRA_PerSkillGrade: 25
-  BCTargetDataUsingPercent: 0
-  TDUsingBC_PerLevel: 0
-  TDUsingBC_PerSkillGrade: 0
 --- !u!114 &156588025570907492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -746,9 +756,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HSDetail:
-    skillId: 0
+    skillId: 
     SkillName: 
+    index: 0
+    UseAppointedPrefab: 0
     SkillFunctionID: 0
+    SkillPrefab: {fileID: 0}
+    DataSet:
+      BCPerformDataUsingRA: 0
+      PDUsingRA_PerLevel: 0
+      PDUsingRA_PerSkillGrade: 0
+      UseState: 0
+      _standardState:
+        SkillGrade: 0
+        NAME: 
+        Success: 0
+        stateEndType: 0
+        StateLastTime: 0
+        stateTag: 0
+        stateKind: 0
+        StatePossibilityBuff: 0
+        AllChangesInRAL: []
+        ChangeInBarChart:
+          HP:
+            dataTag: 0
+            DATA: 0
+          MP:
+            dataTag: 0
+            DATA: 0
+          TP:
+            dataTag: 0
+            DATA: 0
+        aimAtSelf: 0
+        UseSourceAToDmg: 0
+        ExtraDmg:
+          dataTag: 0
+          DATA: 0
+        UsePercent: 0
+        stateAOE: 0
     IconImg: 
     BulletImg: 
     isOmegaSkill: 0
@@ -766,6 +811,7 @@ MonoBehaviour:
   Atb: 0
   AOEType: 2
   AfterwardsAddType: 3
+  ID: 
 --- !u!1 &8841971984501202710
 GameObject:
   m_ObjectHideFlags: 0

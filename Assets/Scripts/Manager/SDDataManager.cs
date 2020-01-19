@@ -43,15 +43,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         SetupDatas();
         //StartCoroutine(IELoadFileAsynchronously());
     }
-    #region Infor
-
-    #region GameChapterInfor
-    public void addUnlockedChapter()
-    {
-        //
-    }
-    #endregion
-    #region HeroInfor
     public void SetupDatas()
     {
         PlayerData = new GDEPlayerData(GDEItemKeys.Player_CurrentPlayer);
@@ -97,6 +88,160 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         //if(SDDataManager.Instance.SettingData.)
 
     }
+    #region Infor
+
+    #region GameChapterInfor
+    public void addUnlockedChapter()
+    {
+        //
+    }
+    #endregion
+    #region HeroInfor
+    /// <summary>
+    /// 添加英雄
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public int addHero(string id)
+    {
+        Instance.heroNum++;
+        //
+        add_Item(id);
+        //
+        GDEHeroData hero = new GDEHeroData(GDEItemKeys.Hero_BasicHero)
+        {
+            id = id
+,
+            hashCode = Instance.heroNum
+,
+            status = 0
+,
+            starNumUpgradeTimes = 1
+,
+            exp = 0
+        };
+        HeroInfo info = getHeroInfoById(id);
+        //ral
+        RoleAttributeList ral = RoleAttributeList.RandomSet
+        (
+        new ScopeInt(-15, 15)//三项Barchart
+        , new ScopeInt(-5, 5)//四项攻防
+        , new ScopeInt(-1, 1)//其他
+        , new ScopeInt(-10, 10)//抗性
+        );
+        hero.RoleAttritubeList = ral.TurnIntoGDEData;
+
+        //skill
+        List<GDEASkillData> list = addStartSkillsWhenSummoning(hero.id);
+        for (int i = 0; i < list.Count; i++)
+        {
+            hero.skillsOwned.Add(list[i]);
+            hero.Set_skillsOwned();
+        }
+        AllStrs = hero.skillsOwned.Select(x =>
+        {
+            return x.Id + "___" + x.Lv;
+        }).ToList();
+        //直接将已解锁技能装配上
+        List<string> enables = list.FindAll(x => x.Lv >= 0).Select(x => x.Id).ToList();
+        for (int i = 0; i < enables.Count; i++)
+        {
+            if (getSkillByHeroId(enables[i], hero.id).isOmegaSkill)
+            {
+                hero.skillOmegaId = enables[i];
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(hero.skill0Id))
+                {
+                    if (checkHeroEnableSkill1ById(hero.id))
+                    {
+                        hero.skill1Id = enables[i];
+                    }
+                }
+                else
+                {
+                    hero.skill0Id = enables[i];
+                }
+            }
+        }
+
+        //animImg
+        int level = getHeroLevelById(id);
+        hero.AnimData = new GDEAnimData(GDEItemKeys.Anim_EmptyAnim)
+        {
+            isRare = false,
+            body = string.Empty,
+            eyes = string.Empty,
+            faceother = string.Empty,
+            hair = string.Empty,
+            handR = string.Empty,
+            head = string.Empty,
+            hips = string.Empty,
+            L_hand_a = string.Empty,
+            L_hand_b = string.Empty,
+            L_hand_c = string.Empty,
+            L_jiao = string.Empty,
+            L_leg_a = string.Empty,
+            L_leg_b = string.Empty,
+            liuhai = string.Empty,
+            R_leg_a = string.Empty,
+            R_leg_b = string.Empty,
+        };
+        if (info.UseSpineData)
+        {
+            List<string> all = info.SpineData.SkeletonData.GetSkeletonData(true).Skins
+                .Select(x => x.Name).ToList();
+            if (string.IsNullOrEmpty(info.SpineData.Skin))
+            {
+                hero.AnimData.isRare = false;
+                int gender = (int)info.Sex - 1;
+                all = all.FindAll(x => x.Contains("normal") && x.Substring(x.Length - 1) == gender.ToString());
+                if (all.Count <= 0) hero.AnimData.skinName = "default";
+                else
+                {
+                    hero.AnimData.skinName = all[UnityEngine.Random.Range(0, all.Count)];
+                }
+            }
+            else
+            {
+                hero.AnimData.isRare = true;
+                hero.AnimData.skinName = null;
+            }
+        }
+
+        Instance.PlayerData.herosOwned.Add(hero);
+        Instance.PlayerData.Set_herosOwned();
+
+
+
+        return hero.hashCode;
+    }
+
+
+    public Sprite heroBoxFrameByRarity(int rarity)
+    {
+        string n = string.Format("heroBoxFrame{0:D1}", rarity);
+        return atlas_rarity.GetSprite(n);
+    }
+    public string getHeroSkinNameInSkeleton(int hashcode)
+    {
+        GDEHeroData hero = getHeroByHashcode(hashcode);
+        HeroInfo info = getHeroInfoById(hero.id);
+        if (hero.AnimData.isRare)
+        {
+            if (info.UseSpineData)
+            {
+                return info.SpineData.Skin;
+            }
+            else { return null; }
+        }
+        else
+        {
+            return hero.AnimData.skinName;
+        }
+    }
+    //
     public int getTempleByType(Job job, AttributeData templeType)
     {
         return getTempleByJob(job).AllAttributeData[(int)templeType];
@@ -266,125 +411,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
         }
     }
-    public int addHero(string id)
-    {
-        Instance.heroNum++;
-        //
-        add_Item(id);
-        //
-        GDEHeroData hero = new GDEHeroData(GDEItemKeys.Hero_BasicHero)
-        {
-            id = id
-,
-            hashCode = Instance.heroNum
-,
-            status = 0
-,
-            starNumUpgradeTimes = 1
-,
-            exp = 0
-        };
 
-//ral
-    RoleAttributeList ral = RoleAttributeList.RandomSet
-        (
-        new ScopeInt(-15, 15)//三项Barchart
-        , new ScopeInt(-5, 5)//四项攻防
-        , new ScopeInt(-1, 1)//其他
-        , new ScopeInt(-10, 10)//抗性
-        );
-    hero.RoleAttritubeList = ral.TurnIntoGDEData;
-//skill
-        List<GDEASkillData> list = addStartSkillsWhenSummoning(hero.id);
-        for(int i = 0; i < list.Count; i++)
-        {
-            hero.skillsOwned.Add(list[i]);
-            hero.Set_skillsOwned();
-        }
-
-        AllStrs = hero.skillsOwned.Select(x =>
-        {
-            return x.Id + "___" + x.Lv;
-        }).ToList();
-
-        //直接将已解锁技能装配上
-        List<string> enables = list.FindAll(x => x.Lv >= 0).Select(x => x.Id).ToList();
-    for (int i = 0; i < enables.Count; i++)
-    {
-        if (getSkillByHeroId(enables[i], hero.id).isOmegaSkill)
-        {
-            hero.skillOmegaId = enables[i];
-        }
-        else
-        {
-            if(!string.IsNullOrEmpty (hero.skill0Id))
-            {
-                if (checkHeroEnableSkill1ById(hero.id))
-                {
-                    hero.skill1Id = enables[i];
-                }
-            }
-            else
-            {
-                hero.skill0Id = enables[i];
-            }
-        }
-    }
-
-//animImg
-    int level = getHeroLevelById(id);
-
-    hero.AnimData = new GDEAnimData(GDEItemKeys.Anim_EmptyAnim)
-{
-isRare = true,
-body = string.Empty,
-eyes = string.Empty,
-faceother = string.Empty,
-hair = string.Empty,
-handR = string.Empty,
-head = string.Empty,
-hips = string.Empty,
-L_hand_a = string.Empty,
-L_hand_b = string.Empty,
-L_hand_c = string.Empty,
-L_jiao = string.Empty,
-L_leg_a = string.Empty,
-L_leg_b = string.Empty,
-liuhai = string.Empty,
-R_leg_a = string.Empty,
-R_leg_b = string.Empty,
-};
-
-    if (level < 2)
-{
-hero.AnimData.isRare = false;
-int skeleton = getHeroSkeletonById(id);
-hero.AnimData.skeletonIndex = skeleton;
-hero.AnimData.body = getRandomImgAddressForAnim(nameof(hero.AnimData.body), skeleton);
-hero.AnimData.eyes = getRandomImgAddressForAnim(nameof(hero.AnimData.eyes), skeleton);
-hero.AnimData.faceother = getRandomImgAddressForAnim(nameof(hero.AnimData.faceother), skeleton);
-hero.AnimData.hair = getRandomImgAddressForAnim(nameof(hero.AnimData.hair) + 1, skeleton);
-hero.AnimData.handR = getRandomImgAddressForAnim(nameof(hero.AnimData.handR), skeleton);
-hero.AnimData.head = getRandomImgAddressForAnim(nameof(hero.AnimData.head), skeleton);
-hero.AnimData.hips = getRandomImgAddressForAnim(nameof(hero.AnimData.hips), skeleton);
-hero.AnimData.L_hand_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_a), skeleton);
-hero.AnimData.L_hand_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_b), skeleton);
-hero.AnimData.L_hand_c = getRandomImgAddressForAnim(nameof(hero.AnimData.L_hand_c), skeleton);
-hero.AnimData.L_jiao = getRandomImgAddressForAnim(nameof(hero.AnimData.L_jiao), skeleton);
-hero.AnimData.L_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_a), skeleton);
-hero.AnimData.L_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.L_leg_b), skeleton);
-hero.AnimData.liuhai = getRandomImgAddressForAnim(nameof(hero.AnimData.liuhai), skeleton);
-hero.AnimData.R_leg_a = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_a), skeleton);
-hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b), skeleton);
-}
-
-        Instance.PlayerData.herosOwned.Add(hero);
-        Instance.PlayerData.Set_herosOwned();
-
-
-
-        return hero.hashCode;
-    }
     public void addHeroByConsumeHero(string costId)
     {
         HeroInfo costHero = getHeroInfoById(costId);
@@ -921,53 +948,6 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         RateToNext = L * 1f / SDConstants.MinHeartVolume;
         return 0;
     }
-    public string getCareerStr(Job career, int raceIndex = 0
-        , SDConstants.CharacterType type = SDConstants.CharacterType.Hero)
-    {
-        string s = "";
-        int careerIndex = (int)career;
-        if (type == SDConstants.CharacterType.Hero)
-        {
-            if (careerIndex == 0) s = SDGameManager.T("fighter");
-            else if (careerIndex == 1) s = SDGameManager.T("ranger");
-            else if (careerIndex == 2) s = SDGameManager.T("priest");
-            else if (careerIndex == 3) s = SDGameManager.T("caster");
-        }
-        else if (type == SDConstants.CharacterType.Goddess)
-        {
-
-        }
-        else if (type == SDConstants.CharacterType.Enemy)
-        {
-            if (raceIndex == 0)
-            {
-
-            }
-        }
-        return s;
-    }
-    public string getRaceStr(int raceIndex, SDConstants.CharacterType type)
-    {
-        string s = "";
-        if (type == SDConstants.CharacterType.Hero)
-        {
-            if (raceIndex == 0) s = SDGameManager.T("human");
-            else if (raceIndex == 1) s = SDGameManager.T("elf");
-            else if (raceIndex == 2) s = SDGameManager.T("dragonborn");
-        }
-        else if (type == SDConstants.CharacterType.Goddess)
-        {
-
-        }
-        else if (type == SDConstants.CharacterType.Enemy)
-        {
-            if (raceIndex == 0) s = SDGameManager.T("elemental");
-            else if (raceIndex == 1) s = SDGameManager.T("goblin");
-            else if (raceIndex == 2) s = SDGameManager.T("orc");
-            else if (raceIndex == 3) s = SDGameManager.T("beast");
-        }
-        return s;
-    }
     public bool getHeroIfLocked(int hashcode)
     {
         GDEHeroData h = getHeroByHashcode(hashcode);
@@ -990,21 +970,9 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     #region Hero_Anim_Infor
     public string getRandomImgAddressForAnim(string parent, int skeletonIndex = 0)
     {
-        //Sprite[] all_body = Resources.LoadAll<Sprite>("Sprites/AnimImage/" + parent);
-        //return all_body[UnityEngine.Random.Range(0, all_body.Length-1)].name;
-        HeroAnimImgList hail = null;
-        HeroAnimImgList[] allHAIL = Resources.LoadAll<HeroAnimImgList>("ScriptableObjects");
-        for (int i = 0; i < allHAIL.Length; i++)
-        {
-            if (allHAIL[i].Skeleton == skeletonIndex)
-            {
-                hail = allHAIL[i];
-                break;
-            }
-        }
-        if (hail == null) return string.Empty;
+        RoleSkeletonData hail = null;
 
-        HeroAnimImgList.SlotRegionPairList list = null;
+        RoleSkeletonData.SlotRegionPairList list = null;
         foreach (var L in hail.AllEnableList)
         {
             if (L.slot == parent)
@@ -1023,22 +991,6 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         //Debug.Log("ATLAS==--=="+atlasAddress + "===---===" + spriteName);
         SpriteAtlas atlas = Resources.Load<SpriteAtlas>("Sprites/AnimImage/" + atlasAddress);
         return atlas.GetSprite(spriteName);
-    }
-    public HeroAnimImgList.SlotRegionPair GetPairBySlotAndRegion(int skeletonIndex, string slot, string region)
-    {
-        HeroAnimImgList hail = null;
-        HeroAnimImgList[] allHAIL = Resources.LoadAll<HeroAnimImgList>("ScriptableObjects/heroAnimImgList");
-        for (int i = 0; i < allHAIL.Length; i++)
-        {
-            if (allHAIL[i].Skeleton == skeletonIndex)
-            {
-                hail = allHAIL[i]; break;
-            }
-        }
-        if (hail == null) return null;
-        HeroAnimImgList.SlotRegionPairList list = hail.AllEnableList.Find(x => x.slot == slot);
-        if (list == null) return null;
-        return list.AllRegionList.Find(x => x.region == region);
     }
     #endregion
     #region HeroTeamInfor
@@ -1162,13 +1114,8 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     }
     public List<GDEHeroData> getHerosFromTeam(string id)
     {
-        List<GDEHeroData> list = new List<GDEHeroData>();
-        IEnumerable<GDEHeroData> all
-            = PlayerData.herosOwned.FindAll(x => x.teamIdBelongTo == id).AsEnumerable();
-        foreach (var a in all)
-        {
-            list.Add(a);
-        }
+        List<GDEHeroData> list
+            = PlayerData.herosOwned.FindAll(x => x.teamIdBelongTo == id).ToList();
         return list;
     }
     public GDEHeroData getHeroFromTeamByOrder(string teamId, int order)
@@ -1600,112 +1547,30 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     public int getDimension() { return PlayerData.dimension; }
     #endregion
     #region DataListResult
+    #region sprite_atlas
+    public List<SpriteAtlas> AllAtlas = new List<SpriteAtlas>();
+    public SpriteAtlas[] atlas_equip_list = new SpriteAtlas[(int)EquipPosition.End];
+    public SpriteAtlas atlas_battleBg;
+    public SpriteAtlas atlas_rarity;
+    #endregion
+    public void ReadAtlas()
+    {
+        AllAtlas = Resources.LoadAll<SpriteAtlas>("Sprites/atlas").ToList();
+        //atlas_equip_list
+        for(int i = 0; i < (int)EquipPosition.End; i++)
+        {
+            SpriteAtlas atlas = AllAtlas.Find(x => x.name.ToLower().Contains
+            (((EquipPosition)i).ToString().ToLower()));
+            if (atlas != null) atlas_equip_list[i] = atlas;
+        }
+        //atlas-battleBg
+        atlas_battleBg = AllAtlas.Find(x => x.name.Contains("battleBg"));
+        atlas_rarity = AllAtlas.Find(x => x.name.Contains("rarity"));
+    }
     public void ResetDatas()
     {
         PlayerPrefs.DeleteAll();
         GDEDataManager.ClearSaved();
-    }
-    #region 现场索引后内容存储区域
-    List<Dictionary<string, string>> dataListResult0;
-    List<Dictionary<string, string>> dataListResult1;
-    List<Dictionary<string, string>> dataListResult2;
-    List<Dictionary<string, string>> dataListResult3;
-    List<Dictionary<string, string>> dataListResult4;
-    List<Dictionary<string, string>> dataListResult5;
-    List<Dictionary<string, string>> dataListResult6;
-    List<Dictionary<string, string>> dataListResult7;
-    List<Dictionary<string, string>> dataListResult8;
-    List<Dictionary<string, string>> dataListResult9;
-    List<Dictionary<string, string>> dataListResult10;
-    List<Dictionary<string, string>> dataListResult11;
-    List<Dictionary<string, string>> dataListResult12;
-    List<Dictionary<string, string>> dataListResult13;
-    List<Dictionary<string, string>> dataListResult14;
-    List<Dictionary<string, string>> dataListResult15;
-    List<Dictionary<string, string>> dataListResult16;
-    List<Dictionary<string, string>> dataListResult17;
-    List<Dictionary<string, string>> dataListResult18;
-    List<Dictionary<string, string>> dataListResult20;
-    List<Dictionary<string, string>> dataListResult21;
-    List<Dictionary<string, string>> dataListResult22;
-    List<Dictionary<string, string>> dataListResult23;
-    List<Dictionary<string, string>> dataListResult24;
-    List<Dictionary<string, string>> dataListResult25;
-    List<Dictionary<string, string>> dataListResult26;
-    List<Dictionary<string, string>> dataListResult27;
-    List<Dictionary<string, string>> dataListResult28;
-    List<Dictionary<string, string>> dataListResult29;
-    
-    #endregion
-    public List<Dictionary<string, string>> ReadFromCSV(string filename)
-    {
-        if (filename == "achievement")
-        {
-            if (dataListResult0 == null) { dataListResult0 = ReadDataFromCSV("achievement"); }
-            return dataListResult0;
-        } else if (filename == "equip")
-        {
-            if (dataListResult1 == null) { dataListResult1 = ReadDataFromCSV("equip"); };
-            return dataListResult1;
-        }
-        else if (filename == "decoration")
-        {
-            if (dataListResult2 == null) { dataListResult2 = ReadDataFromCSV("decoration"); }
-            return dataListResult2;
-        }
-        else if (filename == "enemy")
-        {
-            if (dataListResult3 == null) { dataListResult3 = ReadDataFromCSV("enemy"); }
-            return dataListResult3;
-        }
-        else if (filename == "material")
-        {
-            if (dataListResult4 == null) { dataListResult4 = ReadDataFromCSV("material"); }
-            return dataListResult4;
-        }
-        else if (filename == "heroLvUp")
-        {
-            if (dataListResult6 == null) { dataListResult6 = ReadDataFromCSV("heroLvUp"); }
-            return dataListResult6;
-        }
-        else if (filename == "nameBefore")
-        {
-            if (dataListResult7 == null) { dataListResult7 = ReadDataFromCSV("nameBefore"); }
-            return dataListResult7;
-        }
-        else if (filename == "goddess")
-        {
-            if (dataListResult10 == null) { dataListResult10 = ReadDataFromCSV("goddess"); }
-            return dataListResult10;
-        }
-        else if (filename == "badge")
-        {
-            if (dataListResult11 == null) { dataListResult11 = ReadDataFromCSV("badge"); }
-            return dataListResult11;
-        }
-        else if (filename == "task_time")
-        {
-            if (dataListResult12 == null) { dataListResult12 = ReadDataFromCSV("task_time"); }
-            return dataListResult12;
-        }
-        else if (filename == "task_plot")
-        {
-            if (dataListResult13 == null) { dataListResult13 = ReadDataFromCSV("task_plot"); }
-            return dataListResult13;
-        }
-        else
-        {
-            return ReadDataFromCSV(filename);
-        }
-    }
-    public List<Dictionary<string, string>> ReadDataFromCSV(string fileName)
-    {
-        List<Dictionary<string, string>> xxListResult
-            = new List<Dictionary<string, string>>();
-        TextAsset chadata = Resources.Load("Data/" + fileName) as TextAsset;
-        List<string[]> cDatas = LocalizationReader.ReadCSV(chadata.text);
-        xxListResult = ROHelp.ConvertCsvListToDictWithAttritubes(cDatas);
-        return xxListResult;
     }
     public int getInteger(string s)
     {
@@ -1715,29 +1580,6 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             if (int.TryParse(s, out _)) { tmp = int.Parse(s); }
         }
         return tmp;
-    }
-    public IEnumerator IELoadFileAsynchronously()
-    {
-        dataListResult0 = ReadDataFromCSV("achievement");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        dataListResult1 = ReadDataFromCSV("equip");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        //dataListResult2 = ReadDataFromCSV("decoration");
-        //yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        dataListResult3 = ReadDataFromCSV("enemy");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        dataListResult4 = ReadDataFromCSV("material");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        dataListResult5 = ReadDataFromCSV("prop");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        //dataListResult6 = ReadDataFromCSV("heroLvUp");
-        //yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        dataListResult7 = ReadDataFromCSV("nameBefore");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        dataListResult8 = ReadDataFromCSV("jewelry");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
-        dataListResult9 = ReadDataFromCSV("weapon");
-        yield return new WaitForSeconds(SDConstants.READ_CSV_TIME);
     }
     public SDConstants.ItemType getItemTypeById(string id)
     {
@@ -1938,7 +1780,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         task = PlayerData.TimeTaskList.Find(x => x.taskId == taskId);
         return task != null;
     }
-    public void AddTimeTask(SDConstants.timeTaskType taskType,int Hashcode
+    public bool AddTimeTask(SDConstants.timeTaskType taskType,int Hashcode
         ,string itemId
         ,string taskId = null)
     {
@@ -1960,7 +1802,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                 if (interval.Seconds < taskData.timeType * 60)
                 {
                     Debug.Log("已存在该任务且未完成，添加失败");
-                    return;
+                    return false;
                 }
             }
         }
@@ -1972,24 +1814,27 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             itemId = itemId,
             startTime = DateTime.Now.ToString(),
         };
-        if(taskType == SDConstants.timeTaskType.HOSP)
+        if (taskType == SDConstants.timeTaskType.HOSP)
         {
             int maxF = getHeroMaxFatigue(taskData.itemHashcode);
             GDEHeroData hero = getHeroByHashcode(Hashcode);
             ROHeroData _hero = getHeroOriginalDataById(hero.id);
-            int mainTimeType = (hero.starNumUpgradeTimes + _hero.starNum + _hero.quality) 
+            int mainTimeType = (hero.starNumUpgradeTimes + _hero.starNum + _hero.quality)
                 * 2 + 10;
 
             int status = hero.status;
-            if(status == 2)
+            if (status == 2)
             {
                 setHeroStatus(Hashcode, 3);
                 taskData.oldData = status;
                 taskData.timeType = mainTimeType;
+                Debug.Log("添加英雄从濒死到康复的治疗任务,hashcode: " + Hashcode
+                    + " TaskId: " + TaskId);
                 PlayerData.TimeTaskList.Add(taskData);
                 PlayerData.Set_TimeTaskList();
+                return true;
             }
-            else if(status != 3)
+            else if (status != 3)
             {
                 float fatigueRate = getHeroFatigueRate(Hashcode);
                 if (fatigueRate > 0.1f)//存在明显疲劳
@@ -1997,31 +1842,40 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                     setHeroStatus(Hashcode, 3);
                     taskData.oldData = status;
                     taskData.timeType = (int)(mainTimeType * fatigueRate * 0.8f);
+                    Debug.Log("添加英雄从疲劳到康复的治疗任务,hashcode: " + Hashcode
+                        + " TaskId: " + TaskId);
                     PlayerData.TimeTaskList.Add(taskData);
                     PlayerData.Set_TimeTaskList();
+                    return true;
                 }
                 else//太轻松不需要治疗
                 {
-
+                    Debug.Log("英雄疲劳度太低,不能添加任务");
+                    return false;
                 }
             }
+            else
+            {
+                Debug.Log("英雄状态(status)不符合要求");
+                return false;
+            }
         }
-        else if(taskType == SDConstants.timeTaskType.FACT)
+        else if (taskType == SDConstants.timeTaskType.FACT)
         {
             consumableItem M = getConsumableById(itemId);
             SDConstants.MaterialType mt = M.MaterialType;
             int mainTimeType = (M.LEVEL + 1) * 2;
             GDENPCData slave = SDDataManager.Instance.GetNPCOwned(Hashcode);
-            if (slave!=null)
+            if (slave != null)
             {
                 int lv = getLevelByExp(slave.exp);
-                int like = getLikeByLikability(slave.likability,out float rate);
+                int like = getLikeByLikability(slave.likability, out float rate);
                 mainTimeType = Mathf.Max(2, mainTimeType - lv);
                 if (mt == SDConstants.MaterialType.exp)
                 {
                     taskData.oldData = slave.workPower0;
                 }
-                else if(mt == SDConstants.MaterialType.equip_exp)
+                else if (mt == SDConstants.MaterialType.equip_exp)
                 {
                     taskData.oldData = slave.workPower1;
                 }
@@ -2037,6 +1891,12 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             taskData.timeType = mainTimeType;
             PlayerData.TimeTaskList.Add(taskData);
             PlayerData.Set_TimeTaskList();
+            return true;
+        }
+        else
+        {
+            Debug.Log("不存在该任务类型");
+            return false;
         }
     }
     public bool AbandonTimeTask(string taskId)
@@ -2264,6 +2124,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     }
     #endregion
     #region Equipments_Infor
+    #region getEquipedEquipmentByPosInHashcode
     public GDEEquipmentData getHeroEquipHelmet(int heroHashcode)
     {
         foreach (GDEHeroData hero in PlayerData.herosOwned)
@@ -2288,7 +2149,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                     {
                         hero.equipHelmet.id = string.Empty;
                         hero.equipHelmet.equipType = 0;
-                        hero.equipHelmet.exp = 0;
+                        hero.equipHelmet.lv = 0;
                         hero.equipHelmet.equipBattleForce = 0;
                         hero.equipHelmet.hashcode = 0;
                         hero.equipHelmet.num = 0;
@@ -2323,7 +2184,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                     {
                         hero.equipBreastplate.id = string.Empty;
                         hero.equipBreastplate.equipType = 0;
-                        hero.equipBreastplate.exp = 0;
+                        hero.equipBreastplate.lv = 0;
                         hero.equipBreastplate.equipBattleForce = 0;
                         hero.equipBreastplate.hashcode = 0;
                         hero.equipBreastplate.num = 0;
@@ -2358,7 +2219,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                     {
                         hero.equipGardebras.id = string.Empty;
                         hero.equipGardebras.equipType = 0;
-                        hero.equipGardebras.exp = 0;
+                        hero.equipGardebras.lv = 0;
                         hero.equipGardebras.equipBattleForce = 0;
                         hero.equipGardebras.hashcode = 0;
                         hero.equipGardebras.num = 0;
@@ -2393,7 +2254,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                     {
                         hero.equipLegging.id = string.Empty;
                         hero.equipLegging.equipType = 0;
-                        hero.equipLegging.exp = 0;
+                        hero.equipLegging.lv = 0;
                         hero.equipLegging.equipBattleForce = 0;
                         hero.equipLegging.hashcode = 0;
                         hero.equipLegging.num = 0;
@@ -2430,7 +2291,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                         {
                             hero.jewelry0.id = string.Empty;
                             hero.jewelry0.equipType = 0;
-                            hero.jewelry0.exp = 0;
+                            hero.jewelry0.lv = 0;
                             hero.jewelry0.equipBattleForce = 0;
                             hero.jewelry0.hashcode = 0;
                             hero.jewelry0.num = 0;
@@ -2458,7 +2319,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
                         {
                             hero.jewelry1.id = string.Empty;
                             hero.jewelry1.equipType = 0;
-                            hero.jewelry1.exp = 0;
+                            hero.jewelry1.lv = 0;
                             hero.jewelry1.equipBattleForce = 0;
                             hero.jewelry1.hashcode = 0;
                             hero.jewelry1.num = 0;
@@ -2478,27 +2339,15 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             {
                 if (hero.equipWeapon != null)
                 {
-                    bool exit = false;
-                    foreach (GDEEquipmentData a in PlayerData.equipsOwned)
-                    {
-                        if (a.hashcode == hero.equipWeapon.hashcode)
-                        {
-                            exit = true;
-                        }
-                    }
+                    bool exit = getAllOwnedEquips().Exists(x 
+                        => x.hashcode == hero.equipWeapon.hashcode && x.id == hero.equipWeapon.id);
                     if (exit)
                     {
                         return hero.equipWeapon;
                     }
                     else
                     {
-                        hero.equipWeapon.id = string.Empty;
-                        hero.equipWeapon.equipType = 0;
-                        hero.equipWeapon.exp = 0;
-                        hero.equipWeapon.equipBattleForce = 0;
-                        hero.equipWeapon.hashcode = 0;
-                        hero.equipWeapon.num = 0;
-                        return hero.equipWeapon;
+                        return null;
                     }
                 }
             }
@@ -2526,9 +2375,15 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     {
         GDEEquipmentData e = new GDEEquipmentData(GDEItemKeys.Equipment_EquipEmpty);
         e.hashcode = e.OwnerHashcode = e.equipType = e.equipBattleForce = e.index
-            = e.num = e.exp = 0;
+            = e.num = e.lv = 0;
         e.id = string.Empty;
         return e;
+    }
+    #endregion
+    public Sprite equipPosIcon(EquipPosition pos)
+    {
+        string n = "pos_" + pos.ToString().ToLower();
+        return atlas_rarity.GetSprite(n);
     }
     public GDEEquipmentData getEquipmentByHashcode(int itemHashcode)
     {
@@ -2541,14 +2396,6 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             }
         }
         return null;
-    }
-    public RoleAttributeList EquipRALByDictionary(Dictionary<string, string> s)
-    {
-        RoleAttributeList ral = new RoleAttributeList();
-        string mainE = s["mainEffect"]; string sideE = s["sideEffect"];
-        ral.Add(OneAttritube.ReadEffectString(mainE));//添加主属性
-        ral.Add(OneAttritube.ReadEffectString(sideE));//添加副属性
-        return ral;
     }
     public List<GDEEquipmentData> getAllOwnedEquips()
     {
@@ -2624,6 +2471,16 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         }
         return null;
     }
+
+    public Sprite GetEquipIconById(string id)
+    {
+        EquipItem item = GetEquipItemById(id);
+        return item.IconFromAtlas;
+    }
+    public Sprite GetEquipBgIconByRarity(int rarity)
+    {
+        return null;
+    }
     public int getEquipPosById(string id)
     {
         List<EquipItem> all = AllEquipList;
@@ -2662,7 +2519,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     {
         GDEEquipmentData equip = SDDataManager.Instance.getEquipmentByHashcode(itemHashcode);
         int basic = SDDataManager.Instance.getEquipBaiscBattleForceById(equip.id);
-        int level = SDDataManager.Instance.getLevelByExp(equip.exp);
+        int level = equip.lv;
         int flag = (int)(basic * (1 + level * 0.15f));
         return flag;
     }
@@ -2703,22 +2560,29 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         }
         return 0;
     }
-    public float getPossibleLvupByTargetLevel(int targetLevel,out int visualRate)
+    public bool PromoteEquipQuality(int hashcode, int promote = 1)
     {
-        float m = 1 - targetLevel * targetLevel * 0.01f;
-        visualRate = (int)(((m * 100) / 10) * 10);
-        if (targetLevel <= 5) { m += 0.15f; }
-        else { m -= 0.25f; }
-        return m;
+        foreach (GDEEquipmentData e in PlayerData.equipsOwned)
+        {
+            if (e.hashcode == hashcode)
+            {
+                if (e.quality < SDConstants.equipMaxQuality)
+                {
+                    e.quality += promote;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public void addExpToEquipByHashcode(int hashcode, int figure)
+    public void LvupEquipByHashcode(int hashcode, int figure = 1)
     {
         foreach (GDEEquipmentData equip in PlayerData.equipsOwned)
         {
             if (equip.hashcode == hashcode)
             {
-                equip.exp += figure;
+                equip.lv += figure;
                 PlayerData.Set_equipsOwned();
                 break;
             }
@@ -2750,7 +2614,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             hashcode = Instance.equipNum,
             OwnerHashcode = 0,
             locked = level<2?false:true,
-            exp = 0,
+            lv = 0,
             num = 1,
             index = 0,
             quality = UnityEngine.Random.Range(0, SDConstants.equipMaxQuality),
@@ -2783,7 +2647,7 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     #region residentMovementInfor
     public RoleAttributeList BuffFromRace(RoleAttributeList basic, Race r)
     {
-        RoleAttributeList ral = RoleAttributeList.zero;
+        RoleAttributeList ral = new RoleAttributeList();
         //人类
         if (r == Race.Human)
         {
@@ -2794,14 +2658,14 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         {
             if (ResidentMovementData.CurrentDayNightId == 1)//夜间
             {
-                ral.AT = basic.read(AttributeData.AT, 5);
-                ral.MT = basic.read(AttributeData.MT, 5);
-                ral.Speed = basic.read(AttributeData.Speed, 5);
-                ral.Accur = basic.read(AttributeData.Accur, 5);
+                ral.AT = (int)(basic.read(AttributeData.AT) * 0.1f);
+                ral.MT = (int)(basic.read(AttributeData.MT) * 0.1f);
+                ral.Speed = (int)(basic.read(AttributeData.Speed) * 0.2f);
+                ral.Accur = (int)(basic.read(AttributeData.Accur) * 0.2f);
             }
             else
             {
-                ral.Speed = -basic.read(AttributeData.Speed, 5);
+                ral.Speed = -(int)(basic.read(AttributeData.Speed) * 0.1f);
             }
         }
         //龙裔基础能力周期性增强
@@ -2812,10 +2676,10 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
             {
                 int flag = abm.CurrentRoundNum % 4;
                 flag = flag <= 2 ? flag : 4 - flag;
-                ral.AT = basic.read(AttributeData.AT, flag);
-                ral.AD = basic.read(AttributeData.AD, flag);
-                ral.MT = basic.read(AttributeData.MT, flag);
-                ral.MD = basic.read(AttributeData.MD, flag);
+                ral.AT = (int)(basic.read(AttributeData.AT) * flag * 1f / 50);
+                ral.AD = (int)(basic.read(AttributeData.AD) * flag * 1f / 50);
+                ral.MT = (int)(basic.read(AttributeData.MT) * flag * 1f / 50);
+                ral.MD = (int)(basic.read(AttributeData.MT) * flag * 1f / 50);
             }
         }
 
@@ -2823,10 +2687,10 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
     }
     public RoleAttributeList BuffFromDaynight(RoleAttributeList basic)
     {
-        RoleAttributeList ral = RoleAttributeList.zero;
+        RoleAttributeList ral = new RoleAttributeList();
         if (ResidentMovementData.CurrentDayNightId == 1)//夜间
         {
-            ral.Accur = -basic.read(AttributeData.Accur, 5);
+            ral.Accur = -basic.read(AttributeData.Accur);
         }
         else
         {
@@ -3630,6 +3494,30 @@ hero.AnimData.R_leg_b = getRandomImgAddressForAnim(nameof(hero.AnimData.R_leg_b)
         else if (quality == 3) { n = SDGameManager.T("SSR"); }
         return n;
     }
+    public Sprite raritySprite(int quality)
+    {
+        return atlas_rarity.GetSprite(rarityString(quality).ToLower());
+    }
+    public Sprite baseFrameSpriteByRarity(int quality)
+    {
+        string n = string.Format("frame{0:D1}", quality);
+        return atlas_rarity.GetSprite(n);
+    }
+    public Sprite baseBgSpriteByRarity(int quality)
+    {
+        string n = string.Format("itemBg{0:D1}", quality);
+        return atlas_rarity.GetSprite(n);
+    }
+    public Sprite heroFrameSpriteByRarity(int quality)
+    {
+        string n = string.Format("heroFrame{0:D1}", quality);
+        return atlas_rarity.GetSprite(n);
+    }
+    public Sprite heroBgSpriteByRarity(int quality)
+    {
+        string n = string.Format("heroBg{0:D1}", quality);
+        return atlas_rarity.GetSprite(n);
+    }
     #endregion
 }
 
@@ -3664,22 +3552,6 @@ public class ROHelp
             }
         }
         return SDConstants.AOEType.None;
-        /*
-        if (data == "none") return SDConstants.AOEType.None;
-        else if (data == "horizontal") return SDConstants.AOEType.Horizontal;
-        else if (data == "horizontal1") return SDConstants.AOEType.Horizontal1;
-        else if (data == "horizontal2") return SDConstants.AOEType.Horizontal2;
-        else if (data == "vertical") return SDConstants.AOEType.Vertical;
-        else if (data == "vertical1") return SDConstants.AOEType.Vertical1;
-        else if (data == "vertical2") return SDConstants.AOEType.Vertical2;
-        else if (data == "random1") return SDConstants.AOEType.Random1;
-        else if (data == "random2") return SDConstants.AOEType.Random2;
-        else if (data == "random3") return SDConstants.AOEType.Random3;
-        else if (data == "continuous2") return SDConstants.AOEType.Continuous2;
-        else if (data == "continuous3") return SDConstants.AOEType.Continuous3;
-        else if (data == "all") return SDConstants.AOEType.All;
-        return SDConstants.AOEType.None;
-        */
     }
     public static StateTag STATE_TAG(string s)
     {

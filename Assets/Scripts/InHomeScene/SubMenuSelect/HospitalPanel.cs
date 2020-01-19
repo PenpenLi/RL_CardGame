@@ -3,28 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using System.Linq;
 
 public class HospitalPanel : BasicSubMenuPanel
 {
     public Transform PerSickBed;
-    public ScrollRect SB_SR;
     public HEWPageController pageController;
-    //[HideInInspector]
+    [Space]
+    public ScrollRect SB_SR;
+    public List<UseTimeItem> AllHealSlots;
     public UseTimeItem SickBed(string id)
     {
-        UseTimeItem[] all = SB_SR.content.GetComponentsInChildren<UseTimeItem>();
-        foreach(UseTimeItem t in all)
-        {
-            if(t.taskId == id)
-            {
-                return t;
-            }
-        }
-        return null;
+        return AllHealSlots.Find(x => x.taskId == id);
+    }
+    public UseTimeItem SickBedIncludingEmpty(int index)
+    {
+        return AllHealSlots.Find(x => x.transform.GetSiblingIndex() == index);
     }
     [HideInInspector]
     public List<GDEtimeTaskData> currentTreatingList = new List<GDEtimeTaskData>();
     public string currentSickBedId;
+    public int currentSelectedBedIndex;
     private float refreshInterval = 0.25f;
     float CD;
     [HideInInspector]
@@ -34,12 +33,7 @@ public class HospitalPanel : BasicSubMenuPanel
     {
         base.whenOpenThisPanel();
         currentSickBedId = getTaskIdFromIndex(0);
-        initAllSickBeds();
-        resetSBSR();
-        if (SickBed(currentSickBedId).isEmpty)
-        {
-            initHospital();
-        }
+        initHospital();
     }
     public void resetSBSR()
     {
@@ -52,15 +46,12 @@ public class HospitalPanel : BasicSubMenuPanel
     }
     public void initHospital()
     {
-        SDGameManager.Instance.heroSelectType = SDConstants.HeroSelectType.Hospital;
+        initAllSickTasks();
+        resetSBSR();
+        SDGameManager.Instance.heroSelectType = SDConstants.HeroSelectType.Dying;
         pageController.ItemsInit(SDConstants.ItemType.Hero);
-
-        //
-        //initAllSickBeds();
-        refreshAllSickBeds();
-
     }
-    public void initAllSickBeds()
+    public void initAllSickTasks()
     {
         List<GDEtimeTaskData> allList = SDDataManager.Instance.PlayerData.TimeTaskList;
 
@@ -70,62 +61,72 @@ public class HospitalPanel : BasicSubMenuPanel
             SDDataManager.Instance.PlayerData.sickBedNum = 1;
             sickbedNum = 1;
         }
-        currentTreatingList = allList.FindAll(x => x.taskId.Contains("TT_HOSP"));
 
-        UseTimeItem[] all = SB_SR.content.GetComponentsInChildren<UseTimeItem>();
-        for (int i =0; i< all.Length; i++)
-        {
-            if (string.IsNullOrEmpty(all[i].taskId))
-            {
-                all[i].taskId = string.Format("TT_HOSP#{0:D2}", i);
-            }
+        //读取并在AllHealSlot中构建任务
+        currentTreatingList = allList.FindAll(x => x.taskId.Contains("TT_HOSP"));
+        for (int i =0; i< AllHealSlots.Count; i++)
+        {           
             if (i < sickbedNum)
             {
-                all[i].isUnlocked = true;
+                AllHealSlots[i].isUnlocked = true;
+
+                string fixId = getTaskIdFromIndex(i);
+
+                GDEtimeTaskData tt = null;
+                foreach (GDEtimeTaskData task in currentTreatingList)
+                {
+                    if (task.taskId == fixId)
+                    {
+                        tt = task;
+                        break;
+                    }
+                }
+                if (tt != null)
+                {
+                    AllHealSlots[i].initTimeTask(tt);
+                }
+                else
+                {
+                    AllHealSlots[i].showEmptyPanel();
+                }
             }
             else
             {
-                all[i].showLockedPanel();
+                AllHealSlots[i].showLockedPanel();
                 continue;
             }
 
-            string fixId = getTaskIdFromIndex(i);
-
-            GDEtimeTaskData tt = null;
-            foreach(GDEtimeTaskData task in currentTreatingList)
-            {
-                if(task.taskId == fixId)
-                {
-                    tt = task;
-                    break;
-                }
-            }
-            if (tt!=null)
-            {
-                all[i].initTimeTask(tt);
-            }
-            else
-            {
-                all[i].showEmptyPanel();
-            }
         }
+        //refreshAllSickBeds();
     }
     public void refreshAllSickBeds()
-    {
-        UseTimeItem[] all = SB_SR.content.GetComponentsInChildren<UseTimeItem>();
-        for(int i = 0; i < all.Length; i++)
+    { 
+        for(int i = 0; i < AllHealSlots.Count; i++)
         {
-            if (all[i].isUnlocked)
+            if (AllHealSlots[i].isUnlocked)
             {
-                if (!all[i].isEmpty)
+                if (!AllHealSlots[i].isEmpty)
                 {
-                    all[i].refreshTimeCondition();
+                    AllHealSlots[i].refreshTimeCondition();
                 }
             }
         }
         CD = refreshInterval;
     }
-
+    public bool HaveEmptySickBed(out int MinIndex)
+    {
+        List<UseTimeItem> enables = AllHealSlots.FindAll(x => x.isUnlocked && x.isEmpty);
+        if (enables.Count > 0)
+        {
+            MinIndex = enables.Min(x => x.transform.GetSiblingIndex());
+            return true;
+        }
+        else
+        {
+            MinIndex = 0;
+            return false;
+        }
+    }
     private void FixedUpdate()
     {
         if (CD > 0)
@@ -147,12 +148,7 @@ public class HospitalPanel : BasicSubMenuPanel
 
     public string getTaskIdFromIndex(int index)
     {
-        string k = index.ToString();
-        while (k.Length < 2)
-        {
-            k = 0 + k;
-        }
-        string fixId = "TT_HOSP#" + k;
+        string fixId = string.Format("TT_HOSP#{0:D2}",index);
         return fixId;
     }
 }

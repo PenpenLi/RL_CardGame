@@ -22,10 +22,6 @@ public class SDHeroSelect : MonoBehaviour
     [Header("简易角色信息板")]
     public SimpleHeroDetailVision simpleHDV;
     // Start is called before the first frame update
-    void Start()
-    {
-        //heroPanelInit();
-    }
     public void heroPanelInit()
     {
         string currentTeamId = MainPanel.CurrentTeamId;
@@ -52,7 +48,6 @@ public class SDHeroSelect : MonoBehaviour
                 heroItemsInTeam[i].initEmptyHero();
             }
         }
-        //initads();
         MainPanel.RPC.initRoleModelToRolePosPlace();
 
         heroBtnFunction(MainPanel.currentHeroIndexInTeam);

@@ -120,6 +120,7 @@ public class HomeScene : MonoBehaviour
     void Start()
     {
         SDGameManager.Instance.INIT();
+        SDDataManager.Instance.ReadAtlas();
         SubMenuClose(true);
         foreach(FactoryPanel p in FindObjectsOfType<FactoryPanel>())
         {
@@ -144,7 +145,10 @@ public class HomeScene : MonoBehaviour
         SDDataManager.Instance.addConsumable
             (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_tenTimes.ID, 10);
         //
-        AddHeroPools(); 
+        AddHeroPools();
+
+        FindObjectOfType<test_runeAd>().Test_AddConsumableItems();
+        //
         yield return new WaitForSeconds(0.15f);
         BuildFirstEnterGameData();
     }

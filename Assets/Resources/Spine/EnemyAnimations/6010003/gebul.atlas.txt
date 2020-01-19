@@ -1,0 +1,48 @@
+
+gebul.png
+size: 661,661
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 521, 488
+  size: 138, 171
+  orig: 138, 171
+  offset: 0, 0
+  index: -1
+hand
+  rotate: true
+  xy: 205, 347
+  size: 87, 196
+  orig: 87, 196
+  offset: 0, 0
+  index: -1
+handr
+  rotate: true
+  xy: 521, 385
+  size: 101, 124
+  orig: 101, 124
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 2, 308
+  size: 201, 174
+  orig: 201, 174
+  offset: 0, 0
+  index: -1
+wuqi
+  rotate: false
+  xy: 2, 484
+  size: 289, 175
+  orig: 289, 175
+  offset: 0, 0
+  index: -1
+xiati
+  rotate: false
+  xy: 293, 436
+  size: 226, 223
+  orig: 226, 224
+  offset: 0, 0
+  index: -1

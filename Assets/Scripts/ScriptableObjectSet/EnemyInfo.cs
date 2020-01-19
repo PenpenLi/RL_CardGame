@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Spine;
+using Spine.Unity;
 
 [CreateAssetMenu(fileName ="enemy_info",menuName ="Wun/角色/敌人信息")]
 public class EnemyInfo : CharacterInfo
@@ -53,4 +55,20 @@ public class EnemyInfo : CharacterInfo
     public float dropPercent;
     public List<consumableItem> dropItems;
 
+
+    [Space]
+    [SerializeField]
+    private bool _useSpineData;
+    public bool UseSpineData
+    {
+        get { return _useSpineData; }
+        private set { _useSpineData = value; }
+    }
+    [SerializeField, ConditionalHide("_useSpineData", true, false)]
+    private RoleSkeletonData _SpineData;
+    public RoleSkeletonData SpineData
+    {
+        get { return _SpineData; }
+        private set { _SpineData = value; }
+    }
 }

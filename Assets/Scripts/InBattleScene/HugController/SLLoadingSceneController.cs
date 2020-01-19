@@ -31,7 +31,10 @@ public class SLLoadingSceneController : MonoBehaviour
 
     public static void LoadScene(string sceneName)
     {
-
+#if UNITY_ANDROID && ANDROID_GP
+        RTAndroidBackController.Instance.clearStack();
+        RTAndroidBackController.Instance.enableBackBtn = true;
+#endif
         if (isTransitingScene)
         {
             print("scene still transiting cant transit now(场景正在加载，无法重复加载)");

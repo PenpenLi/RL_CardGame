@@ -73,6 +73,8 @@ public class BattleManager : MonoBehaviour
         SDL = GetComponentInChildren<SkillDetailsList>();
         GM = GC.GM;
         GC.GM.BM = this;
+        //
+        SDGameManager.Instance.isUsingProp = true;
     }
     #region 显示或隐藏技能信息面板
     public void BtnToCloseSDP()
@@ -289,7 +291,7 @@ public class BattleManager : MonoBehaviour
 
                 _currentActionPanel.hideActionPanel();
 
-                UsingPropBtn.interactable = false;
+                //UsingPropBtn.interactable = false;
                 CancelBtn.interactable = false;
 
                 _currentActionPanel.chooseASkillFromSkillGroup();
@@ -363,6 +365,7 @@ public class BattleManager : MonoBehaviour
     public void ConfirmSkillAndTarget()
     {
         ActionConfirm = false;
+        if (_currentActionPanel == null || _currentActionPanel.CurrentSkill == null) return;
         _currentSkill = _currentActionPanel.CurrentSkill;
         int touchId = SelectController.WhenPointDownIndex();
 
@@ -467,10 +470,12 @@ public class BattleManager : MonoBehaviour
             }
             else
             {
+                SDGameManager.Instance.isUsingProp = false;
+                //
                 IsWaitingPlayerAction = true;
                 //显示全部可用交互
                 _currentActionPanel.showActionPanel();
-                UsingPropBtn.interactable = true;
+                //UsingPropBtn.interactable = true;
                 CancelBtn.interactable = true;
             }
         }
@@ -653,6 +658,7 @@ public class BattleManager : MonoBehaviour
         if (goOn)
         {
             hideOptionTarget();
+            _currentSkill.gameObject.SetActive(true);
             _currentSkill.StartSkill(_currentBattleUnit, _currentTargetUnit);
             BtnToCloseSDP();
         }

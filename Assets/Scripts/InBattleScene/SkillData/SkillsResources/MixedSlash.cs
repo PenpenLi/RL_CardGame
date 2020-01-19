@@ -33,7 +33,7 @@ public class MixedSlash : SkillFunction
     public IEnumerator IEStartSkill(BattleRoleData source, BattleRoleData target
         ,int physicalVal,int elementalVal,int arcaneVal)
     {
-        source.playMoveTowardAnimation(target.transform.position);
+        source.playMoveTowardAnimation(target.unit_model.position);
         yield return new WaitForSeconds(moveTowardAndBackTime);
 
         source.unit_character_model.CurrentCharacterModel.ChangeModelAnim

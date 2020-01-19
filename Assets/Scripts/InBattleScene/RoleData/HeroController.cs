@@ -16,7 +16,10 @@ public class HeroController : BasicRoleProperty
     public SDWeapon _weapon;
     #endregion
     public List<string> _equipedSkills;
-
+    /// <summary>
+    /// 生成用于战斗的角色信息
+    /// </summary>
+    public OneRoleClassData roleInShow;
     //将英雄本身数据加上装备数据
     public void InitHeroBasicProperties()
     {
@@ -35,7 +38,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_helmet)
         {
-            this.RoleBasicRA += _helmet.RoleBasicRA.Clone;
+            this.RoleBasicRA.Add(_helmet.RoleBasicRA.Clone);
             this.CRIDmg += _helmet.CRIDmg;
             this.DmgReduction += _helmet.DmgReduction;
             this.DmgReflection += _helmet.DmgReflection;
@@ -44,7 +47,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_breastplate)
         {
-            this.RoleBasicRA += _breastplate.RoleBasicRA.Clone;
+            this.RoleBasicRA.Add( _breastplate.RoleBasicRA.Clone);
             this.CRIDmg += _breastplate.CRIDmg;
             this.DmgReduction += _breastplate.DmgReduction;
             this.DmgReflection += _breastplate.DmgReflection;
@@ -53,7 +56,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_gardebras)
         {
-            this.RoleBasicRA += _gardebras.RoleBasicRA.Clone;
+            this.RoleBasicRA.Add(_gardebras.RoleBasicRA.Clone);
             this.CRIDmg += _gardebras.CRIDmg;
             this.DmgReduction += _gardebras.DmgReduction;
             this.DmgReflection += _gardebras.DmgReflection;
@@ -62,7 +65,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_legging)
         {
-            this.RoleBasicRA += _legging.RoleBasicRA.Clone;
+            this.RoleBasicRA.Add( _legging.RoleBasicRA.Clone);
             this.CRIDmg += _legging.CRIDmg;
             this.DmgReduction += _legging.DmgReduction;
             this.DmgReflection += _legging.DmgReflection;
@@ -71,7 +74,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_jewelry0)
         {
-            this.RoleBasicRA += _jewelry0.RoleBasicRA.Clone;
+            this.RoleBasicRA.Add( _jewelry0.RoleBasicRA.Clone);
             this.CRIDmg += _jewelry0.CRIDmg;
             this.DmgReduction += _jewelry0.DmgReduction;
             this.DmgReflection += _jewelry0.DmgReflection;
@@ -80,7 +83,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_jewelry1)
         {
-            this.RoleBasicRA += _jewelry1.RoleBasicRA.Clone;
+            this.RoleBasicRA .Add( _jewelry1.RoleBasicRA.Clone);
             this.CRIDmg += _jewelry1.CRIDmg;
             this.DmgReduction += _jewelry1.DmgReduction;
             this.DmgReflection += _jewelry1.DmgReflection;
@@ -89,7 +92,7 @@ public class HeroController : BasicRoleProperty
         }
         if (_weapon)
         {
-            this.RoleBasicRA += _weapon.RoleBasicRA.Clone;
+            this.RoleBasicRA .Add( _weapon.RoleBasicRA.Clone);
             this.CRIDmg += _weapon.CRIDmg;
             this.DmgReduction += _weapon.DmgReduction;
             this.DmgReflection += _weapon.DmgReflection;
@@ -98,5 +101,9 @@ public class HeroController : BasicRoleProperty
         }
         initRoleClassData();
     }
-
+    public override void initRoleClassData()
+    {
+        base.initRoleClassData();
+        roleInShow = _role;
+    }
 }

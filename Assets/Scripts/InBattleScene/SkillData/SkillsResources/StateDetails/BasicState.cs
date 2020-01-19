@@ -41,10 +41,10 @@ public class BasicState
     {
         public string Title;
         [DisplayName("是否为标准抗性(否则为标准属性)")]
-        public bool IsForAD = true;
-        [ConditionalHide("IsForAD", true, true)]
+        public bool IsForRD = true;
+        [ConditionalHide("IsForRD", true, true)]
         public AttributeData ADTag;
-        [ConditionalHide("IsForAD", true, false)]
+        [ConditionalHide("IsForRD", true, false)]
         public StateTag STag;
         //
         public enum DataOrigin
@@ -66,16 +66,16 @@ public class BasicState
         public ChangeInRAL(NumberData data, AttributeData tag)
         {
             UseDataType = DataOrigin.normal;
-            ChangeData = data; IsForAD = true; ADTag = tag;
+            ChangeData = data; IsForRD = true; ADTag = tag;
         }
         public ChangeInRAL(NumberData data, StateTag tag)
         {
             UseDataType = DataOrigin.normal;
-            ChangeData = data; IsForAD = false; STag = tag;
+            ChangeData = data; IsForRD = false; STag = tag;
         }
     }
-    public List<ChangeInRAL> AllChangesInRAL;
-    public NDBarChart ChangeInBarChart;
+    public List<ChangeInRAL> AllChangesInRAL = new List<ChangeInRAL>();
+    public NDBarChart ChangeInBarChart = NDBarChart.zero;
 
     [SerializeField]
     private bool aimAtSelf = false;

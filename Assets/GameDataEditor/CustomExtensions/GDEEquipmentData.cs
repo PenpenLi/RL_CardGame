@@ -117,16 +117,16 @@ namespace GameDataEditor
             }
         }
 
-        static string expKey = "exp";
-		int _exp;
-        public int exp
+        static string lvKey = "lv";
+		int _lv;
+        public int lv
         {
-            get { return _exp; }
+            get { return _lv; }
             set {
-                if (_exp != value)
+                if (_lv != value)
                 {
-                    _exp = value;
-					GDEDataManager.SetInt(_key, expKey, _exp);
+                    _lv = value;
+					GDEDataManager.SetInt(_key, lvKey, _lv);
                 }
             }
         }
@@ -189,7 +189,7 @@ namespace GameDataEditor
             dict.Merge(true, num.ToGDEDict(numKey));
             dict.Merge(true, hashcode.ToGDEDict(hashcodeKey));
             dict.Merge(true, OwnerHashcode.ToGDEDict(OwnerHashcodeKey));
-            dict.Merge(true, exp.ToGDEDict(expKey));
+            dict.Merge(true, lv.ToGDEDict(lvKey));
             dict.Merge(true, quality.ToGDEDict(qualityKey));
             dict.Merge(true, initialQuality.ToGDEDict(initialQualityKey));
             dict.Merge(true, id.ToGDEDict(idKey));
@@ -215,7 +215,7 @@ namespace GameDataEditor
                 dict.TryGetInt(numKey, out _num);
                 dict.TryGetInt(hashcodeKey, out _hashcode);
                 dict.TryGetInt(OwnerHashcodeKey, out _OwnerHashcode);
-                dict.TryGetInt(expKey, out _exp);
+                dict.TryGetInt(lvKey, out _lv);
                 dict.TryGetInt(qualityKey, out _quality);
                 dict.TryGetFloat(initialQualityKey, out _initialQuality);
                 dict.TryGetString(idKey, out _id);
@@ -234,7 +234,7 @@ namespace GameDataEditor
             _num = GDEDataManager.GetInt(_key, numKey, _num);
             _hashcode = GDEDataManager.GetInt(_key, hashcodeKey, _hashcode);
             _OwnerHashcode = GDEDataManager.GetInt(_key, OwnerHashcodeKey, _OwnerHashcode);
-            _exp = GDEDataManager.GetInt(_key, expKey, _exp);
+            _lv = GDEDataManager.GetInt(_key, lvKey, _lv);
             _quality = GDEDataManager.GetInt(_key, qualityKey, _quality);
             _initialQuality = GDEDataManager.GetFloat(_key, initialQualityKey, _initialQuality);
             _id = GDEDataManager.GetString(_key, idKey, _id);
@@ -252,7 +252,7 @@ namespace GameDataEditor
             newClone.num = num;
             newClone.hashcode = hashcode;
             newClone.OwnerHashcode = OwnerHashcode;
-            newClone.exp = exp;
+            newClone.lv = lv;
             newClone.quality = quality;
             newClone.initialQuality = initialQuality;
             newClone.id = id;
@@ -329,13 +329,13 @@ namespace GameDataEditor
             dict.TryGetInt(OwnerHashcodeKey, out _OwnerHashcode);
         }
 
-        public void Reset_exp()
+        public void Reset_lv()
         {
-            GDEDataManager.ResetToDefault(_key, expKey);
+            GDEDataManager.ResetToDefault(_key, lvKey);
 
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(expKey, out _exp);
+            dict.TryGetInt(lvKey, out _lv);
         }
 
         public void Reset_quality()
@@ -379,9 +379,9 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, hashcodeKey);
             GDEDataManager.ResetToDefault(_key, OwnerHashcodeKey);
             GDEDataManager.ResetToDefault(_key, lockedKey);
-            GDEDataManager.ResetToDefault(_key, expKey);
             GDEDataManager.ResetToDefault(_key, qualityKey);
             GDEDataManager.ResetToDefault(_key, initialQualityKey);
+            GDEDataManager.ResetToDefault(_key, lvKey);
 
 
             #endif

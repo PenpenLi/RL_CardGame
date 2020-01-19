@@ -15,6 +15,7 @@ MonoBehaviour:
   _ID: M_M#3010026
   _NAME: "\u6676\u4F53\u70AD\u5C51"
   _DESC: 
+  _atlasFrom: {fileID: 0}
   itemtype: 2
   _LEVEL: 0
   stackAble: 0
@@ -23,10 +24,10 @@ MonoBehaviour:
   sellAble: 1
   inexhaustible: 0
   maxDurability: 100
-  specialStr: 25
+  specialStr: 65
   materialType: 5
   consumableType: 0
-  data: 
+  data: "\u7B80\u6613\u5F3A\u5316"
   AOE: 0
   AIM: 
   buyPrice_coin: 500

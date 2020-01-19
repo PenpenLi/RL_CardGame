@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Spine;
+using Spine.Unity;
+
 [CreateAssetMenu(fileName ="hero_info",menuName ="Wun/角色/英雄信息")]
 public class HeroInfo : CharacterInfo
 {
@@ -10,6 +13,14 @@ public class HeroInfo : CharacterInfo
     {
         get { return _LEVEL; }
         set { _LEVEL = value; }
+    }
+    
+    [SerializeField,Range(0,3)]
+    private int _rarity;
+    public int Rarity
+    {
+        get { return _rarity; }
+        set { _rarity = value; }
     }
 
     [SerializeField]
@@ -66,8 +77,6 @@ public class HeroInfo : CharacterInfo
         get { return personalSkillList; }
         set { personalSkillList = value; }
     }
-
-
     public HeroInfo()
     {
         CharacterType = SDConstants.CharacterType.Hero;
@@ -81,5 +90,22 @@ public class HeroInfo : CharacterInfo
     public void InitRAL(RoleAttributeList ral)
     {
         _RAL = ral;
+    }
+
+    [Space]
+    public Sprite PersonalDrawImg;
+    [Space]
+    [SerializeField]
+    private bool _useSpineData;
+    public bool UseSpineData
+    {
+        get { return _useSpineData; }
+        set { _useSpineData = value; }
+    }
+    [SerializeField,ConditionalHide("_useSpineData",true,false)]
+    private RoleSkeletonData _SpineData;
+    public RoleSkeletonData SpineData
+    {
+        get { return _SpineData; }
     }
 }

@@ -11,6 +11,7 @@ using System;
 public class SingleItem : MonoBehaviour
 {
     public Image itemImg;
+    public Image itemBgImg;
     public CharacterModelController characterModel;
     public Image frameImg;
     public Image careerImg;
@@ -93,7 +94,6 @@ public class SingleItem : MonoBehaviour
         {
             if (type == SDConstants.ItemType.Hero)
             {
-                Debug.Log("当前类别" + SDGameManager.Instance.heroSelectType);
                 if (SDGameManager.Instance.heroSelectType
                     == SDConstants.HeroSelectType.Battle)
                 {
@@ -105,9 +105,14 @@ public class SingleItem : MonoBehaviour
                     chooseHeroToWake();
                 }
                 else if (SDGameManager.Instance.heroSelectType
-                    == SDConstants.HeroSelectType.Hospital)
+                    == SDConstants.HeroSelectType.Dying)
                 {
                     chooseHeroToTreat();
+                }
+                else if(SDGameManager.Instance.heroSelectType
+                    == SDConstants.HeroSelectType.Mission)
+                {
+
                 }
                 else if (SDGameManager.Instance.heroSelectType
                     == SDConstants.HeroSelectType.Altar)
@@ -204,9 +209,6 @@ public class SingleItem : MonoBehaviour
                 SDDataManager.Instance.removeFromTeam(itemHashcode);
                 isSelected = false;
             }
-
-            List<GDEHeroData> all = SDDataManager.Instance.getHerosFromTeam(STUP.CurrentTeamId);
-
             //
             SDDataManager.Instance.setHeroTeam(STUP.CurrentTeamId
                 , STUP.currentHeroIndexInTeam
@@ -215,7 +217,6 @@ public class SingleItem : MonoBehaviour
             STUP.refreshUI();
             //
             BHS.heroSelectPanel.heroPanelInit();
-            //BHS.closeBtnTapped();
         }
     }
     public void chooseHeroToWake()
@@ -229,17 +230,21 @@ public class SingleItem : MonoBehaviour
         {
             //显示英雄详情
             SDHeroDetail HDP = BHS.heroDetails.GetComponent<SDHeroDetail>();
-            HDP.initHeroDetailPanel(itemHashcode);
+            HDP.HeroWholeMessage.currentHeroHashcode = itemHashcode;
             HDP.HeroWholeMessage.whenOpenThisPanel();
         }
     }
     public void chooseHeroToTreat()
     {
         HospitalPanel hp = GetComponentInParent<HospitalPanel>();
-        if (hp && hp.SickBed(hp.currentSickBedId).isEmpty)
+        if (hp && hp.HaveEmptySickBed(out int index))
         {
-            SDDataManager.Instance.AddTimeTask(SDConstants.timeTaskType.HOSP
-                , itemHashcode, itemId, hp.SickBed(hp.currentSickBedId).taskId);
+            bool flag = SDDataManager.Instance.AddTimeTask(SDConstants.timeTaskType.HOSP
+                , itemHashcode, itemId, hp.getTaskIdFromIndex(index));
+            if (flag)
+            {
+                hp.initHospital();
+            }
         }
 
 
@@ -299,7 +304,18 @@ public class SingleItem : MonoBehaviour
         //statusImg.sprite = herostat
         starVision.StarNum = dal.starNum;
 
-
+        if (careerImg)
+        {
+            Sprite career = dal.Info.Career.Icon;
+            careerImg.sprite = career;
+        }
+        if (raceImg)
+        {
+            Sprite race = dal.Info.Race.Icon;
+            raceImg.sprite = race;
+        }
+        itemBgImg.sprite = SDDataManager.Instance.heroBgSpriteByRarity(dal.Info.Rarity);
+        frameImg.sprite = SDDataManager.Instance.heroFrameSpriteByRarity(dal.Info.Rarity);
     }
     public void initInjuriedHero(GDEHeroData hero)
     {
@@ -307,17 +323,17 @@ public class SingleItem : MonoBehaviour
         itemId = hero.id;
         itemHashcode = hero.hashCode;
         //
-
+        float fatigueRate = SDDataManager.Instance.getHeroFatigueRate(hero.hashCode);
+        int status = SDDataManager.Instance.getHeroStatus(hero.hashCode);
+        Debug.Log("该英雄疲劳值:" + hero.Fatigue);
         //
         ROHeroData dal = SDDataManager.Instance.getHeroDataByID(itemId, hero.starNumUpgradeTimes);
-        //if (frameImg != null) frameImg.gameObject.SetActive(false);
 
         upText.gameObject.SetActive(true);
         upText.text = "Lv." + SDDataManager.Instance.getLevelByExp(hero.exp);
         downText.text = SDGameManager.T(dal.Info.Name);
         slider?.gameObject.SetActive(true);
         //
-        int status = SDDataManager.Instance.getHeroStatus(hero.hashCode);
         if (status == 2)
         {
             isSelected = false;
@@ -331,7 +347,8 @@ public class SingleItem : MonoBehaviour
         else if(status == 0)
         {
             isSelected = false;
-            isUnable = false;
+            if (fatigueRate > 0.1f) { isUnable = false; }
+            else isUnable = true;
         }//无事可做状态
         else
         {
@@ -341,7 +358,7 @@ public class SingleItem : MonoBehaviour
         //starVision.StarNum = dal.starNum;
         starVision.gameObject.SetActive(false);
         slider.GetChild(0).localScale 
-            = new Vector3(1 - SDDataManager.Instance.getHeroFatigueRate(hero.hashCode), 1, 1);
+            = new Vector3(1 - fatigueRate, 1, 1);
     }
     public void initHero(GDEHeroData hero)
     {
@@ -353,20 +370,18 @@ public class SingleItem : MonoBehaviour
         SDConstants.CharacterAnimType animType = (SDConstants.CharacterAnimType)
             (SDDataManager.Instance.getHeroCareerById(itemId));
         ROHeroData roh = SDDataManager.Instance.getHeroDataByID(itemId,hero.starNumUpgradeTimes);
-        //if (frameImg != null) frameImg.gameObject.SetActive(false);
         if (characterModel != null)
         {
-            characterModel.initCharacterModel(itemHashcode, animType, SDConstants.HERO_MODEL_BIG_RATIO);
+            characterModel.initHeroCharacterModel(itemHashcode, SDConstants.HERO_MODEL_RATIO);
         }
         itemLevel = SDDataManager.Instance.getLevelByExp(hero.exp);
         if (upText)
         {
-            upText.gameObject.SetActive(true);
-            upText.text = SDGameManager.T("Lv.") + itemLevel;
+            upText.gameObject.SetActive(false);
         }
         if (downText)
         {
-            downText.text = SDGameManager.T(roh.Info.Name);
+            downText.text = SDGameManager.T("Lv.") + itemLevel;
         }
         slider?.gameObject.SetActive(false);
         if(starVision) starVision.StarNum = roh.starNum;
@@ -375,6 +390,25 @@ public class SingleItem : MonoBehaviour
             statusImg.gameObject.SetActive(true);
             statusImg.sprite = UIEffectManager.Instance.heroStatusSps[hero.status];
         }
+
+        //
+        if (itemImg)
+        {
+
+        }
+        //
+        if (careerImg)
+        {
+            Sprite career = roh.Info.Career.Icon;
+            careerImg.sprite = career;
+        }
+        if (raceImg)
+        {
+            Sprite race = roh.Info.Race.Icon;
+            raceImg.sprite = race;
+        }
+        itemBgImg.sprite = SDDataManager.Instance.heroBgSpriteByRarity(roh.Info.Rarity);
+        frameImg.sprite = SDDataManager.Instance.heroFrameSpriteByRarity(roh.Info.Rarity);
     }
     public void initHero(int hashcode)
     {
@@ -396,8 +430,9 @@ public class SingleItem : MonoBehaviour
         initHero(hashcode);
         if(upText)
             upText.text = "";
-
-
+        int quality = SDDataManager.Instance.getHeroInfoById(itemId).Rarity;
+        frameImg.sprite = SDDataManager.Instance.raritySprite(quality);
+        frameImg.SetNativeSize();
     }
 
     public void HeroInfoBtnTapped()
@@ -412,6 +447,7 @@ public class SingleItem : MonoBehaviour
         EquipmentPanel EP = GetComponentInParent<EquipmentPanel>();
         if (EP)
         {
+            UIEffectManager.Instance.showAnimFadeIn(EP.EDP.transform);
             EP.EDP
                 .GetComponentInChildren<SDEquipDetail>()
                 .initEquipDetailVision
@@ -436,9 +472,18 @@ public class SingleItem : MonoBehaviour
         EquipItem item = SDDataManager.Instance.GetEquipItemById(equip.id);
         equipPos = (EquipPosition)SDDataManager.Instance.getEquipPosById(equip.id);
         itemId = equip.id;
+        //
+        itemImg.sprite = SDDataManager.Instance.GetEquipIconById(itemId);
+        int quality = item.LEVEL;
+        frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(quality);
+        itemBgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(quality);
+        //
         itemHashcode = equip.hashcode;
-        itemUpLv = SDDataManager.Instance.getLevelByExp(equip.exp);
-        starVision.gameObject.SetActive(false);
+        itemUpLv = equip.lv;
+        if (starVision)
+        {
+            starVision.gameObject.SetActive(false);
+        }
         if (downText) downText.text = SDGameManager.T(item.NAME);
         if (upText)
         {
@@ -531,8 +576,13 @@ public class SingleItem : MonoBehaviour
         }
         if (starVision)
         {
-            starVision.StarNum = E.star;
+            starVision.gameObject.SetActive(false);
         }
+        RuneItem item = SDDataManager.Instance.getRuneItemById(E.id);
+        //
+        frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(item.Quality);
+        itemBgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(item.Quality);
+        //
         itemHashcode = E.Hashcode;
         itemId = E.id;
         GoddessDetailPanel GDP = GetComponentInParent<GoddessDetailPanel>();
@@ -549,7 +599,6 @@ public class SingleItem : MonoBehaviour
         else if (SDDataManager.Instance.checkRuneStatus(itemHashcode))
         {
             isSelected = true;
-
         }
     }
 

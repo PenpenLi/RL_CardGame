@@ -61,7 +61,6 @@ public class BattleTeamPanel : BasicSubMenuPanel
         SelectTeamUnitPanel STUP = EditUnitTeamPanel.GetComponent<SelectTeamUnitPanel>();
         STUP.CurrentTeamId = teamId;
         STUP.whenOpenThisPanel();
-        //UIEffectManager.Instance.showAnimFadeIn(EditUnitTeamPanel);
         HS.heroPanelInit();
         HS.heroItemsInTeam[0].heroBtnTapped();
     }
