@@ -1134,7 +1134,7 @@ public class BattleRoleData : MonoBehaviour
             {
                 unit_character_model
                     .CurrentCharacterModel.ChangeModelAnim
-                    (unit_character_model.CurrentCharacterModel.anim_die);
+                    (unit_character_model.CurrentCharacterModel.anim_die,true);
 
             }
             else if (_Tag == SDConstants.CharacterType.Enemy)

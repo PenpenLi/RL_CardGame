@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2bce1e8cc2d09d64bb4d28697b63c7cc, type: 3}
-  m_Name: '@UH_RACE#03'
+  m_Name: "RACE03#\u4E0D\u660E"
   m_EditorClassIdentifier: 
   _ID: '@UH_RACE#03'
   _name: "\u65E0\u79CD\u65CF"
   _index: 3
   _Desc: 
+  _Icon: {fileID: 0}
   characterType: 0
   race: 3
