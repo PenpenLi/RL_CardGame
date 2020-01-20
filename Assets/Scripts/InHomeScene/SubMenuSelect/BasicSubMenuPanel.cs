@@ -25,7 +25,9 @@ public class BasicSubMenuPanel : MonoBehaviour
     /// 建筑是否存在NPC且可以升级
     /// </summary>
     public bool LvUpEnable;
+#if UNITY_EDITOR
     [ConditionalHide("LvUpEnable", true)]
+#endif
     /// <summary>
     /// 建筑经验
     /// </summary>
@@ -34,13 +36,19 @@ public class BasicSubMenuPanel : MonoBehaviour
     /// 上方玩家实时信息是否显示
     /// </summary>
     public bool AboveOuterMenuIsShowing = false;
+#if UNITY_EDITOR
     [DisplayName("快速索引用ICON")]
+#endif
     public Sprite OwnSprite;
+#if UNITY_EDITOR
     [Space, Header("建筑内NPC设置")]
+#endif
     [SerializeField]
     private bool showNPC;
     public bool ShowNPC { get { return showNPC; } }
+#if UNITY_EDITOR
     [ConditionalHide("showNPC", true),SerializeField]
+#endif
     private Talker representNPC;
     public Talker RepresentNPC
     {

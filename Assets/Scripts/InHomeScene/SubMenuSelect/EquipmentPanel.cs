@@ -9,7 +9,9 @@ public class EquipmentPanel : BasicSubMenuPanel
 {
     public HEWPageController PAGE;
     public EquipDetailPanel EDP;
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private EquipPosition _currentPos = EquipPosition.Hand;
     public EquipPosition CurrentPos
     {

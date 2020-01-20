@@ -20,7 +20,9 @@ public class DrawAnimRound : MonoBehaviour,IBeginDragHandler,IDragHandler,IEndDr
     public float EulerBackSpeed;
     public float MToRRate;
     public float RMaxEuler;
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private float RoundAngle;
     Vector2 startDragPos;
     float BeginDragTime;

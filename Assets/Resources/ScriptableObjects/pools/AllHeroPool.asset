@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a4b1a4f1e9d641478440e85adbc6881, type: 3}
   m_Name: AllHeroPool
   m_EditorClassIdentifier: 
-  _ID: POOL_H#004
-  _Name: "\u5168\u82F1\u96C4\u5361\u6C60"
+  _ID: POOL_H#000
+  _Name: "\u5168\u6218\u58EB\u5361\u6C60"
   _DESC: 
   _NotNormalPool: 0
   HeroList:
@@ -28,37 +28,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f1a1a15ab3fed8a44b07b20cb1ea48a1, type: 2}
   - {fileID: 11400000, guid: 17fd1ede4ad290d41b9fc0d7fc041e20, type: 2}
   - {fileID: 11400000, guid: d8f3d832405032642b61e710d4bafc0e, type: 2}
-  - {fileID: 11400000, guid: 4d0cd87a982b9eb40980120f2623ede7, type: 2}
-  - {fileID: 11400000, guid: 4cbdfb10be427d3419ed1766e5c30868, type: 2}
-  - {fileID: 11400000, guid: 9460f89431cccd942acb30e1ef4e4821, type: 2}
-  - {fileID: 11400000, guid: 06f6e3ac1170b394e8e906af6c6eda7f, type: 2}
-  - {fileID: 11400000, guid: d2975e06c8465584ea6dc39d294b285e, type: 2}
-  - {fileID: 11400000, guid: cdd08bfd3ad44c64d98e3d87369b50df, type: 2}
-  - {fileID: 11400000, guid: 57147340940e7084fb1d965201e1154f, type: 2}
-  - {fileID: 11400000, guid: 8e1d18487c0271449826c18d13730133, type: 2}
-  - {fileID: 11400000, guid: a0a8c286522bcfd43835595d8ff39116, type: 2}
-  - {fileID: 11400000, guid: 7614742a3c21e6145af4e1da5aa13125, type: 2}
-  - {fileID: 11400000, guid: 8f1c5ce84f2f8124c807c574de5c0dd9, type: 2}
-  - {fileID: 11400000, guid: d7b0cdf35118c754e9b9b515952702c7, type: 2}
-  - {fileID: 11400000, guid: df1d00114e2d87f409c3862fd137192a, type: 2}
-  - {fileID: 11400000, guid: cf6929b8d2d07774f9fa405140128391, type: 2}
-  - {fileID: 11400000, guid: 6b38f7ca6fe689341a4c15e360a0d69c, type: 2}
-  - {fileID: 11400000, guid: 65fad042e304ce748a0412f2e8a93640, type: 2}
-  - {fileID: 11400000, guid: e654cc7936190594799affafd1258513, type: 2}
-  - {fileID: 11400000, guid: 9d8c043313ddc1043b82437784776776, type: 2}
-  - {fileID: 11400000, guid: 5ddc7ab6f03c5f64683f1da31e2689e4, type: 2}
-  - {fileID: 11400000, guid: 8c482b69b20bb894994246d9f2a1cae5, type: 2}
-  - {fileID: 11400000, guid: a07db677c7c22f7449beae0cdf502a6b, type: 2}
-  - {fileID: 11400000, guid: 016f4cb014a1d374e954e21449d25c8e, type: 2}
-  - {fileID: 11400000, guid: 85e651f40f0d1cb439b8614a8da241c0, type: 2}
-  - {fileID: 11400000, guid: bcbe11da107d42a45b454a078c2a6f8c, type: 2}
-  - {fileID: 11400000, guid: 7891092d7ec03bd4390caf6c469d8bb5, type: 2}
-  - {fileID: 11400000, guid: 12b6afb72d33e5c4082123d483f95999, type: 2}
-  - {fileID: 11400000, guid: bb170a63ddc784e4b998a6f1dbec7c32, type: 2}
-  - {fileID: 11400000, guid: 1e7e693c01547e944be5bd722a6fdb53, type: 2}
-  - {fileID: 11400000, guid: 6fda9d8fb8af8cd40bd5c3deaa46a713, type: 2}
-  - {fileID: 11400000, guid: 145258ab7a9be9344b74c0d797bdf2ac, type: 2}
-  - {fileID: 11400000, guid: 057a66cfb92a8834f95ef933ff2c3ba0, type: 2}
-  - {fileID: 11400000, guid: 07e7331aeff176c4db27af3ded5a76e9, type: 2}
-  - {fileID: 11400000, guid: cd45a7b3c73b4f8459e4945ce2f4d067, type: 2}
   _HeroesUsingSpecialPossibility: []

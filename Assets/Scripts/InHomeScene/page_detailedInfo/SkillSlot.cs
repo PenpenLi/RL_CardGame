@@ -97,7 +97,7 @@ public class SkillSlot : MonoBehaviour
         isOmega = skill.isOmegaSkill;
         if (isOmega)
         {
-            skillBgIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(2);
+            skillBgIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(3);
         }
         else
         {

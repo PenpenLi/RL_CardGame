@@ -45,7 +45,9 @@ public class CharacterModelController : MonoBehaviour
     }
     public CharacterModel_animation cm_a;
     public CharacterModel_graphic cm_g;
+#if UNITY_EDITOR
     [ReadOnly]
+#endif
     public float scaleRate = 1;
     //角色模型是否底部对齐显示，游戏中角色是否都是底部对齐
     public bool isModelAlignBottom = false;
@@ -107,7 +109,6 @@ public class CharacterModelController : MonoBehaviour
             //构建
             if (!enemy.UseSpineData) return;
             SkeletonData = enemy.SpineData.SkeletonData;
-            skinName = enemy.SpineData.Skin; 
         }
 
         if(thisCMCsUDE == UDE.Animation)
@@ -152,7 +153,11 @@ public class CharacterModelController : MonoBehaviour
         Vector2 p1 = new Vector2(ModelParent.transform.localPosition.x / transform.localScale.x
             , ModelParent.transform.localPosition.y / transform.localScale.y);
         sa.transform.localPosition = isModelAlignBottom ? p0-p1 : Vector2.zero;
+        Vector3 lpos = sa.transform.localPosition;
+        sa.transform.localPosition = new Vector3(lpos.x, lpos.y, -5);
         sa.transform.localScale = Vector3.one * scaleRate;
+
+        sa.zSpacing = -0.1f;
 
         sa.gameObject.AddComponent<Model_ColorInitialize>();
         cm_a = sa.gameObject.AddComponent<CharacterModel_animation>();

@@ -23,46 +23,64 @@ public class skillInfo : ScriptableObject
     public bool IsOmegaSkill { get { return isOmegaSkill; } protected set { isOmegaSkill = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("自己", "友方", "敌方", "无限制", "End")]
+#endif
     private SkillAim aim = SkillAim.End;
     public SkillAim Aim { get { return aim; } protected set { aim = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("远程","近战","无标签")]
+#endif
     private SkillBreed breed = SkillBreed.Absence;
     public SkillBreed Breed { get { return breed; }protected set { breed = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("元素","物理","奥秘","End")]
+#endif
     private SkillKind kind = SkillKind.End;
     public SkillKind Kind { get { return kind; }protected set { kind = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("无AOE", "选择一条横向", "横向1", "横向2", "选择一条纵向", "纵向1", "纵向2"
         , "随机1个", "随机2个", "随机3个", "连续2次", "连续3次", "所有", "End")]
+#endif
     private SDConstants.AOEType skillAoe;
     public SDConstants.AOEType SkillAoe { get { return skillAoe; }protected set { skillAoe = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("标准获取","获取偏向Mp","获取偏向Tp","获取缺少Mp","获取缺少Tp"
         ,"略加强获取量","降低获取量","获取极度偏向Mp","获取极度偏向Tp","极大加强获取量","End")]
+#endif
     private SDConstants.AddMpTpType mptpAddType;
     public SDConstants.AddMpTpType MpTpAddType { get { return mptpAddType; }protected set { mptpAddType = value; } }
-
+#if UNITY_EDITOR
     [DisplayName("使用专用属性")]
+#endif
     public bool UseAppointedAtb = false;
+#if UNITY_EDITOR
     [ConditionalHide("UseAppointedAtb", true)]
+#endif
     public AttributeData Atb;
-
+#if UNITY_EDITOR
     [DisplayName("使用专用SkillPrefab")]
+#endif
     public bool UseAppointedPrefab = false;
     [SerializeField]
+#if UNITY_EDITOR
     [ConditionalHide("UseAppointedPrefab",true,true)]
+#endif
     private int functionId;
     public int FunctionId 
     { get { return functionId; } protected set { functionId = value; } }
     [SerializeField]
+#if UNITY_EDITOR
     [ConditionalHide("UseAppointedPrefab", true, false)]
+#endif
     private SkillClass appointedSkillClass;
     public SkillClass AppointedSkillClass
     {
@@ -71,7 +89,9 @@ public class skillInfo : ScriptableObject
     }
     
     [SerializeField]
+#if UNITY_EDITOR
     [ConditionalHide("UseAppointedPrefab", true, false)]
+#endif
     private ExtraSkillDataSet extraDataSet;
     public ExtraSkillDataSet ExtraDataSet
     {
@@ -94,7 +114,9 @@ public class skillInfo : ScriptableObject
         public int PDUsingRA_PerSkillGrade;//%
         [Header("ExtraStateAdd"), Space(25)]
         public bool UseState;
+#if UNITY_EDITOR
         [ConditionalHide("UseState", true)]
+#endif
         public StandardState _standardState;
     }
     #region event

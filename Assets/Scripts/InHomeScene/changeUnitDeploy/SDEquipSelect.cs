@@ -26,7 +26,7 @@ public class SDEquipSelect : MonoBehaviour
     public Text equipedItemBattleForce;
     public Button equipedItemBtn;
     public Text equipItemBtnText;
-    public Button equipedOrRemoveBtn;
+    //public Button equipedOrRemoveBtn;
     [HideInInspector]
     public int currentEquipHashcode;
     //public GDEEquipmentData CurrentEquipment;
@@ -42,8 +42,13 @@ public class SDEquipSelect : MonoBehaviour
     }
     public void initPosEquipSelectPanel(EquipPosition Pos, bool isSecondJPos=false)
     {
+        if (heroDetail == null)
+        {
+            heroDetail = FindObjectOfType<SDHeroDetail>();
+        }
         careerType = heroDetail.careerIndex;
         equipPos = Pos;
+        Debug.Log(pageController);
 
         pageController.currentHeroHashcode = heroDetail.Hashcode;
         SDGameManager.Instance.stockUseType = SDConstants.StockUseType.work;

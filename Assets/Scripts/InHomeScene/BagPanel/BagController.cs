@@ -36,21 +36,24 @@ public class BagController : MonoBehaviour
     public BattleManager BM;
     [Header("UI_anim")]
     public Button minimizeBtn;
-    [SerializeField,ReadOnly]
+    [SerializeField]
     private bool _ismini;
     public bool IsMini
     {
         get { return _ismini; }
         set
         {
-            _ismini = value;
-            if (_ismini)
+            if (_ismini != value)
             {
-                SCSizePlace.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InBack);
-            }
-            else
-            {
-                SCSizePlace.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
+                _ismini = value;
+                if (_ismini)
+                {
+                    SCSizePlace.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InBack);
+                }
+                else
+                {
+                    SCSizePlace.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
+                }
             }
         }
     }

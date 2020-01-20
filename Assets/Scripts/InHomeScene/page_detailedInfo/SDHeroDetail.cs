@@ -136,10 +136,9 @@ public class SDHeroDetail : BasicRoleProperty
     #region 读取角色属性
     public void setHero(int hashcode)
     {
-        //if (_hero == null) _hero = equipList.gameObject.AddComponent<SDHero>();
 
         GDEHeroData heroData = SDDataManager.Instance.GetHeroOwnedByHashcode(hashcode);
-        string id = SDDataManager.Instance.getHeroIdByHashcode(hashcode);
+        string id = heroData.id;
         ID = id;
         careerIndex = SDDataManager.Instance.getHeroCareerById(id);
         raceIndex = SDDataManager.Instance.getHeroRaceById(id);

@@ -32,10 +32,19 @@ public class test_runeAd : MonoBehaviour
     [ContextMenu("Add_All_Consumable_5")]
     public void Test_AddConsumableItems()
     {
-        List<consumableItem> all = SDDataManager.Instance.AllConsumableList;
-        for (int i = 0; i < all.Count; i++)
+        List<GDEItemData> alls = SDDataManager.Instance.PlayerData.consumables;
+        if (alls.Count < 10)
         {
-            SDDataManager.Instance.addConsumable(all[i].ID, 5);
+            List<consumableItem> all = SDDataManager.Instance.AllConsumableList;
+            all = all.FindAll(x => x.IconFromAtlas != null);
+            List<int> enables = RandomIntger.NumListReturn(5, all.Count);
+            string s = "";
+            for (int i = 0; i < enables.Count; i++)
+            {
+                SDDataManager.Instance.addConsumable(all[enables[i]].ID, 5);
+                s += all[enables[i]].name + "| ";
+            }
+            Debug.Log(s);
         }
     }
 
@@ -61,26 +70,39 @@ public class test_runeAd : MonoBehaviour
     [ContextMenu("AddAllEquips")]
     public void AddEquips()
     {
-        List<EquipItem> all = SDDataManager.Instance.AllEquipList;
-        for(int i = 0; i < all.Count; i++)
+        List<GDEEquipmentData> _gdes = SDDataManager.Instance.getAllOwnedEquips();
+        if (_gdes.Count < 8)
         {
-            SDDataManager.Instance.addEquip(all[i].ID);
+            List<EquipItem> all = SDDataManager.Instance.AllEquipList;
+            all = all.FindAll(x => x.IconFromAtlas != null
+            && x.WeaponRace.WeaponClass == SDConstants.WeaponClass.Claymore);
+            List<int> enables = RandomIntger.NumListReturn(5, all.Count);
+            for (int i = 0; i < all.Count; i++)
+            {
+                if (enables.Contains(i))
+                    SDDataManager.Instance.addEquip(all[i].ID);
+            }
+            List<EquipItem> allcs = all.FindAll(x =>
+            x.WeaponRace.WeaponClass == SDConstants.WeaponClass.Claymore);
+            EquipItem _item = allcs[Random.Range(0, allcs.Count)];
+            SDDataManager.Instance.addEquip(_item.ID);
+
+            List<GDEEquipmentData> gdes = SDDataManager.Instance.getAllOwnedEquips();
+            int[] posLists = new int[(int)EquipPosition.End];
+            for (int i = 0; i < gdes.Count; i++)
+            {
+                string id = gdes[i].id;
+                EquipItem item = SDDataManager.Instance.GetEquipItemById(id);
+                EquipPosition pos = item.EquipPos;
+                posLists[(int)pos]++;
+            }
+            string S = "";
+            for (int i = 0; i < posLists.Length; i++)
+            {
+                S += ((EquipPosition)i).ToString().ToUpper() + ": " + posLists[i] + "/ ";
+            }
+            Debug.Log(S);
         }
-        List<GDEEquipmentData> gdes = SDDataManager.Instance.getAllOwnedEquips();
-        int[] posLists = new int[(int)EquipPosition.End];
-        for(int i = 0; i < gdes.Count; i++)
-        {
-            string id = gdes[i].id;
-            EquipItem item = SDDataManager.Instance.GetEquipItemById(id);
-            EquipPosition pos = item.EquipPos;
-            posLists[(int)pos]++;
-        }
-        string S = "";
-        for(int i = 0; i < posLists.Length; i++)
-        {
-            S += ((EquipPosition)i).ToString().ToUpper() + ": " + posLists[i] + "/ ";
-        }
-        Debug.Log(S);
     }
 
 

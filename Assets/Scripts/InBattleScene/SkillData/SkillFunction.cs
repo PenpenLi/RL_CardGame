@@ -13,7 +13,9 @@ public class SkillFunction : MonoBehaviour
     public int SkillFiniteTimes = 0;//次数限制型技能设置
     [HideInInspector]
     public int SFT_CurrentTimes;//不断增长，当>=时触发
+#if UNITY_EDITOR
     [ReadOnly]
+#endif
     public bool SkillDisable;
     protected Button _btn;
     #region 消耗设置(全部列出)
@@ -109,11 +111,17 @@ public class SkillFunction : MonoBehaviour
     public int skillIndex = 0;
     public Transform bullet;
     //
+#if UNITY_EDITOR
     [ReadOnly]
+#endif
     public bool IsCausedCritDmg;
+#if UNITY_EDITOR
     [ReadOnly]
+#endif
     public bool IsCausedMiss;
+#if UNITY_EDITOR
     [ReadOnly]
+#endif
     public bool IsCausedFault;
 
     public bool IsOmega = false;
@@ -121,7 +129,9 @@ public class SkillFunction : MonoBehaviour
 
     [Header("ExtraStateAdd"), Space(25)]
     public bool UseState;
+#if UNITY_EDITOR
     [ConditionalHide("UseState", true)]
+#endif
     public StandardState _standardState;
 
 

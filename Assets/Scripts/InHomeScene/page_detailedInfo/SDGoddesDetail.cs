@@ -25,7 +25,9 @@ public class SDGoddesDetail : MonoBehaviour
     [Space]
     public Transform lockedPanel;
     public Transform lockedPanelSlider;
+#if UNITY_EDITOR
     [SerializeField, ReadOnly]
+#endif
     private bool _islocked;
     public bool isLocked
     {
@@ -37,7 +39,9 @@ public class SDGoddesDetail : MonoBehaviour
         }
     }
     public Transform emptyPanel;
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private bool _isEmpty;
     public bool isEmpty
     { 

@@ -6,7 +6,9 @@ using UnityEngine.UI;
 public class NPCController : MonoBehaviour
 {
     public int currentDialogueIndex;
+#if UNITY_EDITOR
     [DisplayName("NPC对话云")]
+#endif
     public Transform DialogueCloud;
     public Text dialogueNameText;
     public Text dialogueContentText;

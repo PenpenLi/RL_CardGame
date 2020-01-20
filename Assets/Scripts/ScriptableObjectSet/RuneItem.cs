@@ -13,7 +13,9 @@ public class RuneItem : ItemBase,ItemBase.IUsable
     }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("敏捷","耐力","恢复","统帅","无倾向")]
+#endif
     private GoddessAttiType _AttiType;
     public GoddessAttiType AttiType
     {

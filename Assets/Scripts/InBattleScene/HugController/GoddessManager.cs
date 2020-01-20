@@ -5,7 +5,9 @@ using GameDataEditor;
 public class GoddessManager : MonoBehaviour
 {
     public bool haveGoddess;
+#if UNITY_EDITOR
     [Range(0, 1), ReadOnly, SerializeField]
+#endif
     private float charge;
     public float Charge
     {

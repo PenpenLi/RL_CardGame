@@ -16,6 +16,7 @@ public class SimpleHeroDetailVision : MonoBehaviour
     public Image RarityIconImg;
     public ItemStarVision StarNumVision;
     public Text LvText;
+    public int hashcode;
     public Transform ExpSlider;
     HomeScene _hs;
     public HomeScene hs
@@ -28,41 +29,57 @@ public class SimpleHeroDetailVision : MonoBehaviour
     }
     //public CharacterModelController heroHeadImg;
     public Button MoreInfoBtn;
-    public void ReadFromSDHD(SDHeroDetail SDHD)
+    public void ShowHeroMessage(int _hashcode)
     {
-        heroCharacterDrawingImg.sprite = SDHD.heroCharacterDrawingImg.sprite;
-        CareerIconImg.sprite = SDHD.CareerIconImg.sprite;
-        CareerText.text = SDHD.CareerText.text;
-        RaceIconImg.sprite = SDHD.RaceIconImg.sprite;
-        RaceText.text = SDHD.RaceText.text;
-        NameText.text = SDHD.NameText.text;
-        NameBeforeText.text = SDHD.NameBeforeText.text;
-        RarityIconImg.sprite = SDHD.RarityImg.sprite;
+        hashcode = _hashcode;
+        GDEHeroData data = SDDataManager.Instance.getHeroByHashcode(hashcode);
+        if(data==null || hashcode <= 0)
+        {
+            EmptyVision();return;
+        }
+        HeroInfo info = SDDataManager.Instance.getHeroInfoById(data.id);
+        heroCharacterDrawingImg.sprite = info.FaceIcon;
+        CareerIconImg.sprite = info.Career.Icon;
+        CareerText.text = info.Career.NAME;
+        RaceIconImg.sprite = info.Race.Icon;
+        RaceText.text = info.Race.NAME;
+        //NameBeforeText.text
+        NameText.text = info.Name;
+        RarityIconImg.sprite = SDDataManager.Instance.raritySprite(info.Rarity);
         RarityIconImg.gameObject.SetActive(true);
-        StarNumVision.StarNum = SDHD.StarNumVision.StarNum;
-        LvText.text = SDHD.LvText.text;
-        ExpSlider.localScale = SDHD.ExpSlider.localScale;
-
-        //heroheadimg
-
-
+        StarNumVision.StarNum = info.LEVEL + data.starNumUpgradeTimes;
+        LvText.text = SDGameManager.T("Lv.")+SDDataManager.Instance.getLevelByExp(data.exp);
+        ExpSlider.localScale = new Vector3(SDDataManager.Instance.getExpRateByExp(data.exp), 1, 1);
         MoreInfoBtn.gameObject.SetActive(true);
     }
-    public void ReadFromSDGD(SDGoddesDetail SDGD)
+    public void ShowGoddessMessage(string id)
     {
-        heroCharacterDrawingImg.sprite = SDGD.goddessCharacterDrawingImg.sprite;
-        NameText.text = SDGD.nameText.text;
-        RarityIconImg.gameObject.SetActive(false);
-
-        LvText.text = SDGameManager.T("Lv.") + SDGD.lv;       
+        GDEgoddessData data = SDDataManager.Instance.getGDEGoddessDataById(id);
+        if (data == null)
+        {
+            EmptyVision(); return;
+        }
+        GoddessInfo info = SDDataManager.Instance.getGoddessInfoById(id);
+        NameText.text = info.Name;
+        /*
+        heroCharacterDrawingImg.sprite = info.FaceIcon;
+        CareerIconImg.sprite = info.Career.Icon;
+        CareerText.text = info.Career.NAME;
+        RaceIconImg.sprite = info.Race.Icon;
+        RaceText.text = info.Race.NAME;
+        //NameBeforeText.text
+        RarityIconImg.sprite = SDDataManager.Instance.raritySprite(info.Rarity);
+        RarityIconImg.gameObject.SetActive(true);
+        StarNumVision.StarNum = info.LEVEL + data.starNumUpgradeTimes;
+        LvText.text = SDGameManager.T("Lv.") + SDDataManager.Instance.getLevelByExp(data.exp);
+        ExpSlider.localScale = new Vector3(SDDataManager.Instance.getExpRateByExp(data.exp), 1, 1);
+        */
+        MoreInfoBtn.gameObject.SetActive(true);
     }
 
     public void EmptyVision()
     {
-        //heroCharacterDrawingImg.sprite = SDHD.heroCharacterDrawingImg.sprite;
-        //CareerIconImg.sprite = SDHD.CareerIconImg.sprite;
         CareerText.text = "--";
-        //RaceIconImg.sprite = SDHD.RaceIconImg.sprite;
         RaceText.text = "--";
         NameText.text = "";
         NameBeforeText.text = "";
@@ -78,7 +95,8 @@ public class SimpleHeroDetailVision : MonoBehaviour
     public void BtnToHeroDetailPanel()
     {
         Debug.Log("进入英雄配置界面");
-        //UIEffectManager.Instance.showAnimFadeIn(hs.heroDetailPanel);
+        hs._heroDetailPanel.GetComponent<HeroDetailPanel>()
+            .detail.HeroWholeMessage.currentHeroHashcode = hashcode;
         hs.heroDetailBtnTapped();
     }
     public void BtnToGoddessDetailPanel()

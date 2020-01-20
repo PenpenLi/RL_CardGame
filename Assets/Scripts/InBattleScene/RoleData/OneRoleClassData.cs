@@ -13,7 +13,9 @@ public class OneRoleClassData
     {
         get { return _thisRoleAttritube; }
     }
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private RoleAttributeList _thisRoleAttritube = RoleAttributeList.zero;
     public void InitThisRoleAttritube(RoleAttributeList ral)
     {
@@ -39,8 +41,9 @@ public class OneRoleClassData
     }
     //加减int值，用于显示实时属性增减
     public RoleAttributeList AllARevision;
-
+#if UNITY_EDITOR
     [Header("当前输出总属性显示"), ReadOnly]
+#endif
     public RoleAttributeList CurrentExportRAL = new RoleAttributeList();
     public void RefreshCERAL()
     {

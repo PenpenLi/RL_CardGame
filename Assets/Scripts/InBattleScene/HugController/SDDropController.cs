@@ -12,7 +12,9 @@ public class SDDropController : MonoBehaviour
     public List<string> allProbablyDropIds_legend = new List<string>();
     #region 概率
 
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private float _normalRate;
     public float normalRate
     {
@@ -23,8 +25,10 @@ public class SDDropController : MonoBehaviour
         }
         set { _normalRate = value; }
     }
-    
+
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private float _rareRate;
     public float rareRate
     {
@@ -35,8 +39,10 @@ public class SDDropController : MonoBehaviour
         }
         set { _rareRate = value; }
     }
-    
+
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private float _epicRate;
     public float epicRate
     {
@@ -48,7 +54,9 @@ public class SDDropController : MonoBehaviour
         set { _epicRate = value; }
     }
 
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private float _legendRate;
     public float legendRate
     {

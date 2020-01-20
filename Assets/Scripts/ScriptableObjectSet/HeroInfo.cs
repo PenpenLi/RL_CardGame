@@ -102,10 +102,8 @@ public class HeroInfo : CharacterInfo
         get { return _useSpineData; }
         set { _useSpineData = value; }
     }
-    [SerializeField,ConditionalHide("_useSpineData",true,false)]
-    private RoleSkeletonData _SpineData;
-    public RoleSkeletonData SpineData
-    {
-        get { return _SpineData; }
-    }
+#if UNITY_EDITOR
+    [SerializeField, ConditionalHide("_useSpineData", true, false)]
+#endif
+    public RoleSkeletonData SpineData;
 }

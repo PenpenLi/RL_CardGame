@@ -33,9 +33,6 @@ SpriteAtlas:
     - {fileID: 102900000, guid: 6e79d76893c950c44974406ee6d8742d, type: 3}
     totalSpriteSurfaceArea: 1999536
     bindAsDefault: 1
-    storedHash:
-      serializedVersion: 2
-      Hash: 39598d48fd26d6975989f81f98cbd47a
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 6f531a50552f49b45add8c05fe53a07c, type: 3}
@@ -146,7 +143,7 @@ SpriteAtlas:
   - M_M#3010069
   - M_M#3010099
   - M_M#3010027
-  - huangjinshilaimu-2
+  - M_M#3010005
   - M_M#3010051
   - M_M#3010050
   - M_M#3010052
@@ -168,7 +165,7 @@ SpriteAtlas:
   - M_M#3010100
   - M_M#3010074
   - M_M#3010047
-  - M_M#3010022
+  - M_M#3010021
   - M_M#3010006
   - M_M#3010046
   - M_M#3010096

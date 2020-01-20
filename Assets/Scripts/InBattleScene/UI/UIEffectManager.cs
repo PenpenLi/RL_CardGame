@@ -16,7 +16,7 @@ public class UIEffectManager : PersistentSingleton<UIEffectManager>
     /// 窗口淡入效果
     /// </summary>
     /// <param name="trans"></param>
-    public void showAnimFadeIn(Transform trans)
+    public void showAnimFadeIn(Transform trans )
     {
         Debug.Log("ShowAnimFadeIn:" + trans.name
             + ":(x,y):" + trans.localScale.x + "," + trans.localScale.y);

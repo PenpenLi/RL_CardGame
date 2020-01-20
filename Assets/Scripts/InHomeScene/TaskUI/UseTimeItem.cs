@@ -13,7 +13,9 @@ public class UseTimeItem : MonoBehaviour
     public Text belowText;
     public Transform timeSlider;
     int wholeLastTime;
+#if UNITY_EDITOR
     [DisplayName("该任务Id")]
+#endif
     public string taskId;
     #region isEmpty
     bool _isempty;
@@ -21,7 +23,10 @@ public class UseTimeItem : MonoBehaviour
     {
         get { return _isempty; }
         set { _isempty = value;
-            emptyPanel?.gameObject.SetActive(_isempty);
+            if (emptyPanel)
+            {
+                emptyPanel.gameObject.SetActive(_isempty);
+            }
         }
     }
     public Transform emptyPanel;

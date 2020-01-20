@@ -29,7 +29,12 @@ public class CharacterModel_animation : CharacterModel
         if (FindObjectOfType<HomeScene>())
         {
             GetComponent<MeshRenderer>().sortingLayerName = "UI";
-            GetComponent<MeshRenderer>().sortingOrder = 1;
+            Canvas c = GetComponentInParent<Canvas>();
+            if (c)
+            {
+                GetComponent<MeshRenderer>().sortingOrder = c.sortingOrder;
+            }
+            else GetComponent<MeshRenderer>().sortingOrder = 0;
         }
         else
         {

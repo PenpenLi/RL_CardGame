@@ -30,7 +30,6 @@ public class HeroDetailPanel : BasicSubMenuPanel
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();
-        panelFrom = homeScene.CurrentSubMenuType;
         if(transform.localScale==Vector3.zero|| !gameObject.activeSelf)
             UIEffectManager.Instance.showAnimFadeIn(transform);
         homeScene.CurrentSubMenuType = HomeScene.HomeSceneSubMenu.HeroDetails;
@@ -69,7 +68,6 @@ public class HeroDetailPanel : BasicSubMenuPanel
         equip.transform.gameObject.SetActive(false);
         skill.transform.gameObject.SetActive(false);
         improve.transform.gameObject.SetActive(false);
-
     }
 
 
@@ -193,6 +191,10 @@ public class HeroDetailPanel : BasicSubMenuPanel
 
     public void historyAdd(RoleDetailSubType type)
     {
+        if(history == null)
+        {
+            history = new List<RoleDetailSubType>();
+        }
         if (history.Count > 5)
         {
             history.RemoveAt(0);

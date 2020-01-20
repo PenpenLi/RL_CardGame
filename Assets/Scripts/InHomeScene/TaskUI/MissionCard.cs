@@ -16,7 +16,9 @@ public class MissionCard : MonoBehaviour
     public QuestGroup _questGroup;
     public Quest quest;
     public MissionPanel MP;
+#if UNITY_EDITOR
     [Space,DisplayName("任务进度")]
+#endif
     public Transform Slider;
 
     public Transform Locked;

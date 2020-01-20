@@ -72,6 +72,7 @@ public class GameController : MonoBehaviour
         setupHeroTeam();
         playLevelStartAnim();
         StartCoroutine(IEStartGame());
+        SDGameManager.Instance.isGameFinished = false;
     }
     public IEnumerator IEStartGame()
     {

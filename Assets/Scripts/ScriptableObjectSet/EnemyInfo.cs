@@ -64,11 +64,8 @@ public class EnemyInfo : CharacterInfo
         get { return _useSpineData; }
         private set { _useSpineData = value; }
     }
+#if UNITY_EDITOR
     [SerializeField, ConditionalHide("_useSpineData", true, false)]
-    private RoleSkeletonData _SpineData;
-    public RoleSkeletonData SpineData
-    {
-        get { return _SpineData; }
-        private set { _SpineData = value; }
-    }
+#endif
+    public RoleSkeletonData SpineData;
 }

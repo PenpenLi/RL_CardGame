@@ -27,7 +27,6 @@ public enum SkillAim
 }
 #endregion
 
-
 [System.Serializable]
 public class OneSkill
 {
@@ -37,11 +36,17 @@ public class OneSkill
     public int index;
 
     public bool UseAppointedPrefab;
+#if false
     [ConditionalHide("UseAppointedPrefab", true, true)]
+#endif
     public int SkillFunctionID;
+#if false
     [ConditionalHide("UseAppointedPrefab", true, false)]
+#endif
     public Transform SkillPrefab;
+#if false
     [ConditionalHide("UseAppointedPrefab", true, false)]
+#endif
     public skillInfo.ExtraSkillDataSet DataSet;
 
     public string IconImg;

@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class BasicState 
 {
-    [ReadOnly]
     public int SkillGrade;
-    [ReadOnly]
     public string NAME;
-    [ReadOnly]
     public bool Success;
     #region 状态类基本数据
     public enum StateEndType
@@ -20,7 +17,9 @@ public class BasicState
     /// <summary>
     /// 设置状态持续时间
     /// </summary>
+#if UNITY_EDITOR
     [ConditionalHide("stateEndType", (int)StateEndType.time, true, false)]
+#endif
     public int StateLastTime;
     /// <summary>
     /// 该状态所属类型
@@ -29,7 +28,9 @@ public class BasicState
     /// <summary>
     /// 该状态造成伤害类型
     /// </summary>
+#if UNITY_EDITOR
     [EnumMemberNames("元素", "物理", "奥秘", "无")]
+#endif
     public SkillKind stateKind;
     /// <summary>
     /// 触发状态概率
@@ -40,11 +41,17 @@ public class BasicState
     public class ChangeInRAL
     {
         public string Title;
+#if UNITY_EDITOR
         [DisplayName("是否为标准抗性(否则为标准属性)")]
+#endif
         public bool IsForRD = true;
+#if UNITY_EDITOR
         [ConditionalHide("IsForRD", true, true)]
+#endif
         public AttributeData ADTag;
+#if UNITY_EDITOR
         [ConditionalHide("IsForRD", true, false)]
+#endif
         public StateTag STag;
         //
         public enum DataOrigin
@@ -54,13 +61,21 @@ public class BasicState
             armor,
         }
         public DataOrigin UseDataType = DataOrigin.normal;
+#if UNITY_EDITOR
         [ConditionalHide("UseDataType", (int)DataOrigin.normal, true, false)]
+#endif
         public NumberData ChangeData;
+#if UNITY_EDITOR
         [ConditionalHide("UseDataType", (int)DataOrigin.otherAtb, true, false)]
+#endif
         public AttributeData OtherAtb;
+#if UNITY_EDITOR
         [ConditionalHide("UseDataType", (int)DataOrigin.otherAtb, true, false)]
+#endif
         public int UsePercent;
+#if UNITY_EDITOR
         [ConditionalHide("UseDataType", (int)DataOrigin.armor, true, false)]
+#endif
         public EquipPosition UsePos;
 
         public ChangeInRAL(NumberData data, AttributeData tag)

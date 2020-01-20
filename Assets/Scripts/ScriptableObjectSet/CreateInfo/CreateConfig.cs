@@ -14,7 +14,7 @@ using Spine;
 
 public class CreateConfig : MonoBehaviour
 {
-
+    /*
     [MenuItem("Tools/CreateConfig")]
     private static void Create()
     {
@@ -313,7 +313,6 @@ public class CreateConfig : MonoBehaviour
         return results;
     }
 
-    
     [MenuItem("Tools/CreatePool")]
     private static void CreatePool()
     {
@@ -325,21 +324,25 @@ public class CreateConfig : MonoBehaviour
         HeroInfo[] all = Resources.LoadAll<HeroInfo>
             ("ScriptableObjects/heroes");
         List<HeroInfo> list = all.ToList();
-        P.ID = "POOL_H#004";
-        P.Name = "全英雄卡池";
+        P.ID = "POOL_H#000";
+        P.Name = "全战士卡池";
         P.HeroList = list.FindAll(x=> 
         {
             if (x.Name.Contains("无名") && !x.Name.Contains("("))
             {
                 return false;
             }
-            else
+            else if (x.Career.Career == Job.Fighter)
             {
                 if (x.ID == "H_FIGHTER#000050") return false;
                 else return true;
             }
+            else return false;
         });
-
+        P.HeroList = P.HeroList.FindAll(x=>
+        {
+            return (x.Sex != CharacterSex.Unknown);
+        });
         AssetDatabase.CreateAsset(P, "Assets/Resources/ScriptableObjects/pools/"
                 + "AllHeroPool" + ".asset");
     }
@@ -364,4 +367,5 @@ public class CreateConfig : MonoBehaviour
             h.SpineData.SkeletonData = SDA;
         }
     }
+    */
 }

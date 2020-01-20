@@ -55,7 +55,7 @@ public class OneBagSlot : MonoBehaviour
     }
     #endregion
     #region useType
-    [SerializeField,ReadOnly]
+    [SerializeField]
     BagController.useType _cut = BagController.useType.change;
     public BagController.useType currentUseType
     {
@@ -72,6 +72,8 @@ public class OneBagSlot : MonoBehaviour
     #endregion
     public Image propIcon;
     public Image propBgIcon;
+    public Image propFrameIcon;
+    public ItemStarVision starVision;
     public Text nameText;
     public Text numText;
     public string propId;
@@ -105,6 +107,12 @@ public class OneBagSlot : MonoBehaviour
                 consumableItem D = SDDataManager.Instance.getConsumableById(propId);
                 nameText.text = D.NAME;
                 numText.text = "" + num + (num>=limit?"(上限)":"");
+                //
+                propIcon.sprite = D.IconFromAtlas;
+                propBgIcon.sprite = SDDataManager.Instance.baseBgSpriteByRarity(1);
+                propFrameIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(1);
+                //
+                if (starVision) starVision.StarNum = D.LEVEL;
             }
         }
     }

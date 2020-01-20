@@ -256,7 +256,8 @@ public class SummonAltarPanel : BasicSubMenuPanel
         {
             HeroInfo H = SDDataManager.Instance.AltarInOnePool
                 (AltarPossibility, CurrentPool.Pool.ID,useRareCoupon);
-            int hc = SDDataManager.Instance.addHero(H.ID);
+            SDDataManager.Instance.addHero(H.ID);
+            int hc = SDDataManager.Instance.heroNum;
             RewardHCs.Add(hc);
         }
         initRRP();

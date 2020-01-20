@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using System.Linq;
 
 /// <summary>
 /// 出战英雄选择类
@@ -14,14 +15,11 @@ public class SDHeroSelect : MonoBehaviour
     /// 队伍中英雄(hashcode)
     /// </summary>
     public int[] heroesInTeam;
-
-
     //
     public SelectTeamUnitPanel MainPanel;
-    public Transform heroesSelectPanel;
+    public HEWPageController PAGE;
     [Header("简易角色信息板")]
     public SimpleHeroDetailVision simpleHDV;
-    // Start is called before the first frame update
     public void heroPanelInit()
     {
         string currentTeamId = MainPanel.CurrentTeamId;
@@ -51,6 +49,18 @@ public class SDHeroSelect : MonoBehaviour
         MainPanel.RPC.initRoleModelToRolePosPlace();
 
         heroBtnFunction(MainPanel.currentHeroIndexInTeam);
+        PAGE.ItemsInit(SDConstants.ItemType.Hero);
+        foreach (SingleItem item in PAGE.items)
+        {
+            if (heroesInTeam.Contains(item.itemHashcode))
+            {
+                item.isSelected = true;
+            }
+            else
+            {
+                item.isSelected = false;
+            }
+        }
     }
 
     public void heroBtnTapped(int index)
@@ -62,51 +72,34 @@ public class SDHeroSelect : MonoBehaviour
 
         //
         MainPanel.currentEditType = SelectTeamUnitPanel.editType.hero;
+        PAGE.ItemsInit(SDConstants.ItemType.Hero);
+        foreach(SingleItem item in PAGE.items)
+        {
+            if (heroesInTeam.Contains(item.itemHashcode))
+            {
+                item.isSelected = true;
+            }
+            else
+            {
+                item.isSelected = false;
+            }
+        }
     }
     public void heroBtnFunction(int index)
     {
-        showHeroesSelectPanel(index);
         if (heroesInTeam.Length <= index)
         {
             simpleHDV.EmptyVision();return;
         }
-        if (heroesInTeam[index] == 0)
+        if (heroesInTeam[index] <= 0)
         {
-            //showHeroesSelectPanel(index);
             simpleHDV.EmptyVision();
         }
         else
         {
-            BasicHeroSelect BHS = heroesSelectPanel.GetComponent<BasicHeroSelect>();
-            if (BHS)
-            {
-                //显示英雄详情
-                SDHeroDetail HDP = BHS.heroDetails.GetComponent<SDHeroDetail>();
-                int _hashcode = heroesInTeam[index];
-                HDP.gameObject.SetActive(true);
-                HDP.initHeroDetailPanel(_hashcode);
-
-                if(SDGameManager.Instance.heroSelectType != SDConstants.HeroSelectType.Battle)
-                {
-                    HDP.HeroWholeMessage.whenOpenThisPanel();
-                }
-
-                simpleHDV.ReadFromSDHD(HDP);
-            }
-            else { simpleHDV.EmptyVision(); }
+            int _hashcode = heroesInTeam[index];
+            simpleHDV.ShowHeroMessage(_hashcode);
         }
-    }
-    public void showHeroesSelectPanel(int index)
-    {
-        heroesSelectPanel.localScale = Vector3.one;
-
-        BasicHeroSelect bhs = heroesSelectPanel.GetComponent<BasicHeroSelect>();
-        bhs.index = index;
-        //bhs.pageController.scrollRectReset();
-        bhs.heroesInit();
-        if(!bhs.gameObject.activeSelf)
-            UIEffectManager.Instance.showAnimFadeIn(bhs.transform);
-
     }
 
 }

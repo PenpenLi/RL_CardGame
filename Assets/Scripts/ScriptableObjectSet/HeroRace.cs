@@ -5,7 +5,9 @@ using UnityEngine;
 public class HeroRace : CharacterRace
 {
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("人类","精灵","龙裔","End")]
+#endif
     private Race race;
     public Race Race
     {

@@ -35,7 +35,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1a6905ea0b84b77479d220dc81f73fb7, type: 2}
   PersonalDrawImg: {fileID: 0}
   _useSpineData: 1
-  _SpineData:
-    _SkeletonData: {fileID: 11400000, guid: b8d2b5f3b7fe4934abf1d1100e85d3eb, type: 2}
-    skin: katamier_1
+  SpineData:
+    SkeletonData: {fileID: 11400000, guid: b8d2b5f3b7fe4934abf1d1100e85d3eb, type: 2}
+    skin: 
     allEnableList: []

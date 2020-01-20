@@ -248,6 +248,7 @@ public class SDConstants
 
     static public float AnimTime_ATTACK = 0.6f;
     static public float AnimTime_CAST = 0.8f;
+    static public float AnimTime_DIE = 2.2f;
     #endregion
 
     public static float HERO_MODEL_RATIO = 60f;

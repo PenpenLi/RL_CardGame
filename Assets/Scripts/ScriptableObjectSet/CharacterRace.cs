@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class CharacterRace : BaseRank
 {
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private SDConstants.CharacterType characterType;
     public SDConstants.CharacterType CharacterType
     {

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
+#if UNITY_EDITOR
 public class EditorUtils : Editor
 {
     //This code is released under the MIT license: https://opensource.org/licenses/MIT
@@ -16,3 +17,4 @@ public class EditorUtils : Editor
         }
     }
 }
+#endif

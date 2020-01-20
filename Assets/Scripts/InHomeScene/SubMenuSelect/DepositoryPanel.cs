@@ -33,6 +33,7 @@ public class DepositoryPanel : BasicSubMenuPanel
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();
+        currentBtnKind = aboveBtnKind.material;
         BAG.gameObject.SetActive(false);
         resetThisPanel();
         page.ItemsInit(SDConstants.ItemType.Consumable, SDConstants.ConsumableType.material);

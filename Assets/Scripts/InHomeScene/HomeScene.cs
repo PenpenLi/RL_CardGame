@@ -13,48 +13,52 @@ public class HomeScene : MonoBehaviour
     {
         MainCastle = 0
         ,
-        LevelEnter =1
+        LevelEnter = 1
             ,
-        BattleTeam=2
+        BattleTeam = 2
             ,
-        HeroStage=3
+        HeroStage = 3
             ,
-        HeroDetails=4
+        HeroDetails = 4
         ,
-        Store=5
+        Store = 5
         ,
-        SummonAltar=6
+        SummonAltar = 6
         ,
-        Depository=7
+        Depository = 7
         ,
-        Hospital=8
+        Hospital = 8
         ,
-        Goddess=9
+        Goddess = 9
             ,
-        GoddessDetail=10
+        GoddessDetail = 10
             ,
-        Equipment=11
+        Equipment = 11
             ,
-        EquipDetail=12
+        EquipDetail = 12
             ,
-        Mission=13
+        Mission = 13
             ,
-        Achievement=14
+        Achievement = 14
             ,
-        PhysicalBuff=15
+        PhysicalBuff = 15
             ,
-        ElementalBuff=16
+        ElementalBuff = 16
             ,
-        Factory0=17
+        Factory0 = 17
             ,
-        Factory1=18
+        Factory1 = 18
             ,
-        Rune=19
+        Rune = 19
             ,
-        Illustrate=20
+        Illustrate = 20
             ,
         End
     }
+    [SerializeField]
+#if UNITY_EDITOR
+    [ReadOnly]
+#endif
     private HomeSceneSubMenu _csm = HomeSceneSubMenu.End;
     public HomeSceneSubMenu CurrentSubMenuType
     {
@@ -103,11 +107,18 @@ public class HomeScene : MonoBehaviour
     public Transform ExtraBtnList;
     public Button backBtn;
     public Button mapBtn;
-    public Button packBtn;
+    [Space]
+    public Text coin_currentNum;
+    public Text damond_currentNum;
+    public Text jiancai_currentNum;
+    public Image DayNightImg;
+    public Image GoddessIcon;
+    public Text PlayerNameText;
 
     [Header("特殊设置")]
     public Button SubMenuLvUpBtn;
     public HeroInfo BasicHero;
+    public Text CurrentHeroNum;
     private void Awake()
     {
         //建筑Id设置
@@ -123,6 +134,7 @@ public class HomeScene : MonoBehaviour
     {
         SDGameManager.Instance.INIT();
         SDDataManager.Instance.ReadAtlas();
+        SDDataManager.Instance.ReadAllSkeletonAssets();
         SubMenuClose(true);
         foreach(FactoryPanel p in FindObjectsOfType<FactoryPanel>())
         {
@@ -132,7 +144,8 @@ public class HomeScene : MonoBehaviour
         changeToHomeScene();
         refreshAllBuildingCondition();
         refreshAllGoddessesCondition();
-
+        RefreshDataInOuterMenu();
+        //
         StartCoroutine(IEBuildFirstly());
     }
     IEnumerator IEBuildFirstly()
@@ -149,17 +162,22 @@ public class HomeScene : MonoBehaviour
         //
         AddHeroPools();
 
-        FindObjectOfType<test_runeAd>().Test_AddConsumableItems();
+        test_runeAd t = FindObjectOfType<test_runeAd>();
+        t.Test_AddConsumableItems();
+        t.AddEquips();
         //
-        yield return new WaitForSeconds(0.15f);
         BuildFirstEnterGameData();
+
     }
-    void BuildFirstEnterGameData()
+    public void BuildFirstEnterGameData()
     {
         if (!SDDataManager.Instance.CheckHaveHeroById(BasicHero.ID))
         {
-            int a = SDDataManager.Instance.addHero(BasicHero.ID);
+            SDDataManager.Instance.addHero(BasicHero.ID);
         }
+        if(CurrentHeroNum)
+            CurrentHeroNum.text =""+ SDDataManager.Instance.PlayerData
+                .herosOwned.Count;
     }
 
     public void refreshAllBuildingCondition()
@@ -229,6 +247,7 @@ public class HomeScene : MonoBehaviour
     {
         if (!fromSubMenu) SubMenuClose(true);
         _heroDetailPanel.GetComponent<BasicSubMenuPanel>().panelFrom = CurrentSubMenuType;
+
         CurrentSubMenuType = HomeSceneSubMenu.HeroDetails;
         UIEffectManager.Instance.showAnimFadeIn(_heroDetailPanel);
 
@@ -493,6 +512,7 @@ public class HomeScene : MonoBehaviour
             a++; a %= 2;
             SDDataManager.Instance.ResidentMovementData.CurrentDayNightId = a;
         }
+        RefreshDataInOuterMenu();
     }
     public void WhenChangingSubMenu
         (HomeSceneSubMenu oldOne, HomeSceneSubMenu newOne)
@@ -528,6 +548,9 @@ public class HomeScene : MonoBehaviour
             _BattleTeamPanel.GetComponent<BattleTeamPanel>()
                 .changeSpriterenderersStatus(false);
         }
+
+        //
+        RefreshDataInOuterMenu();
     }
     #endregion
     private void FixedUpdate()
@@ -588,15 +611,34 @@ public class HomeScene : MonoBehaviour
             P.BtnToLvUp();
         }
     }
+
+    public void BtnToShowPropsInDeposity()
+    {
+        depositoryBtnTapped();
+        StartCoroutine(IEToPropBag());
+    }
+    IEnumerator IEToPropBag()
+    {
+        yield return new WaitForSeconds(0.1f);
+        _DepositoryPanel.GetComponent<DepositoryPanel>().btnToProp();
+    }
+
+
+    public void RefreshDataInOuterMenu()
+    {
+        coin_currentNum.text = ""+SDDataManager.Instance.GetCoin();
+        damond_currentNum.text = "" + SDDataManager.Instance.GetDamond();
+        jiancai_currentNum.text = "" + SDDataManager.Instance.getJiancai();
+        if(SDDataManager.Instance.PlayerData.heroesTeam!=null
+            && SDDataManager.Instance.PlayerData.heroesTeam.Count > 0)
+        {
+            GDEunitTeamData team = SDDataManager.Instance.PlayerData.heroesTeam[0];
+            //GoddessIcon.sprite = 
+        }
+        //PlayerNameText.text = 
+        
+    }
     #endregion
-
-
-
-
-
-
-
-
 
 
     public void AddHeroPools()

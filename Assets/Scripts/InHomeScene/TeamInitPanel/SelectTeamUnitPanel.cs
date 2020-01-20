@@ -29,7 +29,7 @@ public class SelectTeamUnitPanel : MonoBehaviour
     public Transform goddessSelectSubPanel;
     public SimpleHeroDetailVision currentGoddessSimpleDetail;
     public HEWPageController goddess_pageController;
-    public SDGoddesDetail SDGD;
+    //public SDGoddesDetail SDGD;
     public RolePosControllerInTeam RPC { get { return GetComponentInChildren<RolePosControllerInTeam>(); } }
     public SDHeroSelect SDHS { get { return GetComponentInChildren<SDHeroSelect>(); } }
     public BattleTeamPanel BTP { get { return GetComponentInParent<BattleTeamPanel>(); } }
@@ -60,8 +60,6 @@ public class SelectTeamUnitPanel : MonoBehaviour
         goddess_pageController.ResetPage();
 
         GDEunitTeamData team = SDDataManager.Instance.getHeroTeamByTeamId(CurrentTeamId);
-
-        //goddessImg.sprite = currentTeamData.TeamGoddess.GetComponent<Image>().sprite;
         teamNameText.text = team.teamName;
 
     }

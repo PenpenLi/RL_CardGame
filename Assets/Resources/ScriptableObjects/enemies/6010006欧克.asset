@@ -29,7 +29,7 @@ MonoBehaviour:
   dropPercent: 5
   dropItems: []
   _useSpineData: 1
-  _SpineData:
-    _SkeletonData: {fileID: 11400000, guid: 5a6e149666b06a0408741d70853744ae, type: 2}
+  SpineData:
+    SkeletonData: {fileID: 11400000, guid: 5a6e149666b06a0408741d70853744ae, type: 2}
     skin: default
     allEnableList: []

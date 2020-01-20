@@ -16,7 +16,7 @@ public class GoddessSkill:MonoBehaviour
 
     [Space]
     public bool UseState;
-    [ConditionalHide("UseState", true, false)]
+    //[ConditionalHide("UseState", true, false)]
     public GSState State;
     public virtual void StartSkill()
     {

@@ -19,7 +19,6 @@ public class BasicHeroSelect : MonoBehaviour
     public AllOwnedHeroesPanel allRolePanel;
     #endregion
     [Space(25)]
-    public ScrollRect scrollRect;
     public Transform heroDetails;
     public Transform emptyHeroPanel;
 

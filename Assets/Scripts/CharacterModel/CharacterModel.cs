@@ -50,6 +50,7 @@ public class CharacterModel : MonoBehaviour
     [Space(25)]
     [SpineAnimation]
     public string current_anim_name;
+    public float current_anim_time;
     public SkeletonDataAsset DataAsset;
     public Spine.AnimationState spineAnimationState;
     public Spine.Skeleton skeleton;
@@ -74,6 +75,7 @@ public class CharacterModel : MonoBehaviour
         anim_cast = SDConstants.AnimName_CAST;
         anim_hurt = SDConstants.AnimName_HURT;
         anim_jump = SDConstants.AnimName_JUMP;
+        anim_die = SDConstants.AnimName_DIE;
     }
     public virtual void initCharacterModel()
     {
@@ -103,6 +105,11 @@ public class CharacterModel : MonoBehaviour
         string w1 = "R_wuqi";
         weaponBaseData = skeleton.FindSlot(w0).Bone.Data;
         weaponBaseData2 = skeleton.FindSlot(w1).Bone.Data;
+        //
+        Material M = GetComponent<MeshRenderer>().material;
+        if(skeleton.FindSlot(w0).Attachment != null)
+            M.shader = skeleton.FindSlot(w0).Attachment.GetMaterial().shader;
+
         if (CMC.notShowWeaponSlot)
         {
             skeleton.FindSlot(w0).A = 0;
@@ -110,16 +117,20 @@ public class CharacterModel : MonoBehaviour
         }
         else
         {
+            skeleton.FindSlot(w0).A = 1;
+            skeleton.FindSlot(w1).A = 1;
+            //
             EquipItem weapon = SDDataManager.Instance.GetEquipItemById(CMC.weaponId);
             if (weapon == null) return;
             List<Sprite> allSprites = Resources.LoadAll<Sprite>("Spine/WeaponVision/").ToList();
             weaponSprite = allSprites.Find(x => x.name == weapon.ID);
             if (weaponSprite == null) return;
 
+
             Spine.Slot baseWQ = skeleton.FindSlot(w0);
+            string an = baseWQ.Data.AttachmentName;
             Spine.Attachment originalAttachment = baseWQ.Attachment;
-            Spine.Attachment newAttachment = originalAttachment.GetRemappedClone
-                (weaponSprite, originalAttachment.GetMaterial());
+            Spine.Attachment newAttachment = originalAttachment.GetRemappedClone(weaponSprite, M);
             if(weapon.WeaponRace.WeaponClass == SDConstants.WeaponClass.Sharp)
             {
                 Spine.Slot otherWQ = skeleton.FindSlot(w1);
@@ -128,7 +139,7 @@ public class CharacterModel : MonoBehaviour
                 if (weaponSprite2 != null)
                 {
                     Spine.Attachment oa1 = otherWQ.Attachment;
-                    Spine.Attachment newoa1 = oa1.GetRemappedClone(weaponSprite2, oa1.GetMaterial());
+                    Spine.Attachment newoa1 = oa1.GetRemappedClone(weaponSprite2, M);
                     otherWQ.Attachment = newoa1;
                 }
             }else if(weapon.WeaponRace.WeaponClass == SDConstants.WeaponClass.Claymore)
@@ -138,23 +149,12 @@ public class CharacterModel : MonoBehaviour
                 baseWQ.Bone.SetLocalPosition(new Vector2(0, -weaponBaseData.Y * 2));
             }
             baseWQ.Attachment = newAttachment;
-
-            skeleton.FindSlot(w0).A = 1;
-            skeleton.FindSlot(w1).A = 1;
         }
     }
 
 
     #region extra
 
-    public void testBtn()
-    {
-        ChangeModelAnim(anim_attack);
-    }
-    public void testBtn1()
-    {
-        ChangeModelAnim(anim_hurt);
-    }
     public void ChangeModelAnim(string TriggerName, bool IsLoop = false)
     {
         if (_isDead) return;
@@ -168,6 +168,7 @@ public class CharacterModel : MonoBehaviour
                 transform.DOShakePosition(0.2f, new Vector3(1, 1, 1));
             }
         }
+        current_anim_time = 0;
         if (_Tag == SDConstants.CharacterType.Hero
             || _Tag == SDConstants.CharacterType.Enemy)
         {
@@ -194,6 +195,7 @@ public class CharacterModel : MonoBehaviour
                             AnimName = "attect-01";
                         }
                     }
+                    current_anim_time = SDConstants.AnimTime_ATTACK;
                 }
                 if(TriggerName == anim_cast)
                 {
@@ -213,10 +215,15 @@ public class CharacterModel : MonoBehaviour
                     {
                         AnimName = fixedAnimNames.Find(x => x.Contains("4"));
                     }
+                    current_anim_time = SDConstants.AnimTime_CAST;
                 }
                 if(TriggerName == anim_jump)
                 {
                     AnimName = AllAnimations.Find(x => x.Contains("cast") && x.Contains("1"));
+                }
+                if(TriggerName == anim_die)
+                {
+                    current_anim_time = SDConstants.AnimTime_DIE;
                 }
             }
             else
@@ -233,6 +240,7 @@ public class CharacterModel : MonoBehaviour
     {
         //var track = skeletonAnimation.state.SetAnimation(0, animName, IsLoop);
         //var empty = skeletonAnimation.state.AddEmptyAnimation(1, 0.5f, 0.1f);
+        yield return new WaitForSeconds(current_anim_time);
         if (!IsLoop)
         {
             spineAnimationState.AddAnimation(0, anim_idle, true, 0);

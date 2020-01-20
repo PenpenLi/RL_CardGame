@@ -14,7 +14,9 @@ public class EquipItem : ItemBase, ItemBase.IUsable
     { get { return resistStr; } set { resistStr = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("头盔","胸甲","臂甲","腿甲","饰品","武器","END")]
+#endif
     private EquipPosition equipPos;
     public EquipPosition EquipPos
     {
@@ -29,7 +31,9 @@ public class EquipItem : ItemBase, ItemBase.IUsable
     }
 
     [SerializeField]
+#if UNITY_EDITOR
     [ConditionalHide("equipPos",(int)EquipPosition.Hand,true)]
+#endif
     private WeaponRace weaponRace;
     public WeaponRace WeaponRace
     {
@@ -55,7 +59,9 @@ public class EquipItem : ItemBase, ItemBase.IUsable
     { get { return _SuitBelong; } set { _SuitBelong = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [ConditionalHide("_SuitBelong",true)]
+#endif
     private string suitId;
     public string SuitId
     {

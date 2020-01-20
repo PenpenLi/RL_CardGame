@@ -19,7 +19,9 @@ public class BaseRank : ScriptableObject
     }
 
     [SerializeField]
+#if UNITY_EDITOR
     [DisplayName("名称")]
+#endif
     private string _name;
     public string NAME
     {

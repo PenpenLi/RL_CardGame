@@ -35,7 +35,9 @@ public class GoddessInfo : CharacterInfo
 
     [Header("女神配属技能"), Space]
     public bool HaveSkill;
+#if UNITY_EDITOR
     [ConditionalHide("HaveSkill",true,false)]
+#endif
     public GoddessSkillInfo SkillInfo;
 }
 
@@ -73,11 +75,17 @@ public class GoddessSkillInfo
         }
     }
     [Space]
+#if UNITY_EDITOR
     [ConditionalHide("SkillTag",(int)GSTag.damage,true,false)]
+#endif
     public NumberData _DamageData;
+#if UNITY_EDITOR
     [ConditionalHide("SkillTag", (int)GSTag.heal, true, false)]
+#endif
     public NumberData _HealData;
+#if UNITY_EDITOR
     [ConditionalHide("SkillTag", (int)GSTag.addState, true, true)]
+#endif
     public int UpBySkillGrade;
     [Space]
     public bool TargetIsHero;
@@ -86,6 +94,8 @@ public class GoddessSkillInfo
     public SkillBreed BREED;
     public SkillKind KIND;
     public bool UseState;
+#if UNITY_EDITOR
     [ConditionalHide("UseState", true, false)]
+#endif
     public GSState State;
 }

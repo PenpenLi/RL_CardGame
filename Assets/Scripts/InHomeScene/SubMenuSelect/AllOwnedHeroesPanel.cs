@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class AllOwnedHeroesPanel : BasicSubMenuPanel
 {
-    public BasicHeroSelect BHS;
+    public HEWPageController PAGE;
     public Transform RoleDetailPanel;
     public Transform RoleStagePanel;
     [Header("RoleDetailPanel__Content")]
@@ -27,8 +27,7 @@ public class AllOwnedHeroesPanel : BasicSubMenuPanel
         //SDGameManager.Instance.isSelectHero = true;
         SDGameManager.Instance.heroSelectType = SDConstants.HeroSelectType.All;
         UIEffectManager.Instance.showAnimFadeIn(RoleStagePanel);
-        BHS.gameObject.SetActive(true);
-        BHS.heroesInit();
+        PAGE.ItemsInit(SDConstants.ItemType.Hero);
     }
 
     public override void commonBackAction()
@@ -42,6 +41,7 @@ public class AllOwnedHeroesPanel : BasicSubMenuPanel
 
         }
         base.commonBackAction();
+        PAGE.ResetPage();
         homeScene.SubMenuClose();
     }
 }

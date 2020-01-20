@@ -21,7 +21,9 @@ public class RunePanel : BasicSubMenuPanel
     public Button MinusBtn;
     public Button PlusBtn;
     public Text LevelUpNumText;
+#if UNITY_EDITOR
     [ReadOnly]
+#endif
     public int ExpectLvupNum = 0;
     [Header("合成页面设置")]
     public simpleSlotSet[] ComposeMaterialSlots;

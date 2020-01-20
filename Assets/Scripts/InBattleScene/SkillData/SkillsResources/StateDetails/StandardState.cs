@@ -5,11 +5,17 @@ using UnityEngine;
 [System.Serializable]
 public class StandardState:BasicState
 {
+#if UNITY_EDITOR
     [DisplayName("是-使用施法者属性/否-使用百分比伤害")]
+#endif
     public bool UseSourceAToDmg = false;
+#if UNITY_EDITOR
     [ConditionalHide("UseSourceAToDmg",true,false)]
+#endif
     public NumberData ExtraDmg;
+#if UNITY_EDITOR
     [ConditionalHide("UseSourceAToDmg",true,true)]
+#endif
     public int UsePercent;
 
     [SerializeField]

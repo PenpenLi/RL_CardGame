@@ -35,7 +35,9 @@ public class ItemBase : ScriptableObject
         }
     }
 
+#if UNITY_EDITOR
     [SerializeField, ReadOnly]
+#endif
     private SDConstants.ItemType itemtype;
     public SDConstants.ItemType ItemType
     {

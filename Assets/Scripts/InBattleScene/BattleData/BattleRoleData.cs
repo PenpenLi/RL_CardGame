@@ -206,8 +206,11 @@ public class BattleRoleData : MonoBehaviour
 
             RoleAttributeList _ral = dal.ExportRAL;
             _ral.Add(RoleAttributeList.GDEToRAL(heroData.RoleAttritubeList));
+            //
+            Race _race = SDDataManager.Instance.getHeroRaceByHashcode(unitHashcode);
+            //
             HeroProperty._hero.initData_Hero
-                (dal.Info.Career.Career, dal.Info.Race.Race
+                (dal.Info.Career.Career, _race
                 , grade, 0, dal.starNum
                 , _ral
                 , dal.CRIDmg, dal.DmgReduction, dal.DmgReflection, dal.RewardRate
@@ -435,7 +438,9 @@ public class BattleRoleData : MonoBehaviour
     }
     #endregion
     #region 状态类
+#if UNITY_EDITOR
     [ReadOnly]
+#endif
     public int stateExtraDamage = 0;
     public RoleBarChart AllRegend = RoleBarChart.zero;
     #region 全状态列表

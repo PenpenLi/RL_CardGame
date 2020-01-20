@@ -18,7 +18,9 @@ public enum StateTag
 [System.Serializable]
 public class BRD_OneStateController 
 {
+#if UNITY_EDITOR
     [SerializeField,ReadOnly]
+#endif
     private StateTag _statetag;
     public StateTag stateTag
     {
@@ -73,7 +75,9 @@ public class OneStateController
     public int ExtraDmg { get { return extraDmg; } set { extraDmg = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("按时间结束","使用技能后结束/行动后结束","被攻击后结束")]
+#endif
     private StandardState.StateEndType stateEndType;
     public StandardState.StateEndType StateEndType
     {
@@ -81,11 +85,15 @@ public class OneStateController
         set { stateEndType = value; }
     }
     [SerializeField]
+#if UNITY_EDITOR
     [ConditionalHide("stateEndType",(int)StandardState.StateEndType.time,true,false)]
+#endif
     private int lastTime;
     public int LastTime { get { return lastTime; } set { lastTime = value; } }
 
+#if UNITY_EDITOR
     [SerializeField, ReadOnly]
+#endif
     private StateTag _statetag = StateTag.End;
     public StateTag StateTag
     {

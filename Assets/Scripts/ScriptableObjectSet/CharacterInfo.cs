@@ -38,7 +38,9 @@ public class CharacterInfo : ScriptableObject
     { get { return _DESC; } protected set { _DESC = value; } }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("未知", "男", "女")]
+#endif
     protected CharacterSex sex;
     public CharacterSex Sex
     {
@@ -67,7 +69,9 @@ public class CharacterInfo : ScriptableObject
         }
     }
 
+#if UNITY_EDITOR
     [SerializeField, ReadOnly]
+#endif
     private SDConstants.CharacterType characterType;
     public SDConstants.CharacterType CharacterType
     {

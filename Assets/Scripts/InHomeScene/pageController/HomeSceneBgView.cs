@@ -19,7 +19,9 @@ public class HomeSceneBgView : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             showEndVisual(currentIndex);
         }
     }
+#if UNITY_EDITOR
     [ReadOnly]
+#endif
     public float floatData;
     //
     public int minIndex;

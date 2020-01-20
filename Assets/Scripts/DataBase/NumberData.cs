@@ -9,7 +9,9 @@ public struct NumberData
     {
         integer, percent,
     }
+#if UNITY_EDITOR
     [EnumMemberNames("整数", "百分数整数部分")]
+#endif
     public DataType dataTag;
     public int DATA;
     public NumberData(int data, DataType tag = DataType.integer)

@@ -6,7 +6,9 @@ using UnityEngine;
 public class RoleCareer : BaseRank
 {
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("战士","游侠","圣职","法师","end")]
+#endif
     private Job career;
     public Job Career
     {

@@ -16,7 +16,9 @@ public class MissionPanel : BasicSubMenuPanel
     }
 
     [SerializeField]
+#if UNITY_EDITOR
     [EnumMemberNames("剧情","日常","周常")]
+#endif
     private MissionType _currentKind = MissionType.type0;
     public MissionType CurrentKind
     {
@@ -37,10 +39,6 @@ public class MissionPanel : BasicSubMenuPanel
     public Transform _Card;
     public ScrollRect CardSR;
     public List<MissionCard> CardList;
-    //[Space, Header("QuestMission")]
-    //public List<Quest> PlotQuestList = new List<Quest>();
-    //public List<Quest> DailyQuestList = new List<Quest>();
-    //public List<Quest> WeeklyQuestList = new List<Quest>();
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();

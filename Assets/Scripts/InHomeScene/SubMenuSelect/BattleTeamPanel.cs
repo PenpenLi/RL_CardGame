@@ -9,14 +9,10 @@ public class BattleTeamPanel : BasicSubMenuPanel
 { 
     public SDHeroSelect HS;
     [Space(25)]
-    //public Transform SelectUnitTeamPanel;
-    //public Transform OneTeam;
     public ScrollRect TeamsScrolrect;
-    //public OneUnitTeam CurrentTeamVision;
     public Transform TeamListParent;
-    //public List<OneUnitTeam> Teams;
     [Space(10)]
-    public Transform EditUnitTeamPanel;
+    public SelectTeamUnitPanel STUP;
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();
@@ -24,14 +20,13 @@ public class BattleTeamPanel : BasicSubMenuPanel
     }
     public void WhenOpenThisMenu()
     {
-        BasicHeroSelect bhs = HS.heroesSelectPanel.GetComponent<BasicHeroSelect>();
-        bhs.pageController.scrollRectReset();
+        HEWPageController PAGE = HS.PAGE;
+        PAGE.scrollRectReset();
         if (string.IsNullOrEmpty(SDGameManager.Instance.currentHeroTeamId))
         {
             SDGameManager.Instance.currentHeroTeamId = "TEAM#" + 1;
         }
         SetupSelectUnitTeamPanel();
-        //EditUnitTeamPanel.localScale = Vector3.zero;
         showTeamId(SDGameManager.Instance.currentHeroTeamId);
         openEditUnitTeamPanel(SDGameManager.Instance.currentHeroTeamId);
     }
@@ -52,13 +47,9 @@ public class BattleTeamPanel : BasicSubMenuPanel
                 SDDataManager.Instance.PlayerData.Set_heroesTeam();
             }
         }
-        //GDEunitTeamData Team = SDDataManager.Instance.getHeroTeamByTeamId(teamId);
-        //CurrentTeamVision.initThisUnitTeam(Team);
-        //showTHisUnitTeamOtherData(Team);
     }
     public void openEditUnitTeamPanel(string teamId)
     {
-        SelectTeamUnitPanel STUP = EditUnitTeamPanel.GetComponent<SelectTeamUnitPanel>();
         STUP.CurrentTeamId = teamId;
         STUP.whenOpenThisPanel();
         HS.heroPanelInit();
@@ -69,9 +60,6 @@ public class BattleTeamPanel : BasicSubMenuPanel
         PageView pv = TeamsScrolrect.GetComponent<PageView>();
         int _pvIndex = pv.currentIndex + 1;
         string pvIndex = "TEAM#" + _pvIndex;
-        //GDEunitTeamData Team = SDDataManager.Instance.getHeroTeamByTeamId(pvIndex);
-        //CurrentTeamVision.initThisUnitTeam(Team);
-        //showTHisUnitTeamOtherData(Team);
         showTeamId(pvIndex);
         openEditUnitTeamPanel(pvIndex);
     }
@@ -105,21 +93,19 @@ public class BattleTeamPanel : BasicSubMenuPanel
     public void changeSpriterenderersStatus(bool needHide)
     {
         Transform modelGroup
-            = EditUnitTeamPanel.GetComponent<SelectTeamUnitPanel>().RPC.RoleGroup;
+            = STUP.RPC.RoleGroup;
         if (needHide)
         {
             for(int i = 0; i < modelGroup.childCount; i++)
             {
-                modelGroup.GetChild(i).gameObject.SetActive(false);
+                modelGroup.GetComponentInChildren<MeshRenderer>().sortingOrder = -1;
             }
-
-
         }
         else
         {
             for (int i = 0; i < modelGroup.childCount; i++)
             {
-                modelGroup.GetChild(i).gameObject.SetActive(true);
+                modelGroup.GetComponentInChildren<MeshRenderer>().sortingOrder = 0;
             }
 
 

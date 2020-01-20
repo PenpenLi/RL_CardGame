@@ -20,12 +20,6 @@ public class DisplayNameAttribute : PropertyAttribute
 [CustomPropertyDrawer(typeof(DisplayNameAttribute))]
 public class DisplayNameAttributeDrawer : PropertyDrawer
 {
-    /*public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        DisplayNameAttribute attribute = this.attribute as DisplayNameAttribute;
-        return EditorGUI.GetPropertyHeight(property, new GUIContent(label) { text = attribute.Name }, true);
-    }*/
-
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         DisplayNameAttribute attribute = this.attribute as DisplayNameAttribute;

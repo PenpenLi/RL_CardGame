@@ -43,6 +43,8 @@ namespace Spine.Unity.Examples {
 
 		IEnumerator Start () {
 			if (skeletonDataAsset == null) yield break;
+
+
 			skeletonDataAsset.GetSkeletonData(false); // Preload SkeletonDataAsset.
 			yield return new WaitForSeconds(1f); // Pretend stuff is happening.
 
