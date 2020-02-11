@@ -127,8 +127,6 @@ public class SDGameManager : PersistentSingleton<SDGameManager>
     //public bool isSelectHero = false;
     public SDConstants.HeroSelectType heroSelectType;
     public SDConstants.StockUseType stockUseType;
-    //public SDConstants.ItemType ItemSetType;
-    //public SDConstants.HeroSelectType goddessSelectType;
     //
     public bool isFirstTimeEnterGame = false;
     public bool isFirstTimeInitAds = false;

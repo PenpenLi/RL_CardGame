@@ -12,6 +12,9 @@ public class BasicImprovePage : MonoBehaviour
     public StockPageController stockPage;
     public int maxSelectedNum;
     public Transform[] AllImproveTrans;
+    //
+    protected float animInterval = 0.2f;
+
     public virtual void InitImprovePanel()
     {
         //当前所有材料点击功效改为“使用”

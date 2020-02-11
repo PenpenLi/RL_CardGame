@@ -26,7 +26,7 @@ MonoBehaviour:
   inexhaustible: 0
   maxDurability: 100
   specialStr: 95
-  materialType: 17
+  materialType: 6
   consumableType: 0
   data: "\u5927\u5E08\u5F3A\u5316"
   AOE: 0

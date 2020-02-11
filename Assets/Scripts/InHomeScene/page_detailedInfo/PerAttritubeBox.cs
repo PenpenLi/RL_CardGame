@@ -22,7 +22,8 @@ public class PerAttritubeBox : MonoBehaviour
     private float AnimTime = 0.2f;
     [HideInInspector]
     public bool isShowingNameText;
-    // Start is called before the first frame update
+
+
     void Start()
     {
         leftPanel = transform.GetChild(0).GetComponent<RectTransform>();
@@ -32,6 +33,14 @@ public class PerAttritubeBox : MonoBehaviour
     public void initThisBoxInAD(int basicRa, int extraRa,AttributeData tag)
     {
         DATA.isAD = true;DATA.index = (int)tag;
+        //
+        Sprite s = SDDataManager.Instance.GetIconInRAL(tag);
+        if (s)
+        { 
+            ICON.sprite = s;
+            ICON.SetNativeSize();
+        }
+        //
         NameText.text = SDGameManager.T(tag.ToString());
         RefreshData_AD(basicRa, extraRa);
     }
@@ -40,10 +49,12 @@ public class PerAttritubeBox : MonoBehaviour
     {
         BasicFigureText.text = basicRA + " ";
         ExtraFigureText.text = "+" + extraRA;
+        float rate0 = Mathf.Max(0, basicRA) * 1f / maxFigure_AD();
         BasicFigureSlider.localScale = new Vector3
-            (Mathf.Max(0, basicRA) * 1f / maxFigure_AD(), 1, 1);
+            (Mathf.Min(rate0,1), 1, 1);
+        float rate1 = Mathf.Max(0, extraRA) * 1f / maxFigure_AD();
         ExtraFigureSlider.localScale = new Vector3
-            (Mathf.Max(0, extraRA) * 1f / maxFigure_AD(), 1, 1);
+            (Mathf.Min(rate1,1), 1, 1);
         DATA.figure = basicRA;
         extraData = extraRA;
     }
@@ -81,6 +92,14 @@ public class PerAttritubeBox : MonoBehaviour
     public void initThisBoxInSR(int basicRa,int extraRa, StateTag tag)
     {
         DATA.isAD = false;DATA.index = (int)tag;
+        //
+        Sprite s = SDDataManager.Instance.GetIconInRAL(tag);
+        if (s)
+        {
+            ICON.sprite = s;
+            ICON.SetNativeSize();
+        }
+        //
         NameText.text = SDGameManager.T(tag.ToString());
         RefreshData_SR(basicRa, extraRa);
     }
@@ -88,10 +107,12 @@ public class PerAttritubeBox : MonoBehaviour
     {
         BasicFigureText.text = basicRA + "";
         ExtraFigureText.text = "+" + extraRA;
+        float rate0 = Mathf.Max(0, basicRA) * 1f / maxFigure_SR();
         BasicFigureSlider.localScale = new Vector3
-            (1, Mathf.Max(0, basicRA) * 1f / maxFigure_SR(), 1);
+            (1, Mathf.Min(rate0,1), 1);
+        float rate1 = Mathf.Max(0, extraRA) * 1f / maxFigure_SR();
         ExtraFigureSlider.localScale = new Vector3
-            (1, Mathf.Max(0, extraRA) * 1f / maxFigure_SR(), 1);
+            (1, Mathf.Min(rate1,1), 1);
         DATA.figure = basicRA;
         extraData = extraRA;
     }

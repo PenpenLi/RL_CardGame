@@ -251,12 +251,6 @@ public class CharacterModel : MonoBehaviour
     {
 
     }
-
-    [ContextMenu("StartAnim")]
-    public void Test_ChangeModeAnim()
-    {
-        ChangeModelAnim(current_anim_name, false);
-    }
 #endregion
 
 }

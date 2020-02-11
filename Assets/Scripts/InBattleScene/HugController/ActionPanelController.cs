@@ -20,7 +20,6 @@ public class ActionPanelController : MonoBehaviour
             return BM.SDL;
         }
     }
-    //public Transform[] allSkillsPrefabs;
     #region 视觉化设置
     public RectTransform ActionPanel;
     public Transform[] skillPos;
@@ -37,7 +36,6 @@ public class ActionPanelController : MonoBehaviour
     private float showAndHideTime = 0.02f;
     #endregion
     #endregion
-    // Start is called before the first frame update
     void Start()
     {
         SkillDetailsPanel = SkillPanelContent.GetChild(0);

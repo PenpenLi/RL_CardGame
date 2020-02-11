@@ -14,7 +14,7 @@ public class SkillDetailsList : MonoBehaviour
         HeroInfo hero = SDDataManager.Instance.getHeroInfoById(id);
         Job _job = hero.Career.Career;
         Race _race = hero.Race.Race;
-        int LEVEL = hero.LEVEL;
+        int LEVEL = hero.Rarity;
         List<OneSkill> all = new List<OneSkill>();
         if (_job == Job.Fighter)
         {

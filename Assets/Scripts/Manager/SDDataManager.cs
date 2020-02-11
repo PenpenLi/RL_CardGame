@@ -701,7 +701,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     public int getHeroLevelById(string id)
     {
-        //List<Dictionary<string, string>> list = ReadHeroFromCSV(getHeroCareerById(id));
         List<HeroInfo> list = getHeroInfoList;
         foreach (HeroInfo info in list)
         {
@@ -1530,11 +1529,16 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     #endregion
 
     #region 基础货币信息
+    void refreshDataInHomeScene()
+    {
+
+    }
     #region Gold_Infor
     public int AddCoin(int val)
     {
         int number = PlayerData.coin;
         PlayerData.coin = number + val;
+        
         return PlayerData.coin;
     }
     public bool ConsumeCoin(int val)
@@ -1559,6 +1563,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     public int getGoldPercOrigin() { return PlayerData.addGoldPerc; }
     public void addGoldPerc(int val) { PlayerData.addGoldPerc += val; }
+
     #endregion
     #region Damond_Infor
     public int AddDamond(int val)
@@ -1647,6 +1652,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public SpriteAtlas atlas_battleBg;
     public SpriteAtlas atlas_rarity;
     public SpriteAtlas atlas_consumable;
+    public SpriteAtlas atlas_ralAndSstate;
     #endregion
     public void ReadAtlas()
     {
@@ -1662,6 +1668,18 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         atlas_battleBg = AllAtlas.Find(x => x.name.Contains("battleBg"));
         atlas_rarity = AllAtlas.Find(x => x.name.Contains("rarity"));
         atlas_consumable = AllAtlas.Find(x => x.name == "atlas_consumable");
+        atlas_ralAndSstate = AllAtlas.Find(x => x.name == "atlas_ral&sstate");
+    }
+
+    public Sprite GetIconInRAL(AttributeData ad)
+    {
+        string n = "ral_" + ad.ToString().ToLower();
+        return atlas_ralAndSstate.GetSprite(n);
+    }
+    public Sprite GetIconInRAL(StateTag st)
+    {
+        string n = "ral_" + st.ToString().ToLower();
+        return atlas_ralAndSstate.GetSprite(n);
     }
     public void ResetDatas()
     {
@@ -1843,6 +1861,21 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
         }
     }
+    public List<GDEgoddessData> getAllGoddesses()
+    {
+        List<GDEgoddessData> all = PlayerData.goddessOwned;
+        return all;
+    }
+    public List<GDEgoddessData> getAllGoddessesUnLocked()
+    {
+        List<GDEgoddessData> all = PlayerData.goddessOwned;
+        all = all.FindAll(x => 
+        {
+            string id = x.id;
+            return CheckIfHaveGoddessById(id);
+        });
+        return all;
+    }
 
     #region Integrity-&&-Volume-=>-Caculate
     public bool IncreaseGoddessVolume(string id,int vol = 1)
@@ -1875,6 +1908,16 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
         }
         return integrity;
+    }
+    public bool CheckIfHaveGoddessById(string id)
+    {
+        GDEgoddessData GD = SDDataManager.Instance.PlayerData.goddessOwned.Find(x=>x.id == id);
+        if (GD == null) return false;
+        GoddessInfo info = getGoddessInfoById(id);
+        if (info == null) return false;
+        int integrity = getIntegrityByVolume(GD.volume, info.Quality);
+        if (integrity < 1) return false;
+        return true;
     }
     public int VolumeBulkPerIntegrity(int integrity, int quality)
     {
@@ -2604,10 +2647,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         EquipItem item = GetEquipItemById(id);
         return item.IconFromAtlas;
-    }
-    public Sprite GetEquipBgIconByRarity(int rarity)
-    {
-        return null;
     }
     public int getEquipPosById(string id)
     {

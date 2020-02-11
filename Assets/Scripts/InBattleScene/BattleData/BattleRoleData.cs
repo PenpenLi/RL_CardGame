@@ -1139,7 +1139,7 @@ public class BattleRoleData : MonoBehaviour
             {
                 unit_character_model
                     .CurrentCharacterModel.ChangeModelAnim
-                    (unit_character_model.CurrentCharacterModel.anim_die,true);
+                    (unit_character_model.CurrentCharacterModel.anim_die);
 
             }
             else if (_Tag == SDConstants.CharacterType.Enemy)
@@ -1205,7 +1205,7 @@ public class BattleRoleData : MonoBehaviour
         #region Obj消失
         if (_Tag == SDConstants.CharacterType.Hero)
         {
-
+            gameObject.GetComponent<CanvasGroup>().DOFade(0, 0.3f);
         }
         else
         {
@@ -1257,8 +1257,8 @@ public class BattleRoleData : MonoBehaviour
     {
         if (Unit_Die) Unit_Die.gameObject.SetActive(true);
         //unit_character_model.GetComponentInChildren<SpriteRenderer>().color = Color.black;
-        unit_model.GetComponentInChildren<SpriteRenderer>()
-            .transform.localScale = Vector3.one * 0.25f;
+        unit_character_model.CurrentCharacterModel
+            .transform.localScale = Vector3.zero;
     }
     public void hideDead()
     {

@@ -180,6 +180,7 @@ GameObject:
   - component: {fileID: 9087087401761718738}
   - component: {fileID: 4732164559281253719}
   - component: {fileID: 3693255658883608733}
+  - component: {fileID: 5521039578198164986}
   m_Layer: 5
   m_Name: PurchaseItem
   m_TagString: Untagged
@@ -360,6 +361,19 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5521039578198164986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4783087528541271412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc8a02a9b8d9984385459c4f7b7f91f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AnimTAG: 0
 --- !u!1 &4926925569581358758
 GameObject:
   m_ObjectHideFlags: 0

@@ -261,7 +261,7 @@ public class ROHeroData:ROUnitData
     public int starNumUpGradeTimes = 0;//后天提升的星级
     public int starNum
     {
-        get { if (Info) return Info.LEVEL + starNumUpGradeTimes; else return 0; }
+        get { return starNumUpGradeTimes; }
     }
     public override RoleAttributeList ExportRAL
     {

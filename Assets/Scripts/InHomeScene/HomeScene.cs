@@ -85,7 +85,6 @@ public class HomeScene : MonoBehaviour
     public Transform _GoddessPanel;
     public Transform _goddessDetailPanel;
     public Transform _equipmentPanel;
-    //public Transform _equipDetailPanel;
     public Transform _missionPanel;
     public Transform _achievementPanel;
     public Transform _physicalBuffPanel;
@@ -108,17 +107,12 @@ public class HomeScene : MonoBehaviour
     public Button backBtn;
     public Button mapBtn;
     [Space]
-    public Text coin_currentNum;
-    public Text damond_currentNum;
-    public Text jiancai_currentNum;
-    public Image DayNightImg;
-    public Image GoddessIcon;
-    public Text PlayerNameText;
-
+    public OuterMenuController OuterMenu;
+    [Space]
     [Header("特殊设置")]
     public Button SubMenuLvUpBtn;
     public HeroInfo BasicHero;
-    public Text CurrentHeroNum;
+    public HeroInfo BasicAuxiliaryHero;
     private void Awake()
     {
         //建筑Id设置
@@ -144,6 +138,9 @@ public class HomeScene : MonoBehaviour
         changeToHomeScene();
         refreshAllBuildingCondition();
         refreshAllGoddessesCondition();
+        //
+        OuterMenu.gameObject.SetActive(true);
+        OuterMenu.SettingPanel.gameObject.SetActive(false);
         RefreshDataInOuterMenu();
         //
         StartCoroutine(IEBuildFirstly());
@@ -151,33 +148,35 @@ public class HomeScene : MonoBehaviour
     IEnumerator IEBuildFirstly()
     {
         yield return new WaitForSeconds(0.15f);
-        SDDataManager.Instance.PlayerData.JianCai += 500;
-        SDDataManager.Instance.AddDamond(500);
-        SDDataManager.Instance.AddCoin(50000);
-        //
-        SDDataManager.Instance.addConsumable
-            (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_oneTime.ID, 10);
-        SDDataManager.Instance.addConsumable
-            (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_tenTimes.ID, 10);
-        //
-        AddHeroPools();
+        bool flag = BuildFirstEnterGameData();
+        if (flag)
+        {
+            SDDataManager.Instance.PlayerData.JianCai += 500;
+            SDDataManager.Instance.AddDamond(500);
+            SDDataManager.Instance.AddCoin(50000);
+            //
+            SDDataManager.Instance.addConsumable
+                (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_oneTime.ID, 10);
+            SDDataManager.Instance.addConsumable
+                (_SummonAltarPanel.GetComponent<SummonAltarPanel>().Coupon_n_tenTimes.ID, 10);
+            //
+            AddHeroPools();
 
-        test_runeAd t = FindObjectOfType<test_runeAd>();
-        t.Test_AddConsumableItems();
-        t.AddEquips();
-        //
-        BuildFirstEnterGameData();
-
+            test_runeAd t = FindObjectOfType<test_runeAd>();
+            t.Test_AddConsumableItems();
+            t.AddEquips();
+            t.AddExpConsumables();
+        }
     }
-    public void BuildFirstEnterGameData()
+    public bool BuildFirstEnterGameData()
     {
         if (!SDDataManager.Instance.CheckHaveHeroById(BasicHero.ID))
         {
             SDDataManager.Instance.addHero(BasicHero.ID);
+            SDDataManager.Instance.addHero(BasicAuxiliaryHero.ID);
+            return true;
         }
-        if(CurrentHeroNum)
-            CurrentHeroNum.text =""+ SDDataManager.Instance.PlayerData
-                .herosOwned.Count;
+        return false;
     }
 
     public void refreshAllBuildingCondition()
@@ -497,7 +496,7 @@ public class HomeScene : MonoBehaviour
     public void changeDayNightByHour()
     {
         int forwardHour = SDDataManager.Instance.OpenTime.Hour;
-        bool changeDayNight = false;
+        bool changeDayNight;
         if (DateTime.Now.Hour >= forwardHour + SDConstants.HourToChangeDayNight
             || DateTime.Now.Hour < forwardHour)
         {
@@ -626,17 +625,7 @@ public class HomeScene : MonoBehaviour
 
     public void RefreshDataInOuterMenu()
     {
-        coin_currentNum.text = ""+SDDataManager.Instance.GetCoin();
-        damond_currentNum.text = "" + SDDataManager.Instance.GetDamond();
-        jiancai_currentNum.text = "" + SDDataManager.Instance.getJiancai();
-        if(SDDataManager.Instance.PlayerData.heroesTeam!=null
-            && SDDataManager.Instance.PlayerData.heroesTeam.Count > 0)
-        {
-            GDEunitTeamData team = SDDataManager.Instance.PlayerData.heroesTeam[0];
-            //GoddessIcon.sprite = 
-        }
-        //PlayerNameText.text = 
-        
+        OuterMenu.ReadAllDataFromGDE();
     }
     #endregion
 

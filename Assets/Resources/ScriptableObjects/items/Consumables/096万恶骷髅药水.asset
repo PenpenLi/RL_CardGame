@@ -26,7 +26,7 @@ MonoBehaviour:
   inexhaustible: 0
   maxDurability: 100
   specialStr: addHP_pc:20|debuff_random
-  materialType: 17
+  materialType: 9
   consumableType: 1
   data: 
   AOE: 7

@@ -10,8 +10,11 @@ using DG.Tweening;
 public class UIEffectManager : PersistentSingleton<UIEffectManager>
 {
     private float offsetY = 1500;
+    private float animTime = 0.2f;
+    private float bounceRate = -0.2f;
     public Sprite[] heroStatusSps;
 
+    #region CLASS
     /// <summary>
     /// 窗口淡入效果
     /// </summary>
@@ -31,8 +34,7 @@ public class UIEffectManager : PersistentSingleton<UIEffectManager>
         //trans.DOScaleY(1,0.2f).SetEase(Ease.OutBack).SetDelay(0.04f);
         CanvasGroup canvasGroup = trans.GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0;
-        trans.gameObject.SetActive(true);
-        canvasGroup.DOFade(1, 0.2f);
+        canvasGroup.DOFade(1, animTime);
 #if UNITY_ANDROID && ANDROID_GP
         RTAndroidBackController.Instance.addToStack(trans);
 #endif
@@ -49,18 +51,60 @@ public class UIEffectManager : PersistentSingleton<UIEffectManager>
         Vector3 originalScale = trans.localScale;
         CanvasGroup canvasGroup = trans.GetComponent<CanvasGroup>();
         canvasGroup.alpha = 1;
-        canvasGroup.DOFade(0, 0.2f);
+        canvasGroup.DOFade(0, animTime);
         StartCoroutine(IEHideWithDeay(trans, originalScale));
         //		trans.localScale = new Vector3(0,0,1);
-        trans.DOScale(0, 0.3f).SetEase(Ease.InBack).SetUpdate(true);
+        trans.DOScale(0, animTime * 1.25f).SetEase(Ease.InBack).SetUpdate(true);
 #if UNITY_ANDROID && ANDROID_GP
         RTAndroidBackController.Instance.removeFromStack();
 #endif
     }
     public IEnumerator IEHideWithDeay(Transform t, Vector3 vec)
     {
-        yield return new WaitForSecondsRealtime(0.3f);
+        yield return new WaitForSecondsRealtime(animTime * 1.25f);
         t.gameObject.SetActive(false);
         t.localScale = vec;
     }
+
+    /// <summary>
+    /// 窗口简易淡入(无缩放效果)
+    /// </summary>
+    /// <param name="trans"></param>
+    public void showAnimFadeIn_withoutScale(Transform trans)
+    {
+        trans.gameObject.SetActive(true);
+        CanvasGroup canvasGroup = trans.GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 0;
+        canvasGroup.DOFade(1, animTime);
+#if UNITY_ANDROID && ANDROID_GP
+        RTAndroidBackController.Instance.addToStack(trans);
+#endif
+    }
+    /// <summary>
+    /// 窗口简易淡出(无缩放效果)
+    /// </summary>
+    /// <param name="trans"></param>
+    public void hideAnimFadeOut_withoutScale(Transform trans)
+    {
+        CanvasGroup canvasGroup = trans.GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 1;
+        canvasGroup.DOFade(0, animTime);
+        StartCoroutine(IEHideWithDeay(trans, trans.localScale));
+    }
+
+    public void bounceAnim(Transform trans)
+    {
+        //trans.localScale = Vector3.zero;
+        trans.DOPunchScale(trans.localScale * bounceRate, animTime);
+        //StartCoroutine(turnToNewScale(trans));
+    }
+    IEnumerator turnToNewScale(Transform trans)
+    {
+        Vector3 scale = trans.localScale;
+        trans.DOScale(scale * bounceRate, animTime).SetEase(Ease.InBack).SetUpdate(true);
+        yield return new WaitForSeconds(animTime);
+        trans.DOScale(scale, animTime).SetEase(Ease.OutBack).SetUpdate(true);
+        trans.localScale = Vector3.zero;
+    }
+    #endregion
 }

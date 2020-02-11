@@ -26,7 +26,7 @@ MonoBehaviour:
   inexhaustible: 0
   maxDurability: 100
   specialStr: addHP_pc:50|addMP_pc:50|up_AT_pc:15,3|up_MT_pc:15,3
-  materialType: 17
+  materialType: 9
   consumableType: 1
   data: 
   AOE: 0

@@ -317,6 +317,7 @@ GameObject:
   - component: {fileID: 8922009197044332417}
   - component: {fileID: 5969041703969187688}
   - component: {fileID: 4349786692785484573}
+  - component: {fileID: -5224728322917441999}
   m_Layer: 5
   m_Name: StockItem
   m_TagString: Untagged
@@ -468,6 +469,19 @@ MonoBehaviour:
   starVision: {fileID: 4909052109780654448}
   UsedNum: 0
   stockPage: {fileID: 0}
+--- !u!114 &-5224728322917441999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7975147985488155598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc8a02a9b8d9984385459c4f7b7f91f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AnimTAG: 0
 --- !u!1 &8800036625773593494
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,7 +7,6 @@ using System.Linq;
 
 public class SDSkillSelect : MonoBehaviour
 {
-    //SDHeroDetail hd;
     public SDHeroDetail heroDetail;
     public SkillDetailsList SDL
     {

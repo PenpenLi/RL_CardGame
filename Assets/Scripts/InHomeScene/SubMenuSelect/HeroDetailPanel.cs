@@ -101,26 +101,11 @@ public class HeroDetailPanel : BasicSubMenuPanel
     {
         if (CurrentRDSubType != RoleDetailSubType.heroImprove)
         {
-            resetAllRDSubPanel();
-
-            if (CurrentRDSubType != RoleDetailSubType.end)
+            if (CurrentRDSubType != RoleDetailSubType.end
+                && CurrentRDSubType != RoleDetailSubType.heroDetail)
             {
-                if (CurrentRDSubType == RoleDetailSubType.heroDetail)
-                {
-                    RDSubPanel(RoleDetailSubType.heroDetail).gameObject.SetActive(false);
-                }
-                else
-                {
-                    UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-                }
-                if (CurrentRDSubType == RoleDetailSubType.heroSkill 
-                    || CurrentRDSubType == RoleDetailSubType.heroEquip)
-                {
-                    //UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(RoleDetailSubType.heroDetail));
-                    RDSubPanel(RoleDetailSubType.heroDetail).gameObject.SetActive(false);
-                }
-
-
+                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
+                UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(RoleDetailSubType.heroDetail));
             }
             CurrentRDSubType = RoleDetailSubType.heroImprove;
             UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));

@@ -82,19 +82,13 @@ public class OneSkill
             };
         }
     }
-    public static OneSkill empty
+    public OneSkill()
     {
-        get 
-        {
-            return new OneSkill()
-            {
-                skillId = string.Empty,
-                SkillName = "",
-                SkillFunctionID = -1,
-                IconImg = "",
-                Desc = "",
-                lv = 0,
-            };
-        }
+        skillId = string.Empty;
+        SkillName = string.Empty;
+        SkillFunctionID = -1;
+        IconImg = string.Empty;
+        Desc = string.Empty;
+        lv = 0;
     }
 }

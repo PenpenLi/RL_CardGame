@@ -252,7 +252,7 @@ public class SDConstants
     #endregion
 
     public static float HERO_MODEL_RATIO = 60f;
-    public static float HERO_MODEL_BIG_RATIO = 75f;
+    public static float HERO_MODEL_BIG_RATIO = 100f;
 
     /// <summary>
     /// 奖金掉落基础值
@@ -475,11 +475,13 @@ public class SDConstants
             ,
         money=4
             ,
-        equip_exp=5
+        coupon=5
             ,
-        equip_fix=6
+        equip_exp=6
             ,
-        equip_reap = 7
+        equip_fix=7
+            ,
+        equip_reap = 8
             ,
         agentia
             ,

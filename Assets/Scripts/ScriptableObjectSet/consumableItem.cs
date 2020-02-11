@@ -8,6 +8,7 @@ public class consumableItem : ItemBase,ItemBase.IUsable
     [SerializeField]
 #if UNITY_EDITOR
     [EnumMemberNames("英雄经验","英雄星级","英雄技能","好感度","金币兑换物"
+        ,"抽奖劵"
         ,"装备经验","装备校准","装备获取箱","药剂","戏法","暗器","女神经验"
         ,"女神碎片","解锁器","宝物","原料","其他","end")]
 #endif

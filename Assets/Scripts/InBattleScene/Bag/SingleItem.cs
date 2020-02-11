@@ -68,6 +68,7 @@ public class SingleItem : MonoBehaviour
             {
                 _isEmpty = value;
                 EmptyPanel?.gameObject.SetActive(_isEmpty);
+                starVision?.gameObject.SetActive(!_isEmpty);
             }
         }
     }
@@ -336,8 +337,14 @@ public class SingleItem : MonoBehaviour
 
         upText.gameObject.SetActive(true);
         upText.text = "Lv." + SDDataManager.Instance.getLevelByExp(hero.exp);
-        downText.text = SDGameManager.T(dal.Info.Name);
-        slider?.gameObject.SetActive(true);
+        if (downText)
+        {
+            downText.text = SDGameManager.T(dal.Info.Name);
+        }
+        if (slider)
+        {
+            slider.gameObject.SetActive(true);
+        }
         //
         if (status == 2)
         {
@@ -537,6 +544,11 @@ public class SingleItem : MonoBehaviour
 
     }
     #endregion
+    public void initConsumable(string id,bool showTaken = false)
+    {
+        GDEItemData data = SDDataManager.Instance.getConsumeableDataById(id);
+        initConsumable(data, showTaken);
+    }
     public void initConsumable(GDEItemData M, bool showTaken = false)
     {
         itemId = M.id;

@@ -14,6 +14,7 @@ public class SLEffectManager : PersistentSingleton<SLEffectManager>
 
     public Sprite[] bagItemBgSps;
     public Sprite[] typeBtnBgSps;
+    #region CLASS
     public void playEnemyBornEffect(Vector3 pos, Transform parent)
     {
 
@@ -48,4 +49,5 @@ public class SLEffectManager : PersistentSingleton<SLEffectManager>
     {
 
     }
+    #endregion
 }

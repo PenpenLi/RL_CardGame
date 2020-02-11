@@ -83,7 +83,7 @@ public class HeroEquipList : MonoBehaviour
         {
             isClicking = true;
         }
-        bool flag = false;
+        bool flag;
         if (CurrentSearchingPos != pos)
         {
             flag = true;
@@ -113,11 +113,13 @@ public class HeroEquipList : MonoBehaviour
         }
         else
         {
+            /*
             UIEffectManager.Instance.hideAnimFadeOut(ES.transform);
             CurrentSearchingPos = EquipPosition.End;
             //
             if(HDP.CurrentRDSubType == HeroDetailPanel.RoleDetailSubType.heroEquip)
                 HDP.commonBackAction();
+            */
         }
         Invoke("BtnTappedEnd", 0.25f);
     }

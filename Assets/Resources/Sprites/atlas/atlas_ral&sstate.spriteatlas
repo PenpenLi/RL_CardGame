@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: atlas_ral&sstate
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 4814933176a6ee24fb45837009d9ebd6, type: 3}
+    totalSpriteSurfaceArea: 247890
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 5a66e7504af3beb42ba25e861a01176e, type: 3}
+  - {fileID: 21300000, guid: ebdbf1928d300f54d8541304eb6561cf, type: 3}
+  - {fileID: 21300000, guid: d690ad931d5870a469211619b807b145, type: 3}
+  - {fileID: 21300000, guid: 317409e72bcf4a441ab47639037fb49c, type: 3}
+  - {fileID: 21300000, guid: e69a917967efb5c448673a2b8305f038, type: 3}
+  - {fileID: 21300000, guid: 47dd9aa9b2742a34d988331db9a79e3d, type: 3}
+  - {fileID: 21300000, guid: 371e666a11389d94584a21b5ed494551, type: 3}
+  - {fileID: 21300000, guid: 976514ba403032045b0540423d6ced33, type: 3}
+  - {fileID: 21300000, guid: 13d5ed1c250cfe849bf4d84b6045939c, type: 3}
+  - {fileID: 21300000, guid: 7ebd3cfc9c3e0b94f9cf4ed7973b1be5, type: 3}
+  - {fileID: 21300000, guid: 75db676d4994a9643878d8f5536d62b9, type: 3}
+  - {fileID: 21300000, guid: d0da3c7d6f00bb0469d7a22401fd0d22, type: 3}
+  - {fileID: 21300000, guid: a23010de24e6c5149af30dcd15fc878e, type: 3}
+  - {fileID: 21300000, guid: 0243245f1cf66b14ca91e0165c71a297, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - ral_fire
+  - ral_ad
+  - sstate_debuff
+  - ral_bleed
+  - ral_dizzy
+  - sstate_hp_regend
+  - ral_frost
+  - ral_hush
+  - ral_at
+  - sstate_mp_regend
+  - ral_confuse
+  - ral_crit
+  - sstate_buff
+  - ral_corrosion
+  m_Tag: atlas_ral&sstate
+  m_IsVariant: 0

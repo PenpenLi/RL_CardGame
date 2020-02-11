@@ -26,7 +26,7 @@ MonoBehaviour:
   inexhaustible: 0
   maxDurability: 100
   specialStr: catch:30
-  materialType: 17
+  materialType: 11
   consumableType: 1
   data: 
   AOE: 0

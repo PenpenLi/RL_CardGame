@@ -71,7 +71,7 @@ public class test_runeAd : MonoBehaviour
     public void AddEquips()
     {
         List<GDEEquipmentData> _gdes = SDDataManager.Instance.getAllOwnedEquips();
-        if (_gdes.Count < 8)
+        if (_gdes.Count < 4)
         {
             List<EquipItem> all = SDDataManager.Instance.AllEquipList;
             all = all.FindAll(x => x.IconFromAtlas != null
@@ -114,6 +114,18 @@ public class test_runeAd : MonoBehaviour
         foreach(int hc in AllHcs)
         {
             SDDataManager.Instance.addHeroFatigue(50, hc);
+        }
+    }
+
+
+    [ContextMenu("Add_All_Exp_Consumables_5")]
+    public void AddExpConsumables()
+    {
+        List<consumableItem> all = SDDataManager.Instance.AllConsumableList.FindAll
+            (x => x.MaterialType == SDConstants.MaterialType.exp);
+        foreach(var item in all)
+        {
+            SDDataManager.Instance.addConsumable(item.ID, 5);
         }
     }
 }
