@@ -43,19 +43,34 @@ public class SDConstants
     /// 最大队伍数量
     /// </summary>
     public static int MaxBattleTeamNum = 10;
+    #region 关卡常数
+    //-----------------关卡内名称统一:章,回,节------------------
 
     /// <summary>
-    /// 单节包括关卡数
+    /// 单节包括关卡数(每节关底守卫有BOSS——精英敌人)
     /// </summary>
-    public static int LevelNumPerSection = 5;
+    public static int LevelNumPerSection = 10;
     /// <summary>
-    /// 出现boss（多节完成）关卡最大公约数
+    /// 单回包括关卡数(每回关底守卫为BOSS——小BOSS)
     /// </summary>
-    public static int PerBossAppearLevel = 25;
+    public static int LevelNumPerSerial = 100;
     /// <summary>
-    /// 单章包括关卡数
+    /// 单章包括关卡数(每章关底守卫为BOSS——大BOSS(邪神，龙))
     /// </summary>
-    public static int LevelNumPerChapter = 125;
+    public static int LevelNumPerChapter = 500;
+    /// <summary>
+    /// 单章包括回数
+    /// </summary>
+    public static int SerialNumPerChapter = 5;
+    /// <summary>
+    /// 单回包括节数
+    /// </summary>
+    public static int SectionNumPerSerial = 10;
+    /// <summary>
+    /// 单章包括节数
+    /// </summary>
+    public static int SectionNumPerChapter = 50;
+    #endregion  
 
     /// <summary>
     /// 经验值变动最大等级
@@ -149,7 +164,7 @@ public class SDConstants
     /// <summary>
     /// 技能等级上限
     /// </summary>
-    public static int SkillMaxGrade = 3;
+    public static int SkillMaxGrade = 5;
     /// <summary>
     /// 角色星级上限
     /// </summary>

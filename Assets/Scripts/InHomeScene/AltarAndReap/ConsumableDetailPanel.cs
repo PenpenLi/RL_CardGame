@@ -10,8 +10,8 @@ public class ConsumableDetailPanel : ItemDetailPanel
     public ItemStarVision starVision;
     public ScopeInt CurrentSelectedScope;
     public Slider SelectedNumSlider;
-    public Text minNumText;
-    public Text maxNumText;
+    //public Text minNumText;
+    //public Text maxNumText;
     public Text currentNumText;
     public MaterialResolveList MaterialResolve
     {
@@ -57,17 +57,22 @@ public class ConsumableDetailPanel : ItemDetailPanel
         if (itemDescText) itemDescText.text = item.DESC;
         if (btnToResolve) btnToResolve.gameObject.SetActive(!item.isProp);
         starVision.StarNum = item.LEVEL;
-        minNumText.text = "" + 1;
-        maxNumText.text = "" + d.num;
+        //minNumText.text = "" + 1;
+        //maxNumText.text = "" + d.num;
         CurrentSelectedScope.Min = 1;
         CurrentSelectedScope.Max = d.num;
+        currentNumText.text = CurrentSelectedScope.ToString("/");
+        //
+        itemImg.sprite = item.IconFromAtlas;
+        bgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(item.LEVEL);
+        frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(item.LEVEL);
         //
         RefreshSliderCondition();
     }
     public void OnSliderChanging()
     {
         CurrentSelectedScope.Current = (int)SelectedNumSlider.value;
-        currentNumText.text = "" + CurrentSelectedScope.Current;
+        currentNumText.text = CurrentSelectedScope.ToString("/");
     }
     public void RefreshSliderCondition()
     {
@@ -75,6 +80,6 @@ public class ConsumableDetailPanel : ItemDetailPanel
         SelectedNumSlider.minValue = 1;
         SelectedNumSlider.value = SelectedNumSlider.minValue;
         SelectedNumSlider.maxValue = d.num;
-        currentNumText.text = "" + SelectedNumSlider.value;
+        currentNumText.text = CurrentSelectedScope.ToString("/");
     }
 }

@@ -34,5 +34,6 @@ namespace GameDataEditor
         public static string Rune_RuneEmpty = "RuneEmpty";
         public static string goddessAtti_emptyGAtti = "emptyGAtti";
         public static string HeroAltarPool_emptyPool = "emptyPool";
+        public static string Section_nullSection = "nullSection";
     }
 }

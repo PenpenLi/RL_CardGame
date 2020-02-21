@@ -1,0 +1,21 @@
+{"bones":[{"name":"root"}],"slots":[
+{"name":"chibang2","bone":"root","attachment":"chibang2"},
+{"name":"chibang1","bone":"root","attachment":"chibang1"},
+{"name":"legR","bone":"root","attachment":"legR"},
+{"name":"handR","bone":"root","attachment":"handR"},
+{"name":"bozi","bone":"root","attachment":"bozi"},
+{"name":"body","bone":"root","attachment":"body"},
+{"name":"legl","bone":"root","attachment":"legl"},
+{"name":"handL","bone":"root","attachment":"handL"},
+{"name":"head","bone":"root","attachment":"head"},
+],"skins":{"default":{
+"chibang2":{"chibang2":{"x":233,"y":332,"width":232,"height":386}},
+"chibang1":{"chibang1":{"x":382.5,"y":332.5,"width":421,"height":485}},
+"legR":{"legR":{"x":193,"y":159.5,"width":160,"height":235}},
+"handR":{"handR":{"x":139.5,"y":300.5,"width":149,"height":159}},
+"bozi":{"bozi":{"x":282,"y":445,"width":98,"height":174}},
+"body":{"body":{"x":285.5,"y":217.5,"width":505,"height":399}},
+"legl":{"legl":{"x":365,"y":114.5,"width":140,"height":229}},
+"handL":{"handL":{"x":341.5,"y":363,"width":123,"height":292}},
+"head":{"head":{"x":223,"y":501.5,"width":146,"height":189}},
+}}, "animations": { "animation": {} }}

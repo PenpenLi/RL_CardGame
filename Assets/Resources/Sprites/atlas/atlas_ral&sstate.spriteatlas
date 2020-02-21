@@ -31,18 +31,20 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 4814933176a6ee24fb45837009d9ebd6, type: 3}
-    totalSpriteSurfaceArea: 247890
+    totalSpriteSurfaceArea: 298096
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 5a66e7504af3beb42ba25e861a01176e, type: 3}
   - {fileID: 21300000, guid: ebdbf1928d300f54d8541304eb6561cf, type: 3}
+  - {fileID: 21300000, guid: 6aecb663ec4bf1b44b8d94467a741874, type: 3}
   - {fileID: 21300000, guid: d690ad931d5870a469211619b807b145, type: 3}
   - {fileID: 21300000, guid: 317409e72bcf4a441ab47639037fb49c, type: 3}
   - {fileID: 21300000, guid: e69a917967efb5c448673a2b8305f038, type: 3}
   - {fileID: 21300000, guid: 47dd9aa9b2742a34d988331db9a79e3d, type: 3}
   - {fileID: 21300000, guid: 371e666a11389d94584a21b5ed494551, type: 3}
   - {fileID: 21300000, guid: 976514ba403032045b0540423d6ced33, type: 3}
+  - {fileID: 21300000, guid: 9c0279eb51752714e91889ee6d7f2a37, type: 3}
   - {fileID: 21300000, guid: 13d5ed1c250cfe849bf4d84b6045939c, type: 3}
   - {fileID: 21300000, guid: 7ebd3cfc9c3e0b94f9cf4ed7973b1be5, type: 3}
   - {fileID: 21300000, guid: 75db676d4994a9643878d8f5536d62b9, type: 3}
@@ -52,14 +54,16 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - ral_fire
   - ral_ad
+  - sstate_die
   - sstate_debuff
   - ral_bleed
   - ral_dizzy
-  - sstate_hp_regend
+  - ral_hp
   - ral_frost
   - ral_hush
+  - ral_mt
   - ral_at
-  - sstate_mp_regend
+  - ral_mp
   - ral_confuse
   - ral_crit
   - sstate_buff

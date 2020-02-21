@@ -127,8 +127,13 @@ public class HomeScene : MonoBehaviour
     void Start()
     {
         SDGameManager.Instance.INIT();
+
+        //  DATA INIT
         SDDataManager.Instance.ReadAtlas();
+        SDDataManager.Instance.ReadAllSOs();
         SDDataManager.Instance.ReadAllSkeletonAssets();
+        //
+
         SubMenuClose(true);
         foreach(FactoryPanel p in FindObjectsOfType<FactoryPanel>())
         {
@@ -172,6 +177,9 @@ public class HomeScene : MonoBehaviour
     {
         if (!SDDataManager.Instance.CheckHaveHeroById(BasicHero.ID))
         {
+            SDDataManager.Instance.PlayerData.maxPassSection = -1;
+
+            //
             SDDataManager.Instance.addHero(BasicHero.ID);
             SDDataManager.Instance.addHero(BasicAuxiliaryHero.ID);
             return true;
@@ -521,9 +529,9 @@ public class HomeScene : MonoBehaviour
             //返回城镇大街页面
             changeToHomeScene();
         }
-        else if(oldOne == HomeSceneSubMenu.End && newOne != HomeSceneSubMenu.End)
+        else if(newOne != HomeSceneSubMenu.End)
         {
-            //从城镇大厅进入功能建筑页面       
+            //进入功能建筑页面       
             BasicSubMenuPanel P = AllSubMenus[(int)newOne].GetComponent<BasicSubMenuPanel>();
             changeToSubMenuScene(P.AboveOuterMenuIsShowing);
         }

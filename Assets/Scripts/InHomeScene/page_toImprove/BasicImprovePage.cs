@@ -7,6 +7,7 @@ using GameDataEditor;
 public class BasicImprovePage : MonoBehaviour
 {
     public int currentImproveKindIntger;
+    public bool TooFlowToAdd;
     [Header("UseItemsPanel")]
     public Transform animPlace;
     public StockPageController stockPage;

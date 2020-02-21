@@ -1,0 +1,7 @@
+{"bones":[{"name":"root"}],"slots":[
+{"name":"body","bone":"root","attachment":"body"},
+{"name":"head","bone":"root","attachment":"head"},
+],"skins":{"default":{
+"body":{"body":{"x":177.5,"y":200,"width":203,"height":234}},
+"head":{"head":{"x":187,"y":321,"width":276,"height":180}},
+}}, "animations": { "animation": {} }}

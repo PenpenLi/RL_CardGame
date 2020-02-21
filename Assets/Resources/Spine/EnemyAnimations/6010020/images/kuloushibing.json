@@ -1,0 +1,21 @@
+{"bones":[{"name":"root"}],"slots":[
+{"name":"handl","bone":"root","attachment":"handl"},
+{"name":"body","bone":"root","attachment":"body"},
+{"name":"leg_r","bone":"root","attachment":"leg_r"},
+{"name":"leg_l","bone":"root","attachment":"leg_l"},
+{"name":"hips","bone":"root","attachment":"hips"},
+{"name":"head","bone":"root","attachment":"head"},
+{"name":"toufa","bone":"root","attachment":"toufa"},
+{"name":"handR","bone":"root","attachment":"handR"},
+{"name":"wuqi","bone":"root","attachment":"wuqi"},
+],"skins":{"default":{
+"handl":{"handl":{"x":90,"y":235,"width":72,"height":138}},
+"body":{"body":{"x":153.5,"y":279.5,"width":75,"height":107}},
+"leg_r":{"leg_r":{"x":104,"y":130.5,"width":68,"height":153}},
+"leg_l":{"leg_l":{"x":211,"y":126.5,"width":76,"height":163}},
+"hips":{"hips":{"x":167,"y":167.5,"width":112,"height":167}},
+"head":{"head":{"x":166.5,"y":394.5,"width":215,"height":203}},
+"toufa":{"toufa":{"x":215,"y":526.5,"width":94,"height":57}},
+"handR":{"handR":{"x":236.5,"y":237,"width":77,"height":154}},
+"wuqi":{"wuqi":{"x":153.5,"y":160,"width":269,"height":96}},
+}}, "animations": { "animation": {} }}

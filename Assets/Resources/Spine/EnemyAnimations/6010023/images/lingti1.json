@@ -1,0 +1,15 @@
+{"bones":[{"name":"root"}],"slots":[
+{"name":"body","bone":"root","attachment":"body"},
+{"name":"piaodair","bone":"root","attachment":"piaodair"},
+{"name":"piaodail","bone":"root","attachment":"piaodail"},
+{"name":"mianju","bone":"root","attachment":"mianju"},
+{"name":"handl","bone":"root","attachment":"handl"},
+{"name":"handr","bone":"root","attachment":"handr"},
+],"skins":{"default":{
+"body":{"body":{"x":188,"y":245.5,"width":144,"height":307}},
+"piaodair":{"piaodair":{"x":233,"y":203,"width":64,"height":130}},
+"piaodail":{"piaodail":{"x":129,"y":205,"width":48,"height":124}},
+"mianju":{"mianju":{"x":176,"y":297.5,"width":96,"height":109}},
+"handl":{"handl":{"x":89.4999999999999,"y":239.5,"width":111,"height":201}},
+"handr":{"handr":{"x":307.5,"y":231,"width":77,"height":186}},
+}}, "animations": { "animation": {} }}

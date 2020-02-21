@@ -1,0 +1,69 @@
+
+BOSS.png
+size: 793,793
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 425, 477
+  size: 366, 314
+  orig: 505, 399
+  offset: 139, 85
+  index: -1
+bozi
+  rotate: false
+  xy: 512, 153
+  size: 98, 174
+  orig: 98, 174
+  offset: 0, 0
+  index: -1
+chibang1
+  rotate: false
+  xy: 2, 306
+  size: 421, 485
+  orig: 421, 485
+  offset: 0, 0
+  index: -1
+chibang2
+  rotate: true
+  xy: 2, 72
+  size: 232, 367
+  orig: 232, 386
+  offset: 0, 19
+  index: -1
+handL
+  rotate: true
+  xy: 512, 28
+  size: 123, 175
+  orig: 123, 292
+  offset: 0, 0
+  index: -1
+handR
+  rotate: false
+  xy: 612, 154
+  size: 121, 159
+  orig: 149, 159
+  offset: 28, 0
+  index: -1
+head
+  rotate: true
+  xy: 425, 329
+  size: 146, 186
+  orig: 146, 189
+  offset: 0, 3
+  index: -1
+legR
+  rotate: true
+  xy: 613, 315
+  size: 160, 163
+  orig: 160, 235
+  offset: 0, 0
+  index: -1
+legl
+  rotate: false
+  xy: 371, 75
+  size: 139, 229
+  orig: 140, 229
+  offset: 1, 0
+  index: -1

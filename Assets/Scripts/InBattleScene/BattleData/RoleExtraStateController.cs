@@ -12,6 +12,11 @@ public class RoleExtraStateController : MonoBehaviour
     public ExtraStateData interveneState;
     public ExtraStateData reflectState;
     public List<OneStateController> StartStateList;
+
+    //
+    [Header("角色被动状态")]
+    public bool havePassiveState;
+    public ExtraStateData unitPassiveState;
     public void checkExtraStates()
     {
         //援护状态设置
@@ -50,6 +55,13 @@ public class RoleExtraStateController : MonoBehaviour
             reflectState.stateUnit?.gameObject.SetActive(false);
             unit.ThisBasicRoleProperty().DmgReflection = 0;
             reflectState.changeData = 0;
+        }
+
+        //角色被动状态设置
+        unitPassiveState.stateUnit?.gameObject.SetActive(havePassiveState);
+        if (havePassiveState)
+        {
+
         }
     }
     public void initInterveneState(int changeData, int lasttime, bool isBuff = true)

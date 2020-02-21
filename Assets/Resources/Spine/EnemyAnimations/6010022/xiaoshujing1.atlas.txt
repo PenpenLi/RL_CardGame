@@ -1,0 +1,48 @@
+
+xiaoshujing1.png
+size: 505,505
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 2, 301
+  size: 179, 202
+  orig: 179, 202
+  offset: 0, 0
+  index: -1
+handL
+  rotate: false
+  xy: 80, 17
+  size: 40, 54
+  orig: 40, 54
+  offset: 0, 0
+  index: -1
+handR
+  rotate: false
+  xy: 2, 2
+  size: 76, 56
+  orig: 76, 56
+  offset: 0, 0
+  index: -1
+legl
+  rotate: false
+  xy: 68, 73
+  size: 59, 64
+  orig: 62, 64
+  offset: 0, 0
+  index: -1
+legr
+  rotate: false
+  xy: 2, 60
+  size: 64, 77
+  orig: 64, 77
+  offset: 0, 0
+  index: -1
+toufa
+  rotate: true
+  xy: 2, 139
+  size: 160, 96
+  orig: 160, 96
+  offset: 0, 0
+  index: -1

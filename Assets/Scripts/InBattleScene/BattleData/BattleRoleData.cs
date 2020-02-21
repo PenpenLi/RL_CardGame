@@ -1257,8 +1257,11 @@ public class BattleRoleData : MonoBehaviour
     {
         if (Unit_Die) Unit_Die.gameObject.SetActive(true);
         //unit_character_model.GetComponentInChildren<SpriteRenderer>().color = Color.black;
-        unit_character_model.CurrentCharacterModel
-            .transform.localScale = Vector3.zero;
+        if (unit_character_model.CurrentCharacterModel)
+        {
+            unit_character_model.CurrentCharacterModel
+                .transform.localScale = Vector3.zero;
+        }
     }
     public void hideDead()
     {

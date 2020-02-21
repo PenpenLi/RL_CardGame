@@ -50,10 +50,12 @@ public class SingleSlot : MonoBehaviour
     public SDConstants.ItemType ItemType;
     public string _id;
     public int _hashcode;
+    public int num = 1;
     private void Start()
     {
         isEmpty = true;
     }
+
     public void AddHeroInSlot(int hashcode)
     {
         if (isLocked) return;
@@ -76,7 +78,6 @@ public class SingleSlot : MonoBehaviour
         _id = info.ID;
         _hashcode = data.hashCode;
     }
-
     public void AddConsumableInSlot(string id)
     {
         if (isLocked) return;
@@ -99,6 +100,20 @@ public class SingleSlot : MonoBehaviour
         _id = id;
         _hashcode = 0;
     }
+    public void AddFromStock(RTSingleStockItem stock)
+    {
+        if(stock.materialType == SDConstants.MaterialType.star
+            ||stock.materialType == SDConstants.MaterialType.skill)
+        if(stock.stockType == SDConstants.StockType.hero)
+        {
+            AddHeroInSlot(stock.hashcode);
+        }
+        else if(stock.stockType == SDConstants.StockType.material)
+        {
+            AddConsumableInSlot(stock.itemId);
+        }
+    }
+
 
     public void ClearSlot()
     {
@@ -112,5 +127,22 @@ public class SingleSlot : MonoBehaviour
     public void BtnTapped()
     {
 
+    }
+
+    public bool consumeContentInSlot()
+    {
+        if(ItemType == SDConstants.ItemType.Hero)
+        {
+            bool flag = SDDataManager.Instance.consumeHero(_hashcode);
+            return flag;
+
+        }
+        else if(ItemType == SDConstants.ItemType.Consumable)
+        {
+            bool flag = SDDataManager.Instance.consumeConsumable
+                (_id,out int r, num);
+            return flag;
+        }
+        return false;
     }
 }

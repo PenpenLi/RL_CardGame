@@ -1,0 +1,55 @@
+
+gaiya.png
+size: 1254,1254
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: true
+  xy: 524, 1009
+  size: 243, 398
+  orig: 347, 398
+  offset: 47, 0
+  index: -1
+handL
+  rotate: true
+  xy: 924, 936
+  size: 169, 306
+  orig: 169, 306
+  offset: 0, 0
+  index: -1
+handR
+  rotate: true
+  xy: 827, 808
+  size: 126, 254
+  orig: 126, 254
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 1083, 800
+  size: 169, 134
+  orig: 169, 134
+  offset: 0, 0
+  index: -1
+legL
+  rotate: true
+  xy: 924, 1107
+  size: 145, 317
+  orig: 145, 332
+  offset: 0, 0
+  index: -1
+legR
+  rotate: true
+  xy: 524, 836
+  size: 171, 301
+  orig: 171, 301
+  offset: 0, 0
+  index: -1
+wuqi
+  rotate: false
+  xy: 2, 771
+  size: 520, 481
+  orig: 520, 481
+  offset: 0, 0
+  index: -1

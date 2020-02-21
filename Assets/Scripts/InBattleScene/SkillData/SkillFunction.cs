@@ -20,10 +20,10 @@ public class SkillFunction : MonoBehaviour
     protected Button _btn;
     #region 消耗设置(全部列出)
     [Header("消耗量数据")]
-    public RoleBarChart BCCostPerTime;//技能消耗(常量)N
-    public RoleBarChart BCCostPerLevel;//技能消耗(随角色品阶增长)N
-    public RoleBarChart BCCostPerSkillGrade;//技能消耗(随技能等级增长)N
-    public RoleBarChart BCCostUsingPercent;//技能消耗(固定占比)%
+    public int BCCostPerTime;//技能消耗(常量)N
+    public int BCCostPerLevel;//技能消耗(随角色品阶增长)N
+    public int BCCostPerSkillGrade;//技能消耗(随技能等级增长)N
+    public int BCCostUsingPercent;//技能消耗(固定占比)%
     #endregion
     #region 技能细节设置
     //[Header("技能细节信息"),Space(25)]
@@ -146,8 +146,8 @@ public class SkillFunction : MonoBehaviour
         {
             BCCostPerTime += BCCostPerLevel * _heroController.LEVEL
                 + BCCostPerSkillGrade * SkillGrade
-                + _heroController._role.ReadAllMaxSSD.ExpandByRBCPercent
-                (BCCostUsingPercent);
+                + (int)(_heroController._role.CurrentExportRAL.Hp
+                * BCCostUsingPercent * 0.01f);
         }
     }
 
@@ -228,31 +228,17 @@ public class SkillFunction : MonoBehaviour
     /// <param name="target"></param>
     public virtual void CalculateBeforeFunction(BattleRoleData source,BattleRoleData target)
     {
-        RoleBarChart BC = BCCostPerTime;
+        int BC = BCCostPerTime;
         BC += BCCostPerLevel * source.ThisBasicRoleProperty().LEVEL;
         BC += BCCostPerSkillGrade * skillgrade;
-        RoleBarChart BCPc = new RoleBarChart()
-        {
-            HP = (int)(source.HpController.MaxHp * AllRandomSetClass.SimplePercentToDecimal
-            (BCCostUsingPercent.HP))
-            ,
-            MP = (int)(source.MpController.maxMp * AllRandomSetClass.SimplePercentToDecimal
-            (BCCostUsingPercent.MP))
-            ,
-            TP = (int)(source.TpController.maxTp * AllRandomSetClass.SimplePercentToDecimal
-            (BCCostUsingPercent.TP))
-        };
-        BC += BCPc;
+        BC += (int)(BCCostUsingPercent * source.MpController.maxMp * 0.01f);
         //
         if (IsOmega)
         {
-            BC = new RoleBarChart(BC.HP,source.MpController.maxMp, Mathf.Min
-                (BC.TP*2,source.TpController.maxTp));
+            BC = source.MpController.maxMp;
         }
         //
-        source.HpController.consumeHp(BC.HP);
-        source.MpController.consumeMp(BC.MP);
-        source.TpController.consumeTp(BC.TP);
+        source.MpController.consumeMp(BC);
         //
         if (GetComponent<HSkilInfo>())
             UseSkillAddMpTp(source, GetComponent<HSkilInfo>().AfterwardsAddType);
@@ -261,31 +247,22 @@ public class SkillFunction : MonoBehaviour
 
     public  bool CheckIfCanConsume(BattleRoleData source)
     {
-        if(source.HpController.CurrentHp < BCCostPerTime.HP && BCCostPerTime.HP>0)
-        {
-            Debug.Log("无法消耗足量生命");return false;
-        }
-
         if (IsOmega)
         {
             if (source.MpController.currentMp < source.MpController.maxMp)
             {
                 Debug.Log("无法消耗足量法力"); return false;
             }
-            if (source.TpController.currentTp < BCCostPerTime.TP*2 && BCCostPerTime.TP > 0)
-            {
-                Debug.Log("无法消耗足量怒气"); return false;
-            }
         }
         else
         {
-            if (source.MpController.currentMp < BCCostPerTime.MP && BCCostPerTime.MP > 0)
+            int bc = BCCostPerTime
+                + BCCostPerLevel * source.ThisBasicRoleProperty().LEVEL
+                + BCCostPerSkillGrade * skillgrade
+                + (int)(BCCostUsingPercent * source.MpController.maxMp * 0.01f);
+            if (source.MpController.currentMp < bc && bc > 0)
             {
                 Debug.Log("无法消耗足量法力"); return false;
-            }
-            if (source.TpController.currentTp < BCCostPerTime.TP && BCCostPerTime.TP > 0)
-            {
-                Debug.Log("无法消耗足量怒气"); return false;
             }
         }
 

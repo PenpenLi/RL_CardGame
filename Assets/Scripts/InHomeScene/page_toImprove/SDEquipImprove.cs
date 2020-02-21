@@ -58,7 +58,7 @@ public class SDEquipImprove : BasicImprovePage
         currentImproveKind = improveKind;
         stockPage.ResetPage();
         stockPage.maxSelectedNum = maxSelectedNum;
-        stockPage.ItemsInit(SDConstants.StockType.material ,MType);
+        stockPage.InitStocks_equipExp();
         stockPage.SelectEmpty();
         RefreshImprovePanel();
     }

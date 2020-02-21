@@ -1,0 +1,17 @@
+{"bones":[{"name":"root"}],"slots":[
+{"name":"wuqi","bone":"root","attachment":"wuqi"},
+{"name":"handR","bone":"root","attachment":"handR"},
+{"name":"legL","bone":"root","attachment":"legL"},
+{"name":"legR","bone":"root","attachment":"legR"},
+{"name":"body","bone":"root","attachment":"body"},
+{"name":"handL","bone":"root","attachment":"handL"},
+{"name":"head","bone":"root","attachment":"head"},
+],"skins":{"default":{
+"wuqi":{"wuqi":{"x":276,"y":313.5,"width":520,"height":481}},
+"handR":{"handR":{"x":213,"y":369,"width":126,"height":254}},
+"legL":{"legL":{"x":388.5,"y":167,"width":145,"height":332}},
+"legR":{"legR":{"x":215.5,"y":171.5,"width":171,"height":301}},
+"body":{"body":{"x":322.5,"y":314,"width":347,"height":398}},
+"handL":{"handL":{"x":436.5,"y":372,"width":169,"height":306}},
+"head":{"head":{"x":307.5,"y":532,"width":169,"height":134}},
+}}, "animations": { "animation": {} }}

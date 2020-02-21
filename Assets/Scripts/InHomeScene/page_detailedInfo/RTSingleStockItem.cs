@@ -10,7 +10,6 @@ using GameDataEditor;
 public class RTSingleStockItem : MonoBehaviour
 {
     public Image itemImg;
-    //public CharacterModelController characterModel;
     public Image frameImg;
     public Image bgImg;
     public Image selectImg;
@@ -57,60 +56,20 @@ public class RTSingleStockItem : MonoBehaviour
         }
         SDConstants.StockUseType useType = stockPage.currentUseType;
         //
-        if (stockType == SDConstants.StockType.hero)
+        if (stockType == SDConstants.StockType.prop)
         {
-            if(useType == SDConstants.StockUseType.work)
-            {
-                chooseHeroToConsume();
-            }
-            else if(useType == SDConstants.StockUseType.detail)
-            {
-                chooseHeroToDetail();
-            }
-            else if(useType == SDConstants.StockUseType.sell)
-            {
-                chooseHeroToSell();
-            }
+
         }
-        else if (stockType == SDConstants.StockType.material)
+        else
         {
-            if(useType == SDConstants.StockUseType.work)
+            if (useType == SDConstants.StockUseType.work)
             {
-                chooseMaterialToConsume();
+                if (materialType == SDConstants.MaterialType.star
+                    || materialType == SDConstants.MaterialType.skill)
+                {
+                    stockPage.chooseStock(this);
+                }
             }
-            else if(useType == SDConstants.StockUseType.detail)
-            {
-                chooseMaterialToDetail();
-            }
-            else if(useType == SDConstants.StockUseType.sell)
-            {
-                chooseMaterialToSell();
-            }
-
-            if (materialType == SDConstants.MaterialType.end)
-            {
-
-            }
-            else if (materialType == SDConstants.MaterialType.exp)
-            {
-
-            }
-            else if (materialType == SDConstants.MaterialType.star)
-            {
-
-            }
-            else if (materialType == SDConstants.MaterialType.skill)
-            {
-
-            }
-            else if (materialType == SDConstants.MaterialType.money)
-            {
-
-            }
-        }
-        else if (stockType == SDConstants.StockType.prop)
-        {
-
         }
     }
     public void chooseHeroToConsume()
@@ -156,39 +115,45 @@ public class RTSingleStockItem : MonoBehaviour
     {
 
     }
-    public void initStock(GDEHeroData data)
+
+
+
+
+
+
+
+    public void initStock(GDEHeroData data
+        , SDConstants.MaterialType MType = SDConstants.MaterialType.end)
     {
         stockType = SDConstants.StockType.hero;
+        materialType = MType;
         itemId = data.id;
         hashcode = data.hashCode;
         itemNum = 1;
-        itemLv = SDDataManager.Instance.getLevelByExp(data.exp);
-        ROHeroData roh = SDDataManager.Instance.getHeroDataByID(itemId, data.starNumUpgradeTimes);
-        starVision.StarNum = roh.starNum;
-        itemName = roh.Info.Name;
-        //if (NameText) NameText.text = SDDataManager.Instance.getMaterialNameById(itemId);
-        if (lvText) lvText.text = SDGameManager.T("Lv.") + itemLv;
+        HeroInfo info = SDDataManager.Instance.getHeroInfoById(itemId);
+        starVision.StarNum = info.LEVEL + data.starNumUpgradeTimes;
         if (NumText) NumText.gameObject.SetActive(false);
-        if(NameText) NameText.gameObject.SetActive(false);
+
+        itemImg.sprite = info.FaceIcon;
+        bgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(info.Rarity);
+        frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(info.Rarity);
     }
     public void initStock(GDEItemData data
-                , SDConstants.StockType SType = SDConstants.StockType.material
         , SDConstants.MaterialType MType = SDConstants.MaterialType.end)
 
     {
-        stockType = SType;
+        stockType = SDConstants.StockType.material;
         materialType = MType;
         itemId = data.id;
         itemNum = data.num;
         hashcode = 0;
 
-        itemLv = SDDataManager.Instance.getMaterialLevelById(itemId);
-        starVision.StarNum = SDDataManager.Instance.getMaterialLevelById(itemId);
-        itemName = SDDataManager.Instance.getMaterialNameById(itemId);
+        consumableItem item = SDDataManager.Instance.getConsumableById(itemId);
+        if (starVision) starVision.gameObject.SetActive(false);
+        if (NumText) NumText.text = "X" + itemNum;
 
-        if (NameText) NameText.gameObject.SetActive(false);
-        if (NumText) NumText.text = "" + itemNum;
-        if (lvText) lvText.gameObject.SetActive(false);
-
+        itemImg.sprite = item.IconFromAtlas;
+        bgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(item.LEVEL);
+        frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(item.LEVEL);
     }
 }

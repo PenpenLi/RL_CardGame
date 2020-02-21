@@ -9,48 +9,46 @@ using GameDataEditor;
 public class ChapterLevelController : MonoBehaviour
 {
     public ScrollRect scrollRect;
-    public int CurrentChapterIndex = 0;
-    public int CurrentBossLvIndex = 0;
-    [HideInInspector]
+    public int LocalChapterIndex
+    {
+        get { return LEP.currentLocalChapter; }
+    }
+    public int LocalSerialIndex
+    {
+        get { return LEP.currentLocalSerial; }
+    }
+    public int LocalSectionIndex
+    {
+        get { return LEP.currentLocalSection; }
+        set { LEP.currentLocalSection = value; }
+    }
+    //[HideInInspector]
     public int maxSectionIndex;
-    [HideInInspector]
+    //[HideInInspector]
     public int maxBossIndex;
     private float BtnAppearAnimTime = 0.05f;
-    public Button BtnToNext;
-    public Button BtnToPrevious;
-
-
-
-
+    public LevelEnterPanel LEP
+    {
+        get { return GetComponentInParent<LevelEnterPanel>(); }
+    }
     public void FirstlyShowLevelList()
     {
-        maxSectionIndex = SDConstants.PerBossAppearLevel / SDConstants.LevelNumPerSection;
-        maxBossIndex = SDConstants.LevelNumPerChapter / SDConstants.PerBossAppearLevel;
+        maxSectionIndex = SDConstants.SectionNumPerSerial;
+        maxBossIndex = SDConstants.SerialNumPerChapter;
 
-        initThisLevelSelectMenu_bossNumSize(0);
-        RefreshBtnForNPSituation();
+        initThisLevelSelectMenu_bossNumSize();
     }
-    public void ResetScrollrect()
+    public void initThisLevelSelectMenu_bossNumSize()
     {
-        scrollRect.content.anchoredPosition = Vector2.zero;
-    }
-    public void initThisLevelSelectMenu_chapterNumSize()
-    {
-
-    }
-    public void initThisLevelSelectMenu_bossNumSize(int bossIndex)
-    {
-        CurrentBossLvIndex = bossIndex;
         for(int i = 0; i < scrollRect.content.childCount; i++)
         {
             if(i < maxSectionIndex)
             {
                 scrollRect.content.GetChild(i)
-                    .GetComponent<EnterSectionBtn>().initThisBtn_perBoss(i);
+                    .GetComponent<EnterSectionBtn>().initThisBtn_perSerial(i);
                 scrollRect.content.GetChild(i).localScale = Vector3.zero;
             }
         }
-        ResetScrollrect();
         StartCoroutine(IEInitLevelSelectMenuBtns());
     }
     public IEnumerator IEInitLevelSelectMenuBtns()
@@ -63,25 +61,7 @@ public class ChapterLevelController : MonoBehaviour
                 yield return new WaitForSeconds(BtnAppearAnimTime);
             }
         }
-    }
-    public void BtnForNP(bool ForN)
-    {
-        if (ForN)
-        {
-            initThisLevelSelectMenu_bossNumSize(CurrentBossLvIndex + 1);
-        }
-        else
-        {
-            initThisLevelSelectMenu_bossNumSize(CurrentBossLvIndex - 1);
-        }
-        RefreshBtnForNPSituation();
-    }
-    public void RefreshBtnForNPSituation()
-    {
-        if (CurrentBossLvIndex == 0) { BtnToPrevious.gameObject.SetActive(false); }
-        else { BtnToPrevious.gameObject.SetActive(true); }
-        if(CurrentBossLvIndex == maxSectionIndex - 1) { BtnToNext.gameObject.SetActive(false); }
-        else { BtnToNext.gameObject.SetActive(true); }
+        scrollRect.DOVerticalNormalizedPos(1, BtnAppearAnimTime * 2);
     }
 
 

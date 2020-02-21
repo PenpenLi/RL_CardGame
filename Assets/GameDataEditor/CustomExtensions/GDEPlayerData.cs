@@ -328,6 +328,13 @@ namespace GameDataEditor
 	        GDEDataManager.SetCustomList(_key, AltarPoolListKey, AltarPoolList);
 		}
 		
+        static string finishSectionsListKey = "finishSectionsList";
+		public List<GDESectionData>      finishSectionsList;
+		public void Set_finishSectionsList()
+        {
+	        GDEDataManager.SetCustomList(_key, finishSectionsListKey, finishSectionsList);
+		}
+		
 
         public GDEPlayerData(string key) : base(key)
         {
@@ -371,6 +378,7 @@ namespace GameDataEditor
             dict.Merge(true, NPCList.ToGDEDict(NPCListKey));
             dict.Merge(true, RunesOwned.ToGDEDict(RunesOwnedKey));
             dict.Merge(true, AltarPoolList.ToGDEDict(AltarPoolListKey));
+            dict.Merge(true, finishSectionsList.ToGDEDict(finishSectionsListKey));
             return dict;
 		}
 
@@ -474,6 +482,14 @@ namespace GameDataEditor
                     AltarPoolList[x].UpdateCustomItems(rebuildKeyList);
                 }
             }
+            if (finishSectionsList != null)
+            {
+                for(int x=0;  x<finishSectionsList.Count;  x++)
+                {
+                    GDEDataManager.UpdateItem(finishSectionsList[x], rebuildKeyList);
+                    finishSectionsList[x].UpdateCustomItems(rebuildKeyList);
+                }
+            }
         }
 
         public override void LoadFromDict(string dataKey, Dictionary<string, object> dict)
@@ -520,6 +536,7 @@ namespace GameDataEditor
                 dict.TryGetCustomList(NPCListKey, out NPCList);
                 dict.TryGetCustomList(RunesOwnedKey, out RunesOwned);
                 dict.TryGetCustomList(AltarPoolListKey, out AltarPoolList);
+                dict.TryGetCustomList(finishSectionsListKey, out finishSectionsList);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -562,6 +579,7 @@ namespace GameDataEditor
             NPCList = GDEDataManager.GetCustomList(_key, NPCListKey, NPCList);
             RunesOwned = GDEDataManager.GetCustomList(_key, RunesOwnedKey, RunesOwned);
             AltarPoolList = GDEDataManager.GetCustomList(_key, AltarPoolListKey, AltarPoolList);
+            finishSectionsList = GDEDataManager.GetCustomList(_key, finishSectionsListKey, finishSectionsList);
         }
 
         public GDEPlayerData ShallowClone()
@@ -621,6 +639,8 @@ namespace GameDataEditor
 			newClone.Set_RunesOwned();
             newClone.AltarPoolList = new List<GDEHeroAltarPoolData>(AltarPoolList);
 			newClone.Set_AltarPoolList();
+            newClone.finishSectionsList = new List<GDESectionData>(finishSectionsList);
+			newClone.Set_finishSectionsList();
 
             return newClone;
 		}
@@ -714,6 +734,13 @@ namespace GameDataEditor
 					newClone.AltarPoolList.Add(val.DeepClone());
 			}
 			newClone.Set_AltarPoolList();
+            newClone.finishSectionsList = new List<GDESectionData>();
+			if (finishSectionsList != null)
+			{
+				foreach(var val in finishSectionsList)
+					newClone.finishSectionsList.Add(val.DeepClone());
+			}
+			newClone.Set_finishSectionsList();
             return newClone;
 		}
 
@@ -1038,6 +1065,18 @@ namespace GameDataEditor
 
 			AltarPoolList.ForEach(x => x.ResetAll());
 		}
+        public void Reset_finishSectionsList()
+		{
+			GDEDataManager.ResetToDefault(_key, finishSectionsListKey);
+
+			Dictionary<string, object> dict;
+			GDEDataManager.Get(_key, out dict);
+
+			dict.TryGetCustomList(finishSectionsListKey, out finishSectionsList);
+			finishSectionsList = GDEDataManager.GetCustomList(_key, finishSectionsListKey, finishSectionsList);
+
+			finishSectionsList.ForEach(x => x.ResetAll());
+		}
 
         public void ResetAll()
         {
@@ -1076,6 +1115,7 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, NPCListKey);
             GDEDataManager.ResetToDefault(_key, RunesOwnedKey);
             GDEDataManager.ResetToDefault(_key, AltarPoolListKey);
+            GDEDataManager.ResetToDefault(_key, finishSectionsListKey);
 
             Reset_achievementData();
             Reset_herosOwned();
@@ -1090,6 +1130,7 @@ namespace GameDataEditor
             Reset_NPCList();
             Reset_RunesOwned();
             Reset_AltarPoolList();
+            Reset_finishSectionsList();
 
             #endif
 

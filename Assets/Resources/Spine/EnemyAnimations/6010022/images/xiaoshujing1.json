@@ -1,0 +1,15 @@
+{"bones":[{"name":"root"}],"slots":[
+{"name":"toufa","bone":"root","attachment":"toufa"},
+{"name":"legl","bone":"root","attachment":"legl"},
+{"name":"legr","bone":"root","attachment":"legr"},
+{"name":"body","bone":"root","attachment":"body"},
+{"name":"handL","bone":"root","attachment":"handL"},
+{"name":"handR","bone":"root","attachment":"handR"},
+],"skins":{"default":{
+"toufa":{"toufa":{"x":187,"y":363,"width":160,"height":96}},
+"legl":{"legl":{"x":151,"y":126,"width":62,"height":64}},
+"legr":{"legr":{"x":209,"y":146.5,"width":64,"height":77}},
+"body":{"body":{"x":201.5,"y":242,"width":179,"height":202}},
+"handL":{"handL":{"x":97,"y":212,"width":40,"height":54}},
+"handR":{"handR":{"x":267,"y":244,"width":76,"height":56}},
+}}, "animations": { "animation": {} }}

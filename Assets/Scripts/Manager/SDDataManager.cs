@@ -391,6 +391,10 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         //
         return ral.BattleForce;
     }
+    public List<GDEHeroData> getHerosListOwned()
+    {
+        return PlayerData.herosOwned;
+    }
     public GDEHeroData GetHeroOwnedByHashcode(int hashCode)
     {
         foreach (GDEHeroData h in PlayerData.herosOwned)
@@ -475,7 +479,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return 0;
     }
-    public void consumeHero(int hashcode)
+    public bool consumeHero(int hashcode)
     {
         foreach (GDEHeroData h in PlayerData.herosOwned)
         {
@@ -484,9 +488,10 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
                 consume_Item(h.id, out int left);
                 PlayerData.herosOwned.Remove(h);
                 PlayerData.Set_herosOwned();
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     /*
@@ -650,11 +655,15 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         get
         {
-            List<HeroInfo> results = new List<HeroInfo>();
-            HeroInfo[] all = Resources.LoadAll<HeroInfo>("ScriptableObjects/heroes");
-            for (int i = 0; i < all.Length; i++)
+            List<HeroInfo> results = AllList_HeroInfo;
+            if(results==null)
             {
-                results.Add(all[i]);
+                results = new List<HeroInfo>();
+                HeroInfo[] all = Resources.LoadAll<HeroInfo>("ScriptableObjects/heroes");
+                for (int i = 0; i < all.Length; i++)
+                {
+                    results.Add(all[i]);
+                }
             }
             return results;
         }
@@ -949,6 +958,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         return (exp - expOld) * 1f / expLength;
     }
     #endregion
+    #region Hero_Improve
     public void addExpToHeroByHashcode(int hashcode, int exp = 1)
     {
         foreach (GDEHeroData h in PlayerData.herosOwned)
@@ -961,8 +971,32 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
                 break;
             }
         }
-
     }
+    public void addStarToHeroByHashcode(int hashcode,int num = 1)
+    {
+        foreach (GDEHeroData h in PlayerData.herosOwned)
+        {
+            if (h.hashCode == hashcode)
+            {
+                h.starNumUpgradeTimes += num;
+                PlayerData.Set_herosOwned();
+                break;
+            }
+        }
+    }
+    public void addMainSkillGradeToHeroByHashcode(int hashcode,int num = 1)
+    {
+        foreach (GDEHeroData h in PlayerData.herosOwned)
+        {
+            if (h.hashCode == hashcode)
+            {
+                h.skillLevel += num;
+                PlayerData.Set_herosOwned();
+                break;
+            }
+        }
+    }
+    #endregion
     public int heroMaxLvByStar(int star)
     {
         int limitedLv = 10;
@@ -1315,6 +1349,10 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         get 
         {
+            if(AllList_ConsumableItem != null) 
+            {
+                return AllList_ConsumableItem;
+            }
             consumableItem[] all = Resources.LoadAll<consumableItem>
                 ("ScriptableObjects/Items/Consumables");
             return all.ToList();
@@ -1525,6 +1563,23 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         if (item) return item.SpecialStr;
         return string.Empty;
     }
+    #region consumableItem_materialType_skill
+    public Job consumableItemSkill_FixCareer(string itemId)
+    {
+        string str = getMaterialSpecialStr(itemId);
+        string career = str.Split('_')[0];
+        if(career == "any") { return Job.End; }
+        for(int i = 0; i < (int)Job.End; i++)
+        {
+            Job _j = (Job)i;
+            if(_j.ToString().ToLower() == career.ToLower())
+            {
+                return _j;
+            }
+        }
+        return Job.End;
+    }
+    #endregion
     #endregion
     #endregion
 
@@ -1644,6 +1699,30 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         return PlayerData.maxPassSection;
     }
     public int getDimension() { return PlayerData.dimension; }
+    public List<GDESectionData> getSectionHistoryList()
+    {
+        return PlayerData.finishSectionsList;
+    }
+    public GDESectionData getSectionHistoryByIndex(int index)
+    {
+        return PlayerData.finishSectionsList.Find(x => x.Index == index);
+    }
+    public bool SaveSectionHistory(int sectionIndex, int remark)
+    {
+        if (GetMaxPassSection() + 1 < sectionIndex) return false;
+        GDESectionData data = new GDESectionData(GDEItemKeys.Section_nullSection)
+        {
+            Index = sectionIndex,
+            remark = remark,
+        };
+        PlayerData.finishSectionsList.Add(data);
+        PlayerData.finishSectionsList.Sort((x, y) =>
+        {
+            return x.Index.CompareTo(y.Index);
+        });
+        PlayerData.Set_finishSectionsList();
+        return true;
+    }
     #endregion
     #region DataListResult
     #region sprite_atlas
@@ -1670,6 +1749,30 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         atlas_consumable = AllAtlas.Find(x => x.name == "atlas_consumable");
         atlas_ralAndSstate = AllAtlas.Find(x => x.name == "atlas_ral&sstate");
     }
+
+    #region ScriptableObjects
+    public List<HeroInfo> AllList_HeroInfo;
+    public List<EquipItem> AllList_EquipItem;
+    public List<consumableItem> AllList_ConsumableItem;
+    public List<EnemyInfo> AllList_EnemyInfo;
+    public List<RuneItem> AllList_RuneItem;
+    public List<GoddessInfo> AllList_GoddessInfo;
+    public void ReadAllSOs()
+    {
+        AllList_HeroInfo = Resources.LoadAll<HeroInfo>
+            ("ScriptableObjects/heroes").ToList();
+        AllList_EquipItem = Resources.LoadAll<EquipItem>
+            ("ScriptableObjects/items/Equips").ToList();
+        AllList_ConsumableItem = Resources.LoadAll<consumableItem>
+            ("ScriptableObjects/Items/Consumables").ToList();
+        AllList_EnemyInfo = Resources.LoadAll<EnemyInfo>
+            ("ScriptableObjects/enemies").ToList();
+        AllList_RuneItem = Resources.LoadAll<RuneItem>
+            ("ScriptableObjects/Items/Runes").ToList();
+        AllList_GoddessInfo = Resources.LoadAll<GoddessInfo>
+            ("ScriptableObjects/goddess").ToList();
+    }
+    #endregion
 
     public Sprite GetIconInRAL(AttributeData ad)
     {
@@ -1789,7 +1892,9 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         get
         {
-            return Resources.LoadAll<GoddessInfo>("ScriptableObjects/goddess").ToList();
+            if (AllList_GoddessInfo != null) return AllList_GoddessInfo;
+            return Resources.LoadAll<GoddessInfo>
+                ("ScriptableObjects/goddess").ToList();
         }
     }
     public GDEgoddessData getGDEGoddessDataById(string goddessId)
@@ -2623,12 +2728,16 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         get
         {
-            EquipItem[] all = Resources.LoadAll<EquipItem>
-                ("ScriptableObjects/items/Equips");
-            List<EquipItem> results = new List<EquipItem>();
-            for(int i = 0; i < all.Length; i++)
+            List<EquipItem> results = AllList_EquipItem;
+            if (results == null)
             {
-                results.Add(all[i]);
+                results = new List<EquipItem>();
+                EquipItem[] all = Resources.LoadAll<EquipItem>
+                   ("ScriptableObjects/items/Equips");
+                for (int i = 0; i < all.Length; i++)
+                {
+                    results.Add(all[i]);
+                }
             }
             return results;
         }
@@ -3094,6 +3203,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         get 
         {
+            if (AllList_EnemyInfo!=null) return AllList_EnemyInfo;
             List<EnemyInfo> results = new List<EnemyInfo>();
             EnemyInfo[] all = Resources.LoadAll<EnemyInfo>
                 ("ScriptableObjects/enemies");
@@ -3123,7 +3233,9 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         get
         {
-            RuneItem[] all = Resources.LoadAll<RuneItem>("ScriptableObjects/Items/Runes");
+            if (AllList_RuneItem != null) return AllList_RuneItem;
+            RuneItem[] all = Resources.LoadAll<RuneItem>
+                ("ScriptableObjects/Items/Runes");
             return all.ToList();
         }
     }

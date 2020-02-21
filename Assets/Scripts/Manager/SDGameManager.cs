@@ -35,19 +35,19 @@ public class SDGameManager : PersistentSingleton<SDGameManager>
     {
         get 
         {
-            return (currentLevel - currentLevel % SDConstants.PerBossAppearLevel)
-                / SDConstants.PerBossAppearLevel;
+            return (currentLevel - currentLevel % SDConstants.LevelNumPerSerial)
+                / SDConstants.LevelNumPerSerial;
         }
         set
         {
-            currentLevel = value * SDConstants.PerBossAppearLevel;
+            currentLevel = value * SDConstants.LevelNumPerSerial;
         }
     }
     public int current_section_in_bossAppearL
     {
         get 
         {
-            int sectionN = SDConstants.PerBossAppearLevel / SDConstants.LevelNumPerSection;
+            int sectionN = SDConstants.SectionNumPerSerial;
             return currentSection % sectionN;
         }
     }
@@ -67,7 +67,7 @@ public class SDGameManager : PersistentSingleton<SDGameManager>
     {
         get 
         {
-            int balN = SDConstants.PerBossAppearLevel / SDConstants.LevelNumPerChapter;
+            int balN = SDConstants.SerialNumPerChapter;
             return currentBossAppearLevelIndex % balN;
         }
     }
@@ -89,12 +89,12 @@ public class SDGameManager : PersistentSingleton<SDGameManager>
     {
         get
         {
-            return (startLevel - startLevel % SDConstants.PerBossAppearLevel)
-                / SDConstants.PerBossAppearLevel;
+            return (startLevel - startLevel % SDConstants.LevelNumPerSerial)
+                / SDConstants.LevelNumPerSerial;
         }
         set
         {
-            startLevel = value * SDConstants.PerBossAppearLevel;
+            startLevel = value * SDConstants.LevelNumPerSerial;
         }
     }
     public int startChapter

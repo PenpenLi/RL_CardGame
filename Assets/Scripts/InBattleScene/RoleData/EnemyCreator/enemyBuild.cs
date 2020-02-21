@@ -8,6 +8,7 @@ public class enemyBuild : MonoBehaviour
     public static bool CanBeUsedInThisLevel(int weight)
     {
         int lvl = SDGameManager.Instance.currentLevel;
+        lvl = lvl % SDConstants.LevelNumPerChapter;
         if (SDGameManager.Instance.gameType == SDConstants.GameType.Normal)
         {
             if(weight <= lvl)
@@ -19,29 +20,34 @@ public class enemyBuild : MonoBehaviour
     }
     public static int createCareerByLevel()
     {
-        int result;
+        int result=0;
         int lvl = SDGameManager.Instance.currentLevel;
         int round0 = lvl % SDConstants.LevelNumPerSection;
-        int round1 = ((lvl % SDConstants.PerBossAppearLevel) 
-            - (lvl % SDConstants.PerBossAppearLevel)%SDConstants.LevelNumPerSection)
-            / SDConstants.LevelNumPerSection;
-        int round2 = ((lvl % SDConstants.LevelNumPerChapter)
-            - (lvl % SDConstants.LevelNumPerChapter)%SDConstants.PerBossAppearLevel)
-            / SDConstants.PerBossAppearLevel;
-        result = Mathf.Clamp(round2 - 1, 0, SDConstants.MaxOtherNum);
-        if(SDGameManager.Instance.gameType == SDConstants.GameType.Normal)
+        int round1 = lvl % SDConstants.LevelNumPerSerial;
+        int round2 = lvl % SDConstants.LevelNumPerChapter;
+        //0
+        if(round0 > SDConstants.LevelNumPerSection - 2)
         {
-            if (round0 == SDConstants.LevelNumPerSection - 1)
-                result = Mathf.Min(SDConstants.MaxOtherNum, round1 + 1);
-            if(lvl % SDConstants.PerBossAppearLevel == SDConstants.PerBossAppearLevel - 1)
-            {
-                result = Mathf.Min(SDConstants.MaxOtherNum, round1 + 2);
-            }
-            if (lvl % SDConstants.LevelNumPerChapter == SDConstants.LevelNumPerChapter - 1)
-            {
-                result = SDConstants.MaxOtherNum;
-            }
+            result ++;
         }
+        //1
+        float r = round1 * 1f / SDConstants.LevelNumPerSerial;
+        if(lvl < SDConstants.LevelNumPerChapter)
+        {
+            r = Mathf.Max(0, r - 0.5f);
+        }
+        float _r = Random.Range(0f, 1f);
+        if (_r < r) { result ++; }
+        //2
+        float r1 = Mathf.Max(round2 * 1f / SDConstants.LevelNumPerChapter-0.5f,0);
+        float _r1 = Random.Range(0, 1f);
+        if(_r1 < r1) { result++; }
+        //3
+        float r2 = round2 < SDConstants.LevelNumPerChapter / 100 ? 0 : 0.5f;
+        float _r2 = Random.Range(0, 1f);
+        if(_r2 < r2) { result++; }
+        //
+        result = Mathf.Min(result, SDConstants.MaxOtherNum);
         return result;
     }
     #region career&&race _data

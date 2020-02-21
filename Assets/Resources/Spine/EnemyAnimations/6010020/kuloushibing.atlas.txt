@@ -1,0 +1,69 @@
+
+kuloushibing.png
+size: 500,500
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: true
+  xy: 357, 150
+  size: 75, 107
+  orig: 75, 107
+  offset: 0, 0
+  index: -1
+handR
+  rotate: true
+  xy: 2, 206
+  size: 77, 154
+  orig: 77, 154
+  offset: 0, 0
+  index: -1
+handl
+  rotate: true
+  xy: 217, 204
+  size: 72, 138
+  orig: 72, 138
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 2, 285
+  size: 215, 203
+  orig: 215, 203
+  offset: 0, 0
+  index: -1
+hips
+  rotate: true
+  xy: 219, 278
+  size: 112, 158
+  orig: 112, 167
+  offset: 0, 0
+  index: -1
+leg_l
+  rotate: false
+  xy: 379, 227
+  size: 75, 163
+  orig: 76, 163
+  offset: 0, 0
+  index: -1
+leg_r
+  rotate: true
+  xy: 2, 136
+  size: 68, 153
+  orig: 68, 153
+  offset: 0, 0
+  index: -1
+toufa
+  rotate: true
+  xy: 158, 189
+  size: 94, 57
+  orig: 94, 57
+  offset: 0, 0
+  index: -1
+wuqi
+  rotate: false
+  xy: 219, 392
+  size: 269, 96
+  orig: 269, 96
+  offset: 0, 0
+  index: -1

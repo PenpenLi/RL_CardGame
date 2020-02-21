@@ -62,7 +62,7 @@ public class SDGoddessImprove : BasicImprovePage
 
         stockPage.maxSelectedNum = maxSelectedNum;
         //stockPage.ItemsInit(SDConstants.StockType.material,MType);
-        stockPage.showMaterialsForGoddessImprove(goddessDetail.Id);
+        //stockPage.showMaterialsForGoddessImprove(goddessDetail.Id);
         stockPage.SelectEmpty();
         RefreshImprovePanel();
         if (stockPage.items.Count == 0) emptyPanel.gameObject.SetActive(true);

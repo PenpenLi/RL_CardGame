@@ -1,0 +1,55 @@
+
+kuloufashi.png
+size: 669,669
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: true
+  xy: 348, 405
+  size: 120, 237
+  orig: 120, 237
+  offset: 0, 0
+  index: -1
+handL
+  rotate: true
+  xy: 149, 357
+  size: 68, 131
+  orig: 68, 131
+  offset: 0, 0
+  index: -1
+handR
+  rotate: false
+  xy: 587, 365
+  size: 74, 145
+  orig: 74, 145
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 2, 427
+  size: 344, 240
+  orig: 344, 292
+  offset: 0, 52
+  index: -1
+legL
+  rotate: true
+  xy: 2, 361
+  size: 64, 145
+  orig: 64, 145
+  offset: 0, 0
+  index: -1
+legR
+  rotate: false
+  xy: 596, 512
+  size: 71, 155
+  orig: 73, 155
+  offset: 0, 0
+  index: -1
+wuqi
+  rotate: false
+  xy: 348, 527
+  size: 246, 140
+  orig: 246, 140
+  offset: 0, 0
+  index: -1

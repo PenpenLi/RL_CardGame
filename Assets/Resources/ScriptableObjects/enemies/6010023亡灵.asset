@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0db3073cff4fb5c479fd1764d3490df3, type: 3}
+  m_Name: "6010023\u4EA1\u7075"
+  m_EditorClassIdentifier: 
+  _ID: D_NROMAL#6010023
+  _Name: "\u4EA1\u7075"
+  _DESC: 
+  sex: 0
+  characterType: 1
+  faceIcon: {fileID: 0}
+  race:
+  - {fileID: 11400000, guid: 9692f5801ac39804d9abe432eb20a4ea, type: 2}
+  enemyRank: {fileID: 11400000, guid: 1ec16465822143c49b932bcbedad3967, type: 2}
+  _RAL:
+    AllAttributeData: f401000064000000320000001900000032000000000000000000000004000000010000000f0000000a0000000a0000000a000000
+    AllResistData: 6400000019000000190000001900000019000000010000001900000019000000
+  specialStr: 
+  weight: 5
+  dropPercent: 5
+  dropItems: []
+  StartAppearLevel: 30
+  EndAppearLevel: 150
+  _useSpineData: 1
+  SpineData:
+    SkeletonData: {fileID: 11400000, guid: 58c5646ef28e8fb44bbbf1fda18e6141, type: 2}
+    skin: default
+    allEnableList: []

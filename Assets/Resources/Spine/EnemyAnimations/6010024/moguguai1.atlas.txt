@@ -1,0 +1,20 @@
+
+moguguai1.png
+size: 502,502
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: true
+  xy: 280, 297
+  size: 203, 220
+  orig: 203, 234
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 2, 320
+  size: 276, 180
+  orig: 276, 180
+  offset: 0, 0
+  index: -1

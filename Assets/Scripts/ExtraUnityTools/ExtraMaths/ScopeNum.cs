@@ -317,6 +317,7 @@ public class ScopeInt
         else if (format == "[//]") return "[" + Min + "/" + Current + "/" + Max + "]";
         else if (format == "(/)") return "(" + Current + "/" + Max + ")";
         else if (format == "(//)") return "(" + Min + "/" + Current + "/" + Max + ")";
+        else if (format == "/") return Current + "/" + Max;
         else return ToString();
     }
 

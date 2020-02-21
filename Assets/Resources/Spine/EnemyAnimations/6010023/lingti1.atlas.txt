@@ -1,0 +1,48 @@
+
+lingti1.png
+size: 879,879
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 2, 570
+  size: 144, 307
+  orig: 144, 307
+  offset: 0, 0
+  index: -1
+handl
+  rotate: false
+  xy: 2, 367
+  size: 97, 201
+  orig: 111, 201
+  offset: 0, 0
+  index: -1
+handr
+  rotate: false
+  xy: 2, 179
+  size: 77, 186
+  orig: 77, 186
+  offset: 0, 0
+  index: -1
+mianju
+  rotate: false
+  xy: 2, 68
+  size: 96, 109
+  orig: 96, 109
+  offset: 0, 0
+  index: -1
+piaodail
+  rotate: false
+  xy: 81, 241
+  size: 48, 124
+  orig: 48, 124
+  offset: 0, 0
+  index: -1
+piaodair
+  rotate: true
+  xy: 2, 2
+  size: 64, 130
+  orig: 64, 130
+  offset: 0, 0
+  index: -1

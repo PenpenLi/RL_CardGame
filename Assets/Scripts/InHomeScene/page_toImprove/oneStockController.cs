@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class oneStockController : MonoBehaviour
 {
+    public BasicImprovePage ImprovePage;
     [Header("LeftPart")]
     public Image bgIcon;
     public Image frameIcon;
@@ -21,11 +24,12 @@ public class oneStockController : MonoBehaviour
     public Button btn_add;
     public Button btn_reduce;
     [Header("Data")]
+    public int MainNum;
     public int CurrentNum;
     public string itemId;
     public void btnTapped_add()
     {
-        //if (Item.type != SDConstants.ItemType.Consumable) return;
+        if (ImprovePage && ImprovePage.TooFlowToAdd) return;
         GDEItemData data = SDDataManager.Instance.getConsumeableDataById(itemId);
         int num = data.num;
         if (CurrentNum < num) CurrentNum++;
@@ -43,9 +47,10 @@ public class oneStockController : MonoBehaviour
         else btn_reduce.interactable = true;
         //
         GDEItemData data = SDDataManager.Instance.getConsumeableDataById(itemId);
-        int num = data.num;
+        if (data == null) MainNum = 0;
+        else MainNum = data.num;
         //
-        if (CurrentNum >= num) btn_add.interactable = false;
+        if (CurrentNum >= MainNum) btn_add.interactable = false;
         else btn_add.interactable = true;
 
         //
@@ -56,7 +61,7 @@ public class oneStockController : MonoBehaviour
         frameIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(item.LEVEL);
         if (starVision) { starVision.StarNum = item.LEVEL; }
         upText?.gameObject.SetActive(false);
-        downText.text = "X" + data.num;
+        downText.text = "X" + MainNum;
     }
 
     public void Init(string id)

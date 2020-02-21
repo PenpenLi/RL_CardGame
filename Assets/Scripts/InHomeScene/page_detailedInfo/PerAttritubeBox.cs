@@ -6,31 +6,16 @@ using DG.Tweening;
 
 public class PerAttritubeBox : MonoBehaviour
 {
-    public Text NameText;
+    //public Text NameText;
     public Image ICON;
-    public Text BasicFigureText;
-    public Text ExtraFigureText;
-    public Transform BasicFigureSlider;
-    public Transform ExtraFigureSlider;
+    public Text FigureText;
+    public Color basicFigureTextColor;
+    public Color decreaseFigureTextColor;
+    public Color increaseFigureTextColor;
     public OneAttritube DATA = new OneAttritube();
-    public int extraData;
-    [HideInInspector]
-    public RectTransform leftPanel;
-    [HideInInspector]
-    public RectTransform basicPanel;
-    private float LeftLength = 75;
-    private float AnimTime = 0.2f;
-    [HideInInspector]
-    public bool isShowingNameText;
-
-
-    void Start()
-    {
-        leftPanel = transform.GetChild(0).GetComponent<RectTransform>();
-        basicPanel = transform.GetChild(1).GetComponent<RectTransform>();
-    }
+    private float figureChangeAnimInterval = 0.15f;
     #region AD
-    public void initThisBoxInAD(int basicRa, int extraRa,AttributeData tag)
+    public void initThisBoxInAD(int Ra,AttributeData tag)
     {
         DATA.isAD = true;DATA.index = (int)tag;
         //
@@ -41,55 +26,19 @@ public class PerAttritubeBox : MonoBehaviour
             ICON.SetNativeSize();
         }
         //
-        NameText.text = SDGameManager.T(tag.ToString());
-        RefreshData_AD(basicRa, extraRa);
+        //NameText.text = SDGameManager.T(tag.ToString());
+        RefreshData_AD(Ra);
     }
 
-    public void RefreshData_AD(int basicRA,int extraRA)
+    public void RefreshData_AD(int RA)
     {
-        BasicFigureText.text = basicRA + " ";
-        ExtraFigureText.text = "+" + extraRA;
-        float rate0 = Mathf.Max(0, basicRA) * 1f / maxFigure_AD();
-        BasicFigureSlider.localScale = new Vector3
-            (Mathf.Min(rate0,1), 1, 1);
-        float rate1 = Mathf.Max(0, extraRA) * 1f / maxFigure_AD();
-        ExtraFigureSlider.localScale = new Vector3
-            (Mathf.Min(rate1,1), 1, 1);
-        DATA.figure = basicRA;
-        extraData = extraRA;
+        StartCoroutine(FigureChangeAnim(RA));
     }
-    public IEnumerator DetailVisionAnim(bool detailIsOn)
-    {
-        if (detailIsOn)
-        {
-            leftPanel.DOSizeDelta(new Vector2(LeftLength, leftPanel.sizeDelta.y), AnimTime);
-            basicPanel.DOAnchorPos(Vector2.right * LeftLength, AnimTime);
-        }
-        else
-        {
-            leftPanel.DOSizeDelta(new Vector2(0, leftPanel.sizeDelta.y), AnimTime);
-            basicPanel.DOAnchorPos(Vector2.zero, AnimTime);
-        }
-        yield return new WaitForSeconds(AnimTime);
-    }
-    public void AnimController(bool clickTrigger)
-    {
-        if (isShowingNameText != clickTrigger)
-        {
-            isShowingNameText = clickTrigger;
-            StartCoroutine(DetailVisionAnim(isShowingNameText));
-        }
-    }
-    public int maxFigure_AD()
-    {
-        int lv = 0;
-        AttritubeListPanel ALP = GetComponentInParent<AttritubeListPanel>();
-        if (ALP) lv = ALP.currentLv;
-        return SDDataManager.Instance.getRoleRAMaxNumPerLv((AttributeData)DATA.index, lv);
-    }
+
+
     #endregion
     #region SR
-    public void initThisBoxInSR(int basicRa,int extraRa, StateTag tag)
+    public void initThisBoxInSR(int Ra, StateTag tag)
     {
         DATA.isAD = false;DATA.index = (int)tag;
         //
@@ -100,29 +49,35 @@ public class PerAttritubeBox : MonoBehaviour
             ICON.SetNativeSize();
         }
         //
-        NameText.text = SDGameManager.T(tag.ToString());
-        RefreshData_SR(basicRa, extraRa);
+        //NameText.text = SDGameManager.T(tag.ToString());
+        RefreshData_SR(Ra);
     }
-    public void RefreshData_SR(int basicRA, int extraRA)
+    public void RefreshData_SR(int RA)
     {
-        BasicFigureText.text = basicRA + "";
-        ExtraFigureText.text = "+" + extraRA;
-        float rate0 = Mathf.Max(0, basicRA) * 1f / maxFigure_SR();
-        BasicFigureSlider.localScale = new Vector3
-            (1, Mathf.Min(rate0,1), 1);
-        float rate1 = Mathf.Max(0, extraRA) * 1f / maxFigure_SR();
-        ExtraFigureSlider.localScale = new Vector3
-            (1, Mathf.Min(rate1,1), 1);
-        DATA.figure = basicRA;
-        extraData = extraRA;
-    }
-    public int maxFigure_SR()
-    {
-        int lv = 0;
-        AttritubeListPanel ALP = GetComponentInParent<AttritubeListPanel>();
-        if (ALP) lv = ALP.currentLv;
-        return SDDataManager.Instance.getRoleSRMaxNumPerLv(lv);
+        StartCoroutine(FigureChangeAnim(RA));
     }
     #endregion
+
+    IEnumerator FigureChangeAnim(int newFigure)
+    {
+        int oldFigure = DATA.figure;
+        FigureText.color = basicFigureTextColor;
+        if(newFigure > oldFigure)
+        {
+            int length = newFigure - oldFigure;
+            FigureText.color = increaseFigureTextColor;
+            FigureText.text = oldFigure + "+" + length;
+            yield return new WaitForSeconds(figureChangeAnimInterval);
+        }
+        else if(newFigure < oldFigure)
+        {
+            int length = oldFigure - newFigure;
+            FigureText.color = decreaseFigureTextColor;
+            FigureText.text = oldFigure + "-" + length;
+            yield return new WaitForSeconds(figureChangeAnimInterval);
+        }
+        FigureText.text = "" + newFigure;
+        FigureText.color = basicFigureTextColor;
+    }
 
 }

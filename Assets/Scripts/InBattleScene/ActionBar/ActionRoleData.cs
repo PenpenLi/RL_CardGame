@@ -10,6 +10,8 @@ public class ActionRoleData : MonoBehaviour
 {
     public CharacterModelController headImage;
     public Image stateBgImage;
+    public Image stateFaceImage;
+    public Image stateFrameImage;
     public Sprite[] stateSprites;
     public float speed;
     public bool isActed=false;
@@ -23,6 +25,13 @@ public class ActionRoleData : MonoBehaviour
     }
     public void initActionUnit()
     {
+        if (isEnemy)
+        {
 
+        }
+        else
+        {
+
+        }
     }
 }

@@ -122,7 +122,9 @@ public class test_runeAd : MonoBehaviour
     public void AddExpConsumables()
     {
         List<consumableItem> all = SDDataManager.Instance.AllConsumableList.FindAll
-            (x => x.MaterialType == SDConstants.MaterialType.exp);
+            (x => x.MaterialType == SDConstants.MaterialType.exp
+            || x.MaterialType == SDConstants.MaterialType.star
+            || x.MaterialType == SDConstants.MaterialType.skill);
         foreach(var item in all)
         {
             SDDataManager.Instance.addConsumable(item.ID, 5);

@@ -1,0 +1,17 @@
+{"bones":[{"name":"root"}],"slots":[
+{"name":"zhuangshi","bone":"root","attachment":"zhuangshi"},
+{"name":"legr","bone":"root","attachment":"legr"},
+{"name":"legl","bone":"root","attachment":"legl"},
+{"name":"handL","bone":"root","attachment":"handL"},
+{"name":"body","bone":"root","attachment":"body"},
+{"name":"huxu","bone":"root","attachment":"huxu"},
+{"name":"handR","bone":"root","attachment":"handR"},
+],"skins":{"default":{
+"zhuangshi":{"zhuangshi":{"x":187,"y":355.5,"width":314,"height":163}},
+"legr":{"legr":{"x":211,"y":127.5,"width":72,"height":109}},
+"legl":{"legl":{"x":125,"y":117,"width":66,"height":88}},
+"handL":{"handL":{"x":77.9999999999999,"y":189,"width":88,"height":222}},
+"body":{"body":{"x":173.5,"y":247,"width":185,"height":286}},
+"huxu":{"huxu":{"x":148,"y":243,"width":150,"height":126}},
+"handR":{"handR":{"x":274.5,"y":189.5,"width":97,"height":219}},
+}}, "animations": { "animation": {} }}

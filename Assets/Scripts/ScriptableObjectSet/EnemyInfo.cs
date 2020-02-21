@@ -55,6 +55,9 @@ public class EnemyInfo : CharacterInfo
     public float dropPercent;
     public List<consumableItem> dropItems;
 
+    [Space]
+    public int StartAppearLevel;
+    public int EndAppearLevel;
 
     [Space]
     [SerializeField]
@@ -63,6 +66,14 @@ public class EnemyInfo : CharacterInfo
     {
         get { return _useSpineData; }
         private set { _useSpineData = value; }
+    }
+    public void InitSpineData(SkeletonDataAsset SDA)
+    {
+        if (SDA != null)
+        {
+            UseSpineData = true;
+            SpineData.SkeletonData = SDA;
+        }
     }
 #if UNITY_EDITOR
     [SerializeField, ConditionalHide("_useSpineData", true, false)]

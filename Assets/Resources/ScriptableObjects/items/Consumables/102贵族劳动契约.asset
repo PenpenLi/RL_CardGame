@@ -18,7 +18,7 @@ MonoBehaviour:
   _atlasFrom: {fileID: 4343727234628468602, guid: 3354f88a9a24b3d44af3c206b456f61b,
     type: 2}
   itemtype: 2
-  _LEVEL: 4
+  _LEVEL: 3
   stackAble: 0
   discardAble: 1
   useable: 1

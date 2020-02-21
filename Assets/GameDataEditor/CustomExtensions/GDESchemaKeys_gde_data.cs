@@ -33,5 +33,6 @@ namespace GameDataEditor
         public static string Rune = "Rune";
         public static string goddessAtti = "goddessAtti";
         public static string HeroAltarPool = "HeroAltarPool";
+        public static string Section = "Section";
     }
 }

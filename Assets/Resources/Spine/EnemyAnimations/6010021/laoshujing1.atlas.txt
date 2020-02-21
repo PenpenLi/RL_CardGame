@@ -1,0 +1,55 @@
+
+laoshujing1.png
+size: 500,500
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 2, 18
+  size: 185, 286
+  orig: 185, 286
+  offset: 0, 0
+  index: -1
+handL
+  rotate: false
+  xy: 288, 92
+  size: 88, 212
+  orig: 88, 222
+  offset: 0, 0
+  index: -1
+handR
+  rotate: false
+  xy: 189, 85
+  size: 97, 219
+  orig: 97, 219
+  offset: 0, 0
+  index: -1
+huxu
+  rotate: false
+  xy: 318, 362
+  size: 150, 107
+  orig: 150, 126
+  offset: 0, 2
+  index: -1
+legl
+  rotate: false
+  xy: 300, 2
+  size: 66, 88
+  orig: 66, 88
+  offset: 0, 0
+  index: -1
+legr
+  rotate: true
+  xy: 189, 11
+  size: 72, 109
+  orig: 72, 109
+  offset: 0, 0
+  index: -1
+zhuangshi
+  rotate: false
+  xy: 2, 306
+  size: 314, 163
+  orig: 314, 163
+  offset: 0, 0
+  index: -1

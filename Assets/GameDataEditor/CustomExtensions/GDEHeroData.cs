@@ -285,6 +285,20 @@ namespace GameDataEditor
             }
         }
 
+        static string skillLevelKey = "skillLevel";
+		int _skillLevel;
+        public int skillLevel
+        {
+            get { return _skillLevel; }
+            set {
+                if (_skillLevel != value)
+                {
+                    _skillLevel = value;
+					GDEDataManager.SetInt(_key, skillLevelKey, _skillLevel);
+                }
+            }
+        }
+
         static string teamIdBelongToKey = "teamIdBelongTo";
 		string _teamIdBelongTo;
         public string teamIdBelongTo
@@ -522,6 +536,7 @@ namespace GameDataEditor
             dict.Merge(true, Fatigue.ToGDEDict(FatigueKey));
             dict.Merge(true, TeamOrder.ToGDEDict(TeamOrderKey));
             dict.Merge(true, race.ToGDEDict(raceKey));
+            dict.Merge(true, skillLevel.ToGDEDict(skillLevelKey));
             dict.Merge(true, teamIdBelongTo.ToGDEDict(teamIdBelongToKey));
             dict.Merge(true, skillOmegaId.ToGDEDict(skillOmegaIdKey));
             dict.Merge(true, skill0Id.ToGDEDict(skill0IdKey));
@@ -601,6 +616,7 @@ namespace GameDataEditor
                 dict.TryGetInt(FatigueKey, out _Fatigue);
                 dict.TryGetInt(TeamOrderKey, out _TeamOrder);
                 dict.TryGetInt(raceKey, out _race);
+                dict.TryGetInt(skillLevelKey, out _skillLevel);
                 dict.TryGetString(teamIdBelongToKey, out _teamIdBelongTo);
                 dict.TryGetString(skillOmegaIdKey, out _skillOmegaId);
                 dict.TryGetString(skill0IdKey, out _skill0Id);
@@ -657,6 +673,7 @@ namespace GameDataEditor
             _Fatigue = GDEDataManager.GetInt(_key, FatigueKey, _Fatigue);
             _TeamOrder = GDEDataManager.GetInt(_key, TeamOrderKey, _TeamOrder);
             _race = GDEDataManager.GetInt(_key, raceKey, _race);
+            _skillLevel = GDEDataManager.GetInt(_key, skillLevelKey, _skillLevel);
             _teamIdBelongTo = GDEDataManager.GetString(_key, teamIdBelongToKey, _teamIdBelongTo);
             _skillOmegaId = GDEDataManager.GetString(_key, skillOmegaIdKey, _skillOmegaId);
             _skill0Id = GDEDataManager.GetString(_key, skill0IdKey, _skill0Id);
@@ -701,6 +718,7 @@ namespace GameDataEditor
             newClone.Fatigue = Fatigue;
             newClone.TeamOrder = TeamOrder;
             newClone.race = race;
+            newClone.skillLevel = skillLevel;
             newClone.teamIdBelongTo = teamIdBelongTo;
             newClone.skillOmegaId = skillOmegaId;
             newClone.skill0Id = skill0Id;
@@ -917,6 +935,15 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetInt(raceKey, out _race);
+        }
+
+        public void Reset_skillLevel()
+        {
+            GDEDataManager.ResetToDefault(_key, skillLevelKey);
+
+            Dictionary<string, object> dict;
+            GDEDataManager.Get(_key, out dict);
+            dict.TryGetInt(skillLevelKey, out _skillLevel);
         }
 
         public void Reset_teamIdBelongTo()
@@ -1149,6 +1176,7 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, TeamOrderKey);
             GDEDataManager.ResetToDefault(_key, AnimDataKey);
             GDEDataManager.ResetToDefault(_key, raceKey);
+            GDEDataManager.ResetToDefault(_key, skillLevelKey);
 
             Reset_equipHelmet();
             Reset_equipBreastplate();

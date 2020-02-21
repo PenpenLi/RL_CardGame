@@ -279,13 +279,14 @@ public class GameController : MonoBehaviour
     public void setupEnemies(int currentLevel)
     {
         if (SDGameManager.Instance.gameType == SDConstants.GameType.Normal
-            && currentLevel % SDConstants.PerBossAppearLevel 
-            == SDConstants.PerBossAppearLevel - 1)
+            && currentLevel % SDConstants.LevelNumPerSerial
+            == SDConstants.LevelNumPerSerial - 1)
         {
             setupBoss(currentLevel);
             return;//生成boss
         }
 
+        //控制敌人种类
         List<string> enemies = new List<string>();
 
         List<EnemyInfo> enemydatas = SDDataManager.Instance.AllEnemyList;
@@ -299,8 +300,6 @@ public class GameController : MonoBehaviour
             }
         }
         startEnemyGroup.Clear();
-        List<int> selectList = RandomIntger.NumListReturn
-            ( SDConstants.MaxOtherNum, enemies.Count );
         int groupNum = Mathf.Min(SDGameManager.Instance.currentLevel + 1, SDConstants.MaxOtherNum);
         for(int i = 0; i < groupNum; i++)
         {
@@ -308,6 +307,7 @@ public class GameController : MonoBehaviour
             startEnemyGroup.Add(s);
             Debug.Log("选中的Enemy id:" + s);
         }
+
 
         int num = enemyBuild.createCareerByLevel();
         List<int> rareList = RandomIntger.NumListReturn(num, startEnemyGroup.Count);

@@ -100,7 +100,6 @@ public class SDHeroDetail : BasicRoleProperty
             setWeapon(Hashcode);
             InitHeroBasicProperties();
             RALPanel.initRAL(this.RoleBasicRA
-                , _role.extraRALChangeData
                 , Type
                 , SDDataManager.Instance.getLevelByExp(hero.exp));//视觉展示属性
             setRoleBaseMessiage();
