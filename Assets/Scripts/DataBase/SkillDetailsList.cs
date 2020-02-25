@@ -12,36 +12,44 @@ public class SkillDetailsList : MonoBehaviour
     public static List<OneSkill> WriteOneSkillList(string id)
     {
         HeroInfo hero = SDDataManager.Instance.getHeroInfoById(id);
-        Job _job = hero.Career.Career;
-        Race _race = hero.Race.Race;
-        int LEVEL = hero.Rarity;
         List<OneSkill> all = new List<OneSkill>();
-        if (_job == Job.Fighter)
+        if (!hero.HaveExclusiveSkills)
         {
-            all = skillList_fighter(_race,LEVEL);
+            Job _job = hero.Career.Career;
+            Race _race = hero.Race.Race;
+            int LEVEL = hero.Rarity;
+
+            if (_job == Job.Fighter)
+            {
+                all = skillList_fighter(_race, LEVEL);
+            }
+            else if (_job == Job.Ranger)
+            {
+                all = skillList_ranger(_race, LEVEL);
+            }
+            else if (_job == Job.Priest)
+            {
+                all = skillList_priest(_race, LEVEL);
+            }
+            else if (_job == Job.Caster)
+            {
+                all = skillList_caster(_race, LEVEL);
+            }
+            for (int i = 0; i < all.Count; i++)
+            {
+                all[i].skillId = string.Format("@SH_N#{0:D3}", i);
+            }
         }
-        else if(_job == Job.Ranger)
+        else
         {
-            all = skillList_ranger(_race, LEVEL);
+            all.Add(InitBySkillInfo(hero.Skill0Info));
+            if (hero.Skill1Info != null)
+            {
+                all.Add(InitBySkillInfo(hero.Skill1Info));
+            }
+            all.Add(InitBySkillInfo(hero.SkillOmegaInfo));
         }
-        else if (_job == Job.Priest)
-        {
-            all = skillList_priest(_race, LEVEL);
-        }
-        else if (_job == Job.Caster)
-        {
-            all = skillList_caster(_race, LEVEL);
-        }
-        for(int i = 0; i < all.Count; i++)
-        {
-            all[i].skillId = string.Format("@SH_N#{0:D3}",i);
-        }
-        //
-        for(int i = 0; i < hero.PersonalSkillList.Count; i++)
-        {
-            all.Add(InitBySkillInfo(hero.PersonalSkillList[i]));
-            all[i].index = i;
-        }
+
         //
         return all;
     }
@@ -399,6 +407,7 @@ public class SkillDetailsList : MonoBehaviour
     #region SkilInfo To OneSkill
     public static OneSkill InitBySkillInfo(skillInfo info)
     {
+        if (info == null) return null;
         OneSkill s = new OneSkill()
         {
             skillId = info.ID

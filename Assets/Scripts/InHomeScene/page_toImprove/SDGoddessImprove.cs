@@ -60,7 +60,7 @@ public class SDGoddessImprove : BasicImprovePage
 
         stockPage.materialType = MType;
 
-        stockPage.maxSelectedNum = maxSelectedNum;
+        //stockPage.maxSelectedNum = maxSelectedNum;
         //stockPage.ItemsInit(SDConstants.StockType.material,MType);
         //stockPage.showMaterialsForGoddessImprove(goddessDetail.Id);
         stockPage.SelectEmpty();

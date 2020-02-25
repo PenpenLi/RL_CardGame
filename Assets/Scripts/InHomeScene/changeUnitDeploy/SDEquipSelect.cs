@@ -15,7 +15,7 @@ public class SDEquipSelect : MonoBehaviour
 
     public Image TitleIcon;
 
-    public Transform emptyEquipPanel;
+    //public Transform emptyEquipPanel;
     [Space]
     public Image equipIcon;
     public Image equipBgIcon;
@@ -276,10 +276,6 @@ public class SDEquipSelect : MonoBehaviour
     {
         equipIcon.sprite = null;
         equipBgIcon.sprite = null;
-    }
-    public void refreshEmptyEquipPanel(bool state)
-    {
-        emptyEquipPanel?.gameObject.SetActive(state);
     }
     public void EquipBelowBtn_Tapped()
     {

@@ -15,7 +15,7 @@ SpriteAtlas:
       compressionQuality: 50
       maxTextureSize: 2048
       textureCompression: 0
-      filterMode: 1
+      filterMode: 0
       generateMipMaps: 0
       readable: 1
       crunchedCompression: 0
@@ -47,7 +47,10 @@ SpriteAtlas:
     - {fileID: 2800000, guid: 2b2735b878444ce43b5a40a6ce487bff, type: 3}
     - {fileID: 2800000, guid: 25136a2107227bc4eaf75a730fefe92d, type: 3}
     - {fileID: 2800000, guid: d36d3431684da8640801710b6c6ae6e1, type: 3}
-    totalSpriteSurfaceArea: 137856
+    - {fileID: 2800000, guid: 2bf563da596596442b46670db4290bb6, type: 3}
+    - {fileID: 2800000, guid: 4053f0877148b2a449b12f3aa63da62e, type: 3}
+    - {fileID: 2800000, guid: 26bfa2b3fc7b9d74983c1bebc4753a7f, type: 3}
+    totalSpriteSurfaceArea: 1811320
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -55,12 +58,18 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d36d3431684da8640801710b6c6ae6e1, type: 3}
   - {fileID: 21300000, guid: 667e5052c71c1d2408d534cc75457f6f, type: 3}
   - {fileID: 21300000, guid: b4e91d83ccaad104b848a588e236ae77, type: 3}
+  - {fileID: 21300000, guid: 26bfa2b3fc7b9d74983c1bebc4753a7f, type: 3}
+  - {fileID: 21300000, guid: 4053f0877148b2a449b12f3aa63da62e, type: 3}
   - {fileID: 21300000, guid: 2b2735b878444ce43b5a40a6ce487bff, type: 3}
+  - {fileID: 21300000, guid: 2bf563da596596442b46670db4290bb6, type: 3}
   m_PackedSpriteNamesToIndex:
   - unlocked
   - locked
   - jiancai
   - coin
+  - heroRaceBg_human
+  - heroRaceBg_elf
   - damond
+  - heroRaceBg_dragonBron
   m_Tag: atlas_ui
   m_IsVariant: 0

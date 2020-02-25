@@ -9,6 +9,7 @@ public class test_runeAd : MonoBehaviour
     public int HC;
     [Space]
     public List<RuneItem> Alls;
+    public List<EquipItem> MustHave;
     private void Start()
     {
         Alls = SDDataManager.Instance.AllRuneList;
@@ -55,6 +56,7 @@ public class test_runeAd : MonoBehaviour
         int hashcode = D.hashCode;
         Debug.Log("HC: " + hashcode);
         GDEHeroData h = SDDataManager.Instance.getHeroByHashcode(hashcode);
+        /*
         List<string> w = h.skillsOwned.Select(x =>
         {
             return x.Id + "__" + x.Lv;
@@ -64,7 +66,7 @@ public class test_runeAd : MonoBehaviour
         {
             W += ww + "/";
         }
-        Debug.Log("FisrtHeroSkills: " + W);
+        Debug.Log("FisrtHeroSkills: " + W);*/
     }
 
     [ContextMenu("AddAllEquips")]
@@ -75,6 +77,7 @@ public class test_runeAd : MonoBehaviour
         {
             List<EquipItem> all = SDDataManager.Instance.AllEquipList;
             all = all.FindAll(x => x.IconFromAtlas != null
+            && x.WeaponRace != null
             && x.WeaponRace.WeaponClass == SDConstants.WeaponClass.Claymore);
             List<int> enables = RandomIntger.NumListReturn(5, all.Count);
             for (int i = 0; i < all.Count; i++)
@@ -103,6 +106,15 @@ public class test_runeAd : MonoBehaviour
             }
             Debug.Log(S);
         }
+
+
+        if(!_gdes.Exists(x=>MustHave.Exists(y=>y.ID == x.id)))
+        {
+            for(int i = 0; i < MustHave.Count; i++)
+            {
+                SDDataManager.Instance.addEquip(MustHave[i].ID);
+            }
+        }
     }
 
 
@@ -124,10 +136,19 @@ public class test_runeAd : MonoBehaviour
         List<consumableItem> all = SDDataManager.Instance.AllConsumableList.FindAll
             (x => x.MaterialType == SDConstants.MaterialType.exp
             || x.MaterialType == SDConstants.MaterialType.star
-            || x.MaterialType == SDConstants.MaterialType.skill);
+            || x.MaterialType == SDConstants.MaterialType.skill
+            );
         foreach(var item in all)
         {
             SDDataManager.Instance.addConsumable(item.ID, 5);
+        }
+
+        List<consumableItem> allEs = SDDataManager.Instance.AllConsumableList.FindAll
+            (x => x.MaterialType == SDConstants.MaterialType.equip_exp
+            || x.MaterialType == SDConstants.MaterialType.equip_fix);
+        foreach(var item in allEs)
+        {
+            SDDataManager.Instance.addConsumable(item.ID, 500);
         }
     }
 }

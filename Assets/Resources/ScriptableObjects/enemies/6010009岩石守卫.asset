@@ -24,7 +24,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ea21d6adf574ed545a9a65271cecb9bd, type: 2}
   enemyRank: {fileID: 11400000, guid: 29708ae65b8ac68478f72fde80137986, type: 2}
   _RAL:
-    AllAttributeData: f401000064000000320000002d00000041000000190000000000000006000000010000000f000000030000000f00000005000000
+    AllAttributeData: f401000064000000320000002d00000041000000000000000000000006000000010000000f000000030000000f00000005000000
     AllResistData: 1900000019000000190000001900000019000000190000001900000019000000
   specialStr: 
   weight: 15
@@ -32,7 +32,7 @@ MonoBehaviour:
   dropItems: []
   StartAppearLevel: 0
   EndAppearLevel: 0
-  _useSpineData: 1
+  _useSpineData: 0
   SpineData:
     SkeletonData: {fileID: 0}
     skin: 

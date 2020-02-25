@@ -30,10 +30,10 @@ MonoBehaviour:
   weight: 50
   dropPercent: 5
   dropItems: []
-  StartAppearLevel: 500
-  EndAppearLevel: 500
-  _useSpineData: 1
+  StartAppearLevel: 0
+  EndAppearLevel: 0
+  _useSpineData: 0
   SpineData:
-    SkeletonData: {fileID: 11400000, guid: 64e514621afc3604598bb216d71db8e8, type: 2}
-    skin: default
+    SkeletonData: {fileID: 0}
+    skin: 
     allEnableList: []

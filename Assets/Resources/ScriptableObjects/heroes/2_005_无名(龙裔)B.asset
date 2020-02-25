@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbf95ce61c3a03c4492e0790fb1cd787, type: 3}
+  m_Name: "2_005_\u65E0\u540D(\u9F99\u88D4)B"
+  m_EditorClassIdentifier: 
+  _ID: H_PRIEST#000005
+  _Name: "\u65E0\u540D(\u9F99\u88D4)B"
+  _DESC: 
+  sex: 0
+  characterType: 0
+  faceIcon: {fileID: 0}
+  _LEVEL: 0
+  _rarity: 0
+  skeleton: 0
+  weaponRaceList:
+  - {fileID: 11400000, guid: 4bdc534047031624bb74bf5b036a3fd3, type: 2}
+  - {fileID: 11400000, guid: 3ca0bdea532f23a4b8cc6c98fd390dd2, type: 2}
+  _RAL:
+    AllAttributeData: c8000000430000003200000010000000160000000f00000013000000020000000a0000000f000000010000000100000002000000
+    AllResistData: 0a0000000a0000000a0000000a0000000a0000000a0000000a0000000a000000
+  _career: {fileID: 11400000, guid: 512374ed7cffb974b84a7bc29bfabdf9, type: 2}
+  _race: {fileID: 11400000, guid: 3a5e14e5e1548394899ba3163db69621, type: 2}
+  specialStr: 
+  _HaveExclusiveSkills: 0
+  _skill0Info: {fileID: 0}
+  _skill1Info: {fileID: 0}
+  _skillOmegaInfo: {fileID: 0}
+  PersonalDrawImg: {fileID: 0}
+  _useSpineData: 0
+  SpineData:
+    SkeletonData: {fileID: 0}
+    skin: 
+    allEnableList: []

@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
 
+/// <summary>
+/// 单任务项
+/// </summary>
 public class MissionCard : MonoBehaviour
 {
     public Image MissionImg;
@@ -22,7 +25,37 @@ public class MissionCard : MonoBehaviour
     public Transform Slider;
 
     public Transform Locked;
+    private bool _isLocked;
+    public bool IsLocked
+    {
+        get { return _isLocked; }
+        set { _isLocked = value;Locked.gameObject.SetActive(_isLocked); }
+    }
     public Transform Completed;
+    private bool _isCompleted;
+    public bool IsCompleted
+    {
+        get { return _isCompleted; }
+        set { _isCompleted = value;Completed.gameObject.SetActive(_isCompleted); }
+    }
+
+    [Header("DATA")]
+    public string id;
+    public string npcId;
+    public string targetId;
+    public int targetCurrentNum;
+    public int targetReqNum;
+    public int targetBonusGoldNum;
+    public int targetBonusDamondNum;
+    public SDConstants.MissionSerieState targetCurrState;
+    public bool canBeCancel;
+    public bool isMainMission;
+    public string targetName;
+    public string targetType;
+    public string targetMission;
+    public string targetDesc;
+    public string targetDialog;
+    public string targetDialogComplelte;
 
     public void initMissionCard(Quest _quest)
     {

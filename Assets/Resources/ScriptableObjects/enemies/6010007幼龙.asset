@@ -30,8 +30,8 @@ MonoBehaviour:
   dropItems: []
   StartAppearLevel: 25
   EndAppearLevel: 150
-  _useSpineData: 1
+  _useSpineData: 0
   SpineData:
-    SkeletonData: {fileID: 11400000, guid: 624b9e2128454024db8542c92201521d, type: 2}
-    skin: default
+    SkeletonData: {fileID: 0}
+    skin: 
     allEnableList: []

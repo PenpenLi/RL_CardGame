@@ -19,9 +19,7 @@ public class OneRoleClassData
     private RoleAttributeList _thisRoleAttritube = RoleAttributeList.zero;
     public void InitThisRoleAttritube(RoleAttributeList ral)
     {
-        Debug.Log("1-Init_Role_Hp:" + ral.Hp);
         _thisRoleAttritube = ral.Clone;
-        Debug.Log("2-Init_Role_Hp:" + _thisRoleAttritube.Hp);
     }
 
     public RoleAttributeList extraRALChangeData;

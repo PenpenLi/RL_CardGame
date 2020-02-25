@@ -328,6 +328,7 @@ MonoBehaviour:
   ItemType: 0
   _id: 
   _hashcode: 0
+  num: 1
 --- !u!114 &-5545645454304593696
 MonoBehaviour:
   m_ObjectHideFlags: 0

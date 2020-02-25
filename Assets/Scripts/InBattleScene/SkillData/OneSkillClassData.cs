@@ -53,11 +53,6 @@ public class OneSkill
     public string BulletImg;
 
     public bool isOmegaSkill;
-    public bool islocked
-    {
-        get { return lv < 0; }
-    }
-
     public string Desc;
     public int lv;
 

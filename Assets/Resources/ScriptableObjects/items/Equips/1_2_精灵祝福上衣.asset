@@ -15,7 +15,8 @@ MonoBehaviour:
   _ID: E_A#1000110
   _NAME: "\u7CBE\u7075\u795D\u798F\u4E0A\u8863"
   _DESC: 
-  _Atlas: {fileID: 0}
+  _atlasFrom: {fileID: 4343727234628468602, guid: 89a498a973594574a8cfb9f9c1234805,
+    type: 2}
   itemtype: 1
   _LEVEL: 2
   stackAble: 0

@@ -70,13 +70,49 @@ public class HeroInfo : CharacterInfo
         set { specialStr = value; }
     }
 
+    #region SkillsData
     [SerializeField]
-    private List<skillInfo> personalSkillList;
-    public List<skillInfo> PersonalSkillList
+    private bool _HaveExclusiveSkills;
+    public bool HaveExclusiveSkills
     {
-        get { return personalSkillList; }
-        set { personalSkillList = value; }
+        get { return _HaveExclusiveSkills; }
+        set { _HaveExclusiveSkills = value; }
     }
+#if UNITY_EDITOR
+    [SerializeField, ConditionalHide("_HaveExclusiveSkills", true, false)]
+#endif
+    private skillInfo _skill0Info;
+    public skillInfo Skill0Info
+    {
+        get { return _skill0Info; }
+        private set { _skill0Info = value; }
+    }
+
+#if UNITY_EDITOR
+    [SerializeField, ConditionalHide("_HaveExclusiveSkills", true, false)]
+#endif
+    private skillInfo _skill1Info;
+    public skillInfo Skill1Info
+    {
+        get { return _skill1Info; }
+        private set { _skill1Info = value; }
+    }
+
+#if UNITY_EDITOR
+    [SerializeField, ConditionalHide("_HaveExclusiveSkills", true, false)]
+#endif
+    private skillInfo _skillOmegaInfo;
+    public skillInfo SkillOmegaInfo
+    {
+        get { return _skillOmegaInfo; }
+        private set { _skillOmegaInfo = value; }
+    }
+    public void AddSkillData(skillInfo s0,skillInfo s1,skillInfo somega)
+    {
+        Skill0Info = s0;Skill1Info = s1;SkillOmegaInfo = somega;
+    }
+    #endregion
+    
     public HeroInfo()
     {
         CharacterType = SDConstants.CharacterType.Hero;

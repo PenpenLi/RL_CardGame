@@ -271,16 +271,16 @@ namespace GameDataEditor
             }
         }
 
-        static string raceKey = "race";
-		int _race;
-        public int race
+        static string sexKey = "sex";
+		int _sex;
+        public int sex
         {
-            get { return _race; }
+            get { return _sex; }
             set {
-                if (_race != value)
+                if (_sex != value)
                 {
-                    _race = value;
-					GDEDataManager.SetInt(_key, raceKey, _race);
+                    _sex = value;
+					GDEDataManager.SetInt(_key, sexKey, _sex);
                 }
             }
         }
@@ -309,48 +309,6 @@ namespace GameDataEditor
                 {
                     _teamIdBelongTo = value;
 					GDEDataManager.SetString(_key, teamIdBelongToKey, _teamIdBelongTo);
-                }
-            }
-        }
-
-        static string skillOmegaIdKey = "skillOmegaId";
-		string _skillOmegaId;
-        public string skillOmegaId
-        {
-            get { return _skillOmegaId; }
-            set {
-                if (_skillOmegaId != value)
-                {
-                    _skillOmegaId = value;
-					GDEDataManager.SetString(_key, skillOmegaIdKey, _skillOmegaId);
-                }
-            }
-        }
-
-        static string skill0IdKey = "skill0Id";
-		string _skill0Id;
-        public string skill0Id
-        {
-            get { return _skill0Id; }
-            set {
-                if (_skill0Id != value)
-                {
-                    _skill0Id = value;
-					GDEDataManager.SetString(_key, skill0IdKey, _skill0Id);
-                }
-            }
-        }
-
-        static string skill1IdKey = "skill1Id";
-		string _skill1Id;
-        public string skill1Id
-        {
-            get { return _skill1Id; }
-            set {
-                if (_skill1Id != value)
-                {
-                    _skill1Id = value;
-					GDEDataManager.SetString(_key, skill1IdKey, _skill1Id);
                 }
             }
         }
@@ -473,6 +431,45 @@ namespace GameDataEditor
                 }
             }
         }
+        static string a_skillOmegaKey = "a_skillOmega";
+		GDEASkillData _a_skillOmega;
+        public GDEASkillData a_skillOmega
+        {
+            get { return _a_skillOmega; }
+            set {
+                if (_a_skillOmega != value)
+                {
+                    _a_skillOmega = value;
+					GDEDataManager.SetCustom(_key, a_skillOmegaKey, _a_skillOmega);
+                }
+            }
+        }
+        static string a_skill0Key = "a_skill0";
+		GDEASkillData _a_skill0;
+        public GDEASkillData a_skill0
+        {
+            get { return _a_skill0; }
+            set {
+                if (_a_skill0 != value)
+                {
+                    _a_skill0 = value;
+					GDEDataManager.SetCustom(_key, a_skill0Key, _a_skill0);
+                }
+            }
+        }
+        static string a_skill1Key = "a_skill1";
+		GDEASkillData _a_skill1;
+        public GDEASkillData a_skill1
+        {
+            get { return _a_skill1; }
+            set {
+                if (_a_skill1 != value)
+                {
+                    _a_skill1 = value;
+					GDEDataManager.SetCustom(_key, a_skill1Key, _a_skill1);
+                }
+            }
+        }
         static string ItemInfoKey = "ItemInfo";
 		GDEItemData _ItemInfo;
         public GDEItemData ItemInfo
@@ -499,14 +496,6 @@ namespace GameDataEditor
                 }
             }
         }
-
-        static string skillsOwnedKey = "skillsOwned";
-		public List<GDEASkillData>      skillsOwned;
-		public void Set_skillsOwned()
-        {
-	        GDEDataManager.SetCustomList(_key, skillsOwnedKey, skillsOwned);
-		}
-		
 
         public GDEHeroData(string key) : base(key)
         {
@@ -535,12 +524,9 @@ namespace GameDataEditor
             dict.Merge(true, likability.ToGDEDict(likabilityKey));
             dict.Merge(true, Fatigue.ToGDEDict(FatigueKey));
             dict.Merge(true, TeamOrder.ToGDEDict(TeamOrderKey));
-            dict.Merge(true, race.ToGDEDict(raceKey));
+            dict.Merge(true, sex.ToGDEDict(sexKey));
             dict.Merge(true, skillLevel.ToGDEDict(skillLevelKey));
             dict.Merge(true, teamIdBelongTo.ToGDEDict(teamIdBelongToKey));
-            dict.Merge(true, skillOmegaId.ToGDEDict(skillOmegaIdKey));
-            dict.Merge(true, skill0Id.ToGDEDict(skill0IdKey));
-            dict.Merge(true, skill1Id.ToGDEDict(skill1IdKey));
             dict.Merge(true, id.ToGDEDict(idKey));
 
             dict.Merge(true, equipHelmet.ToGDEDict(equipHelmetKey));
@@ -551,9 +537,11 @@ namespace GameDataEditor
             dict.Merge(true, jewelry1.ToGDEDict(jewelry1Key));
             dict.Merge(true, RoleAttritubeList.ToGDEDict(RoleAttritubeListKey));
             dict.Merge(true, equipWeapon.ToGDEDict(equipWeaponKey));
+            dict.Merge(true, a_skillOmega.ToGDEDict(a_skillOmegaKey));
+            dict.Merge(true, a_skill0.ToGDEDict(a_skill0Key));
+            dict.Merge(true, a_skill1.ToGDEDict(a_skill1Key));
             dict.Merge(true, ItemInfo.ToGDEDict(ItemInfoKey));
             dict.Merge(true, AnimData.ToGDEDict(AnimDataKey));
-            dict.Merge(true, skillsOwned.ToGDEDict(skillsOwnedKey));
             return dict;
 		}
 
@@ -575,18 +563,16 @@ namespace GameDataEditor
             RoleAttritubeList.UpdateCustomItems(rebuildKeyList);
             GDEDataManager.UpdateItem(equipWeapon, rebuildKeyList);
             equipWeapon.UpdateCustomItems(rebuildKeyList);
+            GDEDataManager.UpdateItem(a_skillOmega, rebuildKeyList);
+            a_skillOmega.UpdateCustomItems(rebuildKeyList);
+            GDEDataManager.UpdateItem(a_skill0, rebuildKeyList);
+            a_skill0.UpdateCustomItems(rebuildKeyList);
+            GDEDataManager.UpdateItem(a_skill1, rebuildKeyList);
+            a_skill1.UpdateCustomItems(rebuildKeyList);
             GDEDataManager.UpdateItem(ItemInfo, rebuildKeyList);
             ItemInfo.UpdateCustomItems(rebuildKeyList);
             GDEDataManager.UpdateItem(AnimData, rebuildKeyList);
             AnimData.UpdateCustomItems(rebuildKeyList);
-            if (skillsOwned != null)
-            {
-                for(int x=0;  x<skillsOwned.Count;  x++)
-                {
-                    GDEDataManager.UpdateItem(skillsOwned[x], rebuildKeyList);
-                    skillsOwned[x].UpdateCustomItems(rebuildKeyList);
-                }
-            }
         }
 
         public override void LoadFromDict(string dataKey, Dictionary<string, object> dict)
@@ -615,12 +601,9 @@ namespace GameDataEditor
                 dict.TryGetInt(likabilityKey, out _likability);
                 dict.TryGetInt(FatigueKey, out _Fatigue);
                 dict.TryGetInt(TeamOrderKey, out _TeamOrder);
-                dict.TryGetInt(raceKey, out _race);
+                dict.TryGetInt(sexKey, out _sex);
                 dict.TryGetInt(skillLevelKey, out _skillLevel);
                 dict.TryGetString(teamIdBelongToKey, out _teamIdBelongTo);
-                dict.TryGetString(skillOmegaIdKey, out _skillOmegaId);
-                dict.TryGetString(skill0IdKey, out _skill0Id);
-                dict.TryGetString(skill1IdKey, out _skill1Id);
                 dict.TryGetString(idKey, out _id);
 
                 string customDataKey;
@@ -640,12 +623,16 @@ namespace GameDataEditor
 				_RoleAttritubeList = new GDERoleAttritubeData(customDataKey);
                 dict.TryGetString(equipWeaponKey, out customDataKey);
 				_equipWeapon = new GDEEquipmentData(customDataKey);
+                dict.TryGetString(a_skillOmegaKey, out customDataKey);
+				_a_skillOmega = new GDEASkillData(customDataKey);
+                dict.TryGetString(a_skill0Key, out customDataKey);
+				_a_skill0 = new GDEASkillData(customDataKey);
+                dict.TryGetString(a_skill1Key, out customDataKey);
+				_a_skill1 = new GDEASkillData(customDataKey);
                 dict.TryGetString(ItemInfoKey, out customDataKey);
 				_ItemInfo = new GDEItemData(customDataKey);
                 dict.TryGetString(AnimDataKey, out customDataKey);
 				_AnimData = new GDEAnimData(customDataKey);
-
-                dict.TryGetCustomList(skillsOwnedKey, out skillsOwned);
                 LoadFromSavedData(dataKey);
 			}
 		}
@@ -672,12 +659,9 @@ namespace GameDataEditor
             _likability = GDEDataManager.GetInt(_key, likabilityKey, _likability);
             _Fatigue = GDEDataManager.GetInt(_key, FatigueKey, _Fatigue);
             _TeamOrder = GDEDataManager.GetInt(_key, TeamOrderKey, _TeamOrder);
-            _race = GDEDataManager.GetInt(_key, raceKey, _race);
+            _sex = GDEDataManager.GetInt(_key, sexKey, _sex);
             _skillLevel = GDEDataManager.GetInt(_key, skillLevelKey, _skillLevel);
             _teamIdBelongTo = GDEDataManager.GetString(_key, teamIdBelongToKey, _teamIdBelongTo);
-            _skillOmegaId = GDEDataManager.GetString(_key, skillOmegaIdKey, _skillOmegaId);
-            _skill0Id = GDEDataManager.GetString(_key, skill0IdKey, _skill0Id);
-            _skill1Id = GDEDataManager.GetString(_key, skill1IdKey, _skill1Id);
             _id = GDEDataManager.GetString(_key, idKey, _id);
 
             _equipHelmet = GDEDataManager.GetCustom(_key, equipHelmetKey, _equipHelmet);
@@ -688,10 +672,11 @@ namespace GameDataEditor
             _jewelry1 = GDEDataManager.GetCustom(_key, jewelry1Key, _jewelry1);
             _RoleAttritubeList = GDEDataManager.GetCustom(_key, RoleAttritubeListKey, _RoleAttritubeList);
             _equipWeapon = GDEDataManager.GetCustom(_key, equipWeaponKey, _equipWeapon);
+            _a_skillOmega = GDEDataManager.GetCustom(_key, a_skillOmegaKey, _a_skillOmega);
+            _a_skill0 = GDEDataManager.GetCustom(_key, a_skill0Key, _a_skill0);
+            _a_skill1 = GDEDataManager.GetCustom(_key, a_skill1Key, _a_skill1);
             _ItemInfo = GDEDataManager.GetCustom(_key, ItemInfoKey, _ItemInfo);
             _AnimData = GDEDataManager.GetCustom(_key, AnimDataKey, _AnimData);
-
-            skillsOwned = GDEDataManager.GetCustomList(_key, skillsOwnedKey, skillsOwned);
         }
 
         public GDEHeroData ShallowClone()
@@ -717,12 +702,9 @@ namespace GameDataEditor
             newClone.likability = likability;
             newClone.Fatigue = Fatigue;
             newClone.TeamOrder = TeamOrder;
-            newClone.race = race;
+            newClone.sex = sex;
             newClone.skillLevel = skillLevel;
             newClone.teamIdBelongTo = teamIdBelongTo;
-            newClone.skillOmegaId = skillOmegaId;
-            newClone.skill0Id = skill0Id;
-            newClone.skill1Id = skill1Id;
             newClone.id = id;
 
             newClone.equipHelmet = equipHelmet;
@@ -733,11 +715,11 @@ namespace GameDataEditor
             newClone.jewelry1 = jewelry1;
             newClone.RoleAttritubeList = RoleAttritubeList;
             newClone.equipWeapon = equipWeapon;
+            newClone.a_skillOmega = a_skillOmega;
+            newClone.a_skill0 = a_skill0;
+            newClone.a_skill1 = a_skill1;
             newClone.ItemInfo = ItemInfo;
             newClone.AnimData = AnimData;
-
-            newClone.skillsOwned = new List<GDEASkillData>(skillsOwned);
-			newClone.Set_skillsOwned();
 
             return newClone;
 		}
@@ -753,16 +735,11 @@ namespace GameDataEditor
             newClone.jewelry1 = jewelry1.DeepClone();
             newClone.RoleAttritubeList = RoleAttritubeList.DeepClone();
             newClone.equipWeapon = equipWeapon.DeepClone();
+            newClone.a_skillOmega = a_skillOmega.DeepClone();
+            newClone.a_skill0 = a_skill0.DeepClone();
+            newClone.a_skill1 = a_skill1.DeepClone();
             newClone.ItemInfo = ItemInfo.DeepClone();
             newClone.AnimData = AnimData.DeepClone();
-
-            newClone.skillsOwned = new List<GDEASkillData>();
-			if (skillsOwned != null)
-			{
-				foreach(var val in skillsOwned)
-					newClone.skillsOwned.Add(val.DeepClone());
-			}
-			newClone.Set_skillsOwned();
             return newClone;
 		}
 
@@ -928,13 +905,13 @@ namespace GameDataEditor
             dict.TryGetInt(TeamOrderKey, out _TeamOrder);
         }
 
-        public void Reset_race()
+        public void Reset_sex()
         {
-            GDEDataManager.ResetToDefault(_key, raceKey);
+            GDEDataManager.ResetToDefault(_key, sexKey);
 
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
-            dict.TryGetInt(raceKey, out _race);
+            dict.TryGetInt(sexKey, out _sex);
         }
 
         public void Reset_skillLevel()
@@ -953,33 +930,6 @@ namespace GameDataEditor
             Dictionary<string, object> dict;
             GDEDataManager.Get(_key, out dict);
             dict.TryGetString(teamIdBelongToKey, out _teamIdBelongTo);
-        }
-
-        public void Reset_skillOmegaId()
-        {
-            GDEDataManager.ResetToDefault(_key, skillOmegaIdKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetString(skillOmegaIdKey, out _skillOmegaId);
-        }
-
-        public void Reset_skill0Id()
-        {
-            GDEDataManager.ResetToDefault(_key, skill0IdKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetString(skill0IdKey, out _skill0Id);
-        }
-
-        public void Reset_skill1Id()
-        {
-            GDEDataManager.ResetToDefault(_key, skill1IdKey);
-
-            Dictionary<string, object> dict;
-            GDEDataManager.Get(_key, out dict);
-            dict.TryGetString(skill1IdKey, out _skill1Id);
         }
 
         public void Reset_id()
@@ -1095,6 +1045,45 @@ namespace GameDataEditor
 
 			equipWeapon.ResetAll();
 		}
+        public void Reset_a_skillOmega()
+		{
+			GDEDataManager.ResetToDefault(_key, a_skillOmegaKey);
+
+			Dictionary<string, object> dict;
+	        GDEDataManager.Get(_key, out dict);
+
+			string customDataKey;
+            dict.TryGetString(a_skillOmegaKey, out customDataKey);
+			_a_skillOmega = new GDEASkillData(customDataKey);
+
+			a_skillOmega.ResetAll();
+		}
+        public void Reset_a_skill0()
+		{
+			GDEDataManager.ResetToDefault(_key, a_skill0Key);
+
+			Dictionary<string, object> dict;
+	        GDEDataManager.Get(_key, out dict);
+
+			string customDataKey;
+            dict.TryGetString(a_skill0Key, out customDataKey);
+			_a_skill0 = new GDEASkillData(customDataKey);
+
+			a_skill0.ResetAll();
+		}
+        public void Reset_a_skill1()
+		{
+			GDEDataManager.ResetToDefault(_key, a_skill1Key);
+
+			Dictionary<string, object> dict;
+	        GDEDataManager.Get(_key, out dict);
+
+			string customDataKey;
+            dict.TryGetString(a_skill1Key, out customDataKey);
+			_a_skill1 = new GDEASkillData(customDataKey);
+
+			a_skill1.ResetAll();
+		}
         public void Reset_ItemInfo()
 		{
 			GDEDataManager.ResetToDefault(_key, ItemInfoKey);
@@ -1120,19 +1109,6 @@ namespace GameDataEditor
 			_AnimData = new GDEAnimData(customDataKey);
 
 			AnimData.ResetAll();
-		}
-
-        public void Reset_skillsOwned()
-		{
-			GDEDataManager.ResetToDefault(_key, skillsOwnedKey);
-
-			Dictionary<string, object> dict;
-			GDEDataManager.Get(_key, out dict);
-
-			dict.TryGetCustomList(skillsOwnedKey, out skillsOwned);
-			skillsOwned = GDEDataManager.GetCustomList(_key, skillsOwnedKey, skillsOwned);
-
-			skillsOwned.ForEach(x => x.ResetAll());
 		}
 
         public void ResetAll()
@@ -1164,10 +1140,9 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, LikabilityKey);
             GDEDataManager.ResetToDefault(_key, lockedKey);
             GDEDataManager.ResetToDefault(_key, teamIdBelongToKey);
-            GDEDataManager.ResetToDefault(_key, skill0IdKey);
-            GDEDataManager.ResetToDefault(_key, skill1IdKey);
-            GDEDataManager.ResetToDefault(_key, skillsOwnedKey);
-            GDEDataManager.ResetToDefault(_key, skillOmegaIdKey);
+            GDEDataManager.ResetToDefault(_key, a_skillOmegaKey);
+            GDEDataManager.ResetToDefault(_key, a_skill1Key);
+            GDEDataManager.ResetToDefault(_key, a_skill0Key);
             GDEDataManager.ResetToDefault(_key, teamPosKey);
             GDEDataManager.ResetToDefault(_key, likabilityKey);
             GDEDataManager.ResetToDefault(_key, FatigueKey);
@@ -1175,8 +1150,8 @@ namespace GameDataEditor
             GDEDataManager.ResetToDefault(_key, idKey);
             GDEDataManager.ResetToDefault(_key, TeamOrderKey);
             GDEDataManager.ResetToDefault(_key, AnimDataKey);
-            GDEDataManager.ResetToDefault(_key, raceKey);
             GDEDataManager.ResetToDefault(_key, skillLevelKey);
+            GDEDataManager.ResetToDefault(_key, sexKey);
 
             Reset_equipHelmet();
             Reset_equipBreastplate();
@@ -1186,9 +1161,11 @@ namespace GameDataEditor
             Reset_jewelry1();
             Reset_RoleAttritubeList();
             Reset_equipWeapon();
+            Reset_a_skillOmega();
+            Reset_a_skill0();
+            Reset_a_skill1();
             Reset_ItemInfo();
             Reset_AnimData();
-            Reset_skillsOwned();
 
             #endif
 

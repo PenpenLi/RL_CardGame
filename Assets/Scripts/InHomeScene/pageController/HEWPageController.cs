@@ -23,12 +23,14 @@ public class HEWPageController : MonoBehaviour
     public ScrollRect scrollRect;
     private int singleHeroHeight = 250;
     private int singleEquipHeight = 250;
-    private int PerPageMaxVolume = 48;
+    [HideInInspector]
+    public int PerPageMaxVolume = 48;
     
     [ContextMenu("INIT_ALL_ITEM_SLOTS")]
     public void Init_AllItemSlots()
     {
         AllItemSlots = scrollRect.content.GetComponentsInChildren<SingleItem>();
+        PerPageMaxVolume = AllItemSlots.Length;
     }
 
     public void ResetPage()
@@ -275,12 +277,6 @@ public class HEWPageController : MonoBehaviour
         List<GDEEquipmentData> allEquips = SDDataManager.Instance.getAllOwnedEquips();
         //int heroHashcode = SDDataManager.Instance.getherohash
         itemCount = allEquips.Count;
-        if (equipSelect == null) equipSelect = FindObjectOfType<SDEquipSelect>();
-        if (equipSelect)
-        {
-            if (itemCount <= 0) equipSelect.refreshEmptyEquipPanel(true);
-            else equipSelect.refreshEmptyEquipPanel(false);
-        }
         for(int i = 0; i < itemCount; i++)
         {
             Transform s = Instantiate(SItem) as Transform;

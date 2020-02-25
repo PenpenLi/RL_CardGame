@@ -10,6 +10,8 @@ using System.Linq;
 using UnityEngine.U2D;
 using Spine.Unity;
 using Spine;
+using Unity.Collections;
+using Unity.Jobs;
 
 /// <summary>
 /// 数据管理类，包括游戏内所有记录数据
@@ -117,39 +119,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         };
         HeroInfo info = getHeroInfoById(id);
         //skill
-        List<GDEASkillData> list = addStartSkillsWhenSummoning(hero.id);
-        for (int i = 0; i < list.Count; i++)
-        {
-            hero.skillsOwned.Add(list[i]);
-            hero.Set_skillsOwned();
-        }
-        AllStrs = hero.skillsOwned.Select(x =>
-        {
-            return x.Id + "___" + x.Lv;
-        }).ToList();
-        //直接将已解锁技能装配上
-        List<string> enables = list.FindAll(x => x.Lv >= 0).Select(x => x.Id).ToList();
-        for (int i = 0; i < enables.Count; i++)
-        {
-            if (getSkillByHeroId(enables[i], hero.id).isOmegaSkill)
-            {
-                hero.skillOmegaId = enables[i];
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(hero.skill0Id))
-                {
-                    if (checkHeroEnableSkill1ById(hero.id))
-                    {
-                        hero.skill1Id = enables[i];
-                    }
-                }
-                else
-                {
-                    hero.skill0Id = enables[i];
-                }
-            }
-        }
+
 
         Instance.PlayerData.herosOwned.Add(hero);
         Instance.PlayerData.Set_herosOwned();
@@ -180,6 +150,12 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             teamIdBelongTo = string.Empty
         };
         HeroInfo info = getHeroInfoById(id);
+        //sex
+        if (info.Sex == CharacterSex.Unknown)
+        {
+            hero.sex = UnityEngine.Random.Range(1, 3);
+        }
+        else hero.sex = (int)info.Sex;
         //ral
         RoleAttributeList ral = RoleAttributeList.RandomSet
         (
@@ -189,50 +165,58 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         , new ScopeInt(-10, 10)//抗性
         );
         hero.RoleAttritubeList = ral.TurnIntoGDEData;
-
-        //skill
-        List<GDEASkillData> list = addStartSkillsWhenSummoning(hero.id);
-        for (int i = 0; i < list.Count; i++)
+        //skills
+        if(!info.HaveExclusiveSkills)
         {
-            hero.skillsOwned.Add(list[i]);
-            hero.Set_skillsOwned();
-        }
-        AllStrs = hero.skillsOwned.Select(x =>
-        {
-            return x.Id + "___" + x.Lv;
-        }).ToList();
-        //直接将已解锁技能装配上
-        List<string> enables = list.FindAll(x => x.Lv >= 0).Select(x => x.Id).ToList();
-        for (int i = 0; i < enables.Count; i++)
-        {
-            if (getSkillByHeroId(enables[i], hero.id).isOmegaSkill)
+            List<OneSkill> all = SkillDetailsList.WriteOneSkillList(info.ID);
+            List<OneSkill> allBs = all.FindAll(x => !x.isOmegaSkill);
+            List<OneSkill> allOs = all.FindAll(x => x.isOmegaSkill);
+            if (info.Rarity < 2)
             {
-                hero.skillOmegaId = enables[i];
+                hero.a_skill0 = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+                {
+                    Id = allBs[UnityEngine.Random.Range(0, allBs.Count)].skillId,
+                    Lv = 0,
+                };
+                hero.a_skill1 = null;
             }
             else
             {
-                if (!string.IsNullOrEmpty(hero.skill0Id))
+                int[] flags = RandomIntger.NumArrayReturn(2,allBs.Count);
+                hero.a_skill0 = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
                 {
-                    if (checkHeroEnableSkill1ById(hero.id))
-                    {
-                        hero.skill1Id = enables[i];
-                    }
-                }
-                else
+                    Id = allBs[flags[0]].skillId,
+                    Lv = 0,
+                };
+                hero.a_skill1 = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
                 {
-                    hero.skill0Id = enables[i];
-                }
+                    Id = allBs[flags[1]].skillId,
+                    Lv = 0,
+                };
             }
-        }
-
-        //race
-        if(info.Race.NAME == "无种族")
-        {
-            hero.race = UnityEngine.Random.Range(0, 3);
+            hero.a_skillOmega = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+            {
+                Id = allOs[UnityEngine.Random.Range(0, allOs.Count)].skillId,
+                Lv = 0,
+            };
         }
         else
         {
-            hero.race = info.Race.Index;
+            hero.a_skill0 = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+            {
+                Id = info.Skill0Info.ID,
+                Lv = 0,
+            };
+            hero.a_skill1 = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+            {
+                Id = info.Skill1Info.ID,
+                Lv = 0,
+            };
+            hero.a_skillOmega = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
+            {
+                Id = info.SkillOmegaInfo.ID,
+                Lv = 0,
+            };
         }
 
         //animImg
@@ -256,7 +240,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             if (string.IsNullOrEmpty(info.SpineData.Skin))
             {
                 hero.AnimData.isRare = false;
-                int gender = (int)info.Sex - 1;
+                int gender = hero.sex - 1;
                 all = all.FindAll(x => x.Contains("normal") && x.Substring(x.Length - 1) == gender.ToString());
                 if (all.Count <= 0) hero.AnimData.skinName = "default";
                 else
@@ -271,8 +255,15 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             }
             Debug.Log("SkinName: " + info.SpineData.Skin + "___" + hero.AnimData.skinName);
         }
+        //
+        if (!Instance.PlayerData.herosOwned.Exists(x => x.id == id)
+            && info.Rarity >= 2)
+        {
+            hero.locked = true;
+        }
+        else hero.locked = false;
 
-
+        //
         Instance.PlayerData.herosOwned.Add(hero);
         Instance.PlayerData.Set_herosOwned();
         return hero.hashCode;
@@ -282,19 +273,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         List<HeroRace> all = Resources.LoadAll<HeroRace>("ScriptableObjects/heroes/heroRace").ToList();
         return all.Find(x => x.Index == index);
-    }
-    public Race getHeroRaceByHashcode(int hashcode)
-    {
-        GDEHeroData h = getHeroByHashcode(hashcode);
-        HeroInfo info = getHeroInfoById(h.id);
-        if(info.Race.NAME == "无种族")
-        {
-            return (Race)h.race;
-        }
-        else
-        {
-            return info.Race.Race;
-        }
     }
     public Sprite heroBoxFrameByRarity(int rarity)
     {
@@ -318,7 +296,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             return hero.AnimData.skinName;
         }
     }
-    //
     public int getTempleByType(Job job, AttributeData templeType)
     {
         return getTempleByJob(job).AllAttributeData[(int)templeType];
@@ -493,7 +470,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return false;
     }
-
     /*
     public void addHeroByConsumeHero(string costId)
     {
@@ -512,17 +488,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             (getHeroByHashcode(hc).RoleAttritubeList);
     }
     */
-    public bool checkHeroEnableSkill1ByHashcode(int hashcode)
-    {
-        GDEHeroData hero = getHeroByHashcode(hashcode);
-        return checkHeroEnableSkill1ById(hero.id);
-    }
-    public bool checkHeroEnableSkill1ById(string id)
-    {
-        int qual = getHeroLevelById(id);
-        if (qual < 2) return false;
-        else return true;
-    }
     #region 根据ID+KEY来产生随机数,一样的种子会出现必然一致的结果
     public static int Rand(int a, int b, int id, int key)
     {
@@ -646,8 +611,11 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         else if(mtype == SDConstants.MaterialType.skill)
         {
-            List<GDEASkillData> all = data.skillsOwned;
-            return all.FindAll(a => a.Lv < SDConstants.SkillMaxGrade).Count > 0;
+            //List<GDEASkillData> all = data.skillsOwned;
+            //return all.FindAll(a => a.Lv < SDConstants.SkillMaxGrade).Count > 0;
+            return data.a_skill0.Lv < SDConstants.SkillMaxGrade
+                || data.a_skill1.Lv < SDConstants.SkillMaxGrade
+                || data.a_skillOmega.Lv < SDConstants.SkillMaxGrade;
         }
         else { return false; }
     }
@@ -699,15 +667,6 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return Race.End;
     }
-    public CharacterSex getHeroGenderById(string id)
-    {
-        List<HeroInfo> list = getHeroInfoList;
-        foreach (HeroInfo info in list)
-        {
-            if (info.ID == id) return info.Sex;
-        }
-        return CharacterSex.Unknown;
-    }
     public int getHeroLevelById(string id)
     {
         List<HeroInfo> list = getHeroInfoList;
@@ -716,6 +675,11 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             if (info.ID == id) return info.LEVEL;
         }
         return 0;
+    }
+    public int getHeroRarityByHashcode(int hashcode)
+    {
+        HeroInfo info = getHeroInfoById(getHeroByHashcode(hashcode).id);
+        return info.Rarity;
     }
     public int getHeroSkeletonById(string id)
     {
@@ -959,6 +923,18 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     #endregion
     #region Hero_Improve
+    public bool checkHeroEnableSkill1ByHashcode(int hashcode)
+    {
+        GDEHeroData hero = getHeroByHashcode(hashcode);
+        return checkHeroEnableSkill1ById(hero.id);
+    }
+    public bool checkHeroEnableSkill1ById(string id)
+    {
+        HeroInfo info = getHeroInfoById(id);
+        if (info.Rarity < 2) return false;
+        else return true;
+    }
+
     public void addExpToHeroByHashcode(int hashcode, int exp = 1)
     {
         foreach (GDEHeroData h in PlayerData.herosOwned)
@@ -991,11 +967,32 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
             if (h.hashCode == hashcode)
             {
                 h.skillLevel += num;
+
+                AddGradesToHeroSkills(hashcode, num);
+
                 PlayerData.Set_herosOwned();
                 break;
             }
         }
     }
+    public void AddGradesToHeroSkills(int hashcode, int gradeNum)
+    {
+        GDEHeroData data = getHeroByHashcode(hashcode);
+        bool flag = checkHeroEnableSkill1ByHashcode(hashcode);
+        int N = Mathf.Min(SkillGradeNumWaitingForImprove(hashcode), gradeNum);
+        List<GDEASkillData> allSkills = new List<GDEASkillData>();
+        allSkills.Add(data.a_skill0);
+        if (flag) allSkills.Add(data.a_skill1);
+        allSkills.Add(data.a_skillOmega);
+        for(int i = 0; i < N; i++)
+        {
+            List<GDEASkillData> all = allSkills.FindAll(x => x.Lv < SDConstants.SkillMaxGrade);
+            all[UnityEngine.Random.Range(0, all.Count)].Lv++;
+            //
+            PlayerData.Set_herosOwned();
+        }
+    }
+    
     #endregion
     public int heroMaxLvByStar(int star)
     {
@@ -1061,11 +1058,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public bool getHeroIfLocked(int hashcode)
     {
         GDEHeroData h = getHeroByHashcode(hashcode);
-        if (h != null)
-        {
-            return h.locked;
-        }
-        return true;
+        return h.locked;
     }
     public int getHeroExpPrice(int hashcode)
     {
@@ -1073,9 +1066,10 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         int _exp = h.exp;
         string id = h.id;
         ROHeroData dal = getHeroDataByID(id, h.starNumUpgradeTimes);
-        int baseExp = (int)(25 * (1 + 0.2f * dal.quality + 0.2f * dal.starNum));
-        return baseExp + _exp;
+        return (int)((25+_exp) * (1 + 0.2f * dal.quality + 0.2f * dal.starNum));
     }
+
+    //
     #endregion
     #region Hero_Anim_Infor
     public string getRandomImgAddressForAnim(string parent, int skeletonIndex = 0)
@@ -1732,6 +1726,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     public SpriteAtlas atlas_rarity;
     public SpriteAtlas atlas_consumable;
     public SpriteAtlas atlas_ralAndSstate;
+    public SpriteAtlas atlas_UI;
     #endregion
     public void ReadAtlas()
     {
@@ -1748,6 +1743,7 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         atlas_rarity = AllAtlas.Find(x => x.name.Contains("rarity"));
         atlas_consumable = AllAtlas.Find(x => x.name == "atlas_consumable");
         atlas_ralAndSstate = AllAtlas.Find(x => x.name == "atlas_ral&sstate");
+        atlas_UI = AllAtlas.Find(x => x.name == "atlas_ui");
     }
 
     #region ScriptableObjects
@@ -2976,107 +2972,11 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     }
     #endregion
     #region Skill_Infor
-    public List<GDEASkillData> addStartSkillsWhenSummoning(string heroId)
-    {
-        List<OneSkill> all
-            = SkillDetailsList.WriteOneSkillList(heroId);
-
-        int skillNum = UnityEngine.Random.Range(2, 3);
-        skillNum = Mathf.Min(skillNum, all.Count);
-
-        all = ROHelp.RandomList(all);
-        List<GDEASkillData> list = new List<GDEASkillData>();
-
-        for (int i = 0; i < all.Count; i++)
-        {
-            bool flag = i < skillNum;
-            all[i].lv = flag ? 0 : -1;
-        }
-
-        List<OneSkill> _all = all.FindAll(x => !x.islocked);
-        Debug.Log("EXIT_OMEGASKILL: " + all.Exists(x => x.isOmegaSkill));
-        if (!_all.Exists(x => x.isOmegaSkill))
-        {
-            List<OneSkill> fa = all.FindAll(x => x.isOmegaSkill);
-            List<string> l =fa.Select(x => x.skillId).ToList();
-            string l0 = l[UnityEngine.Random.Range(0, l.Count)];
-            all.Find(x => x.skillId == l0).lv = 0;
-        }
-        if (!_all.Exists(x => !x.isOmegaSkill))
-        {
-            List<OneSkill> fa = all.FindAll(x => !x.isOmegaSkill);
-            List<string> l =fa.Select(x => x.skillId).ToList();
-            string l0 = l[UnityEngine.Random.Range(0, l.Count)];
-            all.Find(x => x.skillId == l0).lv = 0;
-        }
-
-        all.Sort((x, y) => x.index.CompareTo(y.index));
-        all.Sort((x, y) => x.isOmegaSkill.CompareTo(y.isOmegaSkill));
-        all.Sort((x, y) => x.lv.CompareTo(y.lv));
-        for(int i = 0; i < all.Count; i++)
-        {
-            GDEASkillData s = new GDEASkillData(GDEItemKeys.ASkill_normalAttack)
-            {
-                Id = all[i].skillId
-    ,
-                Lv = all[i].lv,
-            };
-            list.Add(s);
-        }
-        return list;
-    }
-    /// <summary>
-    /// 英雄所有已经解锁的技能
-    /// </summary>
-    /// <param name="hashcode"></param>
-    /// <returns></returns>
-    public List<GDEASkillData> OwnedSkillsByHero(int hashcode)
-    {
-        GDEHeroData hero = getHeroByHashcode(hashcode);
-        List<GDEASkillData> owns = hero.skillsOwned.FindAll(x=>x.Lv>=0);
-        return owns;
-    }
-    public List<OneSkill> getAllSkillsByHashcode(int heroHashcode)
-    {
-        Debug.Log(heroHashcode);
-        GDEHeroData hero = getHeroByHashcode(heroHashcode);
-        List<OneSkill> all = SkillDetailsList.WriteOneSkillList(hero.id);
-        List<GDEASkillData> ownedSkills = hero.skillsOwned;
-
-        AllStrs2 = ownedSkills.Select(x =>
-        {
-            return x.Id + "___" + x.Lv;
-        }).ToList();
-
-        foreach(OneSkill s in all) { s.lv = -1; }
-        for(int i = 0; i < ownedSkills.Count; i++)
-        {
-            string id = ownedSkills[i].Id;
-            if(all.Exists(x=>x.skillId == id))
-            {
-                all.Find(x => x.skillId == id).lv = ownedSkills[i].Lv;
-            }
-        }
-
-
-        return all;
-    }
     public OneSkill getOwnedSkillById(string skillId, int heroHashcode)
     {
         if (string.IsNullOrEmpty(skillId)) return null;
-        GDEHeroData hero = getHeroByHashcode(heroHashcode);
-        List<OneSkill> all
-            = SkillDetailsList.WriteOneSkillList(hero.id);
-        OneSkill s = OneSkill.normalAttack;
-        s = all.Find(x => x.skillId == skillId);
-        List<GDEASkillData> owns = hero.skillsOwned;
-        GDEASkillData _s = owns.Find(x => x.Id == skillId);
-        if (_s!=null)
-        {
-            s.lv = _s.Lv;
-            return s;
-        }
-        return null;
+        List<OneSkill> all = getSkillListByHashcode(heroHashcode);
+        return all.Find(x => x.skillId == skillId);
     }
     public OneSkill getSkillByHeroId(string skillId, string heroId)
     {
@@ -3092,81 +2992,69 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
         }
         return null;
     }
-    public string getDeployedSkillId(int skillPos, int heroHashcode)
+    public List<OneSkill> getSkillListByHashcode(int _hashcode)
+    {
+        GDEHeroData data = getHeroByHashcode(_hashcode);
+        List<OneSkill> All = SkillDetailsList.WriteOneSkillList(data.id);
+        //
+        All = All.FindAll(x =>
+        {
+        if (x.skillId == data.a_skill0.Id)
+        {
+            x.lv = data.a_skill0.Lv; return true;
+        }
+        else if (data.a_skill1 != null && x.skillId == data.a_skill1.Id)
+            {
+                x.lv = data.a_skill1.Lv;return true;
+            }
+            else if(x.skillId == data.a_skillOmega.Id)
+            {
+                x.lv = data.a_skillOmega.Lv;return true;
+            }
+            else return false;
+        });
+        All.Sort((x, y) => 
+        {
+            return x.isOmegaSkill.CompareTo(y.isOmegaSkill);
+        });
+        return All;
+    }
+    public skillInfo getDeployedSkillId(int skillPos, int heroHashcode)
+    {
+        GDEHeroData data = getHeroByHashcode(heroHashcode);
+        HeroInfo info = getHeroInfoById(data.id);
+        if (skillPos == 0) return info.Skill0Info;
+        else if (skillPos == 1) return info.Skill1Info;
+        else if (skillPos == 2) return info.SkillOmegaInfo;
+        return null;
+    }
+    public bool CheckIfHaveThisSkill(string skillId, int heroHashcode)
     {
         GDEHeroData hero = getHeroByHashcode(heroHashcode);
-        if (hero != null)
-        {
-            if (skillPos == 0)
-            {
-                return hero.skill0Id;
-            }
-            else if (skillPos == 1) { return hero.skill1Id; }
-            else if (skillPos == 2) { return hero.skillOmegaId; }
-        }
-        return string.Empty;
+        HeroInfo info = getHeroInfoById(hero.id);
+        List<OneSkill> list = SkillDetailsList.WriteOneSkillList(hero.id);
+        return list.Exists(x => x.skillId == skillId);
     }
-    public bool ifDeployThisSkill(string skillId, int heroHashcode)
+    public int SkillGradeNumWaitingForImprove(int hashcode)
     {
-        GDEHeroData hero = getHeroByHashcode(heroHashcode);
-        OneSkill skill = getOwnedSkillById(skillId, heroHashcode);
-        if (skill.lv < 0) return false;
-        if (hero.skill0Id == skillId
-            || hero.skillOmegaId == skillId)
+        GDEHeroData data = getHeroByHashcode(hashcode);
+        int a = 0;
+        if(data.a_skill0 != null && !string.IsNullOrEmpty(data.a_skill0.Id))
         {
-            return true;
+            Debug.Log("S0:" + data.a_skill0.Lv);
+            a += SDConstants.SkillMaxGrade - data.a_skill0.Lv;
         }
-        if (hero.skill1Id == skillId && checkHeroEnableSkill1ByHashcode(heroHashcode))
+        if (data.a_skill1 != null && !string.IsNullOrEmpty(data.a_skill1.Id))
         {
-            return true;
+            Debug.Log("S1:" + data.a_skill1.Lv);
+            a += SDConstants.SkillMaxGrade - data.a_skill1.Lv;
         }
-        return false;
-    }
-    public void UnDeploySkillById(string skillId, int heroHashcode)
-    {
-        foreach (GDEHeroData hero in PlayerData.herosOwned)
+        if (data.a_skillOmega != null && !string.IsNullOrEmpty(data.a_skillOmega.Id))
         {
-            if (hero.hashCode == heroHashcode)
-            {
-                if (hero.skill0Id == skillId)
-                {
-                    hero.skill0Id = string.Empty;
-                }
-                else if (hero.skill1Id == skillId)
-                {
-                    hero.skill1Id = string.Empty;
-                }
-                else if (hero.skillOmegaId == skillId)
-                {
-                    hero.skillOmegaId = string.Empty;
-                }
-                PlayerData.Set_herosOwned();
-                break;
-            }
+            Debug.Log("SOmega:" + data.a_skillOmega.Lv);
+            a += SDConstants.SkillMaxGrade - data.a_skillOmega.Lv;
         }
-    }
-    public void changeEquipedSkill(string newSkillId, int skillPos, int heroHashcode)
-    {
-        foreach (GDEHeroData hero in PlayerData.herosOwned)
-        {
-            if (hero.hashCode == heroHashcode)
-            {
-                if (skillPos == 0)
-                {
-                    hero.skill0Id = newSkillId;
-                }
-                else if (skillPos == 1 && checkHeroEnableSkill1ByHashcode(heroHashcode))
-                {
-                    hero.skill1Id = newSkillId;
-                }
-                else if (skillPos == 2)
-                {
-                    hero.skillOmegaId = newSkillId;
-                }
-                PlayerData.Set_herosOwned();
-                break;
-            }
-        }
+        return a;
     }
     #endregion
     #region Building_Infor
@@ -3801,6 +3689,11 @@ public class SDDataManager : PersistentSingleton<SDDataManager>
     {
         string n = string.Format("heroBg{0:D1}", quality);
         return atlas_rarity.GetSprite(n);
+    }
+    public Sprite heroRaceBgIcon(Race race)
+    {
+        string n = "heroRaceBg_" + race.ToString().ToLower();
+        return atlas_UI.GetSprite(n);
     }
     #endregion
 }

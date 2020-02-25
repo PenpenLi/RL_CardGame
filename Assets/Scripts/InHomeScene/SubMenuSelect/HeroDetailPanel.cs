@@ -3,30 +3,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
+using DG.Tweening;
 
 public class HeroDetailPanel : BasicSubMenuPanel
 {
     [HideInInspector]
     public int currentHeroHashcode;
+    [Space(20)]
     public SDHeroDetail detail;
     public SDEquipSelect equip;
     public SDHeroDeploySkills skill;
     public SDHeroImprove improve;
-    public Transform aboveMenu;
     public enum RoleDetailSubType
     {
         heroDetail,
         heroEquip,
         heroImprove,
         heroSkill,
+        HeroWakeup,
         heroInfor,
         end,
     }
-    public RoleDetailSubType CurrentRDSubType = RoleDetailSubType.heroDetail;
+    private RoleDetailSubType _currentRDSubType = RoleDetailSubType.end;
+    public RoleDetailSubType CurrentRDSubType
+    {
+        get { return _currentRDSubType; }
+        set
+        {
+            SubPanelChangeAnim(_currentRDSubType, value);
+            _currentRDSubType = value;
+        }
+    }
     List<RoleDetailSubType> history = new List<RoleDetailSubType>();
     public Transform equipedSkillsPanel;
     public SkillDetailsList skillDetailList;
-    public SkillSlot[] skillSlots;
+    [Header("SubPanels")]
+    public Transform abovePanelPlace;
+    public Transform ap_equipAndIdentitySubPanel;
+    public Transform ap_heroImproveConfirmSubPanel;
+    public Transform ap_heroWakeupFaceSubPanel;
+    [Space(15)]
+    public Transform belowPanelPlace;
+    public Transform bp_RAlAndImgSubPanel;
+    public Transform bp_equipListSubPanel;
+    public Transform bp_skillDetailSubPanel;
+    public Transform bp_heroImproveMaterialListSubPanel;
+    public Transform bp_heroWakeupConfirmSubPanel;
+    //
+    private float ChangeSubPanelIndetval = 0.15f;
+    private float MoveDisRate = 1.15f;
     public override void whenOpenThisPanel()
     {
         base.whenOpenThisPanel();
@@ -37,62 +62,21 @@ public class HeroDetailPanel : BasicSubMenuPanel
         detail.gameObject.SetActive(true);
         detail.initHeroDetailPanel(currentHeroHashcode);
         //
-        CurrentRDSubType = RoleDetailSubType.end;
+        _currentRDSubType = RoleDetailSubType.end;
         history.Clear();
-        closeAllSubPanelTrans();
         BtnToHeroDetail();
     }
 
 
     #region roleDetailPanelSubMenu
-    public Transform RDSubPanel(RoleDetailSubType RDType)
-    {
-        switch (RDType)
-        {
-            case RoleDetailSubType.heroDetail:
-                return detail.transform;
-            case RoleDetailSubType.heroEquip:
-                return equip.transform;
-            case RoleDetailSubType.heroSkill:
-                return skill.transform;
-            case RoleDetailSubType.heroImprove:
-                return improve.transform;
-            case RoleDetailSubType.end:
-                return null;
-            default: return detail.transform;
-        }
-    }
-    public void closeAllSubPanelTrans()
-    {
-        detail.transform.gameObject.SetActive(false);
-        equip.transform.gameObject.SetActive(false);
-        skill.transform.gameObject.SetActive(false);
-        improve.transform.gameObject.SetActive(false);
-    }
 
-
-    #region AboveMenu_LinkTo
+    #region UpperBtnList_LinkTo
     public void BtnToHeroDetail()
     {
         if (CurrentRDSubType != RoleDetailSubType.heroDetail)
         {
             resetAllRDSubPanel();
-
-            if(CurrentRDSubType != RoleDetailSubType.end)
-            {
-                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-            }
-            bool flag = false;
-            if(CurrentRDSubType == RoleDetailSubType.heroSkill
-                || CurrentRDSubType == RoleDetailSubType.heroEquip)
-            {
-                flag = true;
-            }
             CurrentRDSubType = RoleDetailSubType.heroDetail;
-            if (!flag)
-            {
-                UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
-            }
             historyAdd(CurrentRDSubType);
 
         }
@@ -101,14 +85,8 @@ public class HeroDetailPanel : BasicSubMenuPanel
     {
         if (CurrentRDSubType != RoleDetailSubType.heroImprove)
         {
-            if (CurrentRDSubType != RoleDetailSubType.end
-                && CurrentRDSubType != RoleDetailSubType.heroDetail)
-            {
-                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-                UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(RoleDetailSubType.heroDetail));
-            }
+            resetAllRDSubPanel();
             CurrentRDSubType = RoleDetailSubType.heroImprove;
-            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
             historyAdd(CurrentRDSubType);
 
             //
@@ -119,14 +97,8 @@ public class HeroDetailPanel : BasicSubMenuPanel
     {
         if (CurrentRDSubType != RoleDetailSubType.heroEquip)
         {
-            if (CurrentRDSubType != RoleDetailSubType.end
-                && CurrentRDSubType != RoleDetailSubType.heroDetail)
-            {
-                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-                UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(RoleDetailSubType.heroDetail));
-            }
+            resetAllRDSubPanel();
             CurrentRDSubType = RoleDetailSubType.heroEquip;
-            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
             historyAdd(CurrentRDSubType);
 
             //
@@ -137,19 +109,24 @@ public class HeroDetailPanel : BasicSubMenuPanel
     {
         if (CurrentRDSubType != RoleDetailSubType.heroSkill)
         {
-            //resetAllRDSubPanel();
-            if(CurrentRDSubType != RoleDetailSubType.end 
-                && CurrentRDSubType != RoleDetailSubType.heroDetail)
-            {
-                UIEffectManager.Instance.hideAnimFadeOut(RDSubPanel(CurrentRDSubType));
-                UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(RoleDetailSubType.heroDetail));
-            }
+            resetAllRDSubPanel();
             CurrentRDSubType = RoleDetailSubType.heroSkill;
-            UIEffectManager.Instance.showAnimFadeIn(RDSubPanel(CurrentRDSubType));
             historyAdd(CurrentRDSubType);
 
             //
             skill.initHeroSkillListPanel();
+        }
+    }
+    public void BtnToHeroWakeup()
+    {
+        if(CurrentRDSubType != RoleDetailSubType.HeroWakeup)
+        {
+            resetAllRDSubPanel();
+            CurrentRDSubType = RoleDetailSubType.HeroWakeup;
+            historyAdd(CurrentRDSubType);
+
+            //
+            
         }
     }
     #endregion
@@ -158,20 +135,95 @@ public class HeroDetailPanel : BasicSubMenuPanel
     public void resetAllRDSubPanel()
     {
         improve.CloseThisPanel();
-        //heroDetail.ModelAndEquipsPanel.gameObject.SetActive(false);
     }
-    public void readHeroEquipedSkills(int heroHashcode)
+    #region SubPanelAnim
+    public RectTransform SubPanel_above(RoleDetailSubType type)
     {
-        for(int i = 0; i < skillSlots.Length; i++)
+        if(type == RoleDetailSubType.heroDetail 
+            || type == RoleDetailSubType.heroEquip
+            || type == RoleDetailSubType.heroSkill)
         {
-            skillSlots[i].initSkillSlot(heroHashcode);
+            return ap_equipAndIdentitySubPanel.GetComponent<RectTransform>();
         }
-        GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(heroHashcode);
-        detail.skillid0 =hero.skill0Id;
-        detail.skillid1 = hero.skill1Id;
-        detail.skillidOmega = hero.skillOmegaId;
-
+        else if(type == RoleDetailSubType.heroImprove)
+        {
+            return ap_heroImproveConfirmSubPanel.GetComponent<RectTransform>();
+        }
+        else if(type == RoleDetailSubType.HeroWakeup)
+        {
+            return ap_heroWakeupFaceSubPanel.GetComponent<RectTransform>();
+        }
+        //
+        return null;
     }
+    public RectTransform SubPanel_below(RoleDetailSubType type)
+    {
+        if(type == RoleDetailSubType.heroDetail)
+        {
+            return bp_RAlAndImgSubPanel.GetComponent<RectTransform>();
+        }
+        else if(type == RoleDetailSubType.heroEquip)
+        {
+            return bp_equipListSubPanel.GetComponent<RectTransform>();
+        }
+        else if(type == RoleDetailSubType.heroSkill)
+        {
+            return bp_skillDetailSubPanel.GetComponent<RectTransform>();
+        }
+        else if(type == RoleDetailSubType.heroImprove)
+        {
+            return bp_heroImproveMaterialListSubPanel.GetComponent<RectTransform>();
+        }
+        else if(type == RoleDetailSubType.HeroWakeup)
+        {
+            return bp_heroWakeupConfirmSubPanel.GetComponent<RectTransform>();
+        }
+
+        //
+        return null;
+    }
+    void SubPanelChangeAnim(RoleDetailSubType oldType,RoleDetailSubType newType)
+    {
+        if (oldType == newType) return;
+        RectTransform a0 = SubPanel_above(oldType);
+        RectTransform a1 = SubPanel_above(newType);
+        RectTransform b0 = SubPanel_below(oldType);
+        RectTransform b1 = SubPanel_below(newType);
+        if(oldType == RoleDetailSubType.end || newType == RoleDetailSubType.end)
+        {
+            RectTransform baseT_a = SubPanel_above(RoleDetailSubType.heroDetail);
+            baseT_a.anchoredPosition = Vector2.zero;
+            RectTransform baseT_b = SubPanel_below(RoleDetailSubType.heroDetail);
+            baseT_b.anchoredPosition = Vector2.zero;
+            for (int i = 0; i < (int)RoleDetailSubType.end; i++)
+            {
+                RoleDetailSubType T = (RoleDetailSubType)i;
+                RectTransform a = SubPanel_above(T);
+                RectTransform b = SubPanel_below(T);
+                if (a != baseT_a && a!=null)
+                {
+                    a.anchoredPosition = new Vector2(a.sizeDelta.x * MoveDisRate, 0);
+                }
+                if(b != baseT_b && b!= null)
+                {
+                    b.anchoredPosition = new Vector2(-b.sizeDelta.x * MoveDisRate, 0);
+                }
+            }
+            return;
+        }
+        if(a0 != a1 && a0!=null && a1!=null)
+        {
+            a0.DOAnchorPosX(a0.sizeDelta.x * MoveDisRate, ChangeSubPanelIndetval);
+            a1.DOAnchorPosX(0, ChangeSubPanelIndetval).SetEase(Ease.OutBack).SetUpdate(true);
+        }
+        if(b0 != b1 && b0!=null && b1!=null)
+        {
+            b0.DOAnchorPosX(-b0.sizeDelta.x * MoveDisRate, ChangeSubPanelIndetval);
+            b1.DOAnchorPosX(0,ChangeSubPanelIndetval).SetEase(Ease.OutBack).SetUpdate(true);
+        }
+    }
+
+    #endregion
     #endregion
 
     public void historyAdd(RoleDetailSubType type)
@@ -207,8 +259,6 @@ public class HeroDetailPanel : BasicSubMenuPanel
         {
             base.commonBackAction();
             homeScene.SubMenuClose();
-            Debug.Log("HDP_Close_End");
-            //homeScene.UseSMTToSubMenu(panelFrom);
             homeScene.CurrentSubMenuType = panelFrom;
             CurrentRDSubType = RoleDetailSubType.end;
             history.Clear();

@@ -15,7 +15,7 @@ MonoBehaviour:
   _ID: D_NROMAL#6010003
   _Name: "\u54E5\u5E03\u6797"
   _DESC: 
-  sex: 0
+  sex: 1
   characterType: 1
   faceIcon: {fileID: 0}
   race:
@@ -30,8 +30,8 @@ MonoBehaviour:
   dropItems: []
   StartAppearLevel: 0
   EndAppearLevel: 50
-  _useSpineData: 1
+  _useSpineData: 0
   SpineData:
-    SkeletonData: {fileID: 11400000, guid: 704da93f636e00245a17380cdae6aa95, type: 2}
-    skin: default
+    SkeletonData: {fileID: 0}
+    skin: 
     allEnableList: []

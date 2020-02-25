@@ -43,18 +43,19 @@ public class SkillSlot : MonoBehaviour
         {
             gameObject.SetActive(true);
             GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(HeroHashcode);
+            HeroInfo info = SDDataManager.Instance.getHeroInfoById(id);
             string skillId = string.Empty;
             if (slotType == skillSlotType.skill0)
             {
-                skillId = hero.skill0Id;
+                skillId = hero.a_skill0.Id;
             }
             else if (slotType == skillSlotType.skill1)
             {
-                skillId = hero.skill1Id;
+                skillId = hero.a_skill1.Id;
             }
             else if (slotType == skillSlotType.omegaSkill)
             {
-                skillId = hero.skillOmegaId;
+                skillId = hero.a_skillOmega.Id;
             }
             OneSkill skill = SDDataManager.Instance.getOwnedSkillById(skillId, HeroHashcode);
             initOneSkillSlot(skill);
@@ -65,7 +66,6 @@ public class SkillSlot : MonoBehaviour
         }
 
     }
-
     public void initOneSkillSlot(OneSkill skill)
     {
         if(skill == null)
@@ -103,5 +103,15 @@ public class SkillSlot : MonoBehaviour
         {
             skillBgIcon.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(1);
         }
+    }
+
+
+    public void BtnTapped()
+    {
+        if (HDP == null)
+        {
+            HDP = GetComponentInParent<HeroDetailPanel>();
+        }
+        HDP.BtnToHeroSkill();
     }
 }

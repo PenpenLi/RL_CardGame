@@ -441,8 +441,8 @@ MonoBehaviour:
   ICON: {fileID: 7890942066890237530}
   FigureText: {fileID: 6420803594712031762}
   basicFigureTextColor: {r: 1, g: 1, b: 1, a: 1}
-  decreaseFigureTextColor: {r: 0, g: 0, b: 0, a: 0}
-  increaseFigureTextColor: {r: 0, g: 0, b: 0, a: 0}
+  decreaseFigureTextColor: {r: 0.6698113, g: 0.17061232, b: 0.17061232, a: 1}
+  increaseFigureTextColor: {r: 0.14951938, g: 0.7924528, b: 0.50197417, a: 1}
   DATA:
     index: 0
     isAD: 1

@@ -26,6 +26,13 @@ public class Quest : ScriptableObject
     public bool Abandonable { get { return _Abandonable; } }
 
     [SerializeField]
+    private SDConstants.MissionType _MissionType;
+    public SDConstants.MissionType MissionType
+    {
+        get { return _MissionType; }
+    }
+
+    [SerializeField]
     private QuestGroup group;
     public QuestGroup Group
     {
@@ -69,7 +76,9 @@ public class Quest : ScriptableObject
             return completeDialogue;
         }
     }
+
     [Space,Header("任务奖励")]
+
     #region 货币类奖励
     [SerializeField]
     private int rewardCoin;
@@ -108,6 +117,7 @@ public class Quest : ScriptableObject
         }
     }
     #endregion
+
     #region 道具类奖励
     [SerializeField]
     private QuestItemReward questItemReward;
@@ -117,6 +127,7 @@ public class Quest : ScriptableObject
     }
 
     #endregion
+
     [Space,Header("任务完成方式")]
     [SerializeField]
     private bool sbmtOnOriginalNPC = true;
@@ -325,7 +336,13 @@ public class Quest : ScriptableObject
         return CollectObjectives.Exists(x => x.Item == item && !x.IsComplete);
     }
 
-
+    [Header("任务其他特性")]
+    public bool canBeCancel;
+    public bool repeatAppear;
+    public int castleLevelMin;
+    public int castleLevelMax;
+    public int requireMinCondition;
+    public int requireMaxCondition;
 }
 
 #region 任务奖励

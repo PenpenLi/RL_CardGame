@@ -207,7 +207,7 @@ public class BattleRoleData : MonoBehaviour
             RoleAttributeList _ral = dal.ExportRAL;
             _ral.Add(RoleAttributeList.GDEToRAL(heroData.RoleAttritubeList));
             //
-            Race _race = SDDataManager.Instance.getHeroRaceByHashcode(unitHashcode);
+            Race _race = dal.Info.Race.Race;
             //
             HeroProperty._hero.initData_Hero
                 (dal.Info.Career.Career, _race
@@ -215,7 +215,7 @@ public class BattleRoleData : MonoBehaviour
                 , _ral
                 , dal.CRIDmg, dal.DmgReduction, dal.DmgReflection, dal.RewardRate
                 , dal.BarChartRegendPerTurn, UnitId, dal.Info.Name, heroData.wakeNum); ;
-            HeroProperty._hero.gender = dal.Info.Sex;
+            HeroProperty._hero.gender = (CharacterSex)heroData.sex;
             addSkillByCareerByRaceByStarnum(heroHashCode, dal.starNum);
         }
     }
@@ -383,14 +383,15 @@ public class BattleRoleData : MonoBehaviour
         _skills.Add(OneSkill.normalAttack);
         //
         GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(heroHashcode);
-        string skill0Id = hero.skill0Id;
+        HeroInfo info = SDDataManager.Instance.getHeroInfoById(UnitId);
+        string skill0Id = info.Skill0Info.ID;
         _skills.Add(SDDataManager.Instance.getOwnedSkillById(skill0Id, heroHashcode));
         if (SDDataManager.Instance.checkHeroEnableSkill1ByHashcode(heroHashcode))
         {
-            string skill1Id = hero.skill1Id;
+            string skill1Id = info.SkillOmegaInfo.ID;
             _skills.Add(SDDataManager.Instance.getOwnedSkillById(skill1Id, heroHashcode));
         }//稀有角色才能拥有额外技能
-        string skillOmegaId = hero.skillOmegaId;
+        string skillOmegaId = info.Skill1Info.ID;
         _skills.Add(SDDataManager.Instance.getOwnedSkillById(skillOmegaId, heroHashcode));
         return;
     }

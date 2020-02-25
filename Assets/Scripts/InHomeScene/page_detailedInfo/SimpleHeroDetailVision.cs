@@ -7,17 +7,19 @@ using GameDataEditor;
 public class SimpleHeroDetailVision : MonoBehaviour
 {
     public Image heroCharacterDrawingImg;
+    [Header("身份")]
     public Image CareerIconImg;
     public Text CareerText;
     public Image RaceIconImg;
     public Text RaceText;
+    [Space(20)]
     public Text NameText;
     public Text NameBeforeText;
     public Image RarityIconImg;
     public ItemStarVision StarNumVision;
-    public Text LvText;
+    //public Text LvText;
     public int hashcode;
-    public Transform ExpSlider;
+    //public Transform ExpSlider;
     HomeScene _hs;
     public HomeScene hs
     {
@@ -38,7 +40,9 @@ public class SimpleHeroDetailVision : MonoBehaviour
             EmptyVision();return;
         }
         HeroInfo info = SDDataManager.Instance.getHeroInfoById(data.id);
-        heroCharacterDrawingImg.sprite = info.FaceIcon;
+        //heroCharacterDrawingImg.sprite = info.FaceIcon;
+        //heroCharacterDrawingImg.sprite = 
+        //
         CareerIconImg.sprite = info.Career.Icon;
         CareerText.text = info.Career.NAME;
         RaceIconImg.sprite = info.Race.Icon;
@@ -47,9 +51,11 @@ public class SimpleHeroDetailVision : MonoBehaviour
         NameText.text = info.Name;
         RarityIconImg.sprite = SDDataManager.Instance.raritySprite(info.Rarity);
         RarityIconImg.gameObject.SetActive(true);
+        RarityIconImg.SetNativeSize();
+        //
         StarNumVision.StarNum = info.LEVEL + data.starNumUpgradeTimes;
-        LvText.text = SDGameManager.T("Lv.")+SDDataManager.Instance.getLevelByExp(data.exp);
-        ExpSlider.localScale = new Vector3(SDDataManager.Instance.getExpRateByExp(data.exp), 1, 1);
+        //LvText.text = SDGameManager.T("Lv.")+SDDataManager.Instance.getLevelByExp(data.exp);
+        //ExpSlider.localScale = new Vector3(SDDataManager.Instance.getExpRateByExp(data.exp), 1, 1);
         MoreInfoBtn.gameObject.SetActive(true);
     }
     public void ShowGoddessMessage(string id)
@@ -86,8 +92,6 @@ public class SimpleHeroDetailVision : MonoBehaviour
         RarityIconImg.sprite = null;
         RarityIconImg.gameObject.SetActive(false);
         StarNumVision.StarNum = 0;
-        LvText.text = "";
-        ExpSlider.localScale = Vector3.up;
 
         MoreInfoBtn.gameObject.SetActive(false);
     }

@@ -32,7 +32,7 @@ MonoBehaviour:
   dropItems: []
   StartAppearLevel: 0
   EndAppearLevel: 0
-  _useSpineData: 1
+  _useSpineData: 0
   SpineData:
     SkeletonData: {fileID: 0}
     skin: 

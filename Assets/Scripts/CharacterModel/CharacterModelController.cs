@@ -245,4 +245,12 @@ public class CharacterModelController : MonoBehaviour
         sa.Initialize(false);
         sa.AnimationState.SetAnimation(0, anim, true);
     }
+
+    public void SetCurrentCMSortingOrder(int index)
+    {
+        if (CurrentCharacterModel)
+        {
+            CurrentCharacterModel.GetComponent<MeshRenderer>().sortingOrder = index;
+        }
+    }
 }

@@ -17,34 +17,42 @@ public class SDHeroDetail : BasicRoleProperty
     public Job careerIndex;
     public Race raceIndex;
 
+    public int BattleForce;
+
     public SDHero _hero;
     public SDHeroSelect heroSelect;
     public BasicHeroSelect BHS;
-    #region 栏No.1
     [Header("立绘和角色详细信息 栏")]
     public Image heroCharacterDrawingImg;
     public Image HCdI_Bg;
-    public Image CareerIconImg;
-    public Text CareerText;
-    public Image RaceIconImg;
-    public Text RaceText;
-    public Text NameText;
+
     public Text NameBeforeText;
     public Image RarityImg;
     public ItemStarVision StarNumVision;
     public Text LvText;
-    public Transform ExpSlider;
-    [HideInInspector]
-    public int e0;
-    [HideInInspector]
-    public int e1;
     public AttritubeListPanel RALPanel;
     public Transform RoleParticularPanel;
-    #endregion
-    #region 栏No.2
-    [Header("装备和小人动画 栏")]
+    public Button LockedBtn;
+    public Sprite[] LockedSpriteArray;
+    private bool _IsLocked;
+    public bool IsLocked
+    {
+        get { return _IsLocked; }
+        set 
+        {
+            _IsLocked = value; 
+            LockedBtn.GetComponent<Image>().sprite =
+                _IsLocked 
+                ? LockedSpriteArray[1] : LockedSpriteArray[0];
+        }
+    }
+    [Header("小人动画模型 栏")]
+    public Text NameText;
     public CharacterModelController heroHeadImg;
+    public Transform modelSubPanel;
+    [Header("装备和身份信息 栏")]
     public HeroEquipList equipList;
+    #region AllEquipments
     Helmet _helmet { get { return equipList._helmet; } }
     Breastplate _breastplate { get { return equipList._breastplate; } }
     Gardebras _gardebras { get { return equipList._gardebras; } }
@@ -52,19 +60,23 @@ public class SDHeroDetail : BasicRoleProperty
     Jewelry _jewelry0 { get { return equipList._jewelry0; } }
     Jewelry _jewelry1 { get { return equipList._jewelry1; } }
     SDWeapon _weapon { get { return equipList._weapon; } }
-    //public Transform roleModelPanel;
-    public Transform ModelAndEquipsPanel;
-    //
     #endregion
-    #region 栏No.3
+    #region MidSubPanelContent
+    public Image CareerIconImg;
+    public Text CareerText;
+    public Image RaceIconImg;
+    public Text RaceText;
+    public Text battleforceText;
+    #endregion
+    public Transform EquipSubPanel;
+    [Header("角色技能与详情 栏")]
     public string skillid0;
     public string skillid1;
     public string skillidOmega;
-    #endregion
-    #region 总栏
+    public SkillSlot[] SkillSlots;
     [Header("上级信息 栏")]
     public HeroDetailPanel HeroWholeMessage;
-    #endregion
+
 
     private void Awake()
     {
@@ -108,28 +120,12 @@ public class SDHeroDetail : BasicRoleProperty
                 int exp = hero.exp;
                 int lv = SDDataManager.Instance.getLevelByExp(exp);
                 LvText.text = SDGameManager.T("Lv.") + lv;
-                if(ExpSlider)
-                ExpSlider.localScale 
-                        = Vector3.up + Vector3.forward 
-                        + Vector3.right * (SDDataManager.Instance.getExpRateByExp(exp));
             }
-            showRoleModelPanel();
 
 
-
-            HeroWholeMessage.readHeroEquipedSkills(hashcode);
+            readHeroSkills();
             //
             heroHeadImg.initHeroCharacterModel(Hashcode, SDConstants.HERO_MODEL_BIG_RATIO);
-        }
-    }
-
-    public void showRoleModelPanel()
-    {
-        if(ModelAndEquipsPanel.parent != this)
-        {
-            ModelAndEquipsPanel.SetParent(transform);
-            ModelAndEquipsPanel.localScale = Vector3.one;
-            ModelAndEquipsPanel.gameObject.SetActive(true);
         }
     }
     #region 读取角色属性
@@ -181,7 +177,7 @@ public class SDHeroDetail : BasicRoleProperty
 
         //RaceIconImg.sprite =
         int grade = SDDataManager.Instance.getLevelByExp(heroData.exp);
-        _hero.gender = dal.Info.Sex;
+        _hero.gender = (CharacterSex)heroData.sex;
         _hero.initData_Hero((Job)careerIndex, raceIndex, grade, dal.quality, dal.starNum
             , dal.ExportRAL
             , dal.CRIDmg, dal.DmgReduction, dal.DmgReflection, dal.RewardRate
@@ -431,13 +427,44 @@ public class SDHeroDetail : BasicRoleProperty
     public override void initRoleClassData()
     {
         base.initRoleClassData();
+        GDEHeroData D = SDDataManager.Instance.getHeroByHashcode(Hashcode);
+        IsLocked = D.locked;
+    }
+    #endregion
+    public void Btn_ChangeLocked()
+    {
+        GDEHeroData D = SDDataManager.Instance.getHeroByHashcode(Hashcode);
+        bool flag = !IsLocked;
+        //
+        if(flag != D.locked)
+        {
+            D.locked = flag;
+            IsLocked = D.locked;
+        }
+    }
+    #region 读取角色技能
+    public void readHeroSkills()
+    {
+        for (int i = 0; i < SkillSlots.Length; i++)
+        {
+            SkillSlots[i].initSkillSlot(Hashcode);
+        }
+        GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(Hashcode);
+        //HeroInfo info = SDDataManager.Instance.getHeroInfoById(ID);
+        skillid0 = hero.a_skill0.Id;
+        if(hero.a_skill1!=null) skillid1 = hero.a_skill1.Id;
+        skillidOmega = hero.a_skillOmega.Id;
 
     }
-
     #endregion
     public void setRoleBaseMessiage()
     {
         NameText.text = Name;
         StarNumVision.StarNum = LEVEL;
+        //
+        BattleForce = RoleBasicRA.Hp
+            + RoleBasicRA.AT * 5
+            + RoleBasicRA.MT * 5;
+        battleforceText.text = "" + BattleForce;
     }
 }

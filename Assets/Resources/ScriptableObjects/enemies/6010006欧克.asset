@@ -15,14 +15,14 @@ MonoBehaviour:
   _ID: D_NROMAL#6010006
   _Name: "\u6B27\u514B"
   _DESC: 
-  sex: 0
+  sex: 1
   characterType: 1
   faceIcon: {fileID: 0}
   race:
   - {fileID: 11400000, guid: a642c3a472f930d44bc18ae9c8999f13, type: 2}
   enemyRank: {fileID: 11400000, guid: 1ec16465822143c49b932bcbedad3967, type: 2}
   _RAL:
-    AllAttributeData: 2c01000028000000320000001e000000140000000f0000000000000004000000010000000f000000020000000f00000005000000
+    AllAttributeData: 2c01000028000000320000001e00000014000000000000000000000004000000010000000f000000020000000f00000005000000
     AllResistData: 0100000001000000010000000100000001000000010000000100000001000000
   specialStr: 
   weight: 5
@@ -30,8 +30,8 @@ MonoBehaviour:
   dropItems: []
   StartAppearLevel: 25
   EndAppearLevel: 150
-  _useSpineData: 1
+  _useSpineData: 0
   SpineData:
-    SkeletonData: {fileID: 11400000, guid: 5a6e149666b06a0408741d70853744ae, type: 2}
-    skin: default
+    SkeletonData: {fileID: 0}
+    skin: 
     allEnableList: []

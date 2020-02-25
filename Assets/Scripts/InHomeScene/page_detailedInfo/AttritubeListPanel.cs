@@ -9,9 +9,28 @@ public class AttritubeListPanel : MonoBehaviour
     public PerAttritubeBox[] Boxes;
     [Space(15)]
     public RoleAttributeList currentRAL;
-
     public int CurrentHashCode;
     public SDConstants.CharacterType _type;
+    [Space(15)]
+    public Transform MoreDetailsPanel;
+    [System.Serializable]
+    public class SimpleAttiVision
+    {
+        public Text AttiNameText;
+        public Text AttiFigure;
+        public AttributeData TAG;
+        public void InitData(AttributeData tag,RoleAttributeList ral)
+        {
+            TAG = tag;
+            AttiNameText.text = SDGameManager.T(TAG.ToString().ToLower());
+            Refresh(ral);
+        }
+        public void Refresh(RoleAttributeList ral)
+        {
+            AttiFigure.text = "" + ral.read(TAG);
+        }
+    }
+    public SimpleAttiVision[] AllAttiVisionArray;
     private void Start()
     {
         
@@ -35,5 +54,22 @@ public class AttritubeListPanel : MonoBehaviour
         Boxes[3].initThisBoxInAD
             (currentRAL.MT, AttributeData.MT);
         #endregion
+    }
+
+
+    public void Btn_CloseMoreDetails()
+    {
+        UIEffectManager.Instance.hideAnimFadeOut(MoreDetailsPanel);
+
+    }
+
+    public void Btn_OpenMoreDetails()
+    {
+        UIEffectManager.Instance.showAnimFadeIn(MoreDetailsPanel);
+        for(int i = 0; i < AllAttiVisionArray.Length; i++)
+        {
+            SimpleAttiVision SAV = AllAttiVisionArray[i];
+            SAV.InitData(SAV.TAG, currentRAL);
+        }
     }
 }

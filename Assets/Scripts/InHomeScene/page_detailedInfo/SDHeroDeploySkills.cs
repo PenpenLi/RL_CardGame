@@ -22,9 +22,6 @@ public class SDHeroDeploySkills : MonoBehaviour
     public Text skill_basedata;
     public Text skill_statelist;
     public Text skill_desc;
-    [Header("交互用按钮")]
-    public Button btn_deploy;
-    public Button btn_improve;
 
     public void initHeroSkillListPanel()
     {
@@ -32,15 +29,7 @@ public class SDHeroDeploySkills : MonoBehaviour
         bool flag = false;
         for(int i = 0; i < skillSelect.skillList.Count; i++)
         {
-            if (skillSelect.skillList[i].isDeployed)
-            {
-                flag = true;
-                skillSelect.skillList[i].isSelected = true;
-                currentSkillId = skillSelect.skillList[i].ItemId;
-                currentSkill 
-                    = SDDataManager.Instance.getOwnedSkillById(currentSkillId, heroDetail.Hashcode);
-                break;
-            }
+
         }
         if (!flag)
         {
@@ -53,7 +42,6 @@ public class SDHeroDeploySkills : MonoBehaviour
     }
     public void SelectSkill(RTSingleSkillItem skillItem)
     {
-        if (skillItem.isLocked) return;
         if (currentSkillId == skillItem.ItemId) return;
         //
         SSI_Id = skillSelect.skillList.IndexOf(skillItem);
@@ -63,37 +51,15 @@ public class SDHeroDeploySkills : MonoBehaviour
         }
         skillItem.isSelected = true;
         currentSkillId = skillItem.ItemId;
-        currentSkill = SDDataManager.Instance.getOwnedSkillById(currentSkillId, heroDetail.Hashcode);
+        currentSkill = SDDataManager.Instance.getOwnedSkillById
+            (currentSkillId, heroDetail.Hashcode);
         refreshSkillDetail();
     }
     public void refreshSkillDetail()
     {
         #region allSkills
-        bool deployEnable = false;
-        bool improveEnable = false;
         if (currentSkill != null)
         {
-            if (!currentSkill.islocked)//已经解锁
-            {
-                deployEnable = true;
-            }
-            if (currentSkill.lv < SDConstants.SkillMaxGrade)//已达上限
-            {
-                improveEnable = true;
-            }
-            if (SDDataManager.Instance.ifDeployThisSkill(currentSkillId, heroDetail.Hashcode))//已装备
-            {
-                btn_deploy.GetComponentInChildren<Text>().text
-                    = SDGameManager.T("解除");
-            }
-            else//未装备
-            {
-                btn_deploy.GetComponentInChildren<Text>().text
-                    = SDGameManager.T("装备");
-            }
-            btn_deploy.gameObject.SetActive(deployEnable);
-            btn_improve.gameObject.SetActive(improveEnable);
-            //
             SkillFunction function 
                 = HDP.skillDetailList.AllSkillList[currentSkill.SkillFunctionID]
                 .GetComponent<SkillFunction>();
@@ -102,6 +68,8 @@ public class SDHeroDeploySkills : MonoBehaviour
                 function = currentSkill.SkillPrefab.GetComponent<SkillFunction>();
             }
             //
+            skill_limit.text = SDGameManager.T
+                (currentSkill.isOmegaSkill ? "绝招" : "普通");
             skill_name.text = currentSkill.SkillName + "·Lv " + currentSkill.lv;
             skill_basedata.text 
                 = (function.CritR != 0 ? string.Format("基础暴击修正 {0:D}", function.CritR) : "")
@@ -111,96 +79,8 @@ public class SDHeroDeploySkills : MonoBehaviour
         }
         #endregion
         #region equipedSkills
-        HDP.readHeroEquipedSkills(heroDetail.Hashcode);
+        heroDetail.readHeroSkills();
         #endregion
-    }
-
-    public void DeploySkill( int skillPos )
-    {
-        int heroHC = heroDetail.Hashcode;
-        RTSingleSkillItem si = skillSelect.skillList[SSI_Id];
-        if (si.isSelected)//基础条件
-        {
-            if (si.isDeployed)//已经被装备
-            {
-                SDDataManager.Instance.UnDeploySkillById(si.ItemId, heroHC);
-                si.isDeployed = false;
-            }
-            else if(!si.isLocked)//未被装备同时已经解锁
-            {
-                SDDataManager.Instance.changeEquipedSkill(si.ItemId, skillPos, heroHC);
-                si.isDeployed = true;
-            }
-            currentSkill
-                = SDDataManager.Instance.getOwnedSkillById(currentSkillId, heroDetail.Hashcode);
-            refreshSkillDetail();
-        }
-    }
-
-    public void btnToDeploy()
-    {
-        int heroHC = heroDetail.Hashcode;
-        GDEHeroData hero = SDDataManager.Instance.getHeroByHashcode(heroHC);
-        RTSingleSkillItem si = skillSelect.skillList[SSI_Id];
-        if (si.isSelected)
-        {
-            if (si.isDeployed)//已经被装备
-            {
-                SDDataManager.Instance.UnDeploySkillById(si.ItemId, heroHC);
-                si.isDeployed = false;
-                refreshSkillDetail();
-            }
-            else if (!si.isLocked)//未被装备同时已经解锁
-            {
-                if (currentSkill.isOmegaSkill)
-                {
-                    if(string.IsNullOrEmpty(hero.skillOmegaId))//槽位为空
-                    {
-                        SDDataManager.Instance.changeEquipedSkill(currentSkillId, 2, heroHC);
-                        si.isDeployed = true;
-                        refreshSkillDetail();
-                    }
-                    else
-                    {
-                        Debug.Log("无法装备:绝招槽已被占用");
-                    }
-                }
-                else
-                {
-                    if (!SDDataManager.Instance.checkHeroEnableSkill1ById(hero.id))
-                    {
-                        if (!string.IsNullOrEmpty(hero.skill0Id))
-                        {
-                            Debug.Log("无法装备:唯一普通技能槽已被占用,占用者为 " + hero.skill0Id);
-                        }
-                        else
-                        {
-                            SDDataManager.Instance.changeEquipedSkill(currentSkillId, 0, heroHC);
-                            si.isDeployed = true;
-                            refreshSkillDetail();
-                        }
-                    }
-                    else
-                    {
-                        if(!string.IsNullOrEmpty(hero.skill0Id))
-                        {
-                            SDDataManager.Instance.changeEquipedSkill(currentSkillId, 0, heroHC);
-                            si.isDeployed = true;
-                            refreshSkillDetail();
-                            return;
-                        }
-                        if(!string.IsNullOrEmpty(hero.skill1Id))
-                        {
-                            SDDataManager.Instance.changeEquipedSkill(currentSkillId, 1, heroHC);
-                            si.isDeployed = true;
-                            refreshSkillDetail();
-                            return;
-                        }
-                        Debug.Log("无法装备:所有普通技能槽均已被占用");
-                    }
-                }
-            }
-        }
     }
     public void btnToImprove()
     {

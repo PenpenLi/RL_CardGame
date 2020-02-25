@@ -113,6 +113,8 @@ public class HomeScene : MonoBehaviour
     public Button SubMenuLvUpBtn;
     public HeroInfo BasicHero;
     public HeroInfo BasicAuxiliaryHero;
+    public HeroAltarPool MoreHerosPool;
+    public int MoreNum;
     private void Awake()
     {
         //建筑Id设置
@@ -182,6 +184,13 @@ public class HomeScene : MonoBehaviour
             //
             SDDataManager.Instance.addHero(BasicHero.ID);
             SDDataManager.Instance.addHero(BasicAuxiliaryHero.ID);
+
+            List<string> all = MoreHerosPool.HeroList.FindAll(x => x.Rarity < 2)
+                .Select(x => x.ID).ToList(); ;
+            for (int i = 0; i < MoreNum; i++)
+            {
+                SDDataManager.Instance.addHero(all[UnityEngine.Random.Range(0, all.Count)]);
+            }
             return true;
         }
         return false;

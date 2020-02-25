@@ -15,7 +15,7 @@ MonoBehaviour:
   _ID: H_FIGHTER#000013
   _Name: "\u6A31"
   _DESC: 
-  sex: 1
+  sex: 0
   characterType: 0
   faceIcon: {fileID: 0}
   _LEVEL: 0
@@ -30,9 +30,10 @@ MonoBehaviour:
   _career: {fileID: 11400000, guid: 9e316a61e6d86e642a829727cbc40b54, type: 2}
   _race: {fileID: 11400000, guid: ce9d470ff9dd74846876b4a80f211b32, type: 2}
   specialStr: 
-  personalSkillList:
-  - {fileID: 11400000, guid: dc2f23b4fcb80a3489a63754a9d1e47b, type: 2}
-  - {fileID: 11400000, guid: 9862a6f6c75b68240b76781a171acb39, type: 2}
+  _HaveExclusiveSkills: 0
+  _skill0Info: {fileID: 0}
+  _skill1Info: {fileID: 0}
+  _skillOmegaInfo: {fileID: 0}
   PersonalDrawImg: {fileID: 0}
   _useSpineData: 1
   SpineData:

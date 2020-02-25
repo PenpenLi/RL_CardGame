@@ -15,7 +15,7 @@ using Spine;
 
 public class CreateConfig : MonoBehaviour
 {
-    
+#if UNITY_EDITOR
     [MenuItem("Tools/CreateConfig")]
     private static void Create()
     {
@@ -26,6 +26,45 @@ public class CreateConfig : MonoBehaviour
         List<Dictionary<string, string>> xxListResult;
 
 
+        #region BasicHeros
+        xxListResult = ReadVSC("hero");
+        HeroRace[] heroRaces = Resources.LoadAll<HeroRace>("");
+        RoleCareer[] careers = Resources.LoadAll<RoleCareer>("");
+        List<HeroInfo> AlreadyHave = Resources.LoadAll<HeroInfo>("").ToList();
+        for (int i = 0; i < xxListResult.Count; i++)
+        {
+            Dictionary<string, string> Dic = xxListResult[i];
+
+            if (AlreadyHave.Exists(x => x.ID == Dic["id"])) continue;
+            //
+            HeroInfo mi = ScriptableObject.CreateInstance<HeroInfo>();
+            CharacterSex sex = (CharacterSex)(StringToInteger(Dic["gender"]));
+            mi.initData(Dic["id"], Dic["name"], Dic["desc"], sex, "");
+            int Race = StringToInteger(Dic["race"]);
+            foreach (HeroRace race in heroRaces)
+            {
+                if (race.Index == Race) { mi.Race = race; break; }
+            }
+            int career = StringToInteger(Dic["career"]);
+            foreach (RoleCareer c in careers)
+            {
+                if (c.Index == career) { mi.Career = c; break; }
+            }
+            mi.InitRAL(RALByDictionary(Dic));
+            mi.WeaponRaceList = GetWeaponTypeList(Dic["weaponClass"]);
+            mi.SpecialStr = Dic["specialStr"];
+            mi.AddSkillData(
+                getSkillsByString(Dic["skill0"])
+                , getSkillsByString(Dic["skill1"])
+                , getSkillsByString(Dic["skillOmega"])
+                );
+            //
+            AssetDatabase.CreateAsset(mi, "Assets/Resources/ScriptableObjects/heroes/"
+                + career + "_"
+                + mi.ID.Substring(mi.ID.Length - 3) + "_" + mi.Name + ".asset");
+        }
+        #endregion
+        return;
         #region enemy
         xxListResult = CreateConfig.ReadVSC("enemy");
         EnemyRank[] eRanks = Resources.LoadAll<EnemyRank>("");
@@ -107,8 +146,8 @@ public class CreateConfig : MonoBehaviour
         #endregion
         return;
         xxListResult = ReadVSC("hero");
-        HeroRace[] heroRaces = Resources.LoadAll<HeroRace>("");
-        RoleCareer[] careers = Resources.LoadAll<RoleCareer>("");
+        //HeroRace[] heroRaces = Resources.LoadAll<HeroRace>("");
+        //RoleCareer[] careers = Resources.LoadAll<RoleCareer>("");
         for (int i = 0; i < xxListResult.Count; i++)
         {
             Dictionary<string, string> Dic = xxListResult[i];
@@ -128,7 +167,11 @@ public class CreateConfig : MonoBehaviour
             mi.InitRAL(RALByDictionary(Dic));
             mi.WeaponRaceList = GetWeaponTypeList(Dic["weaponClass"]);
             mi.SpecialStr = Dic["specialStr"];
-            mi.PersonalSkillList = getSkillsByString(Dic["skill"]);
+            mi.AddSkillData(
+                getSkillsByString(Dic["skill0"])
+                , getSkillsByString(Dic["skill1"])
+                , getSkillsByString(Dic["skillOmega"])
+                );
             //
             AssetDatabase.CreateAsset(mi, "Assets/Resources/ScriptableObjects/heroes/" 
                 + career + "_"
@@ -192,26 +235,21 @@ public class CreateConfig : MonoBehaviour
         }
         return results;
     }
-    public static List<skillInfo> getSkillsByString(string s)
+    public static skillInfo getSkillsByString(string s)
     {
-        List<skillInfo> results = new List<skillInfo>();
-        string[] ss = s.Split('|');
         skillInfo[] all = Resources.LoadAll<skillInfo>("");
-        for(int i = 0; i < ss.Length; i++)
+        if (!s.Contains("@"))
         {
-            if (!ss[i].Contains("@"))
+            s = "@" + s;
+        }
+        foreach (skillInfo info in all)
+        {
+            if (info.ID == s)
             {
-                ss[i] = "@" + ss[i];
-            }
-            foreach(skillInfo info in all)
-            {
-                if(info.ID == ss[i])
-                {
-                    results.Add(info);break;
-                }
+                return info;
             }
         }
-        return results;
+        return null;
     }
     public static List<Dictionary<string,string>> ReadVSC(string csvName)
     {
@@ -372,4 +410,5 @@ public class CreateConfig : MonoBehaviour
         }
     }
     */
+#endif
 }

@@ -315,7 +315,7 @@ public class SingleItem : MonoBehaviour
             Sprite race = dal.Info.Race.Icon;
             if (dal.Info.Race.NAME == "无种族")
             {
-                HeroRace _r = SDDataManager.Instance.getHeroRaceByIndex(hero.race);
+                HeroRace _r = dal.Info.Race;
                 race = _r.Icon;
             }
             raceImg.sprite = race;
@@ -422,7 +422,7 @@ public class SingleItem : MonoBehaviour
             Sprite race = roh.Info.Race.Icon;
             if (roh.Info.Race.NAME == "无种族")
             {
-                HeroRace _r = SDDataManager.Instance.getHeroRaceByIndex(hero.race);
+                HeroRace _r = roh.Info.Race;
                 race = _r.Icon;
             }
             raceImg.sprite = race;

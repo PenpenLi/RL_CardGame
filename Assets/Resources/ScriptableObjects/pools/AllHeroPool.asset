@@ -17,14 +17,18 @@ MonoBehaviour:
   _DESC: 
   _NotNormalPool: 0
   HeroList:
-  - {fileID: 11400000, guid: d8691036341d95340b9dec3c46b48786, type: 2}
-  - {fileID: 11400000, guid: 3f5e20abd2df8ed4fa4ab6999eef871d, type: 2}
-  - {fileID: 11400000, guid: dfd635ade1979af4c974ee23a0b9e75b, type: 2}
-  - {fileID: 11400000, guid: 88dd36a605138b942883755c64b357e8, type: 2}
-  - {fileID: 11400000, guid: a34b98e57614d3c49860169a489e009d, type: 2}
-  - {fileID: 11400000, guid: 2b72f4375e0c3b542851cdd5fd5cfc4e, type: 2}
-  - {fileID: 11400000, guid: 97cfb39d7f6dec14cb881a00c7a24220, type: 2}
-  - {fileID: 11400000, guid: c72d8edcfb4918b4cacd5f1e233b8658, type: 2}
+  - {fileID: 11400000, guid: e78153a9cf789094e878e02dc0e6678c, type: 2}
+  - {fileID: 11400000, guid: 355d12e0645cfd94d93fb89fa743d149, type: 2}
+  - {fileID: 11400000, guid: d5379c28860723349864cd19dc7134a0, type: 2}
+  - {fileID: 11400000, guid: 05a866388ac67c646a42b492ce07eb2c, type: 2}
+  - {fileID: 11400000, guid: d6321948c96cd1049ac5ad9c7427feac, type: 2}
+  - {fileID: 11400000, guid: 102424e2b91ddae42881e2a90579e386, type: 2}
+  - {fileID: 11400000, guid: 24fdb88e33622fb4f916f224b64f86af, type: 2}
+  - {fileID: 11400000, guid: 9cdeefae151f5684a89db4784095bdb6, type: 2}
+  - {fileID: 11400000, guid: 50ab41aa462e1d2449efae642bba6488, type: 2}
+  - {fileID: 11400000, guid: c98d114ce171951439a2ed8f6fb8b13a, type: 2}
+  - {fileID: 11400000, guid: d3bf0a9686b94bf4f9101b9011d1cf92, type: 2}
+  - {fileID: 11400000, guid: e7fe82c1ac19df045ace753c851ab3de, type: 2}
   - {fileID: 11400000, guid: f1a1a15ab3fed8a44b07b20cb1ea48a1, type: 2}
   - {fileID: 11400000, guid: 17fd1ede4ad290d41b9fc0d7fc041e20, type: 2}
   - {fileID: 11400000, guid: d8f3d832405032642b61e710d4bafc0e, type: 2}

@@ -267,7 +267,7 @@ public class SDConstants
     #endregion
 
     public static float HERO_MODEL_RATIO = 60f;
-    public static float HERO_MODEL_BIG_RATIO = 100f;
+    public static float HERO_MODEL_BIG_RATIO = 80f;
 
     /// <summary>
     /// 奖金掉落基础值
@@ -543,7 +543,7 @@ public class SDConstants
     }
 
     #endregion
-    #region 战斗类enum
+    #region 战斗类Enum
     public enum BCType { hp, mp, tp, end }
     public enum AddMpTpType
     {
@@ -600,6 +600,33 @@ public class SDConstants
         /// </summary>
         god,
         end,
+    }
+    #endregion
+    #region 任务类Enum
+    public enum MissionSerieState
+    {
+        Idle,
+        MissionCanDispatch,
+        MissionDispatched,
+        MissionDone,
+    }
+    public enum MissionType
+    {
+        trainHero,
+        items,
+        summon,
+        summonRarity,
+        summonFighter,
+        summonRanger,
+        summonPriest,
+        summonCaster,
+        summonHuman,
+        summonElf,
+        summonDragonborn,
+        enemyAll,
+        forge,
+        calibrate,
+        killBoss,
     }
     #endregion
     #region 设置类常量

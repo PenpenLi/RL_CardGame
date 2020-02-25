@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using GameDataEditor;
 using System.Linq;
+using DG.Tweening;
 
 /// <summary>
 /// 材料与道具选择项控制类
@@ -18,33 +19,12 @@ public class StockPageController : MonoBehaviour
     public int itemCount;
     //
     public ScrollRect scrollRect;
+    private float animInterval = 0.15f;
     #region ImprovePanel
     public SDHeroImprove heroImproveController;
     public SDEquipImprove equipImproveController;
     public SDGoddessImprove goddessImproveController;
     #endregion
-    public int maxSelectedNum;
-    public int currentSelectedNum 
-    {
-        get 
-        {
-            int flag = 0;
-            for(int i = 0; i < items.Count; i++)
-            {
-                if (items[i].isSelected)
-                {
-                    if(items[i].stockType == SDConstants.StockType.hero)
-                        flag++;
-                    else if(items[i].stockType == SDConstants.StockType.material)
-                    {
-                        int num = items[i].UsedNum;
-                        flag += num;
-                    }
-                }
-            }
-            return flag;
-        }
-    }
     public SDConstants.StockUseType currentUseType
     {
         get { return SDGameManager.Instance.stockUseType; }
@@ -120,7 +100,12 @@ public class StockPageController : MonoBehaviour
     }
     public void chooseStock(RTSingleStockItem stock)
     {
-        if (materialType == SDConstants.MaterialType.star)
+        if(materialType == SDConstants.MaterialType.exp)
+        {
+            heroImproveController.addStockToSlot_Exp(stock);
+            refreshStockConditions_heroImprove();
+        }
+        else if (materialType == SDConstants.MaterialType.star)
         {
             heroImproveController.addStockToSlot_Star(stock);
             refreshStockConditions_heroImprove();
@@ -134,10 +119,14 @@ public class StockPageController : MonoBehaviour
     #region HERO_IMPROVE
     public void refreshStockConditions_heroImprove()
     {
-        List<SingleSlot> enables = new List<SingleSlot>();
-        enables = heroImproveController.AllSlots.ToList().FindAll
+        List<SingleSlot> enables = 
+            heroImproveController.AllSlots.ToList().FindAll
             (x => !x.isEmpty && !x.isLocked);
-        if (materialType == SDConstants.MaterialType.star)
+        if(materialType == SDConstants.MaterialType.exp)
+        {
+            heroImproveController.refreshHeroData_exp();
+        }
+        else if (materialType == SDConstants.MaterialType.star)
         {
             heroImproveController.refreshHeroData_star();
         }
@@ -152,21 +141,91 @@ public class StockPageController : MonoBehaviour
             if (enables.Exists(x => x._id == s.itemId && x._hashcode == s.hashcode))
             {
                 s.isSelected = true;
+                if (s.stockType == SDConstants.StockType.material)
+                {
+                    int num = enables.FindAll(x => x._id == s.itemId).Count;
+                    s.UsedNum = num;
+                    s.NumText.text = s.UsedNum + " / " + s.itemNum;
+                }
+                else if(s.stockType == SDConstants.StockType.hero)
+                {
+                    s.UsedNum = s.itemNum;
+                }
             }
             else s.isSelected = false;
         }
+    }
+    public void InitStocks_Exp()
+    {
+        ResetPage();
+        materialType = SDConstants.MaterialType.exp;
+        
+        // 可用的英雄        
+        List<GDEHeroData> allHs = SDDataManager.Instance.getHerosListOwned().FindAll
+            (x =>
+            {
+                if (x.hashCode == heroImproveController.heroDetail.Hashcode) return false;
+                HeroInfo info = SDDataManager.Instance.getHeroInfoById(x.id);
+                if (info == null) return false;
+                return true;
+            });
+        allHs.Sort((x, y) =>
+        {
+            HeroInfo info_x = SDDataManager.Instance.getHeroInfoById(x.id);
+            HeroInfo info_y = SDDataManager.Instance.getHeroInfoById(y.id);
+            if (info_x.Rarity != info_y.Rarity)
+            {
+                return -info_x.Rarity.CompareTo(info_y.Rarity);
+            }
+            return -x.exp.CompareTo(y.exp);
+        });
+        for (int i = 0; i < allHs.Count; i++)
+        {
+            Transform s = Instantiate(SItem) as Transform;
+            s.SetParent(scrollRect.content);
+            s.localScale = Vector3.one;
+            RTSingleStockItem _s = s.GetComponent<RTSingleStockItem>();
+            _s.stockPage = this;
+            _s.initStock(allHs[i], SDConstants.MaterialType.exp);
+            items.Add(_s);
+        }
+
+        // 可用的材料
+        List<GDEItemData> allIs = SDDataManager.Instance.getConsumablesOwned.FindAll
+            (x =>
+            {
+                consumableItem item = SDDataManager.Instance.getConsumableItemById(x.id);
+                if (item == null) return false;
+                return item.MaterialType == SDConstants.MaterialType.exp;
+            });
+        allIs.Sort((x, y) =>
+        {
+            consumableItem item_x = SDDataManager.Instance.getConsumableById(x.id);
+            consumableItem item_y = SDDataManager.Instance.getConsumableById(y.id);
+            return -item_x.LEVEL.CompareTo(item_y.LEVEL);
+        });
+        for (int i = 0; i < allIs.Count; i++)
+        {
+            Transform s = Instantiate(SItem) as Transform;
+            s.SetParent(scrollRect.content);
+            s.localScale = Vector3.one;
+            RTSingleStockItem _s = s.GetComponent<RTSingleStockItem>();
+            _s.stockPage = this;
+            _s.initStock(allIs[i], SDConstants.MaterialType.exp);
+            items.Add(_s);
+        }
+        //
+        SR_ToStart();
     }
     public void InitStocks_Star(int oldLevel)
     {
         ResetPage();
         materialType = SDConstants.MaterialType.star;
-        maxSelectedNum = heroImproveController.AllSlots.ToList()
-            .FindAll(x => !x.isLocked).Count;
         // 可用的英雄        
         List<GDEHeroData> allHs = SDDataManager.Instance.getHerosListOwned().FindAll
             (x=> 
             {
-                if (x.locked) return false;
+                if (x.hashCode == heroImproveController.heroDetail.Hashcode) return false;
                 HeroInfo info = SDDataManager.Instance.getHeroInfoById(x.id);
                 if (info == null) return false;
                 int LEVEL = info.LEVEL + x.starNumUpgradeTimes;
@@ -217,19 +276,19 @@ public class StockPageController : MonoBehaviour
             _s.initStock(allIs[i],SDConstants.MaterialType.star);
             items.Add(_s);
         }
+        //
+        SR_ToStart();
     }
     public void InitStocks_skill(string heroId)
     {
         ResetPage();
         materialType = SDConstants.MaterialType.skill;
-        maxSelectedNum = heroImproveController.AllSlots.ToList()
-            .FindAll(x => !x.isLocked).Count;
 
         //可用的英雄
         List<GDEHeroData> allHs = SDDataManager.Instance.getHerosListOwned().FindAll
             (x =>
             {
-                if (x.locked) return false;
+                if (x.hashCode == heroImproveController.heroDetail.Hashcode) return false;
                 return x.id == heroId;
             });
         allHs.Sort((x, y) =>
@@ -278,8 +337,13 @@ public class StockPageController : MonoBehaviour
             _s.initStock(allIs[i],SDConstants.MaterialType.skill);
             items.Add(_s);
         }
+        //
+        SR_ToStart();
     }
     #endregion
-
+    void SR_ToStart()
+    {
+        scrollRect.DOHorizontalNormalizedPos(0, animInterval);
+    }
     #endregion
 }

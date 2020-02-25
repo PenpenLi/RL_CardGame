@@ -12,6 +12,7 @@ public class SDSkillSelect : MonoBehaviour
     {
         get { return GetComponent<SkillDetailsList>(); }
     }
+    public SDHeroDeploySkills HDS;
     public Transform skillItem;
     //[HideInInspector]
     public List<OneSkill> currentAll;
@@ -35,15 +36,8 @@ public class SDSkillSelect : MonoBehaviour
     {
         int hashcode = heroDetail.Hashcode;
 
-        currentAll = SDDataManager.Instance.getAllSkillsByHashcode(hashcode);
-        currentAll.Sort(
-        (x, y) =>
-        {
-            return x.islocked.CompareTo(y.islocked);
-        });
+        currentAll = SDDataManager.Instance.getSkillListByHashcode(hashcode);
         resetSkillList();
-
-
 
         for (int i = 0; i < currentAll.Count; i++)
         {
@@ -52,31 +46,22 @@ public class SDSkillSelect : MonoBehaviour
             s.localScale = Vector3.one;
             s.gameObject.SetActive(true);
             RTSingleSkillItem _S = s.GetComponent<RTSingleSkillItem>();
-            if (SDDataManager.Instance.ifDeployThisSkill
-                (currentAll[i].skillId, heroDetail.Hashcode))
-            {
-                _S.isDeployed = true;
-            }
-            else _S.isDeployed = false;
             _S.initSkillItem(currentAll[i], heroDetail.Hashcode);//构建技能基础信息
 
-            if(item_use_type == itemUseType.deploy)
-            {
-                _S.use_type = 1;
-            }
-            else if(item_use_type == itemUseType.detail)
-            {
-                _S.use_type = 2;
-            }
             skillList.Add(_S);
         }
     }
-
-
-
-    public void BtnToShowSkillDetail(int skillId)
+    public void refreshAllSkillsCondition(string currentSkillId)
     {
-
+        if (HDS == null) return;
+        HDS.currentSkillId = currentSkillId;
+        HDS.currentSkill = SDDataManager.Instance.getOwnedSkillById
+            (currentSkillId, heroDetail.Hashcode);
+        HDS.refreshSkillDetail();
+        foreach(RTSingleSkillItem S in skillList)
+        {
+            if (S.ItemId == currentSkillId) S.isSelected = true;
+            else S.isSelected = false;
+        }
     }
-
 }

@@ -36,18 +36,18 @@ public class SingleSlot : MonoBehaviour
     {
         get { return _isLocked;}
         set
-        { 
-            if (_isLocked != value)
-            {
-                _isLocked = value;
-                lockPanel?.gameObject.SetActive(_isLocked);
-            }
+        {
+            _isLocked = value;
+            lockPanel?.gameObject.SetActive(_isLocked);
         }
     }
+
+    public SDHeroImprove HeroImprove;
 
     //
     [Header("Data")]
     public SDConstants.ItemType ItemType;
+
     public string _id;
     public int _hashcode;
     public int num = 1;
@@ -102,7 +102,8 @@ public class SingleSlot : MonoBehaviour
     }
     public void AddFromStock(RTSingleStockItem stock)
     {
-        if(stock.materialType == SDConstants.MaterialType.star
+        if( stock.materialType == SDConstants.MaterialType.exp
+            ||stock.materialType == SDConstants.MaterialType.star
             ||stock.materialType == SDConstants.MaterialType.skill)
         if(stock.stockType == SDConstants.StockType.hero)
         {
@@ -126,7 +127,11 @@ public class SingleSlot : MonoBehaviour
 
     public void BtnTapped()
     {
-
+        if (HeroImprove)
+        {
+            ClearSlot();
+            HeroImprove.RefreshImprovePanel();
+        }
     }
 
     public bool consumeContentInSlot()

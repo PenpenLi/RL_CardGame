@@ -7,31 +7,11 @@ using GameDataEditor;
 public class RTSingleSkillItem : MonoBehaviour
 {
     public Image itemImg;
-    public Text itemNameText;
-    public Image itemBgImg;
+    public Text DownText;
+    public Image itemFrameImg;
     public string ItemId;
     public int lv;
     public bool isOmega;
-    public Transform LockedPanel;
-    public bool isLocked
-    {
-        get
-        {
-            if (LockedPanel && LockedPanel.gameObject.activeSelf) return true;
-            return false;
-        }
-        set { LockedPanel.gameObject.SetActive(value); }
-    }
-    public Transform DeployPanel;
-    public bool isDeployed
-    {
-        get
-        {
-            if (DeployPanel && DeployPanel.gameObject.activeSelf) return true;
-            return false;
-        }
-        set { DeployPanel.gameObject.SetActive(value); }
-    }
     public Transform SelectedPanel;
     public bool isSelected
     {
@@ -49,51 +29,37 @@ public class RTSingleSkillItem : MonoBehaviour
     {
         if(deploy == SDConstants.deployType.skill)
         {
-            if (use_type == 1)
-                chooseSkillToDeploy();
-            else if(use_type == 2) 
-                chooseSkillToShowDetail();
+            chooseSkillToShowDetail();
         }
-    }
-    public void chooseSkillToDeploy()
-    {
-        //SDSkillSelect SS = GetComponentInParent<SDSkillSelect>();
-        SDHeroDeploySkills HDS = GetComponentInParent<SDHeroDeploySkills>();
-        HDS.SelectSkill(this);
     }
     public void chooseSkillToShowDetail()
     {
-
+        SDSkillSelect SSS = GetComponentInParent<SDSkillSelect>();
+        if (SSS)
+        {
+            SSS.refreshAllSkillsCondition(ItemId);
+        }
     }
     public void initSkillItem(OneSkill baseskilldata , int heroHashcode = 0 )
     {
         deploy = SDConstants.deployType.skill;
         ItemId = baseskilldata.skillId;
         lv = baseskilldata.lv;
-        itemNameText.text = baseskilldata.SkillName;
-        isLocked = baseskilldata.islocked;
-        if (!isLocked)
+        DownText.text = SDGameManager.T("Lv.") + lv;
+        if (heroHashcode > 0)
         {
-            if (heroHashcode > 0)
+            OneSkill S = SDDataManager.Instance.getOwnedSkillById
+                (ItemId, heroHashcode);
+            isOmega = S.isOmegaSkill;
+            if (isOmega)
             {
-                if (SDDataManager.Instance.ifDeployThisSkill
-                    (ItemId, heroHashcode))
-                {
-                    isDeployed = true;
-                }
-                OneSkill S = SDDataManager.Instance.getOwnedSkillById
-                    (ItemId, heroHashcode);
-                isOmega = S.isOmegaSkill;
-                if (isOmega)
-                {
-                    itemBgImg.sprite = SDDataManager.Instance
-                        .baseFrameSpriteByRarity(3); 
-                }
-                else
-                {
-                    itemBgImg.sprite = SDDataManager.Instance
-                        .baseFrameSpriteByRarity(1);
-                }
+                itemFrameImg.sprite = SDDataManager.Instance
+                    .baseFrameSpriteByRarity(3);
+            }
+            else
+            {
+                itemFrameImg.sprite = SDDataManager.Instance
+                    .baseFrameSpriteByRarity(1);
             }
         }
     }

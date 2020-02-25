@@ -12,12 +12,12 @@ public class RTSingleStockItem : MonoBehaviour
     public Image itemImg;
     public Image frameImg;
     public Image bgImg;
-    public Image selectImg;
     
     public Text lvText;
     public Text NameText;
     public Text NumText;
     public SDConstants.StockType stockType;
+    //public SDConstants.ItemType itemType;
     public SDConstants.MaterialType materialType = SDConstants.MaterialType.end;
     public string itemId;
     public int hashcode;
@@ -26,26 +26,39 @@ public class RTSingleStockItem : MonoBehaviour
     public string itemName;
     //public int itemUpLv;
     public ItemStarVision starVision;
+
+    //
+    public Image selectImg;
     bool _isSelected;
     public bool isSelected 
     {
         get { return _isSelected; }
         set 
         {
-            if (value != _isSelected)
+            _isSelected = value;
+            selectImg?.gameObject.SetActive(_isSelected);
+            if (!_isSelected)
             {
-                _isSelected = value;
-                selectImg?.gameObject.SetActive(_isSelected);
-                if (!_isSelected)
-                {
-                    if (NumText) NumText.text = "" + itemNum;
-                }
+                if (NumText) NumText.text = "" + itemNum;
             }
         }
     }
+
+    public Transform lockedPanel;
+    bool _isLocked;
+    public bool isLocked
+    {
+        get { return _isLocked; }
+        set
+        {
+            _isLocked = value;
+            lockedPanel?.gameObject.SetActive(_isLocked);
+        }
+    }
+
+
     public int UsedNum = 0;
     public StockPageController stockPage;
-
     public void BtnTapped()
     {
         //beingTapped = true;
@@ -54,6 +67,12 @@ public class RTSingleStockItem : MonoBehaviour
             Debug.Log("无法点击");
             return;
         }
+        if (isLocked) 
+        {
+            Debug.Log("被锁定无法添加");
+            return;
+        }
+        if (UsedNum >= itemNum) return;
         SDConstants.StockUseType useType = stockPage.currentUseType;
         //
         if (stockType == SDConstants.StockType.prop)
@@ -64,7 +83,8 @@ public class RTSingleStockItem : MonoBehaviour
         {
             if (useType == SDConstants.StockUseType.work)
             {
-                if (materialType == SDConstants.MaterialType.star
+                if ( materialType == SDConstants.MaterialType.exp
+                    || materialType == SDConstants.MaterialType.star
                     || materialType == SDConstants.MaterialType.skill)
                 {
                     stockPage.chooseStock(this);
@@ -72,40 +92,13 @@ public class RTSingleStockItem : MonoBehaviour
             }
         }
     }
-    public void chooseHeroToConsume()
-    {
-        if(stockPage.maxSelectedNum > 0 
-            && stockPage.currentSelectedNum < stockPage.maxSelectedNum)
-        {
-            if (!SDDataManager.Instance.getHeroIfLocked(hashcode))
-            {
-                isSelected = true;
-                UsedNum = 1;
-            }
-            else
-            {
-
-            }
-        }
-    }
-    public void chooseHeroToDetail()
+    void chooseHeroToDetail()
     {
 
     }
-    public void chooseHeroToSell()
+    void chooseHeroToSell()
     {
 
-    }
-    public void chooseMaterialToConsume()
-    {
-        if (stockPage.maxSelectedNum > 0
-            && stockPage.currentSelectedNum < stockPage.maxSelectedNum)
-        {
-            isSelected = true;
-            if (UsedNum < itemNum)
-                UsedNum++;
-            NumText.text = UsedNum + "/" + itemNum;
-        }
     }
     public void chooseMaterialToDetail()
     {
@@ -137,6 +130,8 @@ public class RTSingleStockItem : MonoBehaviour
         itemImg.sprite = info.FaceIcon;
         bgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(info.Rarity);
         frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(info.Rarity);
+        //
+        isLocked = data.locked;
     }
     public void initStock(GDEItemData data
         , SDConstants.MaterialType MType = SDConstants.MaterialType.end)
@@ -147,13 +142,15 @@ public class RTSingleStockItem : MonoBehaviour
         itemId = data.id;
         itemNum = data.num;
         hashcode = 0;
-
         consumableItem item = SDDataManager.Instance.getConsumableById(itemId);
         if (starVision) starVision.gameObject.SetActive(false);
-        if (NumText) NumText.text = "X" + itemNum;
+        if (NumText) NumText.text = UsedNum + " / " + itemNum;
 
         itemImg.sprite = item.IconFromAtlas;
         bgImg.sprite = SDDataManager.Instance.baseBgSpriteByRarity(item.LEVEL);
         frameImg.sprite = SDDataManager.Instance.baseFrameSpriteByRarity(item.LEVEL);
+
+        //
+        isLocked = false;
     }
 }
